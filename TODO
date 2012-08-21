@@ -1,3 +1,6 @@
+21.08.2012
+- should replace all assert by if & throw
+
 23.07.12
 - review all codes relating to check_and_cast, is it possible to change them into dynamic_cast???
 

@@ -1,4 +1,4 @@
-setwd("/home/giang/workspace/422-omnet-inet-donet/scamp/simulations/results/")
+setwd("/nix/workspace/omnet422-inet118/so/simulations/results/")
 require(omnetpp)
 vectorFiles <- scalarFiles <- file.path('Scamp_Homo_oneRouter_Network-0.vec')
 dataset <- loadDataset(vectorFiles, add(select='module("Scamp_Homo_oneRouter_Network.globalStatisic") AND name("allFinalPVsizes")'))

@@ -1,4 +1,4 @@
-setwd("/home/giang/workspace/422-omnet-inet-donet/scamp/simulations/results/")
+setwd("/nix/workspace/omnet422-inet118/so/simulations/results/")
 
 require(omnetpp)
 
