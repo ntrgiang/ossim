@@ -1,0 +1,41 @@
+//package giang.simpleOverlay.tracker;
+package simpleoverlay.applications.source;
+
+//import inet.applications.udpapp.UDPBasicApp;
+import inet.applications.udpapp.UDPApp;
+//
+// TODO auto-generated module
+//
+//simple VideoSource extends UDPBasicApp
+simple VideoSource like UDPApp
+{
+    parameters:
+        @class(VideoSource); 
+        
+        // -- Communicating via UDP
+        int         localPort       = default(9000); // port number to listen on
+        int         destPort        = default(-1);
+        string      destAddresses   = default("");
+        
+//        old settings when deriving from UDPBasicApp        
+//        messageLength = default(4B);
+//        messageFreq = default(1s);
+        
+        // Timer
+        double bufferMapInterval  @unit(s) = default(0.5s);
+		double startTime          @unit(s) = default(uniform(0.5s,1s));
+		double videoStartTime     @unit(s) = default(5s);
+		// int BufferMapSize = default(60);
+
+        // Streaming:
+        // Try to move these parameters up one level
+//        int videoStreamBitRate      @unit(bps)  = default(300kbps);
+//        int chunkSize               @unit(byte) = default(1250B);
+//        int bufferMapSize           @unit(s)    = default(120s);
+        
+    gates:
+        input udpIn @labels(UDPControlInfo/up);
+        output udpOut @labels(UDPControlInfo/down);
+}
+
+

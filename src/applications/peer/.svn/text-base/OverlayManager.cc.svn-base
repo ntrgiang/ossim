@@ -1,0 +1,104 @@
+#include "OverlayManager.h"
+
+#include <string>
+#include <IPAddressResolver.h>
+
+#include "HelloMessage_m.h"
+
+//#include "BitTorrentClient.h"
+//#include "Choker.h"
+//#include "ContentManager.h"
+//#include "OverlayManagerThread.h"
+
+Define_Module( OverlayManager);
+
+// Public methods
+OverlayManager::OverlayManager()
+   :
+     localPeerId(-1),
+     debugFlag(false),
+     listenPort(-1),
+     trackerPort(-1)
+{
+}
+
+OverlayManager::~OverlayManager()
+{
+   /*
+	this->socketMap.deleteSockets();
+	// delete thread objects
+	std::map<int, OverlayManagerThread *>::iterator threadIt;
+	threadIt = this->swarmThreads.begin();
+   for (; threadIt != this->swarmThreads.end(); ++threadIt)
+   {
+		delete threadIt->second;
+		threadIt->second = NULL;
+	}
+   */
+}
+
+void OverlayManager::join()
+{
+    // tell simulator that this method is being called.
+    Enter_Method("join()");
+
+    /*
+    OverlayManagerThread * thread = new OverlayManagerThread(this->numWant,
+            this->localPeerId, this->port, this->refreshInterval, torrentInfo, seeder);
+
+    TCPSocket * socket = new TCPSocket();
+    socket->setOutputGate(gate("tcpOut"));
+    socket->setCallbackObject(thread);
+    thread->init(this, socket);
+
+    */
+//    HelloMessage* helloMsg = new HelloMessage();
+//    helloMsg->setByteLength(4);
+    EV << "@ join()";
+//    socket.send(helloMsg);
+
+
+}
+
+void OverlayManager::printDebugMsg(std::string s)
+{
+	if (this->debugFlag) {
+		// debug "header"
+		std::cerr << simulation.getEventNumber() << " (T=";
+		std::cerr << simulation.getSimTime() << ")(OverlayManager) - ";
+		std::cerr << "Peer " << this->localPeerId << ": ";
+		std::cerr << s << "\n";
+	}
+}
+
+// Protected methods
+void OverlayManager::handleMessage(cMessage *msg)
+{
+
+}
+//void OverlayManager::initialize(int stage)
+void OverlayManager::initialize()
+{
+    cModule * tracker = simulation.getModuleByPath(par("connectAddress"));
+    if (tracker == NULL) {
+        //throw cException("Tracker not found");
+        printDebugMsg("Tracker not found!");
+    } else {
+        // get the Tracker's address and port
+        this->trackerAddress = IPAddressResolver().addressOf(tracker,
+                    IPAddressResolver::ADDR_IPv4);
+        this->trackerPort = par("connectPort").longValue();
+
+        // connect to server
+//        socket.setCallbackObject(this);
+//        socket.setOutputGate(gate("tcpOut"));
+//        socket.connect(trackerAddress, trackerPort);
+    }
+}
+
+/*
+int OverlayManager::numInitStages() const
+{
+	return 4;
+}
+*/

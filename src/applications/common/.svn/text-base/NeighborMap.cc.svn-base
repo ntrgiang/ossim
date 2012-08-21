@@ -1,0 +1,185 @@
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see http://www.gnu.org/licenses/.
+// 
+
+#include "NeighborMap.h"
+#include <omnetpp.h>
+#include <map>
+
+NeighborMap::NeighborMap() {
+    // TODO Auto-generated constructor stub
+
+}
+
+NeighborMap::~NeighborMap() {
+    // TODO Auto-generated destructor stub
+}
+
+/*
+void NeighborMap::initialize(int stage)
+{
+    if (stage != 1)
+    {
+        return;
+    }
+    // TODO: more content to come
+}
+
+// Raise error
+void NeighborMap::handleMessage(cMessage *)
+{
+    throw cException("NeighborMap does not process messages!");
+}
+*/
+
+void NeighborMap::printNeighborList() const
+{
+//    Enter_Method_Silent("printNeighborList");
+//    Enter_Method("printNeighborList");
+}
+
+bool NeighborMap::isNeighbor(const IPvXAddress& addr) const
+{
+//    Enter_Method_Silent("isNeighbor");
+//    Enter_Method("isNeighbor");
+
+    AddressList::iterator it;
+    it = neighborList.find(addr);
+
+    if (it == neighborList.end())
+        return false;
+
+    return true;
+}
+
+int NeighborMap::getSize() const
+{
+//    Enter_Method_Silent("isNeighbor");
+//    Enter_Method("getSizeNeighborList");
+    return neighborList.size();
+}
+
+
+void NeighborMap::addNeighborAddress(const IPvXAddress &addr)
+{
+    // first version
+//    Enter_Method_Silent("addNeighborAddress");
+//    Enter_Method("addNeighborAddress");
+
+    if (isNeighbor(addr) == true)
+        return;
+
+    NeighborInfo *nbr_info = new NeighborInfo();
+    neighborList.insert(std::pair<IPvXAddress, NeighborInfo *>(addr, nbr_info));
+
+    // second version
+    /*
+    std::pair<std::map<IPvXAddress, NeighborInfo*>::iterator, bool> ret;
+    NeighborInfo *nbr_info = new NeighborInfo();
+    ret = neighborList.insert(std::pair<IPvXAddress, NeighborInfo *>(addr, nbr_info));
+    */
+    // return ret;
+//    if (ret == false)
+//        return false;
+//    return true
+}
+
+/*
+void NeighborMap::updateNeighborInfo(NeighborInfo *)
+{
+
+}
+*/
+
+// -- Check if the address is already in the neighborList
+// -- if YES: delete the OLD NeighborInfo
+// -- if NO: something wrong!
+int NeighborMap::updateStoredBufferMap(IPvXAddress address, BufferMap *bm)
+{
+    std::map<IPvXAddress, NeighborInfo *>::iterator iter;
+    iter = neighborList.find(address);
+
+    if (iter == neighborList.end())
+    {
+        // address is not in the neighborList
+        return -RVALUE_ERROR;
+    }
+
+    if (iter->second) delete iter->second;
+
+    NeighborInfo *neighborInfo = new NeighborInfo;
+    neighborInfo->setLastRecvBmTime(simTime().dbl());
+    //neighborInfo->setBufferMap(bm);
+    //neighborInfo->updateRecvBufferMap(bm);
+    iter->second = neighborInfo;
+
+    return RVALUE_NO_ERROR;
+}
+
+
+bool NeighborMap::deleteNeighborAddress(const IPvXAddress &addr)
+{
+//    Enter_Method_Silent("deleteNeighborAddress");
+//    Enter_Method("deleteNeighborAddress");
+
+    neighborList.erase(addr);
+
+    return true;
+}
+
+
+std::vector<IPvXAddress> NeighborMap::getNeighborList() const
+{
+//    Enter_Method_Silent("getNeighborList");
+//    Enter_Method("getNeighborList");
+
+    std::vector<IPvXAddress>resultAddressList;
+    AddressList::iterator iter;
+    for (iter = neighborList.begin(); iter != neighborList.end(); ++iter)
+    {
+        resultAddressList.push_back(iter->first);
+    }
+    return resultAddressList;
+}
+
+/*
+void NeighborMap::updateKeepAliveTimestamp(IPvXAddress addr, long timestamp)
+{
+//    Enter_Method_Silent("updateKeepAliveTimestamp");
+//    Enter_Method("updateKeepAliveTimestamp");
+
+    std::map<IPvXAddress, NeighborInfo *>::iterator iter;
+    iter = neighborList.find(addr);
+    iter->second->lastKeepAliveTime(timestamp);
+}
+*/
+
+void NeighborMap::getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddress> &holderList)
+{
+    holderList.clear();
+
+    std::map<IPvXAddress, NeighborInfo *>::iterator iter;
+
+    for (iter = neighborList.begin(); iter != neighborList.end(); ++iter)
+    {
+        NeighborInfo *nbr_info = iter->second;
+        if (nbr_info->getLastRecvBmTime() != -1)
+        {
+            if (nbr_info->isInRecvBufferMap(seq_num))
+            {
+                holderList.push_back(iter->first);
+            }
+        }
+    }
+}

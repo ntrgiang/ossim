@@ -1,0 +1,13 @@
+# Partial Tkenv config file -- see $HOME/.tkenvrc as well
+inspector "ScampNetwork.scampSourceNode.scampSourceApp.scampSource" "ScampSource" "1" "918x314+2434+24:normal"
+inspector "ScampNetwork.scampSourceNode.udp" "UDP" "1" "596x314+1495+72:normal"
+inspector "ScampNetwork.scampSourceNode" "ScampSourceNode" "2" "735x410+2400+762:normal"
+inspector "ScampNetwork.scampSourceNode.networkLayer" "NetworkLayer" "2" "707x410+2745+366:normal"
+inspector "ScampNetwork.flatNetworkConfigurator" "FlatNetworkConfigurator" "1" "834x314+1487+414:normal"
+inspector "ScampNetwork.scampPeerNode[2].scampPeerApp.scampPeer" "ScampPeer" "1" "869x314+9+251:normal"
+inspector "ScampNetwork" "ScampNetwork" "2" "607x410+1599+762:normal"
+inspector "ScampNetwork.peerNode[0].peerApp.scampPeer" "ScampPeer" "1" "799x314+1561+52:normal"
+inspector "ScampNetwork.videoSourceNode.videoSourceApp.videoSource" "VideoSource" "1" "918x314+1553+401:normal"
+inspector "ScampNetwork.peerNode[0]" "DonetPeerNode" "2" "693x410+2506+762:normal"
+inspector "ScampNetwork.peerNode[2].peerApp.donetPeer" "DonetPeer" "1" "799x314+2294+705:normal"
+

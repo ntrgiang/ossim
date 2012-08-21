@@ -1,0 +1,10 @@
+package simpleoverlay.applications.peer;
+
+moduleinterface PeerControllerInterface
+{
+    parameters:
+        @display("i=block/user");
+        bool debugFlag;
+//        xml profile;
+        double startTime @unit(s);
+}

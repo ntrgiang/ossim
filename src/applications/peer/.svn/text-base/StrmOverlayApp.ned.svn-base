@@ -1,0 +1,14 @@
+package simpleoverlay.applications.peer;
+
+moduleinterface StrmOverlayApp
+{
+    parameters:
+        @display("i=block/user");
+        bool debugFlag;
+    
+    gates:
+        input tcpIn;
+        output tcpOut;
+        input udpIn;
+        output udpOut;
+}

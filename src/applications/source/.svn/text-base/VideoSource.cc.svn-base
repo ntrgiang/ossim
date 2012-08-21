@@ -1,0 +1,569 @@
+//#include "VideoSource.h"
+
+#include <algorithm>
+#include <cstring>
+#include <cstdio>
+#include "UDPControlInfo_m.h"
+#include "UDPPacket.h"
+#include <IPAddressResolver.h>
+#include <csimulation.h>
+
+#include "IPv4InterfaceData.h"
+//#include "IInterfaceTable.h"
+#include "InterfaceTableAccess.h"
+
+#include "VideoSource.h"
+#include "PeerStreamingPacket_m.h"
+#include "MeshPeerStreamingPacket_m.h"
+
+#include <assert.h>
+
+Define_Module(VideoSource);
+
+VideoSource::VideoSource()
+   : m_id_newChunk(-1L)
+//     debugFlag(false)
+{
+    timer_startVideo    = new cMessage("MESH_SOURCE_TIMER_VIDEO_START");
+    timer_newChunk      = new cMessage("MESH_SOURCE_TIMER_NEW_CHUNK");
+    timer_sendBufferMap = new cMessage("MESH_SOURCE_TIMER_SEND_BUFFERMAP");
+}
+
+VideoSource::~VideoSource()
+{
+//    if (m_videoBuffer != NULL) delete m_videoBuffer;
+
+    // TODO Why should I have this variable so that I have to delete it!
+//    if (m_bufferMap != NULL) delete m_bufferMap;
+
+    // Timer
+    if (timer_startVideo)       delete cancelEvent(timer_startVideo);
+    if (timer_newChunk)         delete cancelEvent(timer_newChunk);
+    if (timer_sendBufferMap)    delete cancelEvent(timer_sendBufferMap);
+
+    // Packets
+    if (m_bmPacket) delete m_bmPacket;
+}
+
+void VideoSource::initialize(int stage)
+//void VideoSource::initialize()
+{
+    if (stage != 3)
+        return;
+
+    appID = 0L;
+
+    // Reading values for parameters
+    m_destPort = par("destPort");
+    m_localPort = par("localPort");
+    bindToPort(m_localPort);
+
+    param_bufferMapSize_second      = getParentModule()->par("bufferMapSize");
+    param_videoStreamBitRate        = getParentModule()->par("videoStreamBitRate");
+    param_chunkSize                 = getParentModule()->par("chunkSize");
+
+    m_videoStreamChunkRate  = param_videoStreamBitRate /* bps */ / param_chunkSize /* Bytes */ / 8;
+    m_bufferMapSize_chunk   = param_bufferMapSize_second * m_videoStreamChunkRate;
+
+    //int videoStreamBitRate  = par("videoStreamBitRate");
+    //int chunkSize           = par ("chunkSize");
+
+    //param_bufferMapSize_second = par("bufferMapSize");
+    //m_bufferMapSize_chunk = param_bufferMapSize_second * m_videoStreamChunkRate;
+
+    m_newChunkTimerInterval = 1.0 / (double)m_videoStreamChunkRate;
+    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_startVideo);
+
+    // TODO: verification!!!
+    // m_videoBuffer = new VideoBuffer(m_bufferMapSize_chunk);
+
+    m_bufferMapInterval = par("bufferMapInterval").doubleValue();
+
+    m_bufferMap = new BufferMap(m_bufferMapSize_chunk);
+
+    // m_chunkSeqNumber_lower = min(0, m_chunkSeqNumber_upper - m_bufferMapSize_chunk);
+
+    // -- Get the IP address of the VideoSource host
+    IInterfaceTable *inet_ift;
+    inet_ift = InterfaceTableAccess().get();
+
+    if (inet_ift->getNumInterfaces() < 2)
+    {
+        throw cException("not enough number of interfaces at the Video Source");
+        return;
+    }
+
+    //    IPvXAddress sourceAddress = (IPvXAddress)inet_ift->getInterface(1)->ipv4Data()->getIPAddress();
+    IPvXAddress sourceAddress(inet_ift->getInterface(1)->ipv4Data()->getIPAddress());
+    EV << "IP address of the video source: " << sourceAddress << endl;
+
+    // -- Add the IP address of the video source to the Active Peer Table
+    // -- (so that other peers could have at least one address in the list to contact to)
+    cModule *temp = simulation.getModuleByPath("activePeerTable");
+    m_apTable = check_and_cast<ActivePeerTable *>(temp);
+    assert(m_apTable != NULL);
+
+    m_apTable->addPeerAddress(sourceAddress);
+//    aptable->printActivePeerTable();
+
+    // Setup pointers to "local" modules
+    temp = getParentModule()->getModuleByRelativePath("partnerList");
+    m_partnerList = check_and_cast<PartnerList *>(temp);
+    assert(m_partnerList != NULL);
+
+    temp = getParentModule()->getModuleByRelativePath("videoBuffer");
+    m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
+    assert(m_videoBuffer != NULL);
+
+    // WATCH:
+    WATCH(m_localPort);
+    WATCH(m_videoStreamChunkRate);
+    WATCH(m_newChunkTimerInterval);
+    WATCH(m_bufferMapSize_chunk);
+//    WATCH(m_id_bmStart);
+//    WATCH(m_id_bmEnd);
+
+    // Result recording variables
+    r_idBmStart_vector.setName("id_start");
+    r_idBmEnd_vector.setName("id_end");
+    r_latestID_vector.setName("latestID");
+    r_bmPkt.setName("bmStatus");
+
+    // Packets
+    m_bmPacket = new MeshBufferMapPacket("MESH_BUFFER_MAP_PACKET");
+    m_bmPacket->setBufferMapArraySize(m_bufferMapSize_chunk);
+}
+
+/*
+ * This function does not delete the message!!!
+ */
+void VideoSource::handleMessage(cMessage* msg)
+{
+
+    if (msg->isSelfMessage() == true)
+    {
+        handleTimerMessage(msg);
+    }
+    else
+    {
+        processPacket(PK(msg));
+        // EV << "External message processed!" << endl;
+    }
+
+}
+
+/**
+ * ----------------
+ * Helper functions
+ * ----------------
+ */
+
+void VideoSource::handleTimerMessage(cMessage *msg)
+{
+//    Enter_Method("handleTimerMessage(msg)");
+
+
+    if (msg == timer_startVideo)
+    {
+        // Start the video stream
+//        m_chunkSeqNumber_upper = 0L;
+//        m_chunkSeqNumber_lower = 0L;
+//        m_id_bmStart = 0L;
+//        m_id_bmEnd = 0L;
+
+        m_id_newChunk = 0L;
+        // Schedule the next chunk
+        scheduleAt(simTime() + m_newChunkTimerInterval, timer_newChunk);
+
+        MeshVideoChunkPacket *chunk = new MeshVideoChunkPacket("MESH_VIDEO_CHUNK_PACKET");
+        chunk->setSeqNumber(0L);
+        ++m_id_newChunk;
+        SIM_TIME_T current_time = simTime().dbl();
+        chunk->setTimeStamp(current_time);
+        m_videoBuffer->insertPacket(chunk, current_time);
+        // TODO: revision needed -- possible duplication of storing timeStamps
+    }
+    else if (msg == timer_newChunk)
+    {
+//        ++m_chunkSeqNumber_upper;
+//        m_chunkSeqNumber_lower = std::max(0L, m_chunkSeqNumber_upper - m_bufferMapSize_chunk);
+//        r_latestID_vector.record(m_chunkSeqNumber_upper);
+
+        // Deleted because they are stored in VideoStreamBuffer already!!!
+//        ++m_id_bmEnd;
+//        m_id_bmStart = std::max(0L, m_id_bmEnd - m_bufferMapSize_chunk);
+//        r_latestID_vector.record(m_id_bmEnd);
+
+        // -- Module validation
+        // r_latestID_vector.record(m_id_newChunk);
+
+        // -- Create a new Chunk Message and attach it to the Buffer
+        MeshVideoChunkPacket *chunk = new MeshVideoChunkPacket("MESH_VIDEO_CHUNK_PACKET");
+        chunk->setSeqNumber(m_id_newChunk);
+        SIM_TIME_T current_time = simTime().dbl();
+        chunk->setTimeStamp(current_time);
+        m_videoBuffer->insertPacket(chunk, current_time);
+
+        ++m_id_newChunk;
+        // Schedule the next chunk
+        scheduleAt(simTime() + m_newChunkTimerInterval, timer_newChunk);
+
+        // -- output the status of the VideoStreamBuffer
+        // EV << "[" << m_videoBuffer->getID_bufferStart() << ", " << m_videoBuffer->getID_bufferEnd() << "]" << endl;
+
+        // -- records status of the video Buffer
+        // r_idBmStart_vector.record(m_videoBuffer->getID_bufferStart());
+        // r_idBmEnd_vector.record(m_videoBuffer->getID_bufferEnd());
+
+//        EV << "[" << m_chunkSeqNumber_lower << ", " << m_chunkSeqNumber_upper << "]" << endl;
+//        EV << "[" << m_id_bmStart << ", " << m_id_bmEnd << "]" << endl;
+    }
+    else if (msg == timer_sendBufferMap)
+    {
+        sendBufferMap();
+
+        scheduleAt(simTime() + m_bufferMapInterval, timer_sendBufferMap);
+
+        // Result recording
+//        r_idBmStart_vector.record(m_bufferMap->getID_bmStart());
+//        r_idBmEnd_vector.record(m_bufferMap->getID_bmEnd());
+    }
+
+/*
+    // More event to come later on
+    if (opp_strcmp(msg->getName(), "MESH_SOURCE_TIMER_JOIN") == 0)
+    {
+//        sourceJoin();
+//        printDebugMsg("Joining overlay...");
+    }
+    else if (opp_strcmp(msg->getName(), "MESH_SOURCE_TIMER_VIDEO_START") == 0)
+    {
+        // Start the video stream
+//        m_chunkSeqNumber_upper = 0L;
+//        m_chunkSeqNumber_lower = 0L;
+//        m_id_bmStart = 0L;
+//        m_id_bmEnd = 0L;
+
+        m_id_newChunk = 0L;
+        // Schedule the next chunk
+        scheduleAt(simTime() + m_newChunkTimerInterval,
+                new cMessage("MESH_SOURCE_TIMER_NEW_CHUNK"));
+
+        MeshVideoChunkPacket *chunk = new MeshVideoChunkPacket;
+        chunk->setSeqNumber(0L);
+        SIM_TIME_T current_time = simTime().dbl();
+        chunk->setTimeStamp(current_time);
+        m_videoBuffer->insertPacket(chunk, current_time);
+        // TODO: revision needed -- possible duplication of storing timeStamps
+    }
+    else if (opp_strcmp(msg->getName(), "MESH_SOURCE_TIMER_NEW_CHUNK") == 0)
+    {
+//        ++m_chunkSeqNumber_upper;
+//        m_chunkSeqNumber_lower = std::max(0L, m_chunkSeqNumber_upper - m_bufferMapSize_chunk);
+//        r_latestID_vector.record(m_chunkSeqNumber_upper);
+
+        // Deleted because they are stored in VideoStreamBuffer already!!!
+//        ++m_id_bmEnd;
+//        m_id_bmStart = std::max(0L, m_id_bmEnd - m_bufferMapSize_chunk);
+//        r_latestID_vector.record(m_id_bmEnd);
+
+        // -- Module validation
+        // r_latestID_vector.record(m_id_newChunk);
+
+        // -- Create a new Chunk Message and attach it to the Buffer
+        MeshVideoChunkPacket *chunk = new MeshVideoChunkPacket;
+        chunk->setSeqNumber(m_id_newChunk);
+        SIM_TIME_T current_time = simTime().dbl();
+        chunk->setTimeStamp(current_time);
+        m_videoBuffer->insertPacket(chunk, current_time);
+
+        ++m_id_newChunk;
+        // Schedule the next chunk
+        scheduleAt(simTime() + m_newChunkTimerInterval,
+                new cMessage("MESH_SOURCE_TIMER_NEW_CHUNK"));
+
+        // -- output the status of the VideoStreamBuffer
+        // EV << "[" << m_videoBuffer->getID_bufferStart() << ", " << m_videoBuffer->getID_bufferEnd() << "]" << endl;
+
+        // -- records status of the video Buffer
+        // r_idBmStart_vector.record(m_videoBuffer->getID_bufferStart());
+        // r_idBmEnd_vector.record(m_videoBuffer->getID_bufferEnd());
+
+//        EV << "[" << m_chunkSeqNumber_lower << ", " << m_chunkSeqNumber_upper << "]" << endl;
+//        EV << "[" << m_id_bmStart << ", " << m_id_bmEnd << "]" << endl;
+    }
+    else if (opp_strcmp(msg->getName(), "MESH_SOURCE_TIMER_BUFFERMAP") == 0)
+    {
+        sendBufferMap();
+
+        scheduleAt(simTime() + m_bufferMapInterval,
+                new cMessage("MESH_SOURCE_TIMER_BUFFERMAP"));
+
+        // Result recording
+//        r_idBmStart_vector.record(m_bufferMap->getID_bmStart());
+//        r_idBmEnd_vector.record(m_bufferMap->getID_bmEnd());
+    }
+
+    delete msg;
+*/
+}
+
+/*
+ * This function DELETE the message
+ */
+void VideoSource::processPacket(cPacket *pkt)
+{
+    Enter_Method("processPacket(pkt)");
+
+    // -- Get the address of the source node of the Packet
+    UDPControlInfo *controlInfo = check_and_cast<UDPControlInfo *>(pkt->getControlInfo());
+    IPvXAddress sourceAddress = controlInfo->getSrcAddr();
+
+    PeerStreamingPacket *appMsg = dynamic_cast<PeerStreamingPacket *>(pkt);
+
+    if (appMsg == NULL)
+        return;
+    if (appMsg->getOverlayType() == MESH_STREAMING_OVERLAY)
+    {
+        MeshPeerStreamingPacket *meshMsg = dynamic_cast<MeshPeerStreamingPacket *>(appMsg);
+        switch (meshMsg->getPacketType())
+        {
+            case MESH_PARTNERSHIP:
+            {
+                MeshPartnershipPacket *pMsg = dynamic_cast<MeshPartnershipPacket *>(appMsg);
+                if (pMsg->getCommand() == CMD_MESH_PARTNERSHIP_REQUEST)
+                {
+                    // -- Get the IP-address of the peer
+                    UDPControlInfo *controlInfo = check_and_cast<UDPControlInfo *>(pMsg->getControlInfo());
+                    IPvXAddress reqPeerAddress = controlInfo->getSrcAddr();
+
+                    acceptJoinRequestFromPeer(reqPeerAddress);
+
+                    // 4. Check if this is the first neighbor,
+                    // if YES --> trigger the Heartbeat/BufferMap module (to periodically start sending the hearbeat)
+                    if (m_partnerList->getSize() == 1)
+                    {
+                        // Start sending bufferMap packets
+                        sendBufferMap();
+
+                        scheduleAt(simTime() + m_bufferMapInterval, timer_sendBufferMap);
+
+                    }
+                }
+                break;
+            }
+            case MESH_BUFFER_MAP:
+            {
+                // Does NOTHING! Video Source does not process Buffer Map
+                break;
+            }
+            case MESH_CHUNK_REQUEST:
+            {
+                MeshChunkRequestPacket *reqPkt = check_and_cast<MeshChunkRequestPacket *>(appMsg);
+
+                //////////////////////////////////////////////////////////////////////////////////////// DEBUG_START //////////////////////////
+                    EV << "Chunk request received from " << sourceAddress << ": " << endl;
+                    EV << "Start: " << reqPkt->getSeqNumMapStart()
+                        << " -- End: " << reqPkt->getSeqNumMapEnd()
+                        << " -- Head: " << reqPkt->getSeqNumMapHead();
+                        << " --- ";
+                    for (int i=0; i < m_bufferMapSize_chunk; ++i)
+                    {
+                        EV << reqPkt->getRequestMap(i);
+                    }
+                    EV << endl;
+                //////////////////////////////////////////////////////////////////////////////////////// DEBUG_END //////////////////////////
+
+                EV << "Source's VideoBuffer: ";
+                m_videoBuffer->printStatus();
+
+                // -- Find the id of the requested chunk
+                SEQUENCE_NUMBER_T start = reqPkt->getSeqNumMapStart();
+                for (int offset=0; offset < m_bufferMapSize_chunk; ++offset)
+                {
+                    if (reqPkt->getRequestMap(offset) == true)
+                    {
+                        SEQUENCE_NUMBER_T seqNum_requestdChunk = offset + start;
+
+                        // -- Look up to see if the requested chunk is available in the Video Buffer
+                        if (m_videoBuffer->isInBuffer(seqNum_requestdChunk) ==  true)
+                        {
+                            // -- If YES, duplicate the chunk and send to the requesting peer
+
+                            MeshVideoChunkPacket *copyPkt = m_videoBuffer->getChunk(seqNum_requestdChunk)->dup();
+
+                            sendToUDP(copyPkt, m_localPort, sourceAddress, m_destPort);
+                        }
+                    }
+                }
+
+
+
+
+
+                break;
+            }
+            default:
+            {
+                // Should be some errors happen
+                break;
+            }
+        }
+    }
+    else // Tree streaming overlay
+    {
+
+    }
+
+    delete pkt;
+
+    /*
+    cPacket *packet = msg;
+//    cPacket *packet = check_and_cast<cPacket *>(msg);
+
+    UDPControlInfo *controlInfo = check_and_cast<UDPControlInfo *>(packet->getControlInfo());
+
+    IPvXAddress sourceAddress = controlInfo->getSrcAddr();
+
+    gm_aptable->addPeerAddress(sourceAddress);
+    gm_aptable->printActivePeerTable();
+
+    delete msg;
+    */
+}
+
+/*
+ * 1. Store the address into its neighbor list
+ * 2. Send the explicit ACCEPT request
+ * 3. Check if this is the first neighbor
+ */
+void VideoSource::acceptJoinRequestFromPeer(IPvXAddress &reqPeerAddress)
+{
+    Enter_Method("acceptJoinRequest(reqPeerAddress)");
+
+    // 2. Store the address into its neighbor list
+    m_partnerList->addAddress(reqPeerAddress);
+
+    // Debug:
+    m_partnerList->print();
+
+    // 3. Send the explicit ACCEPT request
+    MeshPartnershipPacket *acceptPkt = new MeshPartnershipPacket("MESH_PEER_JOIN");
+    acceptPkt->setPacketType(MESH_PARTNERSHIP);
+    acceptPkt->setCommand(CMD_MESH_PARTNERSHIP_ACCEPT);
+    sendToUDP(acceptPkt, m_localPort, reqPeerAddress, m_destPort);
+
+}
+
+/*
+ *  1. Send the Buffer Map
+ *  2. Schedule the send the next BufferMap()
+ */
+
+/*
+void VideoSource::startSendingBufferMap()
+{
+    // TODO: might change bm into local data member, to avoid frequent creation and deletion of the same object
+    sendBufferMap();
+
+    // Set TIMER for the next interval
+    scheduleAt(simTime() + m_newChunkTimerInterval,
+            new cMessage("MESH_SOURCE_TIMER_BUFFERMAP"));
+
+}
+*/
+
+/* ****************************************************************************
+ *   0. Confirmation: assert that the neighborList is not empty
+ *   1. Create the BufferMap packet
+ *   2. Browse through the local NeighborList
+ *     . Send the BufferMap Packet to all of the neighbors in the list
+  * ****************************************************************************
+ */
+void VideoSource::sendBufferMap()
+{
+    // 0. Confirmation: assert that the neighborList is not empty
+//    if (m_partnerList->size() == 0)
+    if (m_partnerList->getSize() == 0)
+    {
+        return;
+    }
+
+//    r_idStart_vector.record(m_id_bmStart);
+//    r_idEnd_vector.record(m_id_bmEnd);
+
+    // 1. Create the BufferMap packet
+    // BufferMap *bm = new BufferMap(m_bufferMapSize_chunk);
+//    m_bufferMap->reset();
+//    m_videoBuffer->captureVideoStreamBuffer(m_bufferMap); // this function has problem!!!
+
+    // Debug
+    // Print out the current BufferMap
+//    EV << "BM size: " << m_bufferMap->getSize() <<
+//            "[" << m_bufferMap->getID_bmStart() << ", " << m_bufferMap->getID_bmEnd() << "]" << endl;
+//    m_bufferMap->printBM();
+
+    // -- Create the BufferMap Packet
+    // MeshBufferMapPacket *bmPkt = new MeshBufferMapPacket("MESH_PEER_BUFFER_MAP");
+    //bmPkt->setBufferMapArraySize(8);
+    //m_videoBuffer->fillBufferMapPacket(bmPkt);
+    m_videoBuffer->fillBufferMapPacket(m_bmPacket);
+
+    // Debug
+    /*
+    for (int i = 0; i<bmPkt->getBufferMapArraySize(); i++)
+    {
+        r_bmPkt.record(bmPkt->getBufferMap(i)==true?1:0);
+    }
+    */
+
+    // 2. Get the Neighbor List
+    std::vector<IPvXAddress> nList = m_partnerList->getAddressList();
+
+    // 3. Browse through the local NeighborList
+    //    . Send the BufferMap Packet to all of the neighbors in the list
+    std::vector<IPvXAddress>::iterator iter;
+    for (iter = nList.begin(); iter != nList.end(); ++iter)
+    {
+        // Create the BufferMap packet
+        MeshBufferMapPacket *bmPkt_copy = m_bmPacket->dup();
+
+        // send the packet to this neighbor
+        sendToUDP(bmPkt_copy, m_localPort, *iter, m_destPort);
+    }
+
+    // delete bmPkt;
+}
+
+/*
+void VideoSource::sourceJoin()
+{
+    Enter_Method("sourceJoin()");
+
+    EV << "@ VideoSource::join()-------------" << endl;
+
+    EV << "localPort = " << localPort << endl;
+    EV << "destPort = " << destPort << endl;
+    EV << "destAddress = " << destAddresses[0] << endl;
+    EV << "packet sent!!! ----------" << endl;
+
+
+//    sendToUDP(new cPacket("dummy_join"), localPort, destAddresses[0], destPort);
+}
+*/
+
+
+/*void VideoSource::handlePeerMessage(cMessage *msg)
+{
+    if (opp_strcmp(msg->getName(), "MESH_PEER_JOIN") == 0)
+    {
+        if (msg->getKind() == MESH_PEER_JOIN_REQUEST)
+        {
+            acceptJoinRequest(msg);
+        }
+    }
+
+//    delete msg;
+}*/
+
+

@@ -1,0 +1,90 @@
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see http://www.gnu.org/licenses/.
+// 
+
+#include "ExponentialChurnModel.h"
+
+Define_Module(ExponentialChurnModel);
+
+double ExponentialChurnModel::m_absoluteInterval = 0.0;
+
+ExponentialChurnModel::ExponentialChurnModel() {
+    // TODO Auto-generated constructor stub
+
+}
+
+ExponentialChurnModel::~ExponentialChurnModel() {
+    // TODO Auto-generated destructor stub
+}
+
+//void ExponentialChurnModel::initialize(int stage)
+void ExponentialChurnModel::initialize()
+{
+    sig_arrivalTime = registerSignal("arrivalTime");
+    sig_sessionDuration = registerSignal("sessionDuration");
+
+    // get a pointer to the NotificationBoard module and IInterfaceTable
+    nb = NotificationBoardAccess().get();
+
+    nb->subscribe(this, NF_INTERFACE_CREATED);
+    nb->subscribe(this, NF_INTERFACE_DELETED);
+    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
+    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
+    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
+
+    // -- Get parameters
+    param_arrivalRate = par("arrivalRate");
+    param_meanDuration = par("meanDuration");
+
+    WATCH(param_arrivalRate);
+    WATCH(param_meanDuration);
+}
+
+void ExponentialChurnModel::handleMessage(cMessage *)
+{
+    throw cException("ActivePeerTable doesn't process messages!");
+}
+
+void ExponentialChurnModel::receiveChangeNotification(int category, const cPolymorphic *details)
+{
+    return;
+}
+
+double ExponentialChurnModel::getArrivalTime()
+{
+    // -- Get an interval which follows an exponential distribution with rate param_arrivalRate
+    if (param_arrivalRate <= 0)
+        throw cException("Invalid value of arrivalRate: %6.2f", param_arrivalRate);
+
+    m_absoluteInterval = (m_absoluteInterval < 0.0)?simTime().dbl():m_absoluteInterval;
+
+    double meanArrivalTime = 1 / param_arrivalRate;
+    double deltaT = exponential(meanArrivalTime);
+
+    // -- Accumulate the value into the origine
+    m_absoluteInterval += deltaT;
+
+    emit(sig_arrivalTime, m_absoluteInterval);
+
+    return m_absoluteInterval;
+}
+
+double ExponentialChurnModel::getSessionDuration()
+{
+    double duration = exponential(param_meanDuration);
+
+    emit(sig_sessionDuration, duration);
+
+    return duration;
+}

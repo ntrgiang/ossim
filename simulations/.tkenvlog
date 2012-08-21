@@ -1,0 +1,111 @@
+----------------------------------------------------------------------
+
+
+Tcl error: modinsp.cc#756: ptr0x31dc650 not found
+    while executing
+"error "$tag not found""
+    (procedure "get_submod_coords" line 4)
+    invoked from within
+"get_submod_coords $c $modptr"
+    (procedure "graphmodwin_draw_nexteventmarker" line 2)
+    invoked from within
+"graphmodwin_draw_nexteventmarker .ptr0x30b8280-2.c ptr0x31dc650 1"
+
+
+Tcl error: modinsp.cc#756: ptr0x31dc650 not found
+    while executing
+"error "$tag not found""
+    (procedure "get_submod_coords" line 4)
+    invoked from within
+"get_submod_coords $c $modptr"
+    (procedure "graphmodwin_draw_nexteventmarker" line 2)
+    invoked from within
+"graphmodwin_draw_nexteventmarker .ptr0x30b8280-2.c ptr0x31dc650 1"
+
+
+Tcl error: modinsp.cc#756: ptr0x3220230 not found
+    while executing
+"error "$tag not found""
+    (procedure "get_submod_coords" line 4)
+    invoked from within
+"get_submod_coords $c $modptr"
+    (procedure "graphmodwin_draw_nexteventmarker" line 2)
+    invoked from within
+"graphmodwin_draw_nexteventmarker .ptr0x32c45f0-2.c ptr0x3220230 1"
+
+
+Tcl error: modinsp.cc#756: ptr0x3220230 not found
+    while executing
+"error "$tag not found""
+    (procedure "get_submod_coords" line 4)
+    invoked from within
+"get_submod_coords $c $modptr"
+    (procedure "graphmodwin_draw_nexteventmarker" line 2)
+    invoked from within
+"graphmodwin_draw_nexteventmarker .ptr0x32c45f0-2.c ptr0x3220230 1"
+
+
+Tcl error: modinsp.cc#756: ptr0x320f350 not found
+    while executing
+"error "$tag not found""
+    (procedure "get_submod_coords" line 4)
+    invoked from within
+"get_submod_coords $c $modptr"
+    (procedure "graphmodwin_draw_nexteventmarker" line 2)
+    invoked from within
+"graphmodwin_draw_nexteventmarker .ptr0x32b28c0-2.c ptr0x320f350 1"
+
+
+Tcl error: modinsp.cc#756: ptr0x320f350 not found
+    while executing
+"error "$tag not found""
+    (procedure "get_submod_coords" line 4)
+    invoked from within
+"get_submod_coords $c $modptr"
+    (procedure "graphmodwin_draw_nexteventmarker" line 2)
+    invoked from within
+"graphmodwin_draw_nexteventmarker .ptr0x32b28c0-2.c ptr0x320f350 1"
+
+
+----------------------------------------------------------------------
+
+
+Tcl error: modinsp.cc#237: syntax error in expression "-": premature end of expression
+    while executing
+"expr [lindex $bb 2]-[lindex $bb 0]"
+    (procedure "graphmodwin_adjust_windowsize_and_zoom" line 13)
+    invoked from within
+"graphmodwin_adjust_windowsize_and_zoom $w"
+    (procedure "create_graphicalmodwindow" line 104)
+    invoked from within
+"create_graphicalmodwindow .ptr0x2ca6850-2 "791x410+2519+333:normal""
+
+
+----------------------------------------------------------------------
+
+
+Tcl error: modinsp.cc#237: syntax error in expression "-": premature end of expression
+    while executing
+"expr [lindex $bb 2]-[lindex $bb 0]"
+    (procedure "graphmodwin_adjust_windowsize_and_zoom" line 13)
+    invoked from within
+"graphmodwin_adjust_windowsize_and_zoom $w"
+    (procedure "create_graphicalmodwindow" line 104)
+    invoked from within
+"create_graphicalmodwindow .ptr0x15464b0-2 "791x410+2531+405:normal""
+
+
+----------------------------------------------------------------------
+
+
+Tcl error: modinsp.cc#237: syntax error in expression "-": premature end of expression
+    while executing
+"expr [lindex $bb 2]-[lindex $bb 0]"
+    (procedure "graphmodwin_adjust_windowsize_and_zoom" line 13)
+    invoked from within
+"graphmodwin_adjust_windowsize_and_zoom $w"
+    (procedure "create_graphicalmodwindow" line 104)
+    invoked from within
+"create_graphicalmodwindow .ptr0x32a43b0-2 "791x410+2027+487:normal""
+
+

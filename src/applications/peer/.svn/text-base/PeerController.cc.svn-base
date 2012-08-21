@@ -1,0 +1,136 @@
+#include "PeerController.h"
+
+//#include <IPAddressResolver.h>
+//#include <cxmlelement.h>
+#include <cstring>
+
+//#include "DataSimulationControl.h"
+
+
+Define_Module(PeerController);
+
+// cListener method
+void PeerController::receiveSignal(cComponent *source,
+                                    simsignal_t signalID,
+                                    long infoHash)
+{
+   /*
+    if (signalID == this->seederSignal) {
+        std::ostringstream out;
+        out << "Became seeder of the swarm " << infoHash;
+        this->printDebugMsg(out.str());
+        // Start downloading next content
+        if (!this->contentDownloadQueue.empty()) {
+            scheduleAt(simTime(), &this->enterSwarmMsg);
+        }
+        //this->contentDownloadFinished(infoHash);
+    }
+    */
+}
+
+long int PeerController::numPeer = 0L;
+
+// public methods
+PeerController::PeerController()
+   :
+//     enterSwarmMsg("Enter swarm"),
+//     enterSwarmSeederMsg("Enter swarm seeding"),
+//     swarmManager(NULL),
+     localPeerId(-1),
+     debugFlag(false)
+{
+//    overlayManager = new OverlayManager();
+    numPeer++;
+}
+
+PeerController::~PeerController()
+{
+//    cancelEvent(&this->enterSwarmMsg);
+//    cancelEvent(&this->enterSwarmSeederMsg);
+}
+int PeerController::getPeerId() const
+{
+    return this->localPeerId;
+}
+// Private methods
+//!!!
+//int PeerController::numInitStages() const
+//{
+//    return 4;
+//}
+
+// Starting point of the simulation
+//void PeerController::initialize(int stage)
+void PeerController::initialize()
+{
+    /*
+    scheduleAt(simTime() + par("startTime").doubleValue(),
+                        &this->joinOverlay);
+    */
+//    joinOverlay = new cMessage("schedule_join");
+//    scheduleAt(simTime() + par("startTime").doubleValue(), joinOverlay);
+
+    appID = numPeer;
+
+    scheduleAt(simTime() + par("startTime").doubleValue(), new cMessage("schedule_join"));
+
+}
+// Private methods
+void PeerController::printDebugMsg(std::string s)
+{
+    if (this->debugFlag) {
+        // debug "header"
+        std::cerr << simulation.getEventNumber() << " (T=";
+        std::cerr << simulation.getSimTime() << ")(PeerController) - ";
+        std::cerr << "Peer " << this->localPeerId << ": ";
+        std::cerr << s << "\n";
+    }
+}
+
+void PeerController::handleMessage(cMessage *msg)
+{
+    if (strcmp(msg->getName(), "schedule_join") == 0)
+    {
+        PeerBootstrap *peerBootstrap = (PeerBootstrap *)this->getParentModule()->getSubmodule("peerBootstrap");
+        if (peerBootstrap == NULL)
+        {
+            printDebugMsg("PeerBootstrap Module not found!");
+            EV << "also NULL pointer here in PeerController";
+        }
+        else
+        {
+//            peerBootstrap->join();
+            if (peerBootstrap->join() == false)
+            {
+                EV << "Error while peer trying to join the network" << endl;
+            }
+        }
+
+
+        // Make sure that overlayManager has been newed!!!
+        /*
+        OverlayManager *overlayManager = (OverlayManager*)this->getParentModule()->getSubmodule("overlayManager");
+        if (overlayManager == NULL)
+        {
+            EV << "NULL submodule for OverlayManager" << endl;;
+        }
+        else
+        {
+            overlayManager->join();
+        }
+        */
+        // shorthand
+        // ((OverlayManager*)this->getParentModule()->getSubmodule("overlayManager"))->join();
+
+        //            std::ostringstream out;
+        //            out << "Joining overlay ";
+        printDebugMsg("Joining overlay...");
+    }
+    else
+    {
+//        throw cException("This module doesn't process messages");
+        printDebugMsg("This module doesn't process this type of message!");
+    }
+    delete msg;
+
+}

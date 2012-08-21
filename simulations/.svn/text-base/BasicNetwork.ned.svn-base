@@ -1,0 +1,17 @@
+package simpleoverlay.simulations;
+
+import ned.IdealChannel;
+import ned.DatarateChannel;
+
+channel ethernetline extends DatarateChannel
+{
+    parameters:
+        delay = 0.1us;
+}
+
+
+network BasicNetwork
+{
+    parameters:
+        int numPeers;
+}

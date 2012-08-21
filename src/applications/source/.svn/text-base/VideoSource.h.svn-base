@@ -1,0 +1,109 @@
+#ifndef __VideoSource_H__
+#define __VideoSource_H__
+
+#include <omnetpp.h>
+#include <vector>
+#include <set>
+//#include "UDPBasicApp.h"
+#include "UDPAppBase.h"
+
+#include "ActivePeerTable.h"
+#include "AppCommon.h"
+#include "PartnerList.h"
+#include "VideoBuffer.h"
+#include "BufferMap.h"
+
+
+// TODO if the peer don't respond during an interval, remove it from list
+//class VideoSource: public UDPBasicApp
+class VideoSource : public UDPAppBase
+{
+public:
+//	friend class PeerConnectionThread;
+	VideoSource();
+	virtual ~VideoSource();
+
+protected:
+//	virtual void initialize();
+    virtual int numInitStages() const { return 4; }
+    virtual void initialize(int stage);
+
+	virtual void handleMessage(cMessage *msg);
+	virtual void processPacket(cPacket *pkt);
+
+public: // Interface
+//	inline long getChunkSeqNumberUpper() { return m_chunkSeqNumber_upper; }
+//	inline void setChunkSeqNumberUpper(long seqNum) { m_chunkSeqNumber_upper = seqNum; }
+
+// Helper functions
+private:
+	//! Print a debug message to the passed ostream, which defaults to clog.
+	//   void printDebugMsg(std::string s);
+//	void sourceJoin();
+	void handleTimerMessage(cMessage *msg);
+//	void handlePeerMessage(cMessage *msg);
+	void acceptJoinRequestFromPeer(IPvXAddress &reqPeerAddress);
+//	void startSendingBufferMap();
+	void sendBufferMap();
+
+private:
+    // -- Result recording
+    cOutVector r_idBmStart_vector;
+    cOutVector r_idBmEnd_vector;
+    cOutVector r_latestID_vector;
+    cOutVector r_bmPkt;
+
+    // -- Timer
+    cMessage *timer_startVideo;
+    cMessage *timer_newChunk;
+    cMessage *timer_sendBufferMap;
+
+    MeshBufferMapPacket *m_bmPacket;
+
+    // -- Parameters
+    int param_bufferMapSize_second;
+    int param_videoStreamBitRate;
+    int param_chunkSize;
+
+// Member data
+private:
+    // -- For communicating via UDP
+    int m_localPort, m_destPort;
+    std::vector<IPvXAddress> m_destAddresses;
+
+    // -- Internal usage, redundancy in storage, but speeding up the query
+    // old ones, might not be used
+    //   SEQUENCE_NUMBER_T m_chunkSeqNumber_upper;
+    //   SEQUENCE_NUMBER_T m_chunkSeqNumber_lower;
+
+    // new ones
+//    SEQUENCE_NUMBER_T m_id_bmStart; // smallest id in the BM
+//    SEQUENCE_NUMBER_T m_id_bmEnd; // biggest id in the BM
+    SEQUENCE_NUMBER_T m_id_newChunk;
+
+   int totalBytesUploaded;
+   int totalBytesDownloaded;
+
+   // -- Pointers to /global/ modules
+   ActivePeerTable *m_apTable;
+
+   // -- Pointers to /local/ modules
+   PartnerList    *m_partnerList;
+   VideoBuffer    *m_videoBuffer;
+
+   BufferMap *m_bufferMap;
+
+   // not used!!!
+   long int appID;
+
+   // Buffer Map
+   int m_videoStreamChunkRate;
+   int m_bufferMapSize_chunk;
+
+   // Timer, getting value from parameters or calculated from parameters
+   double m_newChunkTimerInterval;
+   double m_bufferMapInterval;
+
+};
+
+#endif

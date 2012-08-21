@@ -1,0 +1,129 @@
+#include "PeerBootstrap.h"
+
+#include <string>
+#include <IPAddressResolver.h>
+#include "ActivePeerTable.h"
+
+
+#include "HelloMessage_m.h"
+
+Define_Module(PeerBootstrap);
+
+// Public methods
+PeerBootstrap::PeerBootstrap()
+   :
+     localPeerId(-1),
+     debugFlag(false),
+     listenPort(-1),
+     localPort(-1),
+     bootstrapPort(-1)
+{
+}
+
+PeerBootstrap::~PeerBootstrap() {}
+
+
+
+int PeerBootstrap::numInitStages() const
+{
+    return 4;
+}
+
+void PeerBootstrap::initialize(int stage)
+//void PeerBootstrap::initialize()
+{
+    Enter_Method_Silent("initialize()");
+    if (stage != 3)
+        return;
+
+    WATCH(bootstrapAddress);
+    WATCH(bootstrapPort);
+
+    msgByteLength = par("messageLength").longValue();
+
+//    destAddress = IPAddressResolver().resolve(par("destAddresses"));
+    localPort = par("localPort");
+    destPort = par("destPort");
+
+    const char *destAddrs = par("destAddresses");
+    cStringTokenizer tokenizer(destAddrs);
+    const char *token;
+    while ((token = tokenizer.nextToken())!=NULL)
+        destAddresses.push_back(IPAddressResolver().resolve(token));
+
+}
+
+// Protected methods
+void PeerBootstrap::handleMessage(cMessage *msg)
+{
+    Enter_Method("handleMessage()");
+
+}
+
+
+//void PeerBootstrap::join()
+bool PeerBootstrap::join()
+{
+    Enter_Method("join()");
+
+    EV << "@ PeerBoostrap::join()-------------" << endl;
+
+/*
+    cPacket *payload = new cPacket("payload");
+    sendToUDP(payload, localPort, destAddresses[0], destPort);
+*/
+
+    cModule *temp = simulation.getModuleByPath("gm_activePeerTable");
+    ActivePeerTable *aptable = check_and_cast<ActivePeerTable *>(temp);
+
+//    aptable->addPeerAddress(sourceAddress);
+//    aptable->printActivePeerTable();
+    std::vector<IPvXAddress> initialPeerSet = aptable->getNPeer();
+
+    if (initialPeerSet.size() == 0)
+    {
+        EV << "Peer List from Bootstrap is empty!" << endl;
+        return false;
+    }
+
+    EV << "PeerList size: " << initialPeerSet.size() << endl;
+    std::vector<IPvXAddress>::iterator it;
+    for (it = initialPeerSet.begin(); it != initialPeerSet.end(); it++)
+    {
+//        EV << "Peer: " << it->get4() << ": " << destPort << endl;
+        cPacket *join_req = new cPacket("JOIN_REQ");
+        sendToUDP(join_req, localPort, destAddresses[0], destPort);
+    }
+
+
+
+
+/*
+    EV << "localPort = " << localPort << endl;
+    EV << "destPort = " << destPort << endl;
+    EV << "destAddress = " << destAddresses[0] << endl;
+    EV << "packet sent!!! ----------" << endl;
+*/
+    return true;
+}
+
+cPacket *PeerBootstrap::createPacket()
+{
+    char msgName[32];
+    sprintf(msgName,"PeerBootstrapData");
+
+    cPacket *payload = new cPacket(msgName);
+    payload->setByteLength(msgByteLength);
+    return payload;
+}
+
+void PeerBootstrap::printDebugMsg(std::string s)
+{
+    if (this->debugFlag) {
+        // debug "header"
+        std::cerr << simulation.getEventNumber() << " (T=";
+        std::cerr << simulation.getSimTime() << ")(PeerBootstrap) - ";
+        std::cerr << "Peer " << this->localPeerId << ": ";
+        std::cerr << s << "\n";
+    }
+}

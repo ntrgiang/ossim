@@ -1,0 +1,15 @@
+----------------------------
+version1:
+----------------------------
+- based more significantly on INET: Router, StandardHost
+- re-organize folders: two important folders inside src/ are applications/ and nodes/
+- paths inside the package were therefore also changed
+- applications/ folder contains modules at the application layer (bootstrap/ peer/ tracker/)
+- nodes/ folder contains modules for setting up the "hardware" of the host
+- BootstrapNode, PeerNode & TrackerNode are all modified from inet.StandardHost
+- nodes and router are inter-connected using PPP interface, instead of Ethernet one.
+
+
+----------------------------
+version0: 
+----------------------------

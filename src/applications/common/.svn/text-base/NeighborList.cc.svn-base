@@ -1,0 +1,114 @@
+/*
+ * NeighborList.cc
+ *
+ *  Created on: Mar 30, 2012
+ *      Author: giang
+ */
+
+#include "NeighborList.h"
+#include <algorithm>
+
+Define_Module(NeighborList);
+
+NeighborList::NeighborList() {}
+
+NeighborList::~NeighborList() {}
+
+void NeighborList::printNeighborList() const
+{
+    EV << "-- Neighbor List: --" << endl;
+
+    AddressList::iterator it;
+    for (it = neighborList.begin(); it != neighborList.end(); it++)
+    {
+        EV << it->get4() << endl;
+//        IPvXAddress addr = it->first;
+//        EV << addr.get4() << endl;
+    }
+}
+
+// ------------------------------------------------------------------
+
+void NeighborList::initialize(int stage)
+{
+    if (stage==3)
+    {}
+}
+
+void NeighborList::handleMessage(cMessage *)
+{
+    EV << "NeighborList doesn't process messages!" << endl;
+}
+
+/**
+ * Checks if a peer, given its address, is a neighbor.
+ */
+bool NeighborList::isNeighbor(const IPvXAddress& dest) const
+{
+    Enter_Method("isNeighbor()");
+
+    AddressList::iterator it;
+    it = find (neighborList.begin(), neighborList.end(), dest);
+
+    if (it == neighborList.end())
+        return false;
+
+    return true;
+}
+/**
+ * Returns the total number of Neighbors in the list
+ */
+int NeighborList::getSizeNeighborList() const
+{
+    return neighborList.size();
+}
+
+/**
+ * Adds a Neighbor's address to the table. Note that once added, addresses
+ * cannot be modified; you must delete and re-add them instead.
+ */
+void NeighborList::addNeighborAddress(const IPvXAddress &address)
+{
+    Enter_Method("addNeighborAddress()");
+
+    if (isNeighbor(address))
+        return;
+
+    neighborList.push_back(address);
+}
+
+/**
+ * Deletes the given Neighbor's address from the table.
+ * Returns true if the address was deleted correctly, false if it was
+ * not in the table.
+ */
+bool NeighborList::deleteNeighborAddress(const IPvXAddress &address)
+{
+    Enter_Method("deleteNeighborAddress()");
+
+    if (!isNeighbor(address))
+        return false;
+
+    AddressList::iterator it;
+    it = remove(neighborList.begin(), neighborList.end(), address);
+    return true;
+}
+
+/**
+ * Utility function: Returns a vector of /N/ addresses of the active nodes.
+ */
+std::vector<IPvXAddress> NeighborList::getNeighborList() const
+{
+    Enter_Method("getNeighborList()");
+
+    std::vector<IPvXAddress> resultNeighborList;
+
+    AddressList::iterator it;
+    for (it = neighborList.begin(); it != neighborList.end(); ++it)
+    {
+        resultNeighborList.push_back(*it);
+    }
+
+    return resultNeighborList;
+
+}

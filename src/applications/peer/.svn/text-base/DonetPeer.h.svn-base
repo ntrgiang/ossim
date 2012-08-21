@@ -1,0 +1,198 @@
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see http://www.gnu.org/licenses/.
+// 
+
+#ifndef DONETPEER_H_
+#define DONETPEER_H_
+
+#define __DONET_PEER_DEBUG__ true
+
+#include <UDPBasicApp.h>
+#include "IChurnGenerator.h"
+#include "ActivePeerTable.h"
+
+#include "PartnerList.h"
+#include "VideoBuffer.h"
+
+
+class DonetPeer : public UDPBasicApp {
+public:
+    /** @name Constructor, Destructor */
+    // @{
+    /**
+     * Constructor
+     */
+    DonetPeer();
+
+    /*
+     * Destructor
+     */
+    virtual ~DonetPeer();
+    //@}
+
+    /** @name Redefined cSimpleModule functions */
+    // @{
+    //    virtual void initialize();
+    /*
+     * Initialize.
+     */
+    virtual void initialize(int stage);
+
+    /*
+     * This function set the number of stages to the value of 4
+     */
+    virtual int numInitStage() { return 4; }
+
+    /**
+     *
+     */
+    virtual void finish();
+
+    /*
+     * Main function to distribute self- and external messages
+     * - self message will be processed in handleTimerMessage()
+     * - messages from other modules will be processed in processPacket()
+     */
+    virtual void handleMessage(cMessage *msg);
+    // @}
+
+    /** @name Redefine UDPBasicApp function */
+    // @{
+    /*
+     * This function processes messages/packets from external modules
+     */
+    virtual void processPacket(cPacket *pkt);
+    // @}
+
+// Helper functions
+private:
+    /** */
+    /*
+     * This function processes Timer messages
+     */
+    void handleTimerMessage(cMessage *msg);
+    //void handleExternalMessage(cMessage *msg);
+
+    /*
+     * This function process the Accept message for a Join request
+     */
+    void processAcceptResponse(cPacket *pkt);
+
+    /** @name Processing Heartbeat/KeepAlive */
+    // @{
+    /*
+     * This method is triggered when a KeepAlive message is received
+     * - NOT used at the current implementation
+     */
+    void processKeepAliveMessage(cPacket *pkt);
+    // Heartbeat <-- might not be used
+    // void startSendingHeartbeat();
+    /*
+     * This method triggers the action of sending the KeepAlive messages to partners of the peer
+     */
+    void sendKeepAliveMsgToNeighbor();
+    // @}
+
+    /*
+     * This method starts the join process:
+     * - Get random list of bootstrap partners
+     * - Send them the join request
+     */
+    void join();
+
+    /*
+     * This method allow the peer to accept the join request immediately
+     */
+    void acceptJoinRequest(cPacket *msg);
+
+    /*
+     * This method adds the address of the packet's source node into the local Neighbor List
+     */
+    void addToNeighborList(cPacket *pkt);
+
+    bool canHaveMorePartner(void);
+
+    // BufferMap
+    void sendBufferMap(void);
+    inline int getBufferMapSize(void) { return m_bufferMapSize_chunk; }
+
+    // Chunk scheduling
+    bool should_be_requested(void);
+    void initializeSchedulingWindow(void);
+    bool shouldStartChunkScheduling();
+    void chunkScheduling(void);
+    void randomChunkScheduling(void);
+
+// Helper data members to store parameters values
+private:
+    bool param_moduleDebug;
+    double param_keepAliveInterval;
+    double param_bufferMapInterval;
+    double param_chunkSchedulingInterval;
+    double param_waitingTime_SchedulingStart;
+
+    int param_numberOfPartner;
+    int param_nNeighbor_SchedulingStart;
+
+    int param_bufferMapSize_second;
+    int param_videoStreamBitRate;
+    int param_chunkSize;
+
+    // -- Helper data members for /DEBUGGING/ data collection
+    cOutVector r_countBM;
+    cOutVector m_recvChunkId;
+    cOutVector m_reqChunkId;
+
+    // -- Timers
+    cMessage *timer_getJoinTime;
+    cMessage *timer_join;
+    cMessage *timer_keepAlive;
+    cMessage *timer_chunkScheduling;
+    cMessage *timer_sendBufferMap;
+    // synRexmitTimer = new cMessage("SYN-REXMIT");
+
+    // -- Messages
+    MeshChunkRequestPacket  *m_chunkReqPacket;
+    MeshBufferMapPacket     *m_bmPacket;
+
+private:
+    // Pointers to "global" modules
+    IChurnGenerator *m_churn;
+    ActivePeerTable *m_aptable;
+
+    // Pointers to "local" modules
+    PartnerList *m_partnerList;
+    VideoBuffer *m_videoBuffer;
+
+    static long int instanceCount;
+    long int appID;
+
+    // State variables
+    bool m_joined;
+    bool m_scheduling_started;
+
+    int m_videoStreamChunkRate;     /* in [chunks/second] */
+    int m_bufferMapSize_chunk;      /* in [chunks] */
+    int m_schedulingWindowSize;     /* in [chunks] */
+
+    // Variables to store history
+    double m_firstJoinTime;
+
+    // variables to keep up-to-date with
+    SEQUENCE_NUMBER_T m_seqNum_schedWinStart;
+    SEQUENCE_NUMBER_T m_seqNum_schedWinEnd;
+    SEQUENCE_NUMBER_T m_seqNum_schedWinHead;
+};
+
+#endif /* DONETPEER_H_ */

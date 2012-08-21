@@ -1,0 +1,507 @@
+#
+# OMNeT++/OMNEST Makefile for simpleOverlay
+#
+# This file was generated with the command:
+#  opp_makemake -f --deep -I/usr/include/ -I/usr/include/c++/4.5 -I../../inet/src/networklayer/ipv4 -I../../inet/src/networklayer/common -I../../inet/src/networklayer/rsvp_te -I../../inet/src/networklayer/icmpv6 -I../../inet/src/transport/tcp -I../../inet/src/networklayer/mpls -I../../inet/src/base -I../../inet/src/networklayer/ted -I../../inet/src/util/headerserializers -I../../inet/src/networklayer/contract -I../../inet/src/util -I../../inet/src/transport/contract -I../../inet/src/linklayer/mfcore -I../../inet/src/transport/sctp -I../../inet/src/networklayer/ipv6 -I../../inet/src/world -I../../inet/src/applications/pingapp -I../../inet/src/linklayer/contract -I../../inet/src/networklayer/arp -I../../inet/src/networklayer/ldp -I../../inet/src/transport/udp -I../../inet/src/applications/tcpapp -I../../inet/src/applications/udpapp -L../../inet/out/$(CONFIGNAME)/src -linet -KINET_PROJ=../../inet
+#
+
+# Name of target to be created (-o option)
+TARGET = simpleOverlay$(EXE_SUFFIX)
+
+# User interface (uncomment one) (-u option)
+USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
+#USERIF_LIBS = $(CMDENV_LIBS)
+#USERIF_LIBS = $(TKENV_LIBS)
+
+# C++ include paths (with -I)
+INCLUDE_PATH = \
+    -I/usr/include/ \
+    -I/usr/include/c++/4.5 \
+    -I../../inet/src/networklayer/ipv4 \
+    -I../../inet/src/networklayer/common \
+    -I../../inet/src/networklayer/rsvp_te \
+    -I../../inet/src/networklayer/icmpv6 \
+    -I../../inet/src/transport/tcp \
+    -I../../inet/src/networklayer/mpls \
+    -I../../inet/src/base \
+    -I../../inet/src/networklayer/ted \
+    -I../../inet/src/util/headerserializers \
+    -I../../inet/src/networklayer/contract \
+    -I../../inet/src/util \
+    -I../../inet/src/transport/contract \
+    -I../../inet/src/linklayer/mfcore \
+    -I../../inet/src/transport/sctp \
+    -I../../inet/src/networklayer/ipv6 \
+    -I../../inet/src/world \
+    -I../../inet/src/applications/pingapp \
+    -I../../inet/src/linklayer/contract \
+    -I../../inet/src/networklayer/arp \
+    -I../../inet/src/networklayer/ldp \
+    -I../../inet/src/transport/udp \
+    -I../../inet/src/applications/tcpapp \
+    -I../../inet/src/applications/udpapp \
+    -I. \
+    -Iapplications \
+    -Iapplications/bootstrap \
+    -Iapplications/common \
+    -Iapplications/common/messages \
+    -Iapplications/peer \
+    -Iapplications/peer/smc \
+    -Iapplications/source \
+    -Iapplications/tracker \
+    -Iapplications/tracker/connection \
+    -Iapplications/tracker/messages \
+    -Iapplications/tracker/other \
+    -Icontroller \
+    -Iglobal \
+    -Iglobal/churn \
+    -Imessages \
+    -Inodes
+
+# Additional object and library files to link with
+EXTRA_OBJS =
+
+# Additional libraries (-L, -l options)
+LIBS = -L../../inet/out/$(CONFIGNAME)/src  -linet
+LIBS += -Wl,-rpath,`abspath ../../inet/out/$(CONFIGNAME)/src`
+
+# Output directory
+PROJECT_OUTPUT_DIR = ../out
+PROJECTRELATIVE_PATH = src
+O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
+
+# Object files for local .cc and .msg files
+OBJS = \
+    $O/applications/bootstrap/BootstrapApp.o \
+    $O/applications/common/VideoBuffer.o \
+    $O/applications/common/NeighborList.o \
+    $O/applications/common/BufferMap.o \
+    $O/applications/common/BufferMapTable.o \
+    $O/applications/common/VideoStreamBuffer.o \
+    $O/applications/common/NeighborInfo.o \
+    $O/applications/common/NeighborMap.o \
+    $O/applications/common/PartnerList.o \
+    $O/applications/peer/DonetPeer.o \
+    $O/applications/peer/PeerBootstrap.o \
+    $O/applications/peer/PeerApp.o \
+    $O/applications/peer/PeerController.o \
+    $O/applications/peer/OverlayManager.o \
+    $O/applications/source/VideoSource.o \
+    $O/applications/tracker/TrackerApp.o \
+    $O/applications/tracker/connection/PeerConnectionThread.o \
+    $O/applications/tracker/other/PeerInfo.o \
+    $O/controller/DataSimulationControl.o \
+    $O/controller/SimulationController.o \
+    $O/global/ActivePeerTable.o \
+    $O/global/churn/StaticChurn.o \
+    $O/applications/common/messages/PeerStreamingPacket_m.o \
+    $O/applications/common/messages/MeshPeerStreamingPacket_m.o \
+    $O/applications/tracker/messages/AnnounceRequestMsg_m.o \
+    $O/applications/tracker/messages/AnnounceResponseMsg_m.o \
+    $O/messages/HelloMessage_m.o
+
+# Message files
+MSGFILES = \
+    applications/common/messages/PeerStreamingPacket.msg \
+    applications/common/messages/MeshPeerStreamingPacket.msg \
+    applications/tracker/messages/AnnounceRequestMsg.msg \
+    applications/tracker/messages/AnnounceResponseMsg.msg \
+    messages/HelloMessage.msg
+
+# Other makefile variables (-K)
+INET_PROJ=../../inet
+
+#------------------------------------------------------------------------------
+
+# Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
+
+ifneq ("$(OMNETPP_CONFIGFILE)","")
+CONFIGFILE = $(OMNETPP_CONFIGFILE)
+else
+ifneq ("$(OMNETPP_ROOT)","")
+CONFIGFILE = $(OMNETPP_ROOT)/Makefile.inc
+else
+CONFIGFILE = $(shell opp_configfilepath)
+endif
+endif
+
+ifeq ("$(wildcard $(CONFIGFILE))","")
+$(error Config file '$(CONFIGFILE)' does not exist -- add the OMNeT++ bin directory to the path so that opp_configfilepath can be found, or set the OMNETPP_CONFIGFILE variable to point to Makefile.inc)
+endif
+
+include $(CONFIGFILE)
+
+# Simulation kernel and user interface libraries
+OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+OMNETPP_LIBS = -L"$(OMNETPP_LIB_SUBDIR)" -L"$(OMNETPP_LIB_DIR)" -loppmain$D $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
+
+COPTS = $(CFLAGS)  $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+MSGCOPTS = $(INCLUDE_PATH)
+
+# we want to recompile everything if COPTS changes,
+# so we store COPTS into $COPTS_FILE and have object
+# files depend on it (except when "make depend" was called)
+COPTS_FILE = $O/.last-copts
+ifneq ($(MAKECMDGOALS),depend)
+ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
+$(shell $(MKPATH) "$O" && echo "$(COPTS)" >$(COPTS_FILE))
+endif
+endif
+
+#------------------------------------------------------------------------------
+# User-supplied makefile fragment(s)
+# >>>
+# <<<
+#------------------------------------------------------------------------------
+
+# Main target
+all: $O/$(TARGET)
+	$(LN) $O/$(TARGET) .
+
+$O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile
+	@$(MKPATH) $O
+	$(CXX) $(LDFLAGS) -o $O/$(TARGET)  $(OBJS) $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS)
+
+.PHONY: all clean cleanall depend msgheaders
+
+.SUFFIXES: .cc
+
+$O/%.o: %.cc $(COPTS_FILE)
+	@$(MKPATH) $(dir $@)
+	$(CXX) -c $(COPTS) -o $@ $<
+
+%_m.cc %_m.h: %.msg
+	$(MSGC) -s _m.cc $(MSGCOPTS) $?
+
+msgheaders: $(MSGFILES:.msg=_m.h)
+
+clean:
+	-rm -rf $O
+	-rm -f simpleOverlay simpleOverlay.exe libsimpleOverlay.so libsimpleOverlay.a libsimpleOverlay.dll libsimpleOverlay.dylib
+	-rm -f ./*_m.cc ./*_m.h
+	-rm -f applications/*_m.cc applications/*_m.h
+	-rm -f applications/bootstrap/*_m.cc applications/bootstrap/*_m.h
+	-rm -f applications/common/*_m.cc applications/common/*_m.h
+	-rm -f applications/common/messages/*_m.cc applications/common/messages/*_m.h
+	-rm -f applications/peer/*_m.cc applications/peer/*_m.h
+	-rm -f applications/peer/smc/*_m.cc applications/peer/smc/*_m.h
+	-rm -f applications/source/*_m.cc applications/source/*_m.h
+	-rm -f applications/tracker/*_m.cc applications/tracker/*_m.h
+	-rm -f applications/tracker/connection/*_m.cc applications/tracker/connection/*_m.h
+	-rm -f applications/tracker/messages/*_m.cc applications/tracker/messages/*_m.h
+	-rm -f applications/tracker/other/*_m.cc applications/tracker/other/*_m.h
+	-rm -f controller/*_m.cc controller/*_m.h
+	-rm -f global/*_m.cc global/*_m.h
+	-rm -f global/churn/*_m.cc global/churn/*_m.h
+	-rm -f messages/*_m.cc messages/*_m.h
+	-rm -f nodes/*_m.cc nodes/*_m.h
+
+cleanall: clean
+	-rm -rf $(PROJECT_OUTPUT_DIR)
+
+depend:
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/bootstrap/*.cc applications/common/*.cc applications/common/messages/*.cc applications/peer/*.cc applications/peer/smc/*.cc applications/source/*.cc applications/tracker/*.cc applications/tracker/connection/*.cc applications/tracker/messages/*.cc applications/tracker/other/*.cc controller/*.cc global/*.cc global/churn/*.cc messages/*.cc nodes/*.cc
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/applications/bootstrap/BootstrapApp.o: applications/bootstrap/BootstrapApp.cc \
+	$(INET_PROJ)/src/applications/tcpapp/TCPSrvHostApp.h \
+	$(INET_PROJ)/src/applications/udpapp/UDPAppBase.h \
+	$(INET_PROJ)/src/applications/udpapp/UDPBasicApp.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/base/INotifiable.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/base/NotificationBoard.h \
+	$(INET_PROJ)/src/base/NotifierConsts.h \
+	$(INET_PROJ)/src/linklayer/contract/MACAddress.h \
+	$(INET_PROJ)/src/networklayer/common/IInterfaceTable.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceEntry.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceToken.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/transport/contract/TCPCommand_m.h \
+	$(INET_PROJ)/src/transport/contract/TCPSocket.h \
+	$(INET_PROJ)/src/transport/contract/TCPSocketMap.h \
+	$(INET_PROJ)/src/transport/contract/UDPControlInfo_m.h \
+	applications/bootstrap/BootstrapApp.h \
+	applications/peer/OverlayManager.h \
+	applications/peer/PeerBootstrap.h \
+	applications/peer/PeerController.h \
+	global/ActivePeerTable.h
+$O/applications/common/BufferMap.o: applications/common/BufferMap.cc \
+	applications/common/AppCommon.h \
+	applications/common/BufferMap.h \
+	applications/common/messages/MeshPeerStreamingPacket_m.h \
+	applications/common/messages/PeerStreamingPacket_m.h
+$O/applications/common/BufferMapTable.o: applications/common/BufferMapTable.cc \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	applications/common/BufferMapTable.h
+$O/applications/common/NeighborInfo.o: applications/common/NeighborInfo.cc \
+	applications/common/AppCommon.h \
+	applications/common/BufferMap.h \
+	applications/common/NeighborInfo.h \
+	applications/common/messages/MeshPeerStreamingPacket_m.h \
+	applications/common/messages/PeerStreamingPacket_m.h
+$O/applications/common/NeighborList.o: applications/common/NeighborList.cc \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	applications/common/NeighborList.h
+$O/applications/common/NeighborMap.o: applications/common/NeighborMap.cc \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	applications/common/AppCommon.h \
+	applications/common/BufferMap.h \
+	applications/common/NeighborInfo.h \
+	applications/common/NeighborMap.h \
+	applications/common/messages/MeshPeerStreamingPacket_m.h \
+	applications/common/messages/PeerStreamingPacket_m.h
+$O/applications/common/PartnerList.o: applications/common/PartnerList.cc \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	applications/common/AppCommon.h \
+	applications/common/BufferMap.h \
+	applications/common/NeighborInfo.h \
+	applications/common/PartnerList.h \
+	applications/common/messages/MeshPeerStreamingPacket_m.h \
+	applications/common/messages/PeerStreamingPacket_m.h
+$O/applications/common/VideoBuffer.o: applications/common/VideoBuffer.cc \
+	applications/common/AppCommon.h \
+	applications/common/BufferMap.h \
+	applications/common/VideoBuffer.h \
+	applications/common/messages/MeshPeerStreamingPacket_m.h \
+	applications/common/messages/PeerStreamingPacket_m.h
+$O/applications/common/VideoStreamBuffer.o: applications/common/VideoStreamBuffer.cc \
+	applications/common/AppCommon.h \
+	applications/common/BufferMap.h \
+	applications/common/VideoStreamBuffer.h \
+	applications/common/messages/MeshPeerStreamingPacket_m.h \
+	applications/common/messages/PeerStreamingPacket_m.h
+$O/applications/common/messages/MeshPeerStreamingPacket_m.o: applications/common/messages/MeshPeerStreamingPacket_m.cc \
+	applications/common/messages/MeshPeerStreamingPacket_m.h \
+	applications/common/messages/PeerStreamingPacket_m.h
+$O/applications/common/messages/PeerStreamingPacket_m.o: applications/common/messages/PeerStreamingPacket_m.cc \
+	applications/common/messages/PeerStreamingPacket_m.h
+$O/applications/peer/DonetPeer.o: applications/peer/DonetPeer.cc \
+	$(INET_PROJ)/src/applications/udpapp/UDPAppBase.h \
+	$(INET_PROJ)/src/applications/udpapp/UDPBasicApp.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/base/INotifiable.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/base/NotificationBoard.h \
+	$(INET_PROJ)/src/base/NotifierConsts.h \
+	$(INET_PROJ)/src/linklayer/contract/MACAddress.h \
+	$(INET_PROJ)/src/networklayer/common/IInterfaceTable.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceEntry.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceTableAccess.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceToken.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/networklayer/ipv4/IPv4InterfaceData.h \
+	$(INET_PROJ)/src/transport/contract/UDPControlInfo_m.h \
+	$(INET_PROJ)/src/transport/udp/UDPPacket.h \
+	$(INET_PROJ)/src/transport/udp/UDPPacket_m.h \
+	applications/common/AppCommon.h \
+	applications/common/BufferMap.h \
+	applications/common/NeighborInfo.h \
+	applications/common/PartnerList.h \
+	applications/common/VideoBuffer.h \
+	applications/common/messages/MeshPeerStreamingPacket_m.h \
+	applications/common/messages/PeerStreamingPacket_m.h \
+	applications/peer/DonetPeer.h \
+	global/ActivePeerTable.h \
+	global/churn/IChurnGenerator.h
+$O/applications/peer/OverlayManager.o: applications/peer/OverlayManager.cc \
+	$(INET_PROJ)/src/applications/tcpapp/TCPSrvHostApp.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/transport/contract/TCPCommand_m.h \
+	$(INET_PROJ)/src/transport/contract/TCPSocket.h \
+	$(INET_PROJ)/src/transport/contract/TCPSocketMap.h \
+	applications/peer/OverlayManager.h \
+	messages/HelloMessage_m.h
+$O/applications/peer/PeerApp.o: applications/peer/PeerApp.cc \
+	$(INET_PROJ)/src/applications/udpapp/UDPAppBase.h \
+	$(INET_PROJ)/src/applications/udpapp/UDPBasicApp.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/base/INotifiable.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/base/NotificationBoard.h \
+	$(INET_PROJ)/src/base/NotifierConsts.h \
+	$(INET_PROJ)/src/linklayer/contract/MACAddress.h \
+	$(INET_PROJ)/src/networklayer/common/IInterfaceTable.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceEntry.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceTableAccess.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceToken.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/networklayer/ipv4/IPv4InterfaceData.h \
+	$(INET_PROJ)/src/transport/contract/UDPControlInfo_m.h \
+	$(INET_PROJ)/src/transport/udp/UDPPacket.h \
+	$(INET_PROJ)/src/transport/udp/UDPPacket_m.h \
+	applications/common/AppCommon.h \
+	applications/common/BufferMap.h \
+	applications/common/NeighborInfo.h \
+	applications/common/NeighborMap.h \
+	applications/common/VideoStreamBuffer.h \
+	applications/common/messages/MeshPeerStreamingPacket_m.h \
+	applications/common/messages/PeerStreamingPacket_m.h \
+	applications/peer/PeerApp.h \
+	global/ActivePeerTable.h \
+	global/churn/IChurnGenerator.h
+$O/applications/peer/PeerBootstrap.o: applications/peer/PeerBootstrap.cc \
+	$(INET_PROJ)/src/applications/udpapp/UDPAppBase.h \
+	$(INET_PROJ)/src/applications/udpapp/UDPBasicApp.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/base/INotifiable.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/base/NotificationBoard.h \
+	$(INET_PROJ)/src/base/NotifierConsts.h \
+	$(INET_PROJ)/src/linklayer/contract/MACAddress.h \
+	$(INET_PROJ)/src/networklayer/common/IInterfaceTable.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceEntry.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceToken.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	applications/peer/PeerBootstrap.h \
+	global/ActivePeerTable.h \
+	messages/HelloMessage_m.h
+$O/applications/peer/PeerController.o: applications/peer/PeerController.cc \
+	$(INET_PROJ)/src/applications/tcpapp/TCPSrvHostApp.h \
+	$(INET_PROJ)/src/applications/udpapp/UDPAppBase.h \
+	$(INET_PROJ)/src/applications/udpapp/UDPBasicApp.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/transport/contract/TCPCommand_m.h \
+	$(INET_PROJ)/src/transport/contract/TCPSocket.h \
+	$(INET_PROJ)/src/transport/contract/TCPSocketMap.h \
+	applications/peer/OverlayManager.h \
+	applications/peer/PeerBootstrap.h \
+	applications/peer/PeerController.h
+$O/applications/source/VideoSource.o: applications/source/VideoSource.cc \
+	$(INET_PROJ)/src/applications/udpapp/UDPAppBase.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/base/INotifiable.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/base/NotificationBoard.h \
+	$(INET_PROJ)/src/base/NotifierConsts.h \
+	$(INET_PROJ)/src/linklayer/contract/MACAddress.h \
+	$(INET_PROJ)/src/networklayer/common/IInterfaceTable.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceEntry.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceTableAccess.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceToken.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/networklayer/ipv4/IPv4InterfaceData.h \
+	$(INET_PROJ)/src/transport/contract/UDPControlInfo_m.h \
+	$(INET_PROJ)/src/transport/udp/UDPPacket.h \
+	$(INET_PROJ)/src/transport/udp/UDPPacket_m.h \
+	applications/common/AppCommon.h \
+	applications/common/BufferMap.h \
+	applications/common/NeighborInfo.h \
+	applications/common/PartnerList.h \
+	applications/common/VideoBuffer.h \
+	applications/common/messages/MeshPeerStreamingPacket_m.h \
+	applications/common/messages/PeerStreamingPacket_m.h \
+	applications/source/VideoSource.h \
+	global/ActivePeerTable.h
+$O/applications/tracker/TrackerApp.o: applications/tracker/TrackerApp.cc \
+	$(INET_PROJ)/src/applications/tcpapp/TCPSrvHostApp.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/transport/contract/TCPCommand_m.h \
+	$(INET_PROJ)/src/transport/contract/TCPSocket.h \
+	$(INET_PROJ)/src/transport/contract/TCPSocketMap.h \
+	applications/tracker/TrackerApp.h
+$O/applications/tracker/connection/PeerConnectionThread.o: applications/tracker/connection/PeerConnectionThread.cc \
+	$(INET_PROJ)/src/applications/tcpapp/TCPSrvHostApp.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/transport/contract/TCPCommand_m.h \
+	$(INET_PROJ)/src/transport/contract/TCPSocket.h \
+	$(INET_PROJ)/src/transport/contract/TCPSocketMap.h \
+	applications/tracker/TrackerApp.h \
+	applications/tracker/connection/PeerConnectionThread.h \
+	applications/tracker/messages/AnnounceRequestMsg_m.h \
+	applications/tracker/messages/AnnounceResponseMsg_m.h \
+	applications/tracker/other/PeerInfo.h
+$O/applications/tracker/messages/AnnounceRequestMsg_m.o: applications/tracker/messages/AnnounceRequestMsg_m.cc \
+	applications/tracker/messages/AnnounceRequestMsg_m.h
+$O/applications/tracker/messages/AnnounceResponseMsg_m.o: applications/tracker/messages/AnnounceResponseMsg_m.cc \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	applications/tracker/messages/AnnounceRequestMsg_m.h \
+	applications/tracker/messages/AnnounceResponseMsg_m.h \
+	applications/tracker/other/PeerInfo.h
+$O/applications/tracker/other/PeerInfo.o: applications/tracker/other/PeerInfo.cc \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	applications/tracker/messages/AnnounceRequestMsg_m.h \
+	applications/tracker/other/PeerInfo.h
+$O/controller/DataSimulationControl.o: controller/DataSimulationControl.cc \
+	controller/DataSimulationControl.h
+$O/controller/SimulationController.o: controller/SimulationController.cc \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/transport/tcp/TCP.h \
+	$(INET_PROJ)/src/transport/tcp/TCPConnection.h \
+	$(INET_PROJ)/src/transport/tcp/TCPSegment.h \
+	$(INET_PROJ)/src/transport/tcp/TCPSegment_m.h \
+	controller/DataSimulationControl.h \
+	controller/SimulationController.h
+$O/global/ActivePeerTable.o: global/ActivePeerTable.cc \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/base/INotifiable.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/base/NotificationBoard.h \
+	$(INET_PROJ)/src/base/NotifierConsts.h \
+	$(INET_PROJ)/src/linklayer/contract/MACAddress.h \
+	$(INET_PROJ)/src/networklayer/common/IInterfaceTable.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceEntry.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceToken.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	global/ActivePeerTable.h
+$O/global/churn/StaticChurn.o: global/churn/StaticChurn.cc \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/base/INotifiable.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/base/NotificationBoard.h \
+	$(INET_PROJ)/src/base/NotifierConsts.h \
+	global/churn/IChurnGenerator.h \
+	global/churn/StaticChurn.h
+$O/messages/HelloMessage_m.o: messages/HelloMessage_m.cc \
+	messages/HelloMessage_m.h
+

@@ -1,0 +1,71 @@
+package simpleoverlay.simulations;
+
+import simpleoverlay.controller.SimulationController;
+import simpleoverlay.global.ActivePeerTable;
+import simpleoverlay.global.churn.IChurnModel;
+import simpleoverlay.global.churn.StaticChurn;
+import simpleoverlay.nodes.TrackerNode;
+import simpleoverlay.nodes.BootstrapNode;
+import simpleoverlay.nodes.DonetPeerNode;
+//import simpleoverlay.nodes.PeerNode;
+
+import inet.nodes.inet.Router;
+import inet.nodes.ethernet.EtherSwitch;
+import inet.networklayer.autorouting.FlatNetworkConfigurator;
+import simpleoverlay.nodes.VideoSourceNode;
+
+
+network DonetStreamingNetwork extends BasicNetwork
+{
+    parameters:
+        //        int numPeers = default(1);  // already exists in BasicNetwork.ned
+        @display("bgb=472,295");
+        string churnModel = default("StaticChurn");
+//        int videoStreamingBitRate @unit(bps) = default(512kbps);
+//        int chunkSize @unit(byte) = default(8KiB);
+
+    submodules:
+        bootstrap: BootstrapNode {
+            @display("p=228,29");
+        }
+
+        videoSourceNode: VideoSourceNode {
+            @display("p=395,51");
+        }
+        //        tracker: TrackerNode {
+        //            @display("p=381,29");
+        //        }
+        peerNode[numPeers]: DonetPeerNode {
+            //            @display("p=149,235");
+            @display("i=device/pc");
+        }
+        router: Router {
+            @display("p=306,150");
+        }
+        flatNetworkConfigurator: FlatNetworkConfigurator {
+            @display("p=77,97");
+            networkAddress = "192.168.0.0";
+            netmask = "255.255.0.0";
+        }
+        simulationController: SimulationController {
+            @display("p=77,29");
+        }
+        activePeerTable: ActivePeerTable {
+            @display("p=77,163");
+        }
+        churnModerator: <churnModel> like IChurnModel {
+            @display("p=77,240");
+        }
+    connections:
+        for i=0..numPeers-1 {
+            peerNode[i].pppg++ <--> ethernetline <--> router.pppg++;
+        }
+        bootstrap.pppg++ <--> ethernetline <--> router.pppg++;
+
+        videoSourceNode.pppg++ <--> ethernetline <--> router.pppg++;
+
+//        tracker.pppg++ <--> ethernetline <--> router.pppg++;
+
+//        tracker.ethg++ <--> ethernetline <--> router.ethg++;
+
+}

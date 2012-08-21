@@ -1,0 +1,97 @@
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see http://www.gnu.org/licenses/.
+// 
+
+#ifndef NEIGHBORMAP_H_
+#define NEIGHBORMAP_H_
+
+//#include <vector>
+//#include <omnetpp.h>
+#include "IPvXAddress.h"
+#include "NeighborInfo.h"
+
+//class NeighborMap : public cSimpleModule {
+class NeighborMap {
+public:
+    NeighborMap();
+    virtual ~NeighborMap();
+
+
+/*
+protected:
+  virtual int numInitStages() const  {return 2;}
+  virtual void initialize(int stage);
+
+  // Raises an error.
+  virtual void handleMessage(cMessage *);
+*/
+
+public:
+    /**
+     * For debugging
+     */
+    virtual void printNeighborList() const;
+
+    /** @name Neighbor List manipulation */
+    //@{
+
+    /**
+     * Checks if a peer, given its address, is a neighbor.
+     */
+    virtual bool isNeighbor(const IPvXAddress& dest) const;
+
+    /**
+     * Returns the total number of Neighbors in the list
+     */
+    virtual int getSize() const;
+
+    /**
+     * Adds a Neighbor's address to the table. Note that once added, addresses
+     * cannot be modified; you must delete and re-add them instead.
+     */
+    virtual void addNeighborAddress(const IPvXAddress &address);
+
+    /**
+     * Deletes the given Neighbor's address from the table.
+     * Returns true if the address was deleted correctly, false if it was
+     * not in the table.
+     */
+    virtual bool deleteNeighborAddress(const IPvXAddress &address);
+
+    /**
+     * Utility function: Returns a vector of /N/ addresses of the active nodes.
+     */
+    virtual std::vector<IPvXAddress> getNeighborList() const;
+
+    //virtual void updateNeighborInfo(NeighborInfo *);
+
+    /*
+     *
+     */
+    virtual int updateStoredBufferMap(IPvXAddress, BufferMap *);
+
+//    virtual void updateKeepAliveTimestamp(IPvXAddress addr, long timestamp);
+
+    void getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddress> &holderList);
+
+    //@}
+
+private:
+    typedef std::map<IPvXAddress, NeighborInfo *> AddressList;
+    mutable AddressList neighborList;
+//    std::map<IPvXAddress, NeighborInfo *> neighborList;
+
+};
+
+#endif /* NEIGHBORMAP_H_ */

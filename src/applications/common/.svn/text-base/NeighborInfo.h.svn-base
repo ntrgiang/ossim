@@ -1,0 +1,88 @@
+/*
+ * NeighborInfo.h
+ *
+ *  Created on: May 3, 2012
+ *      Author: giang
+ */
+
+#ifndef NEIGHBORINFO_H_
+#define NEIGHBORINFO_H_
+
+#include "BufferMap.h"
+#include "MeshPeerStreamingPacket_m.h"
+
+class NeighborInfo
+{
+public:
+    NeighborInfo(int bmSize=0);
+    virtual ~NeighborInfo();
+
+public:
+//    inline double lastKeepAliveTime() const { return _lastKeepAliveTime; }
+//    inline void lastKeepAliveTime(double timestamp) { _lastKeepAliveTime = timestamp; }
+
+
+    //bool isInRecvBufferMap(SEQUENCE_NUMBER_T seq_num);
+    //void updateRecvBufferMap(BufferMap *bm);
+
+    // virtual void setBufferMap(BufferMap *bm);
+
+    // Wrapper functions
+    //void resetRequestBufferMap(int bmSize);
+    //void setReqBmStart(SEQUENCE_NUMBER_T seq_num);
+    //void setReqBmEnd(SEQUENCE_NUMBER_T seq_num);
+    //void setReqBmElement(SEQUENCE_NUMBER_T seq_num, bool val);
+
+    // --------- New implementation -----------
+    inline void setSeqNumRecvBmStart(SEQUENCE_NUMBER_T seq_num) { m_seqNum_recvBmStart = seq_num; }
+    inline void setSeqNumRecvBmEnd(SEQUENCE_NUMBER_T seq_num)   { m_seqNum_recvBmEnd = seq_num; }
+    inline void setSeqNumRecvBmHead(SEQUENCE_NUMBER_T seq_num)  { m_seqNum_recvBmHead = seq_num; }
+
+    inline void setLastRecvBmTime(double timeStamp) { m_lastRecvBmTime = timeStamp; }
+    inline double getLastRecvBmTime(void) { return m_lastRecvBmTime; }
+
+    bool isInRecvBufferMap(SEQUENCE_NUMBER_T seq_num);
+    void copyFrom(BufferMap *bm);
+    void copyFrom(MeshBufferMapPacket *bmPkt);
+
+    inline void setSeqNumSendBmStart(SEQUENCE_NUMBER_T seq_num) { m_seqNum_sendBmStart = seq_num; }
+    inline void setSeqNumSendBmEnd(SEQUENCE_NUMBER_T seq_num)   { m_seqNum_sendBmEnd = seq_num; }
+    inline void setSeqNumSendBmHead(SEQUENCE_NUMBER_T seq_num)  { m_seqNum_sendBmHead = seq_num; }
+
+    void clearSendBm(void);
+
+    void setElementSendBm(SEQUENCE_NUMBER_T seq_num, bool val);
+    void copyTo(BufferMap *bm);
+    void copyTo(MeshChunkRequestPacket *bmPkt);
+
+    bool isSendBmModified(void);
+
+    // -- For debugging --
+    void printRecvBm(void);
+    void printSendBm(void);
+
+// Data member
+private:
+    // double _lastKeepAliveTime;
+    double m_lastRecvBmTime;
+    int m_bufferSize;
+
+    //BufferMap *m_recvMap;
+    //BufferMap *m_reqMap;
+
+    std::vector<bool> m_recvBm;
+    std::vector<bool> m_sendBm;
+
+    SEQUENCE_NUMBER_T m_seqNum_recvBmStart;
+    SEQUENCE_NUMBER_T m_seqNum_recvBmEnd;
+    SEQUENCE_NUMBER_T m_seqNum_recvBmHead;
+
+    SEQUENCE_NUMBER_T m_seqNum_sendBmStart;
+    SEQUENCE_NUMBER_T m_seqNum_sendBmEnd;
+    SEQUENCE_NUMBER_T m_seqNum_sendBmHead;
+
+    bool m_sendBmModified;
+};
+
+
+#endif /* NEIGHBORINFO_H_ */

@@ -1,0 +1,45 @@
+package simpleoverlay.applications.peer;
+
+import simpleoverlay.applications.peer.PeerControllerInterface;
+import simpleoverlay.applications.peer.OverlayManager;
+//import simpleoverlay.applications.peer.ActivePeerTable;
+//import inet.base.NotificationBoard;
+
+module PeerApp2
+{
+    parameters:
+        @peer(); // used by the Tracker to find all Peers in the simulation
+        @display("i=block/app;bgb=250,410");
+        string peerControllerModule = default("");
+    gates:
+        input tcpIn;
+        output tcpOut;
+        input udpIn;
+        output udpOut;
+    submodules:
+        peerController: <peerControllerModule> like PeerControllerInterface {
+            @display("p=73,276;i=block/cogwheel");
+        }
+
+        overlayManager: OverlayManager {
+            @display("p=200,120;i=block/network2");
+        }
+
+        peerBootstrap: PeerBootstrap {
+            @display("p=200,203;i=block/plug");
+        }
+
+//        activePeerTable: ActivePeerTable {
+//            @display("p=51,33");
+//        }
+    //        schedulingManager: SchedulingManager {
+    //            @display("p=80,344");
+    //        }
+    connections:
+        // TCP connections
+        overlayManager.tcpOut --> tcpOut;
+        overlayManager.tcpIn <-- tcpIn;
+
+        peerBootstrap.udpOut --> udpOut;
+        peerBootstrap.udpIn <-- udpIn;
+}

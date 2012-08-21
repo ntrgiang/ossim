@@ -1,0 +1,3 @@
+package simpleoverlay;
+
+@license(LGPL);

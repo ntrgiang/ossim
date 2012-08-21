@@ -1,0 +1,8 @@
+package simpleoverlay.applications.peer;
+
+moduleinterface PeerSchedulerInterface
+{
+    parameters:
+        @display("i=block/user");
+        bool debugFlag;
+}
