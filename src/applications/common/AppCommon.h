@@ -43,6 +43,14 @@ struct Link
     IPvXAddress head;
 };
 
+struct Partnership
+{
+    IPvXAddress address;
+    double arrivalTime;
+    double joinTime;
+    int nPartner;
+};
+
 // ----------------------- Packet sizes ---------------------------------
 // --- Membership Overlay
 //#define PACKET_SIZE_MESH_PARTNERSHIP_REQUEST    5
