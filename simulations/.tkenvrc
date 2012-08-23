@@ -1,6 +1,6 @@
 # Partial Tkenv config file -- see $HOME/.tkenvrc as well
 inspector "Donet_Homo_oneRouter_Network.peerNode[0].peerApp" "DonetPeerApp" "2" "868x410+564+24:normal"
-inspector "Donet_Homo_oneRouter_Network" "Donet_Homo_oneRouter_Network" "2" "427x410+116+462:normal"
+inspector "Donet_Homo_oneRouter_Network" "Donet_Homo_oneRouter_Network" "2" "427x410+102+435:normal"
 inspector "Scamp_Homo_oneRouter_Network" "Scamp_Homo_oneRouter_Network" "2" "791x410+641+408:normal"
 inspector "ScampNetwork_newDesign" "ScampNetwork_newDesign" "2" "707x410+71+462:normal"
 inspector "Scamp_Homo_RouterLine_Network.scampPeerNode[0].scampPeerApp" "ScampPeerApp" "2" "342x410+1063+24:normal"
