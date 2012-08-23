@@ -8,6 +8,7 @@ import simpleoverlay.global.churn.StaticChurn;
 import simpleoverlay.global.statistic.GlobalStatistic;
 import simpleoverlay.global.statistic.Statistic;
 import simpleoverlay.global.observer.MeshOverlayObserver;
+import simpleoverlay.global.logger.Logger;
 
 import simpleoverlay.global.AppSettingDonet;
 
@@ -81,6 +82,8 @@ network Donet_Homo_oneRouter_Network extends BasicNetwork
         }
         meshObserver: MeshOverlayObserver {
             @display("p=184,29");
+        }
+        logger: Logger {
         }
     connections:
         // -- old set-up
