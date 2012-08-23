@@ -36,6 +36,7 @@ public:
 
 public:
     void writeToFile(const Link &link);
+    void writeToFile(const Partnership &p);
 
 private:
     ofstream m_outFile;

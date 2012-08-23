@@ -39,7 +39,7 @@ void MeshOverlayObserver::initialize(int stage)
 
     m_outFile.open(par("meshOverlayLogFile").stringValue(), fstream::out);
 
-    m_outFile << "test \n";
+    //  m_outFile << "test \n";
 //    WATCH(m_meshOverlayLogFile);
 }
 
@@ -59,4 +59,12 @@ void MeshOverlayObserver::writeToFile(const Link &link)
     m_outFile << link.linkType << " ";
     m_outFile << link.root << " ";
     m_outFile << link.head << endl;
+}
+
+void MeshOverlayObserver::writeToFile(const Partnership &p)
+{
+    m_outFile << p.address << " ";
+    m_outFile << p.arrivalTime << " ";
+    m_outFile << p.joinTime << " ";
+    m_outFile << p.nPartner << endl;
 }
