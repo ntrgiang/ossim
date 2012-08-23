@@ -1,22 +1,17 @@
 #!/bin/sh
-
+# Current directory should be at .../projectName/simulations/run-scripts/
+# This script uses relative path
 # Project name
 PROJECT_NAME=so
 
-cd ../../../
-
-# Root path
-# ROOT_PATH=/nix/workspace/omnet422-inet118
-ROOT_PATH=$PWD
-
 # Paths for Inet
-INET_PATH=$ROOT_PATH/inet
+INET_PATH=../../../inet
 INET_SRC_PATH=$INET_PATH/src
 
 # More on the paths
-EXEC_PATH=$ROOT_PATH/$PROJECT_NAME
-EXEC_SIM_PATH=$EXEC_PATH/simulations
-EXEC_SRC_PATH=$EXEC_PATH/src
+PROJECT_PATH=../../../$PROJECT_NAME
+EXEC_SIM_PATH=$PROJECT_PATH/simulations
+EXEC_SRC_PATH=$PROJECT_PATH/src
 
 # Binary file to be executed
 EXEC_FILE=$EXEC_SRC_PATH/$PROJECT_NAME
