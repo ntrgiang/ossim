@@ -897,7 +897,6 @@ void DonetPeer::processPartnershipRequest(cPacket *pkt)
 
     //if (canHaveMorePartner())
     if (m_partnerList->getSize() < param_maxNOP)
-//    if (true)
     {
         // -- Debug
         emit(sig_partnerRequest, m_partnerList->getSize());
@@ -925,6 +924,8 @@ void DonetPeer::processPartnershipRequest(cPacket *pkt)
 
         MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
         sendToDispatcher(acceptPkt, m_localPort, requesterAddress, requesterPort);
+
+        m_activityLog << "\tAccept it " << m_partnerList->getSize() << endl;
     }
     else // cannot accept any more partner
     {
@@ -937,6 +938,8 @@ void DonetPeer::processPartnershipRequest(cPacket *pkt)
 //            rejPkt->setBitLength(m_appSetting->getPacketSizePartnershipReject());
         MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
         sendToDispatcher(rejectPkt, m_localPort, requesterAddress, requesterPort);
+
+        m_activityLog << "\tReject it " << m_partnerList->getSize() << endl;
     }
 }
 
