@@ -113,6 +113,10 @@ private:
     SEQUENCE_NUMBER_T m_seqNum_schedWinEnd;
     SEQUENCE_NUMBER_T m_seqNum_schedWinHead;
 
+    // -- Partnership size
+    int param_minNOP;
+    int param_maxNOP;
+
     // -- Time stampt value objects
     // cTimestampedValue
 

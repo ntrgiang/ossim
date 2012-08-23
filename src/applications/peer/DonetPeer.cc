@@ -61,6 +61,8 @@ void DonetPeer::initialize(int stage)
     param_nNeighbor_SchedulingStart     = par("nNeighbor_SchedulingStart");
     param_waitingTime_SchedulingStart   = par("waitingTime_SchedulingStart");
     param_numberOfPartner               = par("numberOfPartner");
+    param_minNOP                        = par("minNOP");
+    param_maxNOP                        = par("maxNOP");
 
     scheduleAt(simTime() + par("startTime").doubleValue(), timer_getJoinTime);
 
@@ -96,6 +98,8 @@ void DonetPeer::initialize(int stage)
     WATCH(param_chunkSchedulingInterval);
 
     WATCH(param_numberOfPartner);
+    WATCH(param_minNOP);
+    WATCH(param_maxNOP);
 
     WATCH(m_appSetting);
     WATCH(m_apTable);
@@ -333,7 +337,8 @@ void DonetPeer::join()
     for (std::vector<IPvXAddress>::iterator iter = listRandPeer.begin(); iter != listRandPeer.end(); ++iter)
     {
         // -- Only send a partnership request if not enough partners
-        if (m_partnerList->getSize() < param_numberOfPartner)
+        //if (m_partnerList->getSize() < param_numberOfPartner)
+        if (m_partnerList->getSize() < param_minNOP)
         {
             IPvXAddress addressRandPeer = *iter;
 
@@ -377,7 +382,8 @@ void DonetPeer::join()
  */
 void DonetPeer::findMorePartner()
 {
-    if (m_partnerList->getSize() >= param_numberOfPartner)
+    //if (m_partnerList->getSize() >= param_numberOfPartner)
+    if (m_partnerList->getSize() >= param_minNOP)
     {
         emit(signal_nPartner, -1);
 //        if (getNodeAddress() == m_monitoredAddress)
@@ -386,7 +392,7 @@ void DonetPeer::findMorePartner()
 //            m_logger->m_outFile << "\tBut has enough partner!" << endl;
 //        }
         m_activityLog << "--- Find more partner --- " << endl;
-        m_activityLog << "\tBut has enough partner!" << endl;
+        m_activityLog << "\tBut has enough (mininum number of) partners!" << endl;
         return;
     }
 
@@ -889,7 +895,8 @@ void DonetPeer::processPartnershipRequest(cPacket *pkt)
     m_activityLog << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
 
 
-    if (canHaveMorePartner())
+    //if (canHaveMorePartner())
+    if (m_partnerList->getSize() < param_maxNOP)
 //    if (true)
     {
         // -- Debug
