@@ -3,8 +3,11 @@
 # Project name
 PROJECT_NAME=so
 
+cd ../../../
+
 # Root path
-ROOT_PATH=/nix/workspace/omnet422-inet118
+# ROOT_PATH=/nix/workspace/omnet422-inet118
+ROOT_PATH=$PWD
 
 # Paths for Inet
 INET_PATH=$ROOT_PATH/inet
