@@ -14,8 +14,8 @@ simple Player
 		
 		// --- Statistics
 //        @statistic[rebuffering_local](title="Number of Re-buffering events"; source=rebuffering_Local; record=sum,vector);
-        @statistic[ChunkHit](source=Signal_ChunkHit; title="Number of chunk hit";record=count,vector);
-        @statistic[ChunkMiss](source=Signal_ChunkMiss; title="Number of chunk Miss";record=count,vector);
+//        @statistic[ChunkHit](source=Signal_ChunkHit; title="Number of chunk hit";record=count,vector);
+//        @statistic[ChunkMiss](source=Signal_ChunkMiss; title="Number of chunk Miss";record=count,vector);
 
 }
 
