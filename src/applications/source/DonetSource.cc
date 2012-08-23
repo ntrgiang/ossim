@@ -43,6 +43,12 @@ void DonetSource::initialize(int stage)
     // -- Schedule events
     scheduleAt(simTime() + param_bufferMapInterval, timer_sendBufferMap);
 
+
+    // -- Init for activity logging:
+    string path = "..//results//";
+    string filename = path + getNodeAddress().str();
+    m_activityLog.open(filename.c_str(), fstream::out);
+
     // -------------------------------------------------------------------------
     // -------------------------------- WATCH ----------------------------------
     // -------------------------------------------------------------------------
@@ -83,6 +89,15 @@ void DonetSource::finish()
 
     // Packets
     //if (m_bmPacket) delete m_bmPacket;
+
+    Partnership p;
+        p.address = getNodeAddress();
+        p.arrivalTime = 0.0;
+        p.joinTime = 0.0;
+        p.nPartner = m_partnerList->getSize();
+    m_meshOverlayObserver->writeToFile(p);
+
+    m_activityLog.close();
 }
 
 /**

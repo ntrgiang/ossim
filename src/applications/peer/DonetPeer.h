@@ -34,8 +34,13 @@ private:
     void findMorePartner();
     void processPartnershipRequest(cPacket *pkt);
     void processAcceptResponse(cPacket *pkt);
+    void processRejectResponse(cPacket *pkt);
     void processPeerBufferMap(cPacket *pkt);
 //    void processChunkRequest(cPacket *pkt);
+
+    // -- State variables for join process
+    int m_nRequestSent;
+    int m_nRejectSent;
 
     // temp one:
     // void processPeerBufferMap2(cPacket *pkt);
@@ -110,6 +115,11 @@ private:
 
     // -- Time stampt value objects
     // cTimestampedValue
+
+    // -- For debugging purpose about the number of partners
+    double m_arrivalTime;
+    double m_joinTime;
+    IPvXAddress m_monitoredAddress;
 
     // -- Signals
     simsignal_t sig_chunkRequestSeqNum;

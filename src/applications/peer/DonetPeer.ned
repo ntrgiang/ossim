@@ -37,11 +37,11 @@ simple DonetPeer extends DonetBase
         @signal[chunkRequestSeqNum](type=long);
         
         // -- Statistics
-        @statistic[chunkRequestSeqNum](title="Sequence Number of chunk requests"; record=count, vector);
+//        @statistic[chunkRequestSeqNum](title="Sequence Number of chunk requests"; record=count, vector);
         
-        @statistic[nPartner](source=Signal_nPartner; record=last, vector);
+//        @statistic[nPartner](source=Signal_nPartner; record=last, vector);
         
-        @statistic[partnerRequest](title="Partnership Request"; source=Signal_PartnerRequest; record=vector);
+//        @statistic[partnerRequest](title="Partnership Request"; source=Signal_PartnerRequest; record=vector);
         
 }
 
