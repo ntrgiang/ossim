@@ -140,6 +140,7 @@ void DonetBase::bindToMeshModule(void)
     //m_forwarder = check_and_cast<Forwarder *>(temp);
     m_forwarder = dynamic_cast<Forwarder *>(temp);
     assert(m_forwarder != NULL);
+
 }
 
 void DonetBase::bindToGlobalModule(void)
@@ -154,8 +155,11 @@ void DonetBase::bindToGlobalModule(void)
 
     temp = simulation.getModuleByPath("meshObserver");
     m_meshOverlayObserver = dynamic_cast<MeshOverlayObserver *>(temp);
-    if (m_appSetting == NULL) throw cException("NULL pointer to module MeshOverlayObserver");
+    if (m_meshOverlayObserver == NULL) throw cException("NULL pointer to module MeshOverlayObserver");
 
+    temp = simulation.getModuleByPath("logger");
+    m_logger = dynamic_cast<Logger *>(temp);
+    if (m_logger == NULL) throw cException("NULL pointer to module Logger");
 
 }
 

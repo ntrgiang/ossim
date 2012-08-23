@@ -25,9 +25,12 @@
 #include "AppSettingDonet.h"
 #include "IChurnGenerator.h"
 #include "MeshOverlayObserver.h"
+#include "Logger.h"
 
 #include "IPvXAddress.h"
+#include <fstream>
 
+//class Logger;
 
 class DonetBase : public CommBase
 {
@@ -102,6 +105,8 @@ protected:
     AppSettingDonet *m_appSetting;
     IChurnGenerator *m_churn;
     MeshOverlayObserver *m_meshOverlayObserver;
+    Logger *m_logger;
+    ofstream m_activityLog;
 
     // -- Pointers to /local/ modules
     PartnerList *m_partnerList;
