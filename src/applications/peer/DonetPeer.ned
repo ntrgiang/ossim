@@ -32,8 +32,9 @@ simple DonetPeer extends DonetBase
         double waitingTime_SchedulingStart @unit(s) = default(0.25s);
         
         int numberOfPartner = default(4);
-        int minNOP = default(1); // Min number of partners
+        // int minNOP = default(1); // Min number of partners
         int maxNOP = default(2); // Max number of partners
+        int offsetNOP = default(1); // The difference between minNOP and maxNOP
         
         // -- Possible signals to collect
         @signal[chunkRequestSeqNum](type=long);

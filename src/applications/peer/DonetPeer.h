@@ -116,6 +116,7 @@ private:
     // -- Partnership size
     int param_minNOP;
     int param_maxNOP;
+    int param_offsetNOP;
 
     // -- Time stampt value objects
     // cTimestampedValue

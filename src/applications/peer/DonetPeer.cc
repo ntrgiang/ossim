@@ -61,8 +61,11 @@ void DonetPeer::initialize(int stage)
     param_nNeighbor_SchedulingStart     = par("nNeighbor_SchedulingStart");
     param_waitingTime_SchedulingStart   = par("waitingTime_SchedulingStart");
     param_numberOfPartner               = par("numberOfPartner");
-    param_minNOP                        = par("minNOP");
+//    param_minNOP                        = par("minNOP");
     param_maxNOP                        = par("maxNOP");
+    param_offsetNOP                     = par("offsetNOP");
+
+    param_minNOP = param_maxNOP - param_offsetNOP;
 
     scheduleAt(simTime() + par("startTime").doubleValue(), timer_getJoinTime);
 
@@ -100,6 +103,7 @@ void DonetPeer::initialize(int stage)
     WATCH(param_numberOfPartner);
     WATCH(param_minNOP);
     WATCH(param_maxNOP);
+    WATCH(param_offsetNOP);
 
     WATCH(m_appSetting);
     WATCH(m_apTable);
