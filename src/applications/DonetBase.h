@@ -106,7 +106,7 @@ protected:
     IChurnGenerator *m_churn;
     MeshOverlayObserver *m_meshOverlayObserver;
     Logger *m_logger;
-    ofstream m_activityLog;
+//    ofstream m_activityLog;
 
     // -- Pointers to /local/ modules
     PartnerList *m_partnerList;

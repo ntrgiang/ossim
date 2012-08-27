@@ -45,9 +45,9 @@ void DonetSource::initialize(int stage)
 
 
     // -- Init for activity logging:
-    string path = "..//results//";
-    string filename = path + getNodeAddress().str();
-    m_activityLog.open(filename.c_str(), fstream::out);
+//    string path = "..//results//";
+//    string filename = path + getNodeAddress().str();
+//    m_activityLog.open(filename.c_str(), fstream::out);
 
     // -------------------------------------------------------------------------
     // -------------------------------- WATCH ----------------------------------
@@ -97,7 +97,7 @@ void DonetSource::finish()
         p.nPartner = m_partnerList->getSize();
     m_meshOverlayObserver->writeToFile(p);
 
-    m_activityLog.close();
+//    m_activityLog.close();
 }
 
 /**
@@ -468,9 +468,9 @@ void DonetSource::processPartnershipRequest(cPacket *pkt)
     getSender(pkt, requesterAddress, requesterPort);
     EV << "Requester: " << requesterAddress << ":" << requesterPort << endl; // Debug
 
-    m_activityLog << "--- Partnership Request --- " << endl;
-    m_activityLog << "\tGot a REQUEST from: " << requesterAddress << endl;
-    m_activityLog << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
+//    m_activityLog << "--- Partnership Request --- " << endl;
+//    m_activityLog << "\tGot a REQUEST from: " << requesterAddress << endl;
+//    m_activityLog << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
 
     if (!canHaveMorePartner())
     {

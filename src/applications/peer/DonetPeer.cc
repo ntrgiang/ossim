@@ -75,9 +75,9 @@ void DonetPeer::initialize(int stage)
     m_joinTime = -1.0;
     m_monitoredAddress = IPvXAddress("192.168.0.11");
     // -- Init for activity logging:
-    string path = "..//results//";
-    string filename = path + getNodeAddress().str();
-    m_activityLog.open(filename.c_str(), fstream::out);
+//    string path = "..//results//";
+//    string filename = path + getNodeAddress().str();
+//    m_activityLog.open(filename.c_str(), fstream::out);
 
 //    WATCH(filename.c_str());
 
@@ -135,7 +135,7 @@ void DonetPeer::finish()
     // -- Debug
     m_gstat->reportNumberOfPartner(m_partnerList->getSize());
 
-    m_activityLog.close();
+//    m_activityLog.close();
 
     Partnership p;
         p.address = getNodeAddress();
@@ -245,15 +245,9 @@ void DonetPeer::processAcceptResponse(cPacket *pkt)
     // 2. Store the address into its partner list
     m_partnerList->addAddress(acceptorAddress, upBw_remotePeer);
 
-//    if (getNodeAddress() == m_monitoredAddress)
-//    {
-//        m_logger->m_outFile << "--- processAcceptResponse --- " << endl;
-//        m_logger->m_outFile << "\tGot an ACCEPT from: " << acceptorAddress << endl;
-//        m_logger->m_outFile << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
-//    }
-    m_activityLog << "--- processAcceptResponse --- " << endl;
-    m_activityLog << "\tGot an ACCEPT from: " << acceptorAddress << endl;
-    m_activityLog << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
+//    m_activityLog << "--- processAcceptResponse --- " << endl;
+//    m_activityLog << "\tGot an ACCEPT from: " << acceptorAddress << endl;
+//    m_activityLog << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
 
     m_nRequestSent = -1;
     m_nRejectSent = 0;
@@ -303,24 +297,14 @@ void DonetPeer::processRejectResponse(cPacket *pkt)
     IPvXAddress rejectorAddress = controlInfo->getSrcAddr();
     EV << "Accepter's address: " << rejectorAddress << endl;
 
-//    if (getNodeAddress() == m_monitoredAddress)
-//    {
-//        m_logger->m_outFile << "--- processRejectResponse --- " << endl;
-//        m_logger->m_outFile << "\tGot a REJECT from: " << rejectorAddress << endl;
-//    }
-
-    m_activityLog << "--- processRejectResponse --- " << endl;
-    m_activityLog << "\t at " << simTime().dbl() << " Got a REJECT from: " << rejectorAddress << endl;
+//    m_activityLog << "--- processRejectResponse --- " << endl;
+//    m_activityLog << "\t at " << simTime().dbl() << " Got a REJECT from: " << rejectorAddress << endl;
 
     ++m_nRejectSent;
 
     if (m_nRejectSent == m_nRequestSent)
     {
-//        if (getNodeAddress() == m_monitoredAddress)
-//        {
-//            m_logger->m_outFile << "\tAll requests were rejected --> join() again!" << endl;
-//        }
-        m_activityLog << "\tAll requests were rejected --> join() again!" << endl;
+//        m_activityLog << "\tAll requests were rejected --> join() again!" << endl;
 
         // Reset state-variables
         m_nRequestSent = -1;
@@ -354,26 +338,13 @@ void DonetPeer::join()
         }
     }
 
-    // ------- Debug ----------
-//    if (getNodeAddress() == m_monitoredAddress)
-//    {
-//        m_logger->m_outFile << "--- Join ---" << endl;
-//        m_logger->m_outFile << "Bootstrap list: size = " << listRandPeer.size() << endl;
-//        for (std::vector<IPvXAddress>::iterator iter = listRandPeer.begin(); iter != listRandPeer.end(); ++iter)
-//        {
-//            IPvXAddress addressRandPeer = *iter;
-//
-//            m_logger->m_outFile << addressRandPeer << endl;
-//        }
-//    }
-
-            m_activityLog << "--- Join ---" << endl;
-            m_activityLog << "\tat " << simTime().dbl() << " Bootstrap list: size = " << listRandPeer.size() << endl;
+//            m_activityLog << "--- Join ---" << endl;
+//            m_activityLog << "\tat " << simTime().dbl() << " Bootstrap list: size = " << listRandPeer.size() << endl;
             for (std::vector<IPvXAddress>::iterator iter = listRandPeer.begin(); iter != listRandPeer.end(); ++iter)
             {
                 IPvXAddress addressRandPeer = *iter;
 
-                m_activityLog << "\t" << addressRandPeer << endl;
+//                m_activityLog << "\t" << addressRandPeer << endl;
             }
     // ------- Debug ----------
 }
@@ -389,14 +360,10 @@ void DonetPeer::findMorePartner()
     //if (m_partnerList->getSize() >= param_numberOfPartner)
     if (m_partnerList->getSize() >= param_minNOP)
     {
-        emit(signal_nPartner, -1);
-//        if (getNodeAddress() == m_monitoredAddress)
-//        {
-//            m_logger->m_outFile << "--- Find more partner --- " << endl;
-//            m_logger->m_outFile << "\tBut has enough partner!" << endl;
-//        }
-        m_activityLog << "--- Find more partner --- " << endl;
-        m_activityLog << "\tBut has enough (mininum number of) partners!" << endl;
+//        emit(signal_nPartner, -1);
+//
+//        m_activityLog << "--- Find more partner --- " << endl;
+//        m_activityLog << "\tBut has enough (mininum number of) partners!" << endl;
         return;
     }
 
@@ -410,26 +377,17 @@ void DonetPeer::findMorePartner()
 
     if (m_partnerList->have(addressRandPeer))
     {
-        emit(signal_nPartner, -2);
-        if (getNodeAddress() == m_monitoredAddress)
-//        {
-//            m_logger->m_outFile << "--- Find more partner --- " << endl;
-//            m_logger->m_outFile << "\tBut already had partner!" << endl;
-//        }
-        m_activityLog << "--- Find more partner --- " << endl;
-        m_activityLog << "\tBut already had partner!" << endl;
+//        emit(signal_nPartner, -2);
+
+//        m_activityLog << "--- Find more partner --- " << endl;
+//        m_activityLog << "\tBut already had partner!" << endl;
         return;
     }
 
-//    if (getNodeAddress() == m_monitoredAddress)
-//    {
-//        m_logger->m_outFile << "--- Find more partner --- " << endl;
-//        m_logger->m_outFile << "\tPartner to contat: " << addressRandPeer << endl;
-//    }
-    m_activityLog << "--- Find more partner --- " << endl;
-    m_activityLog << "\tPartner to contat: " << addressRandPeer << endl;
+//    m_activityLog << "--- Find more partner --- " << endl;
+//    m_activityLog << "\tPartner to contat: " << addressRandPeer << endl;
 
-    emit(signal_nPartner, m_partnerList->size());
+//    emit(signal_nPartner, m_partnerList->size());
     MeshPartnershipRequestPacket *reqPkt = new MeshPartnershipRequestPacket("MESH_PEER_JOIN_REQUEST");
         reqPkt->setUpBw(param_upBw);
         reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
@@ -888,15 +846,9 @@ void DonetPeer::processPartnershipRequest(cPacket *pkt)
     getSender(pkt, requesterAddress, requesterPort);
     EV << "Requester: " << requesterAddress << ":" << requesterPort << endl; // Debug
 
-//    if (getNodeAddress() == m_monitoredAddress)
-//    {
-//        m_logger->m_outFile << "--- Partnership Request --- " << endl;
-//        m_logger->m_outFile << "\tGot a REQUEST from: " << requesterAddress << endl;
-//        m_logger->m_outFile << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
-//    }
-    m_activityLog << "--- Partnership Request --- " << endl;
-    m_activityLog << "\tGot a REQUEST from: " << requesterAddress << endl;
-    m_activityLog << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
+//    m_activityLog << "--- Partnership Request --- " << endl;
+//    m_activityLog << "\tGot a REQUEST from: " << requesterAddress << endl;
+//    m_activityLog << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
 
 
     //if (canHaveMorePartner())
@@ -929,7 +881,7 @@ void DonetPeer::processPartnershipRequest(cPacket *pkt)
         MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
         sendToDispatcher(acceptPkt, m_localPort, requesterAddress, requesterPort);
 
-        m_activityLog << "\tAccept it " << m_partnerList->getSize() << endl;
+//        m_activityLog << "\tAccept it " << m_partnerList->getSize() << endl;
     }
     else // cannot accept any more partner
     {
@@ -943,7 +895,7 @@ void DonetPeer::processPartnershipRequest(cPacket *pkt)
         MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
         sendToDispatcher(rejectPkt, m_localPort, requesterAddress, requesterPort);
 
-        m_activityLog << "\tReject it " << m_partnerList->getSize() << endl;
+//        m_activityLog << "\tReject it " << m_partnerList->getSize() << endl;
     }
 }
 
