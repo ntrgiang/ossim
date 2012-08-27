@@ -12,6 +12,7 @@ INET_SRC_PATH=$INET_PATH/src
 PROJECT_PATH=../../../$PROJECT_NAME
 EXEC_SIM_PATH=$PROJECT_PATH/simulations
 EXEC_SRC_PATH=$PROJECT_PATH/src
+RESULT_PATH=$PROJECT_PATH/simulations/results
 
 # Binary file to be executed
 EXEC_FILE=$EXEC_SRC_PATH/$PROJECT_NAME
@@ -19,6 +20,9 @@ EXEC_FILE=$EXEC_SRC_PATH/$PROJECT_NAME
 # Specify the Network and the configuration file
 NETWORK=Donet_Homo_oneRouter_Network
 CONFIG_FILE=DonetNetworkConfig.ini
+
+# Delete all files in the results/ folder
+rm $CONFIG_FILE/*.*
 
 # Get the total number of runs
 N_RUN=`$EXEC_FILE -x $NETWORK $EXEC_SIM_PATH/$CONFIG_FILE | grep "Number of runs:" | cut -d' ' -f4`
