@@ -1,17 +1,14 @@
 #!/bin/bash
 # write standard output to file
 #PBS -o job.out
-# calculate for 4 minutes
-#PBS -l walltime=04:00:00,nodes=1,mem=3G
+# calculate for 10 hours
+#PBS -l walltime=10:00:00,nodes=1,mem=3G
 
 # Notification settings
 #PBS -M nguyen@cs.tu-darmstadt.de
 #PBS -m be
 
-# load needed modules
-## module load intel/compiler/64/11.1/046
-
 # change to path with your executale
-# cd /home/darmstadt/nguyeng/
+cd /home/darmstadt/nguyeng/sim/omnetpp/so/simulations/run-scripts/
 # start your program
 ./so-sim.sh
