@@ -1,4 +1,5 @@
-setwd("../simulations/results/")
+#setwd("../simulations/results/")
+setwd("/nix/workspace/omnet422-inet118/so/simulations/results/")
 
 require(omnetpp)
 

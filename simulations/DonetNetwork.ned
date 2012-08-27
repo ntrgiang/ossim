@@ -26,10 +26,6 @@ network Donet_Homo_oneRouter_Network extends BasicNetwork
         @display("bgb=488,389");
         string churnModel = default("StaticChurn");
 
-//        @statistic[ChunkHit](source=Signal_ChunkHit; record=count,vector?);
-//        @statistic[ChunkMiss](source=Signal_ChunkMiss; record=count,vector?);
-//        @statistic[nPartner](source=Signal_nPartner; record=sum, vector);
-
     types:
         channel Channel_9M_up extends ned.DatarateChannel
         {
