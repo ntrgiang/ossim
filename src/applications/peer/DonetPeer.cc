@@ -970,10 +970,13 @@ void DonetPeer::startPlayer(void)
 bool DonetPeer::shouldStartPlayer(void)
 {
     SEQUENCE_NUMBER_T head = m_videoBuffer->getHeadReceivedSeqNum();
+    SEQUENCE_NUMBER_T begin = m_videoBuffer->getBufferStartSeqNum();
+    int offset = head - begin;
+    if (offset < 0) throw cException("Non-sense values of head and begin");
 
     // A simple logic to start the player
     // More sophisticated one could be included as nested if to "ensure" better playback quality
-    if (head >= m_bufferMapSize_chunk / 2)
+    if (offset >= m_bufferMapSize_chunk / 2)
     {
         return true;
     }
