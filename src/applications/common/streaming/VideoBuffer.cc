@@ -40,7 +40,8 @@ void VideoBuffer::initialize(int stage)
 
     cModule *temp = simulation.getModuleByPath("appSetting");
     AppSettingDonet *m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    assert(m_appSetting != NULL);
+    //assert(m_appSetting != NULL);
+    if (m_appSetting == NULL) throw cException("m_appSetting == NULL is invalid");
 
     m_bufferSize_chunk  = m_appSetting->getBufferMapSizeChunk();
     m_chunkInterval     = m_appSetting->getIntervalNewChunk();
