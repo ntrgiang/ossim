@@ -43,14 +43,16 @@ void ChunkGenerator::initialize(int stage)
     // -- pointing to the Video Buffer
     cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
     m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
-    assert(m_videoBuffer != NULL);
+    //assert(m_videoBuffer != NULL);
+    if (m_videoBuffer == NULL) throw cException("m_videoBuffer == NULL is invalid");
 
     m_id_newChunk = 0L;
     timer_newChunk      = new cMessage("MESH_SOURCE_TIMER_NEW_CHUNK");
 
     temp = simulation.getModuleByPath("appSetting");
     m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    assert(m_appSetting != NULL);
+    //assert(m_appSetting != NULL);
+    if (m_appSetting == NULL) throw cException("m_appSetting == NULL is invalid");
 
     m_interval_newChunk = m_appSetting->getIntervalNewChunk();
     m_size_chunkPacket  = m_appSetting->getPacketSizeVideoChunk();

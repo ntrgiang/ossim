@@ -125,6 +125,11 @@ private:
     double m_arrivalTime;
     double m_joinTime;
     IPvXAddress m_monitoredAddress;
+    double m_video_startTime;
+    SEQUENCE_NUMBER_T m_head_videoStart;
+    SEQUENCE_NUMBER_T m_begin_videoStart;
+    int m_threshold_videoStart;
+
 
     // -- Signals
     simsignal_t sig_chunkRequestSeqNum;

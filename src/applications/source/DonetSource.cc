@@ -43,7 +43,6 @@ void DonetSource::initialize(int stage)
     // -- Schedule events
     scheduleAt(simTime() + param_bufferMapInterval, timer_sendBufferMap);
 
-
     // -- Init for activity logging:
 //    string path = "..//results//";
 //    string filename = path + getNodeAddress().str();
@@ -95,6 +94,10 @@ void DonetSource::finish()
         p.arrivalTime = 0.0;
         p.joinTime = 0.0;
         p.nPartner = m_partnerList->getSize();
+        p.video_startTime = -1.0;
+        p.head_videoStart = -1;
+        p.begin_videoStart = -1;
+        p.threshold_videoStart = -1;
     m_meshOverlayObserver->writeToFile(p);
 
 //    m_activityLog.close();

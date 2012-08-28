@@ -63,8 +63,13 @@ void MeshOverlayObserver::writeToFile(const Link &link)
 
 void MeshOverlayObserver::writeToFile(const Partnership &p)
 {
-    m_outFile << p.address << " ";
-    m_outFile << p.arrivalTime << " ";
-    m_outFile << p.joinTime << " ";
-    m_outFile << p.nPartner << endl;
+    m_outFile << p.address                  << "\t " \
+                << p.arrivalTime            << "\t " \
+                << p.joinTime               << "\t " \
+                << p.nPartner               << "\t " \
+                << p.video_startTime        << "\t " \
+                << p.head_videoStart        << "\t " \
+                << p.begin_videoStart       << "\t " \
+                << p.threshold_videoStart   << "\t " \
+                << endl;
 }

@@ -93,7 +93,8 @@ IPvXAddress CommBase::getNodeAddress(void)
     inet_ift = InterfaceTableAccess().get();
 
     // EV << "Number of interfaces: " << inet_ift->getNumInterfaces() << endl;
-    assert(inet_ift->getNumInterfaces() >= 2);
+    //assert(inet_ift->getNumInterfaces() >= 2);
+    if (inet_ift->getNumInterfaces() < 2) throw cException("Less than 2 interfaces");
 
     // EV << "Interface 1: " << inet_ift->getInterface(0)->ipv4Data()->getIPAddress() << endl;
     // EV << "Interface 2: " << inet_ift->getInterface(1)->ipv4Data()->getIPAddress() << endl;
@@ -110,11 +111,13 @@ void CommBase::bindToGlobalModule(void)
     // -- Active Peer Table
     cModule *temp = simulation.getModuleByPath("activePeerTable");
     m_apTable = check_and_cast<ActivePeerTable *>(temp);
-    assert(m_apTable != NULL);
+    //assert(m_apTable != NULL);
+    if (m_apTable == NULL) throw cException("m_apTable == NULL is invalid");
 
     // -- Global Statistic
     temp = simulation.getModuleByPath("globalStatistic");
     m_gstat = check_and_cast<GlobalStatistic *>(temp);
 //    m_gstat = check_and_cast<Statistic *>(temp);
-    assert(m_gstat != NULL);
+    //assert(m_gstat != NULL);
+    if (m_gstat == NULL) throw cException("m_gstat == NULL is invalid");
 }

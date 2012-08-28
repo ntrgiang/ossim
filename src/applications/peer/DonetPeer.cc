@@ -142,6 +142,10 @@ void DonetPeer::finish()
         p.arrivalTime = m_arrivalTime;
         p.joinTime = m_joinTime;
         p.nPartner = m_partnerList->getSize();
+        p.video_startTime = m_video_startTime;
+        p.head_videoStart = m_head_videoStart;
+        p.begin_videoStart = m_begin_videoStart;
+        p.threshold_videoStart = m_threshold_videoStart;
     m_meshOverlayObserver->writeToFile(p);
 }
 
@@ -822,7 +826,8 @@ void DonetPeer::bindToGlobalModule(void)
     // -- Churn
     cModule *temp = simulation.getModuleByPath("churnModerator");
     m_churn = check_and_cast<IChurnGenerator *>(temp);
-    assert(m_churn != NULL);
+    //assert(m_churn != NULL);
+    if (m_churn == NULL) throw cException("m_churn == NULL is invalid");
 }
 
 void DonetPeer::bindToMeshModule(void)
@@ -978,6 +983,10 @@ bool DonetPeer::shouldStartPlayer(void)
     // More sophisticated one could be included as nested if to "ensure" better playback quality
     if (offset >= m_bufferMapSize_chunk / 2)
     {
+        m_video_startTime = simTime().dbl();
+        m_head_videoStart = head;
+        m_begin_videoStart = begin;
+        m_threshold_videoStart = m_bufferMapSize_chunk / 2;
         return true;
     }
     return false;
