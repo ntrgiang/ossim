@@ -38,6 +38,8 @@ void GlobalStatistic::initialize(int stage)
 
         sig_chunkHit    = registerSignal("Signal_ChunkHit");
         sig_chunkMiss   = registerSignal("Signal_ChunkMiss");
+        sig_chunkNeed   = registerSignal("Signal_ChunkNeed");
+
         sig_chunkSeek   = registerSignal("Signal_ChunkSeek");
         sig_rebuffering   = registerSignal("Signal_Rebuffering");
 
@@ -298,11 +300,13 @@ void GlobalStatistic::reportChunkHit(const SEQUENCE_NUMBER_T &seq_num)
 void GlobalStatistic::reportChunkMiss(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_chunkMiss, seq_num);
+    emit(sig_chunkNeed, seq_num);
 }
 
 void GlobalStatistic::reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_chunkSeek, seq_num);
+    emit(sig_chunkNeed, seq_num);
 }
 
 void GlobalStatistic::reportRebuffering(const SEQUENCE_NUMBER_T &seq_num)

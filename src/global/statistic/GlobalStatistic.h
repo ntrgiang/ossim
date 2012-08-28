@@ -135,6 +135,8 @@ private:
 
     simsignal_t sig_chunkHit;
     simsignal_t sig_chunkMiss;
+    simsignal_t sig_chunkNeed;
+
     simsignal_t sig_chunkSeek;
     simsignal_t sig_rebuffering;
 

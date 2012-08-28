@@ -18,18 +18,19 @@ package simpleoverlay.global.statistic;
 simple GlobalStatistic
 {
     parameters:
-//        @signal[chunkHit_Global](type=long);
+        // --- Signals
+        @signal[Signal_ChunkHit](type="long");
+        @signal[Signal_ChunkMiss](type="long");
+        @signal[Signal_ChunkNeed](type="long");
         
         // --- Statistics
-//        @statistic[hitCount_global](source=chunkHit_Global; record=count);
-        
-//        @signal[chunkHit_Global](type=long);
-//        @statistic[hitCount_global](source=chunkHit_Global; record=count);
-//        @statistic[hitCount_glocal](source=chunkHit_Local; record=count);
         @statistic[ChunkHit](source=Signal_ChunkHit; record=count);
         @statistic[ChunkMiss](source=Signal_ChunkMiss; record=count);
         @statistic[ChunkSeek](source=Signal_ChunkSeek; record=count);
         @statistic[Rebuffering](source=Signal_Rebuffering; record=count);
+        
+        //@statistic[CI](source="count(Signal_ChunkHit)/(count(Signal_ChunkHit)+count(Signal_ChunkMiss))"; record=last);
+        @statistic[CI](source="count(Signal_ChunkHit)/count(Signal_ChunkNeed)"; record=last);
         
         // -- Join time
         @statistic[MeshJoin](source=Signal_MeshJoin; record=vector);
