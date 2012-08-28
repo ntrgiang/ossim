@@ -123,7 +123,8 @@ void Dispatcher::processUdpPacket(cMessage *udpMsg)
     UDPControlInfo *udpCtrl = check_and_cast<UDPControlInfo *>(udpMsg->removeControlInfo());
 
     PeerStreamingPacket *strmPkt = dynamic_cast<PeerStreamingPacket *>(udpMsg);
-    assert(strmPkt != NULL);
+    //assert(strmPkt != NULL);
+    if (strmPkt == NULL) throw cException("strmPkt == NULL is invalid");
 
     DpControlInfo *dpCtrl = new DpControlInfo();
     dpCtrl->setSrcAddr(udpCtrl->getSrcAddr());
