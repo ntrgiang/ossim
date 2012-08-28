@@ -19,7 +19,8 @@ NeighborInfo::NeighborInfo(int bmSize)
 , m_sendBmModified(false)
 //, m_timeBudget(0.0)
 {
-    assert(bmSize >= 0);
+    //assert(bmSize >= 0);
+    if (bmSize < 0) throw cException("bmSize %d is invalid", bmSize);
     // m_bufferSize = bmSize;
     // m_reqMap = new BufferMap(bmSize);
     // m_recvMap = new BufferMap(bmSize);
@@ -120,7 +121,8 @@ void NeighborInfo::setElementSendBm(SEQUENCE_NUMBER_T seq_num, bool val)
     // -- Debug
     // EV << "NeighborInfo::setElementSendBm:: offset: " << offset << endl;
 
-    assert(offset >= 0);
+    //assert(offset >= 0);
+    if (bmSize < 0) throw cException("bmSize %d is invalid", bmSize);
     m_sendBm[offset] = val;
 
     //m_sendBmModified = (m_sendBmModified == true)
@@ -238,7 +240,8 @@ void NeighborInfo::resetVectorAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE
     m_winStart = win_start;
 
     int offset = win_start - vb_start;
-    assert(offset >= 0);
+    //assert(offset >= 0);
+    if (bmSize < 0) throw cException("bmSize %d is invalid", bmSize);
 
     for (int i = 0; i < m_bufferSize; ++i)
     {
@@ -249,7 +252,8 @@ void NeighborInfo::resetVectorAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE
 void NeighborInfo::updateChunkAvailTime(SEQUENCE_NUMBER_T seq_num, double txTime)
 {
     int offset = seq_num - m_winStart;
-    assert(offset >= 0);
+    //assert(offset >= 0);
+    if (bmSize < 0) throw cException("bmSize %d is invalid", bmSize);
 
     m_availTime[offset] = m_availTime[offset] - txTime;
 }
@@ -257,7 +261,8 @@ void NeighborInfo::updateChunkAvailTime(SEQUENCE_NUMBER_T seq_num, double txTime
 double NeighborInfo::getChunkAvailTime(SEQUENCE_NUMBER_T seq_num)
 {
     int offset = seq_num - m_winStart;
-    assert(offset >= 0);
+    //assert(offset >= 0);
+    if (bmSize < 0) throw cException("bmSize %d is invalid", bmSize);
 
     return m_availTime[offset];
 }
