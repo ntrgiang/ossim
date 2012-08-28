@@ -122,7 +122,7 @@ void NeighborInfo::setElementSendBm(SEQUENCE_NUMBER_T seq_num, bool val)
     // EV << "NeighborInfo::setElementSendBm:: offset: " << offset << endl;
 
     //assert(offset >= 0);
-    if (bmSize < 0) throw cException("bmSize %d is invalid", bmSize);
+    if (offset < 0) throw cException("offset %d is invalid", offset);
     m_sendBm[offset] = val;
 
     //m_sendBmModified = (m_sendBmModified == true)
@@ -241,7 +241,7 @@ void NeighborInfo::resetVectorAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE
 
     int offset = win_start - vb_start;
     //assert(offset >= 0);
-    if (bmSize < 0) throw cException("bmSize %d is invalid", bmSize);
+    if (offset < 0) throw cException("offset %d is invalid", offset);
 
     for (int i = 0; i < m_bufferSize; ++i)
     {
@@ -253,7 +253,7 @@ void NeighborInfo::updateChunkAvailTime(SEQUENCE_NUMBER_T seq_num, double txTime
 {
     int offset = seq_num - m_winStart;
     //assert(offset >= 0);
-    if (bmSize < 0) throw cException("bmSize %d is invalid", bmSize);
+    if (offset < 0) throw cException("offset %d is invalid", offset);
 
     m_availTime[offset] = m_availTime[offset] - txTime;
 }
@@ -262,7 +262,7 @@ double NeighborInfo::getChunkAvailTime(SEQUENCE_NUMBER_T seq_num)
 {
     int offset = seq_num - m_winStart;
     //assert(offset >= 0);
-    if (bmSize < 0) throw cException("bmSize %d is invalid", bmSize);
+    if (offset < 0) throw cException("offset %d is invalid", offset);
 
     return m_availTime[offset];
 }
