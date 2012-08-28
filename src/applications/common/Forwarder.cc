@@ -77,7 +77,8 @@ void Forwarder::initialize(int stage)
 
     cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
     m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
-    assert(m_videoBuffer != NULL);
+    //assert(m_videoBuffer != NULL);
+    if (m_videoBuffer == NULL) throw cException("m_videoBuffer == NULL is invalid");
 }
 
 void Forwarder::finish()
