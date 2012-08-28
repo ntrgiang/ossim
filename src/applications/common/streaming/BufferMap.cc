@@ -51,7 +51,8 @@ BufferMap::BufferMap(int size)
 {
     // TODO Auto-generated constructor stub
 
-    assert(size>0);
+    // assert(size>0);
+    if (size <= 0) throw cException("Buffer map size has to be a positive number!");
 
     m_bmSize = size;
     m_map.resize(size);
@@ -76,8 +77,10 @@ BufferMap::~BufferMap() {
 
 bool BufferMap::getElementByOffset(unsigned int index)
 {
-    assert(index >= 0 && index < m_map.size());
-    return m_map[index];
+    // assert(index >= 0 && index < m_map.size());
+    if (index >= 0 && index < m_map.size())
+        return m_map[index];
+    throw cException("Index value %d is invalid", index);
 }
 
 void BufferMap::setElementByOffset(int index, bool val)
@@ -182,7 +185,8 @@ void BufferMap::reset()
 bool BufferMap::isInBufferMap(SEQUENCE_NUMBER_T seq_num)
 {
     long offset = seq_num - m_bmStart_seqNum;
-    assert(offset >= 0);
+    // assert(offset >= 0);
+    if (offset < 0) throw cException("Offset value %d is invalid", offset);
 
     return (m_map[offset]);
 }
