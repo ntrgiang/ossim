@@ -1,6 +1,14 @@
 #!/bin/sh
 # Current directory should be at .../projectName/simulations/run-scripts/
 # This script uses relative path
+
+if [$# -lt 2]; then
+   echo "Wrong format! Should be:\n"
+   echo "so-sim.sh n_measurement n_iteration\n"
+   echo "\tn_measurement: Number of different values of the parameter\n"
+   echo "\tn_iteration: Number of iterations for each measurement\n"
+fi
+
 # Project name
 PROJECT_NAME=so
 
@@ -12,7 +20,7 @@ INET_SRC_PATH=$INET_PATH/src
 PROJECT_PATH=../../../$PROJECT_NAME
 EXEC_SIM_PATH=$PROJECT_PATH/simulations
 EXEC_SRC_PATH=$PROJECT_PATH/src
-RESULT_PATH=$PROJECT_PATH/simulations/results
+#RESULT_PATH=$PROJECT_PATH/simulations/results
 
 # Binary file to be executed
 EXEC_FILE=$EXEC_SRC_PATH/$PROJECT_NAME
@@ -22,18 +30,26 @@ NETWORK=Donet_Homo_oneRouter_Network
 CONFIG_FILE=DonetNetworkConfig.ini
 
 # Delete all files in the results/ folder
-rm $CONFIG_FILE/*.*
+# rm $RESULT_PATH/*.*
 
 # Get the total number of runs
-N_RUN=`$EXEC_FILE -x $NETWORK $EXEC_SIM_PATH/$CONFIG_FILE | grep "Number of runs:" | cut -d' ' -f4`
-LAST_INDEX=$((N_RUN-1))
+#N_RUN=`$EXEC_FILE -x $NETWORK $EXEC_SIM_PATH/$CONFIG_FILE | grep "Number of runs:" | cut -d' ' -f4`
+#LAST_INDEX=$((N_RUN-1))
+
+# Deviding the whole simulation into smaller "chunks"
+N_MEASUREMENT=$1
+N_ITERATION=$2
+
+INDEX_LOW=$((N_ITERATION*(N_MEASUREMENT-1)))
+INDEX_HIGH=$((N_ITERATION*N_MEASUREMENT-1))
 
 opp_runall -j1 \
 	  $EXEC_FILE -u Cmdenv \
-	  -r 0..$LAST_INDEX \
+     -r $INDEX_LOW..$INDEX_HIGH \
 	  -c $NETWORK $EXEC_SIM_PATH/$CONFIG_FILE \
 	  -n $EXEC_SIM_PATH:$EXEC_SRC_PATH:$INET_SRC_PATH \
 	  -l $INET_SRC_PATH/inet 
+#	  -r 0..$LAST_INDEX \
 
 #RESULT_PATH=$EXEC_SIM_PATH/results
 #NEW_FOLDER="SCAMP_VALIDATION_PARTIALVIEW"
