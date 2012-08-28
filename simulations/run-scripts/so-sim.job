@@ -11,4 +11,4 @@
 # change to path with your executale
 cd /home/darmstadt/nguyeng/sim/omnetpp/so/simulations/run-scripts/
 # start your program
-./so-sim.sh
+#./so-sim.sh > screen.out

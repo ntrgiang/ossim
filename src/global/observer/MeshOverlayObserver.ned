@@ -18,5 +18,5 @@ package simpleoverlay.global.observer;
 simple MeshOverlayObserver
 {
     parameters:
-        string meshOverlayLogFile;
+        string meshOverlayLogFile = default("");
 }

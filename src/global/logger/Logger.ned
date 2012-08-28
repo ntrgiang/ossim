@@ -18,5 +18,5 @@ package simpleoverlay.global.logger;
 simple Logger
 {
     parameters:
-        string logFile;
+        string logFile = default("");
 }
