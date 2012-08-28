@@ -46,7 +46,8 @@ void PartnerList::initialize(int stage)
 
     cModule *temp = simulation.getModuleByPath("appSetting");
     AppSettingDonet *appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    assert(appSetting != NULL);
+    //assert(appSetting != NULL);
+    if (appSetting == NULL) throw cException("appSetting == NULL is invalid");
 
     m_bufferSize = appSetting->getBufferMapSizeChunk();
 
