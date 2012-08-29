@@ -2,11 +2,12 @@
 # Current directory should be at .../projectName/simulations/run-scripts/
 # This script uses relative path
 
-if [$# -lt 2]; then
-   echo "Wrong format! Should be:\n"
-   echo "so-sim.sh n_measurement n_iteration\n"
-   echo "\tn_measurement: Number of different values of the parameter\n"
-   echo "\tn_iteration: Number of iterations for each measurement\n"
+if [ $# -lt 2 ]; then
+   echo "Wrong format! Should be:"
+   echo "so-sim.sh <n_measurement> <n_iteration>"
+   echo "\t- n_measurement: Number of different values of the parameter"
+   echo "\t- n_iteration:   Number of iterations for each measurement"
+   exit
 fi
 
 # Project name
@@ -49,7 +50,17 @@ opp_runall -j1 \
 	  -c $NETWORK $EXEC_SIM_PATH/$CONFIG_FILE \
 	  -n $EXEC_SIM_PATH:$EXEC_SRC_PATH:$INET_SRC_PATH \
 	  -l $INET_SRC_PATH/inet 
-#	  -r 0..$LAST_INDEX \
+
+
+
+
+
+
+
+
+
+
+#--------------------- Post-processing ----------------------
 
 #RESULT_PATH=$EXEC_SIM_PATH/results
 #NEW_FOLDER="SCAMP_VALIDATION_PARTIALVIEW"
