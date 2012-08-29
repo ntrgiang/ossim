@@ -14,6 +14,7 @@
 // 
 
 #include "MeshOverlayObserver.h"
+#include <iomanip>
 
 Define_Module(MeshOverlayObserver);
 
@@ -62,13 +63,14 @@ void MeshOverlayObserver::writeToFile(const Link &link)
 
 void MeshOverlayObserver::writeToFile(const Partnership &p)
 {
-    /*m_outFile*/ EV << p.address                  << "\t " \
-                << p.arrivalTime            << "\t " \
-                << p.joinTime               << "\t " \
-                << p.nPartner               << "\t " \
-                << p.video_startTime        << "\t " \
-                << p.head_videoStart        << "\t " \
-                << p.begin_videoStart       << "\t " \
-                << p.threshold_videoStart   << "\t " \
-                << endl;
+    EV \
+        << setw(20) << p.address                << " " \
+        << setw(10) << p.arrivalTime            << " " \
+        << setw(10) << p.joinTime               << " " \
+        << setw(10) << p.nPartner               << " " \
+        << setw(10) << p.video_startTime        << " " \
+        << setw(10) << p.head_videoStart        << " " \
+        << setw(10) << p.begin_videoStart       << " " \
+        << setw(10) << p.threshold_videoStart   << " " \
+        << endl;
 }
