@@ -1,9 +1,0 @@
-package simpleoverlay.applications.peer;
-
-moduleinterface ChunkSchedulerInterface
-{
-    parameters:
-        @display("i=block/user");
-        bool debugFlag;
-
-}
