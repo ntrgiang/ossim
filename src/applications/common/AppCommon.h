@@ -49,6 +49,10 @@ struct Partnership
     double arrivalTime;
     double joinTime;
     int nPartner;
+    double video_startTime;
+    SEQUENCE_NUMBER_T head_videoStart;
+    SEQUENCE_NUMBER_T begin_videoStart;
+    int threshold_videoStart;
 };
 
 // ----------------------- Packet sizes ---------------------------------
