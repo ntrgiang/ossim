@@ -7,8 +7,6 @@
 #include "DpControlInfo_m.h"
 #include "MeshPeerStreamingPacket_m.h"
 
-#include <assert.h>
-
 Define_Module(DonetSource);
 
 DonetSource::DonetSource() {}

@@ -16,12 +16,9 @@
 #include "ScampBase.h"
 #include "Contact.h"
 
-//#include "UDPControlInfo_m.h"
-//#include "CommControlInfo_m.h"
 #include "DpControlInfo_m.h"
 
 #include <string>
-#include <assert.h>
 
 ScampBase::ScampBase()
 //: m_active(false)
@@ -99,7 +96,6 @@ void ScampBase::bindToParentModule(void)
     // -- Dispatcher
     cModule *temp = getParentModule()->getModuleByRelativePath("dispatcher");
     m_dispatcher = check_and_cast<Dispatcher *>(temp);
-    //assert(m_dispatcher != NULL);
     if (m_dispatcher == NULL) throw cException("m_dispatcher == NULL is invalid");
 }
 
@@ -696,7 +692,6 @@ void ScampBase::sendGossipAppMessage()
 void ScampBase::handleAppPacket(cPacket *pkt)
 {
     GossipApplicationPacket *appPkt = dynamic_cast<GossipApplicationPacket *>(pkt);
-    //assert(appPkt != NULL);
     if (appPkt == NULL) throw cException("appPkt == NULL is invalid");
     IPvXAddress rootAddress = appPkt->getRootAddress();
     MESSAGE_ID_TYPE msgId = appPkt->getMessageId();

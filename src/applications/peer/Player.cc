@@ -14,7 +14,6 @@
 // 
 
 #include "Player.h"
-#include "assert.h"
 
 Define_Module(Player);
 

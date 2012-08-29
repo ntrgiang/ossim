@@ -15,7 +15,6 @@
 
 #include "VideoBuffer.h"
 #include "simutil.h"
-#include "assert.h"
 #include "AppSettingDonet.h"
 
 #define _VERSION_1 1
@@ -40,7 +39,6 @@ void VideoBuffer::initialize(int stage)
 
     cModule *temp = simulation.getModuleByPath("appSetting");
     AppSettingDonet *m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    //assert(m_appSetting != NULL);
     if (m_appSetting == NULL) throw cException("m_appSetting == NULL is invalid");
 
     m_bufferSize_chunk  = m_appSetting->getBufferMapSizeChunk();
@@ -500,13 +498,3 @@ int VideoBuffer::getNumberActiveElement(void)
 {
     return m_nActiveElement;
 }
-
-/*
-double VideoBuffer::getDeadline(SEQUENCE_NUMBER_T seq_num) const
-{
-    int offset = seq_num - m_bufferStart_seqNum;
-    assert(offset >= 0);
-
-    return (offset * m_chunkInterval);
-}
-*/

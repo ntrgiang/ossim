@@ -6,7 +6,6 @@
 #include "DpControlInfo_m.h"
 #include "MeshPeerStreamingPacket_m.h"
 
-#include <assert.h>
 #include <algorithm>
 
 Define_Module(DonetPeer);
@@ -826,7 +825,6 @@ void DonetPeer::bindToGlobalModule(void)
     // -- Churn
     cModule *temp = simulation.getModuleByPath("churnModerator");
     m_churn = check_and_cast<IChurnGenerator *>(temp);
-    //assert(m_churn != NULL);
     if (m_churn == NULL) throw cException("m_churn == NULL is invalid");
 }
 
@@ -840,7 +838,6 @@ void DonetPeer::bindToMeshModule(void)
     if (!m_player)
         throw cException("Null pointer to Player module!");
 
-//    assert(m_churn != NULL);
 }
 
 void DonetPeer::processPartnershipRequest(cPacket *pkt)

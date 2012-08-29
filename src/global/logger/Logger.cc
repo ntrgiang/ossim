@@ -35,7 +35,7 @@ void Logger::initialize(int stage)
     if (stage != 3)
         return;
 
-    m_outFile.open(par("logFile").stringValue(), fstream::out);
+    //m_outFile.open(par("logFile").stringValue(), fstream::out);
 
     //  m_outFile << "test \n";
 //    WATCH(m_meshOverlayLogFile);
@@ -48,5 +48,5 @@ void Logger::handleMessage(cMessage *)
 
 void Logger::finish()
 {
-    m_outFile.close();
+    //m_outFile.close();
 }

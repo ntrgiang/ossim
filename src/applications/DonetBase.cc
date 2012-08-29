@@ -15,7 +15,6 @@
 
 #include "DonetBase.h"
 #include "DpControlInfo_m.h"
-#include "assert.h"
 
 DonetBase::DonetBase() {}
 
@@ -127,21 +126,15 @@ void DonetBase::sendBufferMap(void)
 void DonetBase::bindToMeshModule(void)
 {
     cModule *temp = getParentModule()->getModuleByRelativePath("partnerList");
-    //m_partnerList = check_and_cast<PartnerList *>(temp);
     m_partnerList = dynamic_cast<PartnerList *>(temp);
-    //assert(m_partnerList != NULL);
     if (m_partnerList == NULL) throw cException("m_partnerList == NULL is invalid");
 
     temp = getParentModule()->getModuleByRelativePath("videoBuffer");
-    //m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
     m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
-    //assert(m_videoBuffer != NULL);
     if (m_videoBuffer == NULL) throw cException("m_videoBuffer == NULL is invalid");
 
     temp = getParentModule()->getModuleByRelativePath("forwarder");
-    //m_forwarder = check_and_cast<Forwarder *>(temp);
     m_forwarder = dynamic_cast<Forwarder *>(temp);
-    //assert(m_forwarder != NULL);
     if (m_forwarder == NULL) throw cException("m_forwarder == NULL is invalid");
 
 }

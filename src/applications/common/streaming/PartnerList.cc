@@ -17,7 +17,6 @@
 #include "AppSettingDonet.h"
 #include <omnetpp.h>
 #include <map>
-#include "assert.h"
 
 Define_Module(PartnerList);
 
@@ -46,7 +45,6 @@ void PartnerList::initialize(int stage)
 
     cModule *temp = simulation.getModuleByPath("appSetting");
     AppSettingDonet *appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    //assert(appSetting != NULL);
     if (appSetting == NULL) throw cException("appSetting == NULL is invalid");
 
     m_bufferSize = appSetting->getBufferMapSizeChunk();

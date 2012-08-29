@@ -14,7 +14,6 @@
 // 
 
 #include "ChunkGenerator.h"
-#include "assert.h"
 
 Define_Module(ChunkGenerator);
 
@@ -43,7 +42,6 @@ void ChunkGenerator::initialize(int stage)
     // -- pointing to the Video Buffer
     cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
     m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
-    //assert(m_videoBuffer != NULL);
     if (m_videoBuffer == NULL) throw cException("m_videoBuffer == NULL is invalid");
 
     m_id_newChunk = 0L;
@@ -51,7 +49,6 @@ void ChunkGenerator::initialize(int stage)
 
     temp = simulation.getModuleByPath("appSetting");
     m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    //assert(m_appSetting != NULL);
     if (m_appSetting == NULL) throw cException("m_appSetting == NULL is invalid");
 
     m_interval_newChunk = m_appSetting->getIntervalNewChunk();

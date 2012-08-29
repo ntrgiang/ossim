@@ -17,7 +17,6 @@
 #include "PeerStreamingPacket_m.h"
 #include "DpControlInfo_m.h"
 #include "UDPControlInfo_m.h"
-#include "assert.h"
 
 Define_Module(Dispatcher);
 
@@ -123,7 +122,6 @@ void Dispatcher::processUdpPacket(cMessage *udpMsg)
     UDPControlInfo *udpCtrl = check_and_cast<UDPControlInfo *>(udpMsg->removeControlInfo());
 
     PeerStreamingPacket *strmPkt = dynamic_cast<PeerStreamingPacket *>(udpMsg);
-    //assert(strmPkt != NULL);
     if (strmPkt == NULL) throw cException("strmPkt == NULL is invalid");
 
     DpControlInfo *dpCtrl = new DpControlInfo();

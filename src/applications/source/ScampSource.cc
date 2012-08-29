@@ -14,8 +14,6 @@
 #include "MeshPeerStreamingPacket_m.h"
 #include "GossipMembershipPacket_m.h"
 
-#include <assert.h>
-
 Define_Module(ScampSource);
 
 ScampSource::ScampSource()

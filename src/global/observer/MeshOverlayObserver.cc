@@ -35,12 +35,10 @@ void MeshOverlayObserver::initialize(int stage)
     if (stage != 3)
         return;
 
-//    m_meshOverlayLogFile = par("meshOverlayLogFile");
-
-    m_outFile.open(par("meshOverlayLogFile").stringValue(), fstream::out);
+    //m_outFile.open(par("meshOverlayLogFile").stringValue(), fstream::out);
 
     //  m_outFile << "test \n";
-//    WATCH(m_meshOverlayLogFile);
+    //  WATCH(m_meshOverlayLogFile);
 }
 
 void MeshOverlayObserver::handleMessage(cMessage *)
@@ -50,20 +48,21 @@ void MeshOverlayObserver::handleMessage(cMessage *)
 
 void MeshOverlayObserver::finish()
 {
-    m_outFile.close();
+//    m_outFile.close();
 }
 
 void MeshOverlayObserver::writeToFile(const Link &link)
 {
-    m_outFile << link.timeStamp << " ";
-    m_outFile << link.linkType << " ";
-    m_outFile << link.root << " ";
-    m_outFile << link.head << endl;
+    /*m_outFile*/ EV << link.timeStamp << " " \
+     << link.linkType << " " \
+     << link.root << " " \
+     << link.head << " " \
+     << endl;
 }
 
 void MeshOverlayObserver::writeToFile(const Partnership &p)
 {
-    m_outFile << p.address                  << "\t " \
+    /*m_outFile*/ EV << p.address                  << "\t " \
                 << p.arrivalTime            << "\t " \
                 << p.joinTime               << "\t " \
                 << p.nPartner               << "\t " \

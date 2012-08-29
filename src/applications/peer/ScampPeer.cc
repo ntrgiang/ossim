@@ -28,7 +28,6 @@
 #include "IPv4InterfaceData.h"
 
 #include <vector>
-#include <assert.h>
 #include <algorithm>
 
 Define_Module(ScampPeer);

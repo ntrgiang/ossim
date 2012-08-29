@@ -14,36 +14,6 @@
 // 
 
 #include "BufferMap.h"
-#include <assert.h>
-
-/*
-BufferMap::BufferMap(int size)
-: m_id_bmStart(-1), m_id_bmEnd(-1)
-{
-    // TODO Auto-generated constructor stub
-
-    assert(size>0);
-
-    // Creating enough number of elements for the buffer
-     m_map.resize(size);
-
-    // change the code so that it is "compatible" to Eclipse's suggestion
-//    m_map.resize((unsigned long int)size, false);
-
-    for(int i = 0; i < size; i++)
-    {
-        m_map[i] = false;
-    }
-
-    m_bmSize = size;
-
-    m_mapArray = new bool[size];
-    for(int i = 0; i < size; i++)
-    {
-        m_mapArray[i] = false;
-    }
-}
-*/
 
 BufferMap::BufferMap(int size)
 // : m_id_bmStart(-1), m_id_bmEnd(-1)
@@ -51,7 +21,6 @@ BufferMap::BufferMap(int size)
 {
     // TODO Auto-generated constructor stub
 
-    // assert(size>0);
     if (size <= 0) throw cException("Buffer map size has to be a positive number!");
 
     m_bmSize = size;
@@ -77,7 +46,6 @@ BufferMap::~BufferMap() {
 
 bool BufferMap::getElementByOffset(unsigned int index)
 {
-    // assert(index >= 0 && index < m_map.size());
     if (index >= 0 && index < m_map.size())
         return m_map[index];
     throw cException("Index value %d is invalid", index);
@@ -185,8 +153,7 @@ void BufferMap::reset()
 bool BufferMap::isInBufferMap(SEQUENCE_NUMBER_T seq_num)
 {
     long offset = seq_num - m_bmStart_seqNum;
-    // assert(offset >= 0);
-    if (offset < 0) throw cException("Offset value %d is invalid", offset);
+    if (offset < 0) throw cException("Offset = %ld is invalid", offset);
 
     return (m_map[offset]);
 }
