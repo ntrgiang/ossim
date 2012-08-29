@@ -95,7 +95,6 @@ void DonetBase::sendBufferMap(void)
     // Old code, replaced by a function
     MeshBufferMapPacket *bmPkt = new MeshBufferMapPacket("MESH_PEER_BUFFER_MAP");
         bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);
-        //bmPkt->setBitLength(m_appSetting->getPacketSizeBufferMap() * 8);    // Convert sizes from Bytes --> bits
         bmPkt->setBitLength(m_BufferMapPacketSize_bit);
         m_videoBuffer->fillBufferMapPacket(bmPkt);
 
@@ -169,8 +168,10 @@ void DonetBase::acceptJoinRequest(IPvXAddress &reqPeerAddress, double upBw_remot
     m_partnerList->print();
 
     // 2. Send the explicit ACCEPT request
-    MeshPartnershipAcceptPacket *acceptPkt = new MeshPartnershipAcceptPacket("MESH_PEER_JOIN_ACCEPT");
-        acceptPkt->setUpBw(param_upBw);
+//    MeshPartnershipAcceptPacket *acceptPkt = new MeshPartnershipAcceptPacket("MESH_PEER_JOIN_ACCEPT");
+//        acceptPkt->setUpBw(param_upBw);
+
+    MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
 
     // 3. Send the packet
     sendToDispatcher(acceptPkt, m_localPort, reqPeerAddress, m_destPort);

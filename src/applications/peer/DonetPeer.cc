@@ -761,9 +761,9 @@ void DonetPeer::donetChunkScheduling(void)
             iter->second->printSendBm();
 
             MeshChunkRequestPacket *chunkReqPkt = new MeshChunkRequestPacket;
-
-            // -- Map the sendBM into ChunkRequestPacket
-            iter->second->copyTo(chunkReqPkt);
+                chunkReqPkt->setBitLength(m_appSetting->getPacketSizeChunkRequest());
+                // -- Map the sendBM into ChunkRequestPacket
+                iter->second->copyTo(chunkReqPkt);
 
             // -- Send the copy
             sendToDispatcher(chunkReqPkt, m_localPort, iter->first, m_destPort);

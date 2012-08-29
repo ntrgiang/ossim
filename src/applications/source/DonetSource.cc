@@ -341,15 +341,7 @@ void DonetSource::acceptJoinRequestFromPeer(IPvXAddress &reqPeerAddress, double 
     // Debug:
     m_partnerList->print();
 
-    MeshPartnershipAcceptPacket *acceptPkt = new MeshPartnershipAcceptPacket("MESH_PEER_JOIN_ACCEPT");
-        acceptPkt->setUpBw(param_upBw);
-
-    // 3. Send the explicit ACCEPT request
-//    MeshPartnershipPacket *acceptPkt = new MeshPartnershipPacket("MESH_PEER_JOIN_ACCEPT");
-//        acceptPkt->setPacketType(MESH_PARTNERSHIP);
-        // !!! has problem
-//        acceptPkt->setCommand(CMD_MESH_PARTNERSHIP_ACCEPT);
-//        acceptPkt->setUpBw(param_upBw);
+    MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
 
     // -- Send the packet
     sendToDispatcher(acceptPkt, m_localPort, reqPeerAddress, m_destPort);
@@ -483,7 +475,6 @@ void DonetSource::processPartnershipRequest(cPacket *pkt)
 
     if (!canHaveMorePartner())
     {
-        //MeshPartnershipRejectPacket *rejPkt = new MeshPartnershipRejectPacket("MESH_PARTNERSHIP_REJECT");
         MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
         sendToDispatcher(rejectPkt, m_localPort, requesterAddress, requesterPort);
 
@@ -498,8 +489,6 @@ void DonetSource::processPartnershipRequest(cPacket *pkt)
     m_partnerList->addAddress(requesterAddress, upBw_remotePeer);
 
     // m_partnerList->print(); // Debug:
-//    MeshPartnershipAcceptPacket *acceptPkt = new MeshPartnershipAcceptPacket("MESH_PEER_JOIN_ACCEPT");
-//        acceptPkt->setUpBw(param_upBw);
 
     MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
     sendToDispatcher(acceptPkt, m_localPort, requesterAddress, requesterPort);
