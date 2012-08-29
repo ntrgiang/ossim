@@ -113,6 +113,14 @@ protected:
     VideoBuffer *m_videoBuffer;
     Forwarder   *m_forwarder;
 
+    // --- Additional variables for debugging purposes
+    double m_arrivalTime;
+    double m_joinTime;
+    double m_video_startTime;
+    SEQUENCE_NUMBER_T m_head_videoStart;
+    SEQUENCE_NUMBER_T m_begin_videoStart;
+    int m_threshold_videoStart;
+
 };
 
 #endif /* DONETBASE_H_ */

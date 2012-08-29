@@ -46,6 +46,14 @@ void DonetSource::initialize(int stage)
 //    string filename = path + getNodeAddress().str();
 //    m_activityLog.open(filename.c_str(), fstream::out);
 
+    // --- For logging variables
+    m_arrivalTime = -1.0;
+    m_joinTime = -1.0;
+    m_video_startTime = -1.0;
+    m_head_videoStart = -1L;
+    m_begin_videoStart = -1L;
+    m_threshold_videoStart = m_bufferMapSize_chunk/2;
+
     // -------------------------------------------------------------------------
     // -------------------------------- WATCH ----------------------------------
     // -------------------------------------------------------------------------

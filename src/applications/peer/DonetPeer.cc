@@ -86,6 +86,14 @@ void DonetPeer::initialize(int stage)
     // -- Unimportant signals:
     signal_nPartner = registerSignal("Signal_nPartner");
 
+    // -- Debugging variables
+    m_arrivalTime = -1.0;
+    m_joinTime = -1.0;
+    m_video_startTime = -1.0;
+    m_head_videoStart = -1L;
+    m_begin_videoStart = -1L;
+    m_threshold_videoStart = m_bufferMapSize_chunk/2;
+
     WATCH(m_localPort);
     WATCH(m_destPort);
 
@@ -137,13 +145,13 @@ void DonetPeer::finish()
 //    m_activityLog.close();
 
     Partnership p;
-        p.address = getNodeAddress();
-        p.arrivalTime = m_arrivalTime;
-        p.joinTime = m_joinTime;
-        p.nPartner = m_partnerList->getSize();
-        p.video_startTime = m_video_startTime;
-        p.head_videoStart = m_head_videoStart;
-        p.begin_videoStart = m_begin_videoStart;
+        p.address           = getNodeAddress();
+        p.arrivalTime       = m_arrivalTime;
+        p.joinTime          = m_joinTime;
+        p.nPartner          = m_partnerList->getSize();
+        p.video_startTime   = m_video_startTime;
+        p.head_videoStart   = m_head_videoStart;
+        p.begin_videoStart  = m_begin_videoStart;
         p.threshold_videoStart = m_threshold_videoStart;
     m_meshOverlayObserver->writeToFile(p);
 }
@@ -973,8 +981,8 @@ bool DonetPeer::shouldStartPlayer(void)
 {
     SEQUENCE_NUMBER_T head = m_videoBuffer->getHeadReceivedSeqNum();
     SEQUENCE_NUMBER_T begin = m_videoBuffer->getBufferStartSeqNum();
-    int offset = head - begin;
-    if (offset < 0) throw cException("Non-sense values of head and begin");
+    long offset = head - begin;
+    if (offset < 0L) throw cException("Non-sense values of head and begin");
 
     // A simple logic to start the player
     // More sophisticated one could be included as nested if to "ensure" better playback quality
@@ -983,7 +991,6 @@ bool DonetPeer::shouldStartPlayer(void)
         m_video_startTime = simTime().dbl();
         m_head_videoStart = head;
         m_begin_videoStart = begin;
-        m_threshold_videoStart = m_bufferMapSize_chunk / 2;
         return true;
     }
     return false;
