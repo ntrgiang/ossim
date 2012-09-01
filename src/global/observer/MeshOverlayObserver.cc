@@ -63,14 +63,43 @@ void MeshOverlayObserver::writeToFile(const Link &link)
 
 void MeshOverlayObserver::writeToFile(const Partnership &p)
 {
+    // -- Names of fields
     EV \
-        << setw(20) << p.address                << " " \
-        << setw(10) << p.arrivalTime            << " " \
-        << setw(10) << p.joinTime               << " " \
-        << setw(10) << p.nPartner               << " " \
-        << setw(10) << p.video_startTime        << " " \
-        << setw(10) << p.head_videoStart        << " " \
-        << setw(10) << p.begin_videoStart       << " " \
-        << setw(10) << p.threshold_videoStart   << " " \
+        << setw(15) << "IP address" << " " \
+        << setw(6)  << "T_arr"      << " " \
+        << setw(6)  << "T_join"     << " " \
+        << setw(3)  << "nPner"      << " " \
+        << setw(6)  << "T_st"       << " " \
+        << setw(6)  << "head"       << " " \
+        << setw(6)  << "begin"      << " " \
+        << setw(5)  << "th_hold"    << " " \
+        << setw(8)  << "n_Req_Recv" << " " \
+        << setw(8)  << "n_sent"     << " " \
+        << setw(8)  << "n_BMrecv"   << " " \
         << endl;
+
+    EV \
+        << setw(15) << p.address                << " " \
+        << setw(6) << p.arrivalTime             << " " \
+        << setw(6) << p.joinTime                << " " \
+        << setw(3) << p.nPartner                << " " \
+        << setw(6) << p.video_startTime         << " " \
+        << setw(6) << p.head_videoStart         << " " \
+        << setw(6) << p.begin_videoStart        << " " \
+        << setw(5) << p.threshold_videoStart    << " " \
+        << setw(8) << p.nChunkRequestReceived   << " " \
+        << setw(8) << p.nChunkSent              << " " \
+        << setw(8) << p.nBMrecv                 << " " \
+        << endl;
+
+    EV << "Partner list: " << endl;
+    int listSize = p.partnerList.size();
+    for (int i=0; i<listSize; ++i)
+    {
+        EV << p.partnerList[i] << endl;
+    }
+    //for (vector<IPvXAddress>::iterator iter = p.partnerList.begin(); iter != p.partnerList.end(); ++iter)
+//    {
+//        EV << *iter << endl;
+//    }
 }
