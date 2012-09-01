@@ -32,13 +32,9 @@ void Forwarder::handleMessage(cMessage* msg)
     PeerStreamingPacket *appMsg = check_and_cast<PeerStreamingPacket *>(msg);
     EV << "PacketGroup = " << appMsg->getPacketGroup() << endl;
     if (appMsg->getPacketGroup() != PACKET_GROUP_VIDEO_CHUNK)
-    {
         throw cException("Wrong packet type!");
-        return;
-    }
 
     EV << "A video chunk has just been received from " << endl;
-    //MeshVideoChunkPacket *chunkPkt = check_and_cast<MeshVideoChunkPacket *>(appMsg);
     VideoChunkPacket *chunkPkt = check_and_cast<VideoChunkPacket *>(appMsg);
 
     //////////////////////////////////////////////////////////////////////////////////////// DEBUG_START //////////////////////////
@@ -93,8 +89,3 @@ void Forwarder::sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int de
 
     sendToDispatcher(chunkPkt, getLocalPort(), destAddress, destPort);
 }
-
-//int Forwarder::getLocalPort()
-//{
-//
-//}
