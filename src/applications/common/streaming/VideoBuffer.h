@@ -74,8 +74,10 @@ public:
 //    void insertPacket(MeshVideoChunkPacket *packet);
     void insertPacket(VideoChunkPacket *packet);
     VideoChunkPacket *getChunk(SEQUENCE_NUMBER_T seq_num);
+    int getNumberFilledChunk();
 
     bool isInBuffer(SEQUENCE_NUMBER_T seq_num);
+    bool inBuffer(SEQUENCE_NUMBER_T seq_num);
     SIM_TIME_T getReceivedTime(SEQUENCE_NUMBER_T seq_num);
 //    MeshVideoChunkPacket *getChunk(SEQUENCE_NUMBER_T seq_num);
     STREAM_BUFFER_ELEMENT_T & getBufferElement(SEQUENCE_NUMBER_T seq_num);

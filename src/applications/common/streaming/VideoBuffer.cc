@@ -38,8 +38,9 @@ void VideoBuffer::initialize(int stage)
     }
 
     cModule *temp = simulation.getModuleByPath("appSetting");
-    AppSettingDonet *m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    if (m_appSetting == NULL) throw cException("m_appSetting == NULL is invalid");
+    AppSettingDonet *m_appSetting = check_and_cast<AppSettingDonet *>(temp);
+    //AppSettingDonet *m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
+    //if (m_appSetting == NULL) throw cException("m_appSetting == NULL is invalid");
 
     m_bufferSize_chunk  = m_appSetting->getBufferMapSizeChunk();
     m_chunkInterval     = m_appSetting->getIntervalNewChunk();
@@ -320,6 +321,19 @@ bool VideoBuffer::isInBuffer(SEQUENCE_NUMBER_T seq_num)
     return (elem.m_chunk != NULL && elem.m_chunk->getSeqNumber() == seq_num);
 }
 
+bool VideoBuffer::inBuffer(SEQUENCE_NUMBER_T seq_num)
+{
+    // Browse through the queue?
+    STREAM_BUFFER_ELEMENT_T &elem = m_streamBuffer[seq_num % m_streamBuffer.size()];
+    /*
+     * Return TRUE only if the elem points to a packet AND the seq_num of the packet is correct
+     */
+    if (elem.m_chunk != NULL && elem.m_chunk->getSeqNumber() == seq_num)
+        return true;
+
+    return false;
+}
+
 // TODO: verification!!!
 SIM_TIME_T VideoBuffer::getReceivedTime(SEQUENCE_NUMBER_T seq_num)
 {
@@ -433,7 +447,12 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
     bmPkt->setBmStartSeqNum(m_bufferStart_seqNum);
     bmPkt->setBmEndSeqNum(m_bufferEnd_seqNum);
     bmPkt->setHeadSeqNum(m_head_received_seqNum);
-    EV << "-------- m_bufferSize_chunk = " << m_bufferSize_chunk << endl;
+
+    EV << "Buffer Map info: " << endl;
+    EV  << "\t m_bufferSize_chunk = "   << m_bufferSize_chunk       << endl \
+        << "\t m_bufferStart_seqNum = " << m_bufferStart_seqNum     << endl \
+        << "\t m_bufferEnd_seqNum = "   << m_bufferEnd_seqNum       << endl \
+        << "\t m_head_received_seqNum"  << m_head_received_seqNum   << endl;
 
     // -- Initialize all of the element of the BM to false
     for (int i = 0; i < m_bufferSize_chunk; i++)
@@ -497,4 +516,16 @@ void VideoBuffer::finish(void)
 int VideoBuffer::getNumberActiveElement(void)
 {
     return m_nActiveElement;
+}
+
+int VideoBuffer::getNumberFilledChunk()
+{
+    int count = 0;
+    for (SEQUENCE_NUMBER_T i = m_bufferStart_seqNum; i <= m_bufferEnd_seqNum; ++i)
+    {
+        if (inBuffer(i))
+            ++count;
+    }
+    EV << "Number of chunks in the video buffer: " << count << endl;
+    return count;
 }
