@@ -14,7 +14,7 @@
 // 
 
 #include "VideoBuffer.h"
-#include "simutil.h"
+//#include "simutil.h"
 #include "AppSettingDonet.h"
 
 #define _VERSION_1 1
@@ -39,8 +39,6 @@ void VideoBuffer::initialize(int stage)
 
     cModule *temp = simulation.getModuleByPath("appSetting");
     AppSettingDonet *m_appSetting = check_and_cast<AppSettingDonet *>(temp);
-    //AppSettingDonet *m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    //if (m_appSetting == NULL) throw cException("m_appSetting == NULL is invalid");
 
     m_bufferSize_chunk  = m_appSetting->getBufferMapSizeChunk();
     m_chunkInterval     = m_appSetting->getIntervalNewChunk();
@@ -58,16 +56,12 @@ void VideoBuffer::initialize(int stage)
 
     m_bufferStart_seqNum = m_bufferEnd_seqNum = m_head_received_seqNum = 0;
 
-    // Debug
-    r_index.setName("bm_index");
-
     WATCH(m_bufferSize_chunk);
     WATCH(m_chunkInterval);
 }
 
 void VideoBuffer::handleMessage(cMessage *)
 {
-    // EV << "VideoBuffer doesn't process messages!" << endl;
     throw cException("VideoBuffer doesn't process messages!");
 }
 
@@ -161,16 +155,14 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
     long seq_num = packet->getSeqNumber();
     EV << "Sequence number of chunk: " << seq_num << " --> element: " << seq_num % m_bufferSize_chunk << endl;
 
-// something wrong immediately with this block
-
     STREAM_BUFFER_ELEMENT_T & elem = m_streamBuffer[seq_num % m_bufferSize_chunk];
 
     if (elem.m_chunk != NULL)
     {
-        // TODO: release allocated memory (or simply, delete the chunk)
         // elem.m_chunk->release_reference();
         EV << "Existing chunk needs to be deleted: " << seq_num % m_bufferSize_chunk << endl;
         delete elem.m_chunk;
+        elem.m_chunk = NULL;
 
         if (__VIDEOBUFFER_CROSSCHECK__) --m_nActiveElement;
     }
@@ -194,7 +186,6 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
         m_bufferStart_seqNum = std::max(0L, m_bufferEnd_seqNum - m_bufferSize + 1);
     }
 #elif (BUFFER_IMPL_VERSION == _VERSION_3)
-    // something wrong slowly with this block
     if (seq_num > m_head_received_seqNum)
     {
 
@@ -498,9 +489,8 @@ void VideoBuffer::finish(void)
         STREAM_BUFFER_ELEMENT_T &elem = *iter;
         if (elem.m_chunk != NULL)
         {
-            // TODO: release memory -- DONE
-            // elem.m_packet->release_reference();
             delete elem.m_chunk;
+            elem.m_chunk = NULL;
 
             if (__VIDEOBUFFER_CROSSCHECK__) --m_nActiveElement;
 
