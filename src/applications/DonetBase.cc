@@ -52,13 +52,47 @@ void DonetBase::getAppSetting(void)
 
 void DonetBase::readChannelRate(void)
 {
-    cDatarateChannel *channel = dynamic_cast<cDatarateChannel *>(getParentModule()->getParentModule()->gate("pppg$o", 0)->getTransmissionChannel());
-    param_upBw = channel->getDatarate();
+//    cDatarateChannel *channel = dynamic_cast<cDatarateChannel *>(getParentModule()->getParentModule()->gate("pppg$o", 0)->getTransmissionChannel());
+//    param_upBw = channel->getDatarate();
 
     // -- problem unresolved!!!
 //    channel = dynamic_cast<cDatarateChannel *>(getParentModule()->getParentModule()->gate("pppg$i", 0)->getChannel());
 //            ->getTransmissionChannel());
 //    param_downBw = channel->getDatarate();
+
+    // -- Trying new functions
+    param_upBw = getUploadBw();
+    param_downBw = getDownloadBw();
+}
+
+double DonetBase::getUploadBw()
+{
+    cDatarateChannel *channel = check_and_cast<cDatarateChannel *>(getParentModule()->getParentModule()->gate("pppg$o", 0)->getTransmissionChannel());
+
+    return channel->getDatarate();
+}
+
+double DonetBase::getDownloadBw()
+{
+    double rate;
+    cModule* nodeModule = getParentModule()->getParentModule();
+
+    int gateSize = nodeModule->gateSize("pppg$i");
+    for (int i=0; i<gateSize; i++)
+    {
+        cGate* currentGate = nodeModule->gate("pppg$i",i);
+        if (currentGate->isConnected())
+        {
+            rate = check_and_cast<cDatarateChannel *>(currentGate->getPreviousGate()->getChannel())->getDatarate();
+//                capacity += check_and_cast<cDatarateChannel *>
+//                    (currentGate->getPreviousGate()->getChannel())->getDatarate()
+//                    - uniform(0,800000);
+        }
+    }
+    //channel = dynamic_cast<cDatarateChannel *>(getParentModule()->getParentModule()->gate("pppg$i", 0)->getChannel());
+                //->getTransmissionChannel());
+
+    return rate;
 }
 
 /*
@@ -92,14 +126,10 @@ void DonetBase::sendBufferMap(void)
         return;
     }
 
-    // Old code, replaced by a function
     MeshBufferMapPacket *bmPkt = new MeshBufferMapPacket("MESH_PEER_BUFFER_MAP");
         bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);
         bmPkt->setBitLength(m_BufferMapPacketSize_bit);
         m_videoBuffer->fillBufferMapPacket(bmPkt);
-
-    // Not neccessary to have a separate function! The sendBufferMap is simple enough
-    //    MeshBufferMapPacket *bmPkt = generateBufferMapPacket();
 
     // 2. Get the partner List
     std::vector<IPvXAddress> nList = m_partnerList->getAddressList();
@@ -206,6 +236,9 @@ const IPvXAddress& DonetBase::getSender(const cPacket *pkt) const
 
 void DonetBase::processChunkRequest(cPacket *pkt)
 {
+    // Debug
+    ++m_nChunkRequestReceived;
+
     IPvXAddress senderAddress;
     int senderPort;
     getSender(pkt, senderAddress, senderPort);
@@ -246,6 +279,9 @@ void DonetBase::processChunkRequest(cPacket *pkt)
                 m_forwarder->sendChunk(seqNum_requestedChunk, senderAddress, senderPort);
 
                 //sendToDispatcher(copyPkt, m_localPort, senderAddress, m_destPort);
+
+                // Debug
+                ++m_nChunkSent;
             }
         }
     }
@@ -266,6 +302,24 @@ MeshPartnershipRejectPacket *DonetBase::generatePartnershipRequestRejectPacket()
         rejectPkt->setBitLength(m_appSetting->getPacketSizePartnershipReject());
 
     return rejectPkt;
+}
+
+void DonetBase::reportStatus()
+{
+    Partnership p;
+        p.address           = getNodeAddress();
+        p.arrivalTime       = m_arrivalTime;
+        p.joinTime          = m_joinTime;
+        p.nPartner          = m_partnerList->getSize();
+        p.video_startTime   = m_video_startTime;
+        p.head_videoStart   = m_head_videoStart;
+        p.begin_videoStart  = m_begin_videoStart;
+        p.threshold_videoStart = m_threshold_videoStart;
+        p.nChunkRequestReceived = m_nChunkRequestReceived;
+        p.nChunkSent = m_nChunkSent;
+        p.nBMrecv = m_nBufferMapRecv;
+        p.partnerList = m_partnerList->getAddressList();
+    m_meshOverlayObserver->writeToFile(p);
 }
 
 

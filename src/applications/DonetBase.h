@@ -46,6 +46,8 @@ protected:
     // -- utility functions
     void getAppSetting(void);
     void readChannelRate(void);
+    double getDownloadBw();
+    double getUploadBw();
 
     // -- -- Get the IP address and/or port number
     const IPvXAddress& getSender(const cPacket *pkt) const;
@@ -72,6 +74,9 @@ protected:
     MeshPartnershipAcceptPacket *generatePartnershipRequestAcceptPacket();
     MeshPartnershipRejectPacket *generatePartnershipRequestRejectPacket();
 
+    // -- Debug
+    void reportStatus();
+
 // -- Data members
 protected:
     int m_localPort, m_destPort;
@@ -79,7 +84,7 @@ protected:
     // -- Parameters
     int param_numberOfPartner;
     double param_upBw;
-//    double param_downBw; // Download bandwidth is not neccessary!
+    double param_downBw; // Download bandwidth is not neccessary!
 
     int param_bufferMapSize_second;
     int param_videoStreamBitRate;
@@ -120,6 +125,9 @@ protected:
     SEQUENCE_NUMBER_T m_head_videoStart;
     SEQUENCE_NUMBER_T m_begin_videoStart;
     int m_threshold_videoStart;
+    long m_nChunkRequestReceived;
+    long m_nChunkSent;
+    long m_nBufferMapRecv;
 
 };
 
