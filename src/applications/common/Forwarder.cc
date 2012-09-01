@@ -57,13 +57,6 @@ void Forwarder::handleMessage(cMessage* msg)
 
 }
 
-/*
-void Forwarder::initialize()
-{
-
-}
-*/
-
 void Forwarder::initialize(int stage)
 {
     if (stage != 3)
@@ -84,7 +77,6 @@ void Forwarder::sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int de
 {
     Enter_Method("sendChunk");
 
-    //MeshVideoChunkPacket *chunkPkt = m_videoBuffer->getChunk(seq)->dup();
     VideoChunkPacket *chunkPkt = m_videoBuffer->getChunk(seq)->dup();
 
     sendToDispatcher(chunkPkt, getLocalPort(), destAddress, destPort);
