@@ -29,11 +29,10 @@ void Forwarder::handleMessage(cMessage* msg)
         return;
     }
 
-    PeerStreamingPacket *appMsg = dynamic_cast<PeerStreamingPacket *>(msg);
+    PeerStreamingPacket *appMsg = check_and_cast<PeerStreamingPacket *>(msg);
     EV << "PacketGroup = " << appMsg->getPacketGroup() << endl;
     if (appMsg->getPacketGroup() != PACKET_GROUP_VIDEO_CHUNK)
     {
-        //EV << "Wrong packet type!" << endl;
         throw cException("Wrong packet type!");
         return;
     }
@@ -75,8 +74,9 @@ void Forwarder::initialize(int stage)
         return;
 
     cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
-    m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
-    if (m_videoBuffer == NULL) throw cException("m_videoBuffer == NULL is invalid");
+    m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
+//    m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
+//    if (m_videoBuffer == NULL) throw cException("m_videoBuffer == NULL is invalid");
 }
 
 void Forwarder::finish()
