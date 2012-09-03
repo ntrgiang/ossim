@@ -42,26 +42,6 @@ private:
     int m_nRequestSent;
     int m_nRejectSent;
 
-    // temp one:
-    // void processPeerBufferMap2(cPacket *pkt);
-
-    // Heartbeat <-- might not be used
-    // void processKeepAliveMessage(cPacket *pkt);
-    // void startSendingHeartbeat();
-    // void sendKeepAliveMsgToNeighbor();
-//    void acceptJoinRequest(cPacket *msg);
-
-    /*
-     * This method adds the address of the packet's source node into the local Neighbor List
-     */
-//    void addToNeighborList(cPacket *pkt);
-//
-//    bool canHaveMorePartner(void);
-//
-//    // BufferMap
-//    void sendBufferMap(void);
-//    inline int getBufferMapSize(void) { return m_bufferMapSize_chunk; }
-
     // Chunk scheduling
     bool should_be_requested(void);
     void initializeSchedulingWindow(void);
@@ -93,7 +73,7 @@ private:
 
     //    int param_numberOfPartner;
 
-    // Pointers to "global" modules
+    // -- Pointers to "global" modules
     IChurnGenerator *m_churn;
 
     // -- Pointer to external modules
@@ -118,18 +98,12 @@ private:
     int param_maxNOP;
     int param_offsetNOP;
 
+    // -- Scheduling
+    int m_nChunkRequested_perSchedulingInterval;
+    int m_nChunk_perSchedulingInterval;
+
     // -- Time stampt value objects
     // cTimestampedValue
-
-    // -- For debugging purpose about the number of partners
-    IPvXAddress m_monitoredAddress;
-//    double m_arrivalTime;
-//    double m_joinTime;
-//    double m_video_startTime;
-//    SEQUENCE_NUMBER_T m_head_videoStart;
-//    SEQUENCE_NUMBER_T m_begin_videoStart;
-//    int m_threshold_videoStart;
-
 
     // -- Signals
     simsignal_t sig_chunkRequestSeqNum;

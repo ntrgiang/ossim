@@ -60,7 +60,6 @@ void DonetPeer::initialize(int stage)
     param_nNeighbor_SchedulingStart     = par("nNeighbor_SchedulingStart");
     param_waitingTime_SchedulingStart   = par("waitingTime_SchedulingStart");
     param_numberOfPartner               = par("numberOfPartner");
-//    param_minNOP                        = par("minNOP");
     param_maxNOP                        = par("maxNOP");
     param_offsetNOP                     = par("offsetNOP");
 
@@ -73,7 +72,6 @@ void DonetPeer::initialize(int stage)
 
     // --------- Debug ------------
     m_joinTime = -1.0;
-    m_monitoredAddress = IPvXAddress("192.168.0.11");
     // -- Init for activity logging:
 //    string path = "..//results//";
 //    string filename = path + getNodeAddress().str();
@@ -1010,6 +1008,7 @@ void DonetPeer::startPlayer(void)
 
 bool DonetPeer::shouldStartPlayer(void)
 {
+/*
     SEQUENCE_NUMBER_T head = m_videoBuffer->getHeadReceivedSeqNum();
     SEQUENCE_NUMBER_T begin = m_videoBuffer->getBufferStartSeqNum();
     long offset = head - begin;
@@ -1025,6 +1024,17 @@ bool DonetPeer::shouldStartPlayer(void)
         m_begin_videoStart = begin;
         return true;
     }
+    return false;
+*/
+
+    if (m_videoBuffer->getNumberFilledChunk() >= m_bufferMapSize_chunk / 2)
+    {
+        m_video_startTime = simTime().dbl();
+        m_head_videoStart = m_videoBuffer->getHeadReceivedSeqNum();
+        m_begin_videoStart = m_videoBuffer->getBufferStartSeqNum();
+        return true;
+    }
+
     return false;
 }
 /*
