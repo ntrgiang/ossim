@@ -9,6 +9,7 @@
 #define APPCOMMON_H_
 
 #include "IPvXAddress.h"
+using namespace std;
 
 // For Timer of type: MESH_PEER_TIMER
 #define TIMER_MESH_GET_ARRIVAL_TIME    0
@@ -53,6 +54,10 @@ struct Partnership
     SEQUENCE_NUMBER_T head_videoStart;
     SEQUENCE_NUMBER_T begin_videoStart;
     int threshold_videoStart;
+    long nChunkRequestReceived;
+    long nChunkSent;
+    long nBMrecv;
+    vector<IPvXAddress> partnerList;
 };
 
 // ----------------------- Packet sizes ---------------------------------
