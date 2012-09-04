@@ -77,7 +77,6 @@ protected:
     // -- Debug
     void reportStatus();
 
-// -- Data members
 protected:
     int m_localPort, m_destPort;
 
@@ -90,28 +89,21 @@ protected:
     int param_videoStreamBitRate;
     int param_chunkSize;
 
-//    double param_keepAliveInterval;
-    double param_bufferMapInterval;
+    double param_interval_bufferMap;
 
     // -- Variables for settings
     int m_videoStreamChunkRate;     /* in [chunks/second] */
     int m_bufferMapSize_chunk;      /* in [chunks] */
     int m_BufferMapPacketSize_bit;  /* in [bits]   */
-//    int m_schedulingWindowSize;     /* in [chunks] */
 
     // -- Timer messages
-    // cMessage *timer_keepAlive;
     cMessage *timer_sendBufferMap;
 
-    // -- Messages to external
-    //MeshBufferMapPacket *m_bmPacket;
-
     // -- Pointers to /global/ modules
-    AppSettingDonet *m_appSetting;
-    IChurnGenerator *m_churn;
-    MeshOverlayObserver *m_meshOverlayObserver;
-    Logger *m_logger;
-//    ofstream m_activityLog;
+    AppSettingDonet         *m_appSetting;
+    IChurnGenerator         *m_churn;
+    MeshOverlayObserver     *m_meshOverlayObserver;
+    Logger                  *m_logger;
 
     // -- Pointers to /local/ modules
     PartnerList *m_partnerList;

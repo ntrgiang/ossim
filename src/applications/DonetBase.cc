@@ -40,7 +40,7 @@ void DonetBase::getAppSetting(void)
     m_localPort = getLocalPort();
     m_destPort = getDestPort();
 
-    param_bufferMapInterval = m_appSetting->getBufferMapInterval();
+    param_interval_bufferMap     = m_appSetting->getBufferMapInterval();
 
     param_videoStreamBitRate    = m_appSetting->getVideoStreamBitRate();
     param_chunkSize             = m_appSetting->getChunkSize();
