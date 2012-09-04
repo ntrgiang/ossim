@@ -23,8 +23,9 @@ void DonetSource::initialize(int stage)
     getAppSetting();
     readChannelRate();
 
-    param_bufferMapInterval     = par("bufferMapInterval").doubleValue();
-    param_numberOfPartner       = par("numberOfPartner");
+//    param_bufferMapInterval     = par("bufferMapInterval").doubleValue();
+
+    param_maxNOP = par("maxNOP");
 
     // -------------------------------------------------------------------------
     // -------------------------------- Timers ---------------------------------
@@ -53,6 +54,8 @@ void DonetSource::initialize(int stage)
     m_head_videoStart = -1L;
     m_begin_videoStart = -1L;
     m_threshold_videoStart = m_bufferMapSize_chunk/2;
+    m_nChunkRequestReceived = 0L;
+    m_nChunkSent = 0L;
 
     // -------------------------------------------------------------------------
     // -------------------------------- WATCH ----------------------------------
@@ -60,12 +63,13 @@ void DonetSource::initialize(int stage)
     WATCH(m_localPort);
     WATCH(m_destPort);
 
-    WATCH(param_numberOfPartner);
-
+    WATCH(param_bufferMapInterval);
     WATCH(param_upBw);
+    WATCH(param_downBw);
     WATCH(param_bufferMapSize_second);
     WATCH(param_chunkSize);
     WATCH(param_videoStreamBitRate);
+    WATCH(param_maxNOP);
 
     WATCH(m_videoStreamChunkRate);
     WATCH(m_bufferMapSize_chunk);
@@ -95,6 +99,7 @@ void DonetSource::finish()
     // Packets
     //if (m_bmPacket) delete m_bmPacket;
 
+/*
     Partnership p;
         p.address = getNodeAddress();
         p.arrivalTime = 0.0;
@@ -105,6 +110,8 @@ void DonetSource::finish()
         p.begin_videoStart = -1;
         p.threshold_videoStart = -1;
     m_meshOverlayObserver->writeToFile(p);
+*/
+    reportStatus();
 
 //    m_activityLog.close();
 }
@@ -463,17 +470,14 @@ void DonetSource::sourceJoin()
 
 void DonetSource::processPartnershipRequest(cPacket *pkt)
 {
+    EV << "Processing partnership request:" << endl;
     // -- Get the IP-address of the peer
     IPvXAddress requesterAddress;
     int requesterPort;
     getSender(pkt, requesterAddress, requesterPort);
-    EV << "Requester: " << requesterAddress << ":" << requesterPort << endl; // Debug
+    EV << "\tRequester: " << requesterAddress << ":" << requesterPort << endl; // Debug
 
-//    m_activityLog << "--- Partnership Request --- " << endl;
-//    m_activityLog << "\tGot a REQUEST from: " << requesterAddress << endl;
-//    m_activityLog << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
-
-    if (!canHaveMorePartner())
+    if (!canAcceptMorePartner())
     {
         MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
         sendToDispatcher(rejectPkt, m_localPort, requesterAddress, requesterPort);
@@ -497,6 +501,8 @@ void DonetSource::processPartnershipRequest(cPacket *pkt)
 
 bool DonetSource::canHaveMorePartner(void)
 {
-    bool ret = (m_partnerList->getSize() < param_numberOfPartner)?true:false;
-    return ret;
+    if (m_partnerList->getSize() < param_maxNOP)
+        return (true);
+
+    return (false);
 }

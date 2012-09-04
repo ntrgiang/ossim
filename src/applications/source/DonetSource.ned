@@ -8,9 +8,10 @@ simple DonetSource extends DonetBase
         @class(DonetSource); 
         
         // Timer
-        double bufferMapInterval  @unit(s) = default(0.5s);
-        int numberOfPartner = default(5);
-		// int BufferMapSize = default(60);
+        //double bufferMapInterval  @unit(s) = default(0.5s);
+        
+        // Partnership
+        int maxNOP = default(5);
 
 }
 

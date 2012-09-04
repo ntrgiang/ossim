@@ -29,6 +29,8 @@ private:
     void getAppSetting();
 //    void readChannelRate(void);
 
+    void cancelAllTimer();
+
     // -- Partnership
     void join();
     void findMorePartner();
@@ -70,8 +72,6 @@ private:
     int     param_nNeighbor_SchedulingStart;
     double  param_interval_findMorePartner;
     double  param_interval_starPlayer;
-
-    //    int param_numberOfPartner;
 
     // -- Pointers to "global" modules
     IChurnGenerator *m_churn;

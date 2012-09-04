@@ -12,10 +12,7 @@ simple DonetPeer extends DonetBase
         
         // Timer
         double startTime @unit(s);
-        double bufferMapInterval        @unit(s) = default(0.5s);
-        double chunkSchedulingInterval  @unit(s) = default(0.5s);
         
-        double interval_bufferMap       @unit(s) = default(0.5s); // to replace the above params
         double interval_chunkScheduling @unit(s) = default(1.0s); // to replace the above params
         double interval_findMorePartner @unit(s) = default(1.0s);
         
@@ -31,7 +28,7 @@ simple DonetPeer extends DonetBase
         int nNeighbor_SchedulingStart = default(1);
         double waitingTime_SchedulingStart @unit(s) = default(0.25s);
         
-        int numberOfPartner = default(4);
+        // int numberOfPartner = default(4);
         // int minNOP = default(1); // Min number of partners
         int maxNOP = default(2); // Max number of partners
         int offsetNOP = default(1); // The difference between minNOP and maxNOP
