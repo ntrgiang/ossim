@@ -10,7 +10,10 @@
 Define_Module(DonetSource);
 
 DonetSource::DonetSource() {}
-DonetSource::~DonetSource() {}
+DonetSource::~DonetSource()
+{
+    if (timer_sendBufferMap  != NULL) { delete cancelEvent(timer_sendBufferMap);     timer_sendBufferMap = NULL; }
+}
 
 void DonetSource::initialize(int stage)
 {
@@ -74,7 +77,7 @@ void DonetSource::finish()
 {
     //    if (m_videoBuffer != NULL) delete m_videoBuffer;
 
-    if (timer_sendBufferMap) { delete cancelEvent(timer_sendBufferMap);     timer_sendBufferMap = NULL; }
+    if (timer_sendBufferMap  != NULL) { delete cancelEvent(timer_sendBufferMap);     timer_sendBufferMap = NULL; }
 
 /*
     Partnership p;
@@ -88,7 +91,7 @@ void DonetSource::finish()
         p.threshold_videoStart = -1;
     m_meshOverlayObserver->writeToFile(p);
 */
-    reportStatus();
+    //reportStatus();
 }
 
 /**
@@ -209,6 +212,7 @@ void DonetSource::processPartnershipRequest(cPacket *pkt)
 
 }
 
+/*
 bool DonetSource::canHaveMorePartner(void)
 {
     if (m_partnerList->getSize() < param_maxNOP)
@@ -216,3 +220,4 @@ bool DonetSource::canHaveMorePartner(void)
 
     return (false);
 }
+*/

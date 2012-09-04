@@ -16,13 +16,7 @@ Define_Module(DonetPeer);
 DonetPeer::DonetPeer() {}
 DonetPeer::~DonetPeer()
 {
-    cancelAllTimer();
-//    if (timer_getJoinTime)      delete (timer_getJoinTime);
-//    if (timer_join)             delete (timer_join);
-//    if (timer_sendBufferMap)    delete (timer_sendBufferMap);
-//    if (timer_chunkScheduling)  delete (timer_chunkScheduling);
-//    if (timer_findMorePartner)  delete (timer_findMorePartner);
-//    if (timer_startPlayer)      delete (timer_startPlayer);
+        cancelAndDeleteAllTimer();
 }
 
 void DonetPeer::initialize(int stage)
@@ -56,7 +50,6 @@ void DonetPeer::initialize(int stage)
     timer_join              = new cMessage("MESH_PEER_TIMER_JOIN");
 
     // -- Repeated timers
-    // timer_keepAlive         = new cMessage("MESH_PEER_TIMER_KEEP_ALIVE");
     timer_chunkScheduling   = new cMessage("MESH_PEER_TIMER_CHUNK_SCHEDULING");
     timer_sendBufferMap     = new cMessage("MESH_PEER_TIMER_SEND_BUFFERMAP");
     timer_findMorePartner   = new cMessage("MESH_PEER_TIMER_FIND_MORE_PARTNER");
@@ -110,10 +103,14 @@ void DonetPeer::initialize(int stage)
     m_nChunkSent = 0L;
     m_nBufferMapRecv = 0L;
 
+    // -------------------------------------------------------------------------
+    // --------------------------- WATCH ---------------------------------------
+    // -------------------------------------------------------------------------
+
     WATCH(m_localPort);
     WATCH(m_destPort);
 
-    WATCH(param_bufferMapInterval);
+    WATCH(param_interval_bufferMap);
     WATCH(param_bufferMapSize_second);
     WATCH(param_chunkSize);
     WATCH(param_videoStreamBitRate);
@@ -138,23 +135,22 @@ void DonetPeer::initialize(int stage)
 
 void DonetPeer::finish()
 {
-    cancelAllTimer();
+        cancelAndDeleteAllTimer();
 
-    // -- Debug
+        // -- Debug
 //    m_gstat->reportNumberOfPartner(m_partnerList->getSize());
 
-    reportStatus();
+    //reportStatus();
 }
 
-void DonetPeer::cancelAllTimer()
+void DonetPeer::cancelAndDeleteAllTimer()
 {
-    // Cancel all scheduled events
-    if (timer_getJoinTime)      delete cancelEvent(timer_getJoinTime);
-    if (timer_join)             delete cancelEvent(timer_join);
-    if (timer_sendBufferMap)    delete cancelEvent(timer_sendBufferMap);
-    if (timer_chunkScheduling)  delete cancelEvent(timer_chunkScheduling);
-    if (timer_findMorePartner)  delete cancelEvent(timer_findMorePartner);
-    if (timer_startPlayer)      delete cancelEvent(timer_startPlayer);
+    if (timer_getJoinTime != NULL)      { delete cancelEvent(timer_getJoinTime);        timer_getJoinTime       = NULL; }
+    if (timer_join != NULL)             { delete cancelEvent(timer_join);               timer_join              = NULL; }
+    if (timer_sendBufferMap != NULL)    { delete cancelEvent(timer_sendBufferMap);      timer_sendBufferMap     = NULL; }
+    if (timer_chunkScheduling != NULL)  { delete cancelEvent(timer_chunkScheduling);    timer_chunkScheduling   = NULL; }
+    if (timer_findMorePartner != NULL)  { delete cancelEvent(timer_findMorePartner);    timer_findMorePartner   = NULL; }
+    if (timer_startPlayer != NULL)      { delete cancelEvent(timer_startPlayer);        timer_startPlayer       = NULL; }
 }
 
 void DonetPeer::handleTimerMessage(cMessage *msg)
@@ -162,7 +158,7 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
     if (msg == timer_sendBufferMap)
     {
         sendBufferMap();
-        scheduleAt(simTime() + param_bufferMapInterval, timer_sendBufferMap);
+        scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
     }
     else if (msg == timer_chunkScheduling)
     {
@@ -194,12 +190,10 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
 void DonetPeer::processPacket(cPacket *pkt)
 {
     PeerStreamingPacket *appMsg = dynamic_cast<PeerStreamingPacket *>(pkt);
-    // EV << "appMsg->getMsgType() =" << appMsg->getMsgType() << endl;
+    EV << "appMsg->getMsgType() =" << appMsg->getPacketGroup() << endl;
     if (appMsg->getPacketGroup() != PACKET_GROUP_MESH_OVERLAY)
     {
-        //EV << "Wrong packet type!" << endl;
         throw cException("Wrong packet type!");
-        return;
     }
 
     MeshPeerStreamingPacket *meshMsg = dynamic_cast<MeshPeerStreamingPacket *>(appMsg);
@@ -283,7 +277,7 @@ void DonetPeer::processAcceptResponse(cPacket *pkt)
         scheduleAt(simTime() + param_interval_chunkScheduling, timer_chunkScheduling);
 
         // -- 2. Send buffer map timers
-        scheduleAt(simTime() + param_bufferMapInterval, timer_sendBufferMap);
+        scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
 
         // -- 3. Have more partner timers
         scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
@@ -859,12 +853,12 @@ void DonetPeer::processPartnershipRequest(cPacket *pkt)
     getSender(pkt, requesterAddress, requesterPort);
     EV << "Requester: " << requesterAddress << ":" << requesterPort << endl; // Debug
 
-//    m_activityLog << "--- Partnership Request --- " << endl;
-//    m_activityLog << "\tGot a REQUEST from: " << requesterAddress << endl;
-//    m_activityLog << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
+    EV << "--- Partnership Request --- " << endl;
+    EV << "\tGot a REQUEST from: " << requesterAddress << endl;
+    EV << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
 
-    //if (canHaveMorePartner())
-    if (m_partnerList->getSize() < param_maxNOP)
+    //if (m_partnerList->getSize() < param_maxNOP)
+    if (canAcceptMorePartner())
     {
         // -- Debug
         emit(sig_partnerRequest, m_partnerList->getSize());
@@ -875,13 +869,6 @@ void DonetPeer::processPartnershipRequest(cPacket *pkt)
         EV << "Remote peer's upload bandwidth: " << upBw_remotePeer << endl;
 
         m_partnerList->addAddress(requesterAddress, upBw_remotePeer);
-
-//        Link link;
-//            link.timeStamp = simTime();
-//            link.linkType = 1;
-//            link.root = getNodeAddress();
-//            link.head = requesterAddress;
-//        m_meshOverlayObserver->writeToFile(link);
 
         // m_partnerList->print(); // Debug:
 
@@ -965,8 +952,6 @@ void DonetPeer::startPlayer(void)
     {
         EV << "Player should start now. " << endl;
         m_player->startPlayer();
-        if (timer_startPlayer)
-            cancelEvent(timer_startPlayer);
     }
     else
     {

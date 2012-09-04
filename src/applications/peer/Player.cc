@@ -21,8 +21,9 @@ Player::Player() {
     // TODO Auto-generated constructor stub
 }
 
-Player::~Player() {
-    // TODO Auto-generated destructor stub
+Player::~Player()
+{
+    if (timer_nextChunk != NULL) { delete cancelEvent(timer_nextChunk); timer_nextChunk = NULL; }
 }
 
 void Player::initialize(int stage)
@@ -51,7 +52,7 @@ void Player::initialize(int stage)
     m_stat = dynamic_cast<GlobalStatistic *>(temp);
     if (!m_stat) throw cException("Null pointer for the GlobalStatistic module");
 
-    timer_nextChunk      = new cMessage("MESH_SOURCE_TIMER_NEW_CHUNK");
+    timer_nextChunk      = new cMessage("PLAYER_TIMER_NEXT_CHUNK");
 
     param_interval_recheckVideoBuffer = par("interval_recheckVideoBuffer");
 
@@ -69,7 +70,7 @@ void Player::initialize(int stage)
 
 void Player::finish()
 {
-    if (timer_nextChunk) delete cancelEvent(timer_nextChunk);
+    if (timer_nextChunk != NULL) { delete cancelEvent(timer_nextChunk); timer_nextChunk = NULL; }
 }
 
 void Player::handleMessage(cMessage *msg)
@@ -93,20 +94,25 @@ void Player::handleTimerMessage(cMessage *msg)
 
         if (m_videoBuffer->isInBuffer(m_id_nextChunk))
         {
+            EV << "\tChunk " << m_id_nextChunk << " is available in the buffer." << endl;
+
             emit(sig_chunkHit, m_id_nextChunk);
             m_stat->reportChunkHit(m_id_nextChunk);
         }
         else
         {
+            EV << "\tChunk " << m_id_nextChunk << " is not available in the buffer." << endl;
+
             emit(sig_chunkMiss, m_id_nextChunk);
             m_stat->reportChunkMiss(m_id_nextChunk);
 
             if (m_id_nextChunk >= m_videoBuffer->getBufferEndSeqNum())
             {
+                EV << "\t\tNo more chunk in the buffer to play out --> rebuffering!" << endl;
                 cancelEvent(timer_nextChunk);
                 scheduleAt(simTime() + param_interval_recheckVideoBuffer, timer_nextChunk);
 
-                // -- recording rebuffering events
+                // -- recording re-buffering events
                 emit(sig_rebuffering_local, m_id_nextChunk);
                 m_stat->reportRebuffering(m_id_nextChunk);
             }
@@ -125,6 +131,8 @@ void Player::startPlayer()
 {
     Enter_Method("startPlayer");
     scheduleAt(simTime(), timer_nextChunk);
+
+    EV << "Player starts with chunk " << m_id_nextChunk << endl;
 
     m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
 

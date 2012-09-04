@@ -58,7 +58,7 @@ protected:
     int m_bufferMapPacketSize_bit;
 
     double m_interval_newChunk;
-    double param_bufferMapInterval;
+    double param_interval_bufferMap;
 
     int constant_packet_size_mesh_partnership_request;
     int constant_packet_size_mesh_partnership_accept;

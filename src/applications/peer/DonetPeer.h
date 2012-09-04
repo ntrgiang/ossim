@@ -29,7 +29,7 @@ private:
     void getAppSetting();
 //    void readChannelRate(void);
 
-    void cancelAllTimer();
+    void cancelAndDeleteAllTimer();
 
     // -- Partnership
     void join();
@@ -43,6 +43,7 @@ private:
     // -- State variables for join process
     int m_nRequestSent;
     int m_nRejectSent;
+    bool m_timerDeleted;
 
     // Chunk scheduling
     bool should_be_requested(void);

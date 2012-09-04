@@ -30,7 +30,7 @@ void AppSettingDonet::initialize()
 {
     // -- Read all parameters
 
-    param_bufferMapInterval         = par("interval_bufferMap").doubleValue();
+    param_interval_bufferMap         = par("interval_bufferMap").doubleValue();
 
     param_videoStreamBitRate        = par("videoStreamBitRate").longValue();
     param_chunkSize                 = par("chunkSize").longValue();
@@ -74,6 +74,7 @@ void AppSettingDonet::initialize()
     WATCH(m_videoStreamChunkRate);
     WATCH(m_bufferMapSize_chunk);
     WATCH(m_interval_newChunk);
+    WATCH(param_interval_bufferMap);
 
     WATCH(constant_packet_size_mesh_partnership_request);
     WATCH(constant_packet_size_mesh_partnership_accept);
@@ -150,5 +151,5 @@ int AppSettingDonet::getPacketSizeVideoChunk(void) const
 
 double AppSettingDonet::getBufferMapInterval()
 {
-    return param_bufferMapInterval;
+    return param_interval_bufferMap;
 }
