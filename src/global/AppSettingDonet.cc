@@ -29,6 +29,9 @@ void AppSettingDonet::handleMessage(cMessage* msg)
 void AppSettingDonet::initialize()
 {
     // -- Read all parameters
+
+    param_bufferMapInterval         = par("interval_bufferMap").doubleValue();
+
     param_videoStreamBitRate        = par("videoStreamBitRate").longValue();
     param_chunkSize                 = par("chunkSize").longValue();
     param_bufferMapSize_second      = par("bufferMapSize").longValue();
@@ -143,4 +146,9 @@ int AppSettingDonet::getPacketSizeChunkRequest(void) const
 int AppSettingDonet::getPacketSizeVideoChunk(void) const
 {
     return constant_packet_size_video_chunk;
+}
+
+double AppSettingDonet::getBufferMapInterval()
+{
+    return param_bufferMapInterval;
 }

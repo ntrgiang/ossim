@@ -33,6 +33,7 @@ public:
     int getVideoStreamBitRate(void);
     int getChunkSize(void);
     int getBufferMapSizeSecond(void);
+    double getBufferMapInterval(void);
 
     // -- Indirect parameters
     int getVideoStreamChunkRate(void);
@@ -57,6 +58,7 @@ protected:
     int m_bufferMapPacketSize_bit;
 
     double m_interval_newChunk;
+    double param_bufferMapInterval;
 
     int constant_packet_size_mesh_partnership_request;
     int constant_packet_size_mesh_partnership_accept;
