@@ -54,7 +54,7 @@ bool MessageLogger::isUniqueMessage(cPacket *pkt, int& count)
     std::map<IPvXAddress, MESSAGE_ID_LIST>::iterator itNode;
     MESSAGE_ID_LIST::iterator itMsg;
 
-    GossipApplicationPacket *appPkt = dynamic_cast<GossipApplicationPacket *>(pkt);
+    GossipApplicationPacket *appPkt = check_and_cast<GossipApplicationPacket *>(pkt);
     IPvXAddress rootAddress = appPkt->getRootAddress();
     MESSAGE_ID_TYPE msgId = appPkt->getMessageId();
 

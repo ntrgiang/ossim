@@ -13,6 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include "omnetpp.h"
 #include "ScampPeer.h"
 #include "IChurnGenerator.h"
 #include "ActivePeerTable.h"

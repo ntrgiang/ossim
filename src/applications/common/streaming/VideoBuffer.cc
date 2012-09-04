@@ -151,23 +151,23 @@ void VideoBuffer::insertPacket(MeshVideoChunkPacket *packet, SIM_TIME_T current_
 void VideoBuffer::insertPacket(VideoChunkPacket *packet)
 {
     Enter_Method("insertPacket()");
+    EV << "Insert a packet into video buffer:" << endl;
 
     long seq_num = packet->getSeqNumber();
-    EV << "Sequence number of chunk: " << seq_num << " --> element: " << seq_num % m_bufferSize_chunk << endl;
+    EV << "\tSequence number of chunk: " << seq_num << " --> element: " << seq_num % m_bufferSize_chunk << endl;
 
     STREAM_BUFFER_ELEMENT_T & elem = m_streamBuffer[seq_num % m_bufferSize_chunk];
 
     if (elem.m_chunk != NULL)
     {
-        // elem.m_chunk->release_reference();
-        EV << "Existing chunk needs to be deleted: " << seq_num % m_bufferSize_chunk << endl;
+        EV << "\tExisting chunk needs to be deleted: " << seq_num % m_bufferSize_chunk << endl;
         delete elem.m_chunk;
         elem.m_chunk = NULL;
 
         if (__VIDEOBUFFER_CROSSCHECK__) --m_nActiveElement;
     }
 
-    EV << "New chunk was attached to the Buffer" << endl;
+    EV << "\tNew chunk was attached to the Buffer" << endl;
     elem.m_chunk = packet;
 
     if (__VIDEOBUFFER_CROSSCHECK__) ++m_nActiveElement;
@@ -188,15 +188,14 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
 #elif (BUFFER_IMPL_VERSION == _VERSION_3)
     if (seq_num > m_head_received_seqNum)
     {
-
-        // because of modification in class implementation
-//        m_id_bufferEnd = seq_num;
-//        m_id_bufferStart = std::max(0L, m_id_bufferEnd - m_bufferSize + 1);
+        EV << "\tUpdate the range of the Video Buffer:" << endl;
 
         m_head_received_seqNum = seq_num;
         m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
         m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
-        // m_bufferEnd_seqNum = (m_bufferStart_seqNum == 0) ? m_bufferSize_chunk : m_head_received_seqNum;
+        EV << "\thead: " << m_head_received_seqNum;
+        EV << "-- start: " << m_bufferStart_seqNum;
+        EV << "-- end: " << m_bufferEnd_seqNum << endl;
     }
 #endif
 
@@ -219,84 +218,6 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
     // verified! -- the number of undeleted objects are stable at 80 (in steady state)
     // EV << "VideoBuffer::insertPacket() :: Number of undeleted objects: " << m_nActiveElement << endl;
 }
-
-
-/*
-void VideoBuffer::insertPacket(MeshVideoChunkPacket *packet)
-{
-    Enter_Method("insertPacket()");
-
-    long seq_num = packet->getSeqNumber();
-    EV << "Sequence number of chunk: " << seq_num << " --> element: " << seq_num % m_bufferSize_chunk << endl;
-
-// something wrong immediately with this block
-
-    STREAM_BUFFER_ELEMENT_T & elem = m_streamBuffer[seq_num % m_bufferSize_chunk];
-
-    if (elem.m_chunk != NULL)
-    {
-        // TODO: release allocated memory (or simply, delete the chunk)
-        // elem.m_chunk->release_reference();
-        EV << "Existing chunk needs to be deleted: " << seq_num % m_bufferSize_chunk << endl;
-        delete elem.m_chunk;
-
-        if (__VIDEOBUFFER_CROSSCHECK__) --m_nActiveElement;
-    }
-
-    EV << "New chunk was attached to the Buffer" << endl;
-    elem.m_chunk = packet;
-
-    if (__VIDEOBUFFER_CROSSCHECK__) ++m_nActiveElement;
-
-#if (BUFFER_IMPL_VERSION == _VERSION_1)
-    if (seq_num > m_id_bufferEnd)
-    {
-        // because of modification in class implementation
-        m_id_bufferEnd = seq_num;
-        m_id_bufferStart = std::max(0L, m_id_bufferEnd - m_bufferSize + 1);
-    }
-#elif (BUFFER_IMPL_VERSION == _VERSION_2)
-    if (seq_num > m_bufferEnd_seqNum)
-    {
-        m_bufferEnd_seqNum = seq_num;
-        m_bufferStart_seqNum = std::max(0L, m_bufferEnd_seqNum - m_bufferSize + 1);
-    }
-#elif (BUFFER_IMPL_VERSION == _VERSION_3)
-    // something wrong slowly with this block
-    if (seq_num > m_head_received_seqNum)
-    {
-
-        // because of modification in class implementation
-//        m_id_bufferEnd = seq_num;
-//        m_id_bufferStart = std::max(0L, m_id_bufferEnd - m_bufferSize + 1);
-
-        m_head_received_seqNum = seq_num;
-        m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
-        m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
-        // m_bufferEnd_seqNum = (m_bufferStart_seqNum == 0) ? m_bufferSize_chunk : m_head_received_seqNum;
-    }
-#endif
-
-    //if (seq_num > m_id_bufferEnd)
-    // if (seq_num > m_bufferEnd_seqNum)
-//    {
-
-        // because of modification in class implementation
-        m_id_bufferEnd = seq_num;
-        m_id_bufferStart = std::max(0L, m_id_bufferEnd - m_bufferSize + 1);
-
-
-//        m_bufferEnd_seqNum = seq_num;
-//        m_bufferStart_seqNum = std::max(0L, m_bufferEnd_seqNum - m_bufferSize_chunk + 1);
-//    }
-
-    // TODO: verification for the removal of this line!!!
-    // packet->add_reference();
-
-    // verified! -- the number of undeleted objects are stable at 80 (in steady state)
-    // EV << "VideoBuffer::insertPacket() :: Number of undeleted objects: " << m_nActiveElement << endl;
-}
-*/
 
 
 // TODO: verification!!!
@@ -443,7 +364,7 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
     EV  << "\t m_bufferSize_chunk = "   << m_bufferSize_chunk       << endl \
         << "\t m_bufferStart_seqNum = " << m_bufferStart_seqNum     << endl \
         << "\t m_bufferEnd_seqNum = "   << m_bufferEnd_seqNum       << endl \
-        << "\t m_head_received_seqNum"  << m_head_received_seqNum   << endl;
+        << "\t m_head_received_seqNum ="  << m_head_received_seqNum   << endl;
 
     // -- Initialize all of the element of the BM to false
     for (int i = 0; i < m_bufferSize_chunk; i++)

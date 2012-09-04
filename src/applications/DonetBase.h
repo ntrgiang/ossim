@@ -62,7 +62,7 @@ protected:
     // -- Partner Management
     void acceptJoinRequest(IPvXAddress &reqPeerAddress, double upBw_remotePeer);
     void addToNeighborList(cPacket *pkt);
-    bool canHaveMorePartner(void);
+    bool canAcceptMorePartner(void);
 
     // -- BufferMap
 //    MeshBufferMapPacket *generateBufferMapPacket();
@@ -82,7 +82,7 @@ protected:
     int m_localPort, m_destPort;
 
     // -- Parameters
-    int param_numberOfPartner;
+    int param_maxNOP;
     double param_upBw;
     double param_downBw; // Download bandwidth is not neccessary!
 

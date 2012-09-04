@@ -40,6 +40,8 @@ void DonetBase::getAppSetting(void)
     m_localPort = getLocalPort();
     m_destPort = getDestPort();
 
+    param_bufferMapInterval = m_appSetting->getBufferMapInterval();
+
     param_videoStreamBitRate    = m_appSetting->getVideoStreamBitRate();
     param_chunkSize             = m_appSetting->getChunkSize();
     param_bufferMapSize_second  = m_appSetting->getBufferMapSizeSecond();
@@ -98,9 +100,10 @@ double DonetBase::getDownloadBw()
 /*
  * Consider whether having "enough" number of partners
  */
-bool DonetBase::canHaveMorePartner(void)
+bool DonetBase::canAcceptMorePartner(void)
 {
-    if (m_partnerList->getSize() < param_numberOfPartner)
+    EV << "Current size of the partnerList: " << m_partnerList->getSize() << endl;
+    if (m_partnerList->getSize() < param_maxNOP)
         return true;
 
     return false;

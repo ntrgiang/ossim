@@ -104,15 +104,17 @@ void Dispatcher::forwardToUdp(cMessage *msg)
 // ------------- new interface -------------
 void Dispatcher::processMsgFromOverlay(cMessage *overlayData)
 {
+    EV << "Dispatcher received a packet from overlay" << endl;
+
     DpControlInfo *dpCtrl = check_and_cast<DpControlInfo *>(overlayData->removeControlInfo());
 
-    PeerStreamingPacket *pkt = dynamic_cast<PeerStreamingPacket *>(overlayData);
+    PeerStreamingPacket *pkt = check_and_cast<PeerStreamingPacket *>(overlayData);
+
+    EV << "\tPayload size: " << pkt->getByteLength() << "(bytes)" << endl;
 
     sendToUDP(pkt, dpCtrl->getSrcPort(),
             dpCtrl->getDestAddr(),
             dpCtrl->getDestPort());
-
-    EV << "Packet size: " << sizeof(*pkt) << endl;
 
     delete dpCtrl;
 }
@@ -121,8 +123,9 @@ void Dispatcher::processUdpPacket(cMessage *udpMsg)
 {
     UDPControlInfo *udpCtrl = check_and_cast<UDPControlInfo *>(udpMsg->removeControlInfo());
 
-    PeerStreamingPacket *strmPkt = dynamic_cast<PeerStreamingPacket *>(udpMsg);
-    if (strmPkt == NULL) throw cException("strmPkt == NULL is invalid");
+    PeerStreamingPacket *strmPkt = check_and_cast<PeerStreamingPacket *>(udpMsg);
+//    PeerStreamingPacket *strmPkt = dynamic_cast<PeerStreamingPacket *>(udpMsg);
+//    if (strmPkt == NULL) throw cException("strmPkt == NULL is invalid");
 
     DpControlInfo *dpCtrl = new DpControlInfo();
     dpCtrl->setSrcAddr(udpCtrl->getSrcAddr());

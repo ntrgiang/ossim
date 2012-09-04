@@ -72,16 +72,17 @@ void CommBase::printPacket(cPacket *pkt)
 
 void CommBase::sendToDispatcher(cPacket *pkt, int srcPort, const IPvXAddress& destAddr, int destPort)
 {
+    EV << "Send a packet to Dispatcher" << endl;
+
     DpControlInfo *ctrl = new DpControlInfo();
         ctrl->setSrcPort(srcPort);
         ctrl->setDestAddr(destAddr);
         ctrl->setDestPort(destPort);
     pkt->setControlInfo(ctrl);
 
-    EV << "Sending packet: ";
     printPacket(pkt);
 
-    EV << "Packet size: " << sizeof(*pkt) << endl;;
+    EV << "\tPayload size: " << pkt->getByteLength() << "(bytes)" << endl;;
 
     send(pkt, "dpOut");
 }
