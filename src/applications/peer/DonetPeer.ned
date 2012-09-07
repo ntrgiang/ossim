@@ -11,10 +11,10 @@ simple DonetPeer extends DonetBase
         // bool moduleDebug = default(false);
         
         // Timer
-        double startTime @unit(s);
+        volatile double startTime @unit(s);
         
-        double interval_chunkScheduling @unit(s) = default(1.0s); // to replace the above params
-        double interval_findMorePartner @unit(s) = default(1.0s);
+        double interval_chunkScheduling @unit(s) = default(0.0s); // to replace the above params
+        double interval_findMorePartner @unit(s) = default(0.0s);
         
         double interval_startPlayer     @unit(s) = default(0.5s); // 
         
