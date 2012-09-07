@@ -42,9 +42,6 @@ protected:
     simsignal_t sig_chunkSeek;
     simsignal_t sig_rebuffering_local;
 
-    // -- Objects for aggregated data
-    cTimestampedValue m_tsValue;
-
 };
 
 #endif /* PLAYER_H_ */
