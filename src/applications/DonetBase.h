@@ -81,7 +81,10 @@ protected:
     int m_localPort, m_destPort;
 
     // -- Parameters
+    // -- Partnership size
+    int param_minNOP;
     int param_maxNOP;
+    int param_offsetNOP;
     double param_upBw;
     double param_downBw; // Download bandwidth is not neccessary!
 
