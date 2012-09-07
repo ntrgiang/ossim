@@ -61,7 +61,6 @@ public:
 
 // Data member
 private:
-    // double _lastKeepAliveTime;
     double m_lastRecvBmTime;
     int m_bufferSize;
 

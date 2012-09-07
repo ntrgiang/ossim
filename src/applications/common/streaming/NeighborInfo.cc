@@ -33,41 +33,41 @@ NeighborInfo::NeighborInfo(int bmSize)
 
 NeighborInfo::~NeighborInfo()
 {
-    //if (m_recvMap) delete m_recvMap;
-    //if (m_reqMap) delete m_reqMap;
 }
 
 bool NeighborInfo::isInRecvBufferMap(SEQUENCE_NUMBER_T seq_num)
 {
+    //Enter_Method("isInRecvBufferMap");
+
+    EV << "Checking whether a chunk is in the RecvBufferMap" << endl;
+    EV << " -- seq_num = " << seq_num << endl;
+    EV << " -- start = " << m_seqNum_recvBmStart << endl;
+    EV << " -- end = " << m_seqNum_recvBmEnd << endl;
+
+    long offset = seq_num - m_seqNum_recvBmStart;
+
     // -- Debug
     // printRecvBm();
 
     if (seq_num > m_seqNum_recvBmEnd) return false;
 
-    // TODO-Giang: Fixing the code so that it looks nicer, cleaner (as above)
-
-    long offset = seq_num - m_seqNum_recvBmStart;
-    if (offset < 0L)
-    {
-        // -- Debug
-        // EV << "seq_num = " << seq_num << " -- m_seqNum_recvBmStart = " << m_seqNum_recvBmStart << endl;
-        return false;
-    }
+    if (seq_num < m_seqNum_recvBmStart) return false;
 
     return (m_recvBm[offset]);
 }
 
 void NeighborInfo::setElementSendBm(SEQUENCE_NUMBER_T seq_num, bool val)
 {
-    //int offset = seq_num - m_reqMap->getBmStartSeqNum();
+    //Enter_Method("setElementSendBm");
+
+    EV << "Set an element of the SendBufferMap" << endl;
+
     int offset = seq_num - m_seqNum_sendBmStart;
-    // -- Debug
-    // EV << "NeighborInfo::setElementSendBm:: offset: " << offset << endl;
+    EV << " -- NeighborInfo::setElementSendBm:: offset: " << offset << endl;
 
     if (offset < 0) throw cException("offset %d is invalid", offset);
     m_sendBm[offset] = val;
 
-    //m_sendBmModified = (m_sendBmModified == true)
     m_sendBmModified = true;
 
     // -- Debug
@@ -98,7 +98,6 @@ void NeighborInfo::copyFrom(MeshBufferMapPacket *bmPkt)
     for (int i=0; i < m_bufferSize; ++i)
     {
         m_recvBm[i] = bmPkt->getBufferMap(i);
-        //setElementByOffset(i, pkt->getBufferMap(i));
     }
 }
 
@@ -134,10 +133,12 @@ void NeighborInfo::copyTo(MeshChunkRequestPacket *reqPkt)
 
 void NeighborInfo::printRecvBm(void)
 {
-    EV << "RecvBm:: --- Start: " << m_seqNum_recvBmStart
-            << " --- End: " << m_seqNum_recvBmEnd
-            << " --- Head " << m_seqNum_recvBmHead
-            << " --- ";
+    EV << "Print Received Buffer Map:" << endl;
+
+    EV << "--- Start: " << m_seqNum_recvBmStart << endl
+       << "--- End: " << m_seqNum_recvBmEnd << endl
+       << "--- Head " << m_seqNum_recvBmHead
+       << endl;
 
     for (int i = 0; i < m_bufferSize; ++i)
     {
@@ -149,11 +150,12 @@ void NeighborInfo::printRecvBm(void)
 
 void NeighborInfo::printSendBm(void)
 {
-    EV << "sendBm:: m_sendBmModified: " << m_sendBmModified
-            << " -- Start: " << m_seqNum_sendBmStart
-            << " -- End: " << m_seqNum_sendBmEnd
+    EV << "sendBm:: << endl"
+            << " -- m_sendBmModified: " << m_sendBmModified << endl
+            << " -- Start: " << m_seqNum_sendBmStart << endl
+            << " -- End: " << m_seqNum_sendBmEnd << endl
             << " -- Head: " << m_seqNum_sendBmHead
-            << " -- ";
+            << endl;
 
     for (int i = 0; i < m_bufferSize; ++i)
     {
