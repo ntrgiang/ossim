@@ -14,6 +14,7 @@
 // 
 
 #include "Forwarder.h"
+#include "DpControlInfo_m.h"
 
 Define_Module(Forwarder);
 
@@ -23,38 +24,27 @@ Forwarder::~Forwarder() {}
 
 void Forwarder::handleMessage(cMessage* msg)
 {
+    Enter_Method("handleMessage");
+
     if (msg->isSelfMessage())
     {
         throw cException("No timer is used in this module");
         return;
     }
 
+    IPvXAddress senderAddress;
+    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(msg->getControlInfo());
+    senderAddress = controlInfo->getSrcAddr();
+
     PeerStreamingPacket *appMsg = check_and_cast<PeerStreamingPacket *>(msg);
     EV << "PacketGroup = " << appMsg->getPacketGroup() << endl;
     if (appMsg->getPacketGroup() != PACKET_GROUP_VIDEO_CHUNK)
         throw cException("Wrong packet type!");
 
-    EV << "A video chunk has just been received from " << endl;
+    EV << "A video chunk has just been received from " << senderAddress << endl;
     VideoChunkPacket *chunkPkt = check_and_cast<VideoChunkPacket *>(appMsg);
 
-    //////////////////////////////////////////////////////////////////////////////////////// DEBUG_START //////////////////////////
-    #if (__DONET_PEER_DEBUG__)
-    EV << "Video chunk, before inserting ------------";
-    m_videoBuffer->printStatus();
-    #endif
-    ///////////////////////////////////////////////////////////////////////////////////////// DEBUG_END //////////////////////////
-
     m_videoBuffer->insertPacket(chunkPkt);
-
-    ///////////////////////////////////////////////////////////////////////////////////////// DEBUG_START //////////////////////////
-    #if (__DONET_PEER_DEBUG__)
-    EV << "ID of inserted chunk: " << chunkPkt->getSeqNumber() << " from " << senderAddress << endl;
-
-    EV << "Video chunk, after inserting ------------ ";
-    m_videoBuffer->printStatus();
-    #endif
-    ///////////////////////////////////////////////////////////////////////////////////////// DEBUG_END //////////////////////////
-
 }
 
 void Forwarder::initialize(int stage)
@@ -64,8 +54,6 @@ void Forwarder::initialize(int stage)
 
     cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
     m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
-//    m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
-//    if (m_videoBuffer == NULL) throw cException("m_videoBuffer == NULL is invalid");
 }
 
 void Forwarder::finish()
