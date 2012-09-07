@@ -38,11 +38,11 @@ public:
     inline int getDestPort(void)    { return m_destPort; }
 
 protected:
-    void forwardToGossipModule(cMessage *msg);
-    void forwardToMeshStreamingModule(cMessage *msg);
-    void forwardToTreeStreamingModule(cMessage *msg);
-    void forwardToBuffer(cMessage *msg);
-    void forwardToUdp(cMessage *msg);
+//    void forwardToGossipModule(cMessage *msg);
+//    void forwardToMeshStreamingModule(cMessage *msg);
+//    void forwardToTreeStreamingModule(cMessage *msg);
+//    void forwardToBuffer(cMessage *msg);
+//    void forwardToUdp(cMessage *msg);
 
     void processMsgFromOverlay(cMessage *msg);
     void processUdpPacket(cMessage *msg);

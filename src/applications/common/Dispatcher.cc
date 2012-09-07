@@ -61,7 +61,7 @@ void Dispatcher::handleMessage(cMessage* msg)
     }
 }
 
-void Dispatcher::forwardToGossipModule(cMessage *msg)
+/*void Dispatcher::forwardToGossipModule(cMessage *msg)
 {
 //    UDPControlInfo *controlInfo = check_and_cast<UDPControlInfo *>(msg->removeControlInfo());
 //
@@ -86,11 +86,11 @@ void Dispatcher::forwardToBuffer(cMessage *msg)
 
 }
 
-/**
+*
  * Dispatch ControlInfo & payload (original message)
  * Change the ControlInfo into UDP ControlInfo, then attach back to the payload message
  * Then, send it to UDP, using sendToUDP()
- */
+
 void Dispatcher::forwardToUdp(cMessage *msg)
 {
 //    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(msg->removeControlInfo());
@@ -98,7 +98,7 @@ void Dispatcher::forwardToUdp(cMessage *msg)
 //    PeerStreamingPacket *pkt = dynamic_cast<PeerStreamingPacket *>(msg);
 //
 //    sendToUDP(pkt, controlInfo->getSrcPort(), controlInfo->getDestAddr(), controlInfo->getDestPort());
-}
+}*/
 
 
 // ------------- new interface -------------
@@ -124,14 +124,12 @@ void Dispatcher::processUdpPacket(cMessage *udpMsg)
     UDPControlInfo *udpCtrl = check_and_cast<UDPControlInfo *>(udpMsg->removeControlInfo());
 
     PeerStreamingPacket *strmPkt = check_and_cast<PeerStreamingPacket *>(udpMsg);
-//    PeerStreamingPacket *strmPkt = dynamic_cast<PeerStreamingPacket *>(udpMsg);
-//    if (strmPkt == NULL) throw cException("strmPkt == NULL is invalid");
 
     DpControlInfo *dpCtrl = new DpControlInfo();
-    dpCtrl->setSrcAddr(udpCtrl->getSrcAddr());
-    dpCtrl->setSrcPort(udpCtrl->getSrcPort());
-    dpCtrl->setDestAddr(udpCtrl->getDestAddr());
-    dpCtrl->setDestPort(udpCtrl->getDestPort());
+        dpCtrl->setSrcAddr(udpCtrl->getSrcAddr());
+        dpCtrl->setSrcPort(udpCtrl->getSrcPort());
+        dpCtrl->setDestAddr(udpCtrl->getDestAddr());
+        dpCtrl->setDestPort(udpCtrl->getDestPort());
     udpMsg->setControlInfo(dpCtrl);
 
     int packetGroup = strmPkt->getPacketGroup();
@@ -146,8 +144,6 @@ void Dispatcher::processUdpPacket(cMessage *udpMsg)
     send(udpMsg, "overlayOut", gateNumber);
 
     delete udpCtrl;
-
-
 }
 
 int Dispatcher::getGateNumber(int packetGroup)
