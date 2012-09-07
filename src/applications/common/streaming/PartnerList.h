@@ -28,6 +28,7 @@ public:
 protected:
   virtual int numInitStages() const  {return 4;}
   virtual void initialize(int stage);
+  virtual void finish();
 
   // Raises an error.
   virtual void handleMessage(cMessage *);

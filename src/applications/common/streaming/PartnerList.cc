@@ -28,12 +28,6 @@ PartnerList::PartnerList() {
 PartnerList::~PartnerList() {
     // TODO Auto-generated destructor stub
 
-    // Release allocated elements
-    std::map<IPvXAddress, NeighborInfo *>::iterator iter;
-    for (iter = m_map.begin(); iter != m_map.end(); ++iter)
-    {
-        if (iter->second) delete iter->second;
-    }
 }
 
 void PartnerList::initialize(int stage)
@@ -44,11 +38,22 @@ void PartnerList::initialize(int stage)
     }
 
     cModule *temp = simulation.getModuleByPath("appSetting");
-    AppSettingDonet *appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    if (appSetting == NULL) throw cException("appSetting == NULL is invalid");
-
+    AppSettingDonet *appSetting = check_and_cast<AppSettingDonet *>(temp);
     m_bufferSize = appSetting->getBufferMapSizeChunk();
+}
 
+void PartnerList::finish()
+{
+    // Release allocated elements
+    std::map<IPvXAddress, NeighborInfo *>::iterator iter;
+    for (iter = m_map.begin(); iter != m_map.end(); ++iter)
+    {
+        if (iter->second)
+        {
+            delete iter->second;
+            iter->second = NULL;
+        }
+    }
 }
 
 // Raise error
@@ -59,7 +64,6 @@ void PartnerList::handleMessage(cMessage *)
 
 void PartnerList::print() const
 {
-//    Enter_Method_Silent("printpartnerList");
     Enter_Method("print()");
 
     std::map<IPvXAddress, NeighborInfo*>::iterator iter;
@@ -110,7 +114,6 @@ void PartnerList::updateBoundSendBm(SEQUENCE_NUMBER_T head,
  */
 bool PartnerList::isPartner(const IPvXAddress& addr) const
 {
-//    Enter_Method_Silent("isNeighbor");
     Enter_Method("isNeighbor()");
 
     AddressList::iterator it;
@@ -146,7 +149,6 @@ int PartnerList::getSize() const
 void PartnerList::addAddress(const IPvXAddress &addr)
 {
     // first version
-//    Enter_Method_Silent("addNeighborAddress");
     Enter_Method("addAddress");
 
     if (isPartner(addr) == true)
@@ -312,7 +314,7 @@ void PartnerList::printRecvBm(const IPvXAddress &address)
     }
     else
     {
-        EV << "Partner " << address << " sent: ";
+        EV << "\t\tPartner " << address << " sent: " << endl;
         iter->second->printRecvBm();
     }
 
