@@ -39,6 +39,7 @@ protected:
     // -- Signal for data collection
     simsignal_t sig_chunkHit;
     simsignal_t sig_chunkMiss;
+    simsignal_t sig_chunkSeek;
     simsignal_t sig_rebuffering_local;
 
     // -- Objects for aggregated data

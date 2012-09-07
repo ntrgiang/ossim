@@ -32,6 +32,7 @@ void Player::initialize(int stage)
     {
         sig_chunkHit            = registerSignal("Signal_ChunkHit");
         sig_chunkMiss           = registerSignal("Signal_ChunkMiss");
+        sig_chunkSeek           = registerSignal("Signal_ChunkSeek");
         sig_rebuffering_local   = registerSignal("rebuffering_Local");
         return;
     }
@@ -90,18 +91,19 @@ void Player::handleTimerMessage(cMessage *msg)
     {
         scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
 
+        emit(sig_chunkSeek, m_id_nextChunk);
         m_stat->reportChunkSeek(m_id_nextChunk);
 
         if (m_videoBuffer->isInBuffer(m_id_nextChunk))
         {
-            EV << "\tChunk " << m_id_nextChunk << " is available in the buffer." << endl;
+            EV << "\tChunk " << m_id_nextChunk << " is in the buffer." << endl;
 
             emit(sig_chunkHit, m_id_nextChunk);
             m_stat->reportChunkHit(m_id_nextChunk);
         }
         else
         {
-            EV << "\tChunk " << m_id_nextChunk << " is not available in the buffer." << endl;
+            EV << "\tChunk " << m_id_nextChunk << " is NOT in the buffer." << endl;
 
             emit(sig_chunkMiss, m_id_nextChunk);
             m_stat->reportChunkMiss(m_id_nextChunk);
