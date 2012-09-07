@@ -102,6 +102,8 @@ double DonetBase::getDownloadBw()
  */
 bool DonetBase::canAcceptMorePartner(void)
 {
+    Enter_Method("canAcceptMorePartner");
+
     EV << "Current size of the partnerList: " << m_partnerList->getSize() << endl;
     if (m_partnerList->getSize() < param_maxNOP)
         return true;
@@ -239,30 +241,28 @@ const IPvXAddress& DonetBase::getSender(const cPacket *pkt) const
 
 void DonetBase::processChunkRequest(cPacket *pkt)
 {
+    EV << "Process chunk request" << endl;
     // Debug
     ++m_nChunkRequestReceived;
 
     IPvXAddress senderAddress;
     int senderPort;
     getSender(pkt, senderAddress, senderPort);
-    // EV << "A chunk request packet has just been received from " << sourceAddress << " ! prepare to print packet's content" << endl;
-    // EV << "----------------------------------------------------------" << endl;
     MeshChunkRequestPacket *reqPkt = check_and_cast<MeshChunkRequestPacket *>(pkt);
 
-    //////////////////////////////////////////////////////////////////////////////////////// DEBUG_START //////////////////////////
-    #if (__DONET_PEER_DEBUG__)
+    // ---------------- Debugging starts ---------------------------------------
         EV << "Chunk request received from " << senderAddress << ": " << endl;
-        EV << "Start: " << reqPkt->getSeqNumMapStart()
-            << " -- End: " << reqPkt->getSeqNumMapEnd()
-            << " -- Head: " << reqPkt->getSeqNumMapHead()
-            << " -- ";
+        EV << " -- Start: " << reqPkt->getSeqNumMapStart() << endl;
+        EV << " -- End: " << reqPkt->getSeqNumMapEnd() << endl;
+        EV << " -- Head: " << reqPkt->getSeqNumMapHead() << endl;
+        EV  << " -- The whole map of requested chunks:" << endl;
+
         for (int i=0; i < m_bufferMapSize_chunk; ++i)
         {
             EV << reqPkt->getRequestMap(i);
         }
         EV << endl;
-    #endif
-    //////////////////////////////////////////////////////////////////////////////////////// DEBUG_END //////////////////////////
+    // ---------------- Debugging starts ---------------------------------------
 
     // -- TODO: Need reply to chunk request here
     // -- Find the id of the requested chunk
@@ -272,19 +272,22 @@ void DonetBase::processChunkRequest(cPacket *pkt)
         if (reqPkt->getRequestMap(offset) == true)
         {
             SEQUENCE_NUMBER_T seqNum_requestedChunk = offset + start;
+            EV << "\tChunk on request: " << seqNum_requestedChunk << endl;
 
             // -- Look up to see if the requested chunk is available in the Video Buffer
             if (m_videoBuffer->isInBuffer(seqNum_requestedChunk) ==  true)
             {
-                // -- If YES, duplicate the chunk and send to the requesting peer
+                EV << "\t\t in buffer" << endl;
+                // -- If YES, send the chunk to the requesting peer VIA Forwarder
 
-                //MeshVideoChunkPacket *copyPkt = m_videoBuffer->getChunk(seqNum_requestedChunk)->dup();
                 m_forwarder->sendChunk(seqNum_requestedChunk, senderAddress, senderPort);
-
-                //sendToDispatcher(copyPkt, m_localPort, senderAddress, m_destPort);
 
                 // Debug
                 ++m_nChunkSent;
+            }
+            else
+            {
+                EV << "\t\t not in buffer" << endl;
             }
         }
     }
