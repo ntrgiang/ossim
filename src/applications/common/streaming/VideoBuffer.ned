@@ -21,13 +21,8 @@ simple VideoBuffer
         @class(VideoBuffer);
         @display("i=block/table");
         
-        // Try to move these parameters up one level
-//        int videoStreamBitRate      @unit(bps)  = default(512kbps);
-//        int chunkSize               @unit(byte) = default(8KiB);
-//        int bufferMapSize           @unit(s)    = default(2s);
-
-//    gates:
-//        // -- Gates to the Dispatcher module
-//        input dpIn @labels(DpControlInfo/up);
-//        output dpOut @labels(DpControlInfo/down);
+        @signal[SeqNum_RecevedChunk](type=long);
+        
+        @statistic[SeqNum_RecevedChunk](title="Sequence Number of received chunks"; source=SeqNum_RecevedChunk; record=count,vector);
+        
 }

@@ -121,6 +121,9 @@ private:
     // -- Validation / Cross-check
     int m_nActiveElement;
 
+    // -- signals for statistical analysis
+    simsignal_t signal_seqNum_receivedChunk;
+
 // Debug
 private:
     cOutVector r_index;
