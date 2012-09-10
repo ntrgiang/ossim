@@ -17,6 +17,11 @@
 #include "IInterfaceTable.h"
 #include "NotificationBoard.h"
 
+#include <map>
+#include "ActivePeerInfo.h"
+
+using namespace std;
+
 class ActivePeerTable: public cSimpleModule, protected INotifiable
 {
 protected:
@@ -108,23 +113,9 @@ protected:
     IInterfaceTable *ift; // cached pointer
     NotificationBoard *nb; // cached pointer
 
-    // local addresses cache (to speed up isLocalAddress())
-//    typedef std::set<IPAddress> AddressSet;
+    map<IPvXAddress, ActivePeerInfo *> m_activePeerList;
 
-    // version1: set (binary tree) to speed up the looking-up of an address (key)
-    // But it is difficult to get a /random/ list of N active peers
-//        typedef std::set<IPvXAddress> AddressSet;
-//        mutable AddressSet activePeerList;
-
-    // version2: vector (or list) to make it easier for accessing the list via indices
-    // Using vector is not easier at all (when have to check for existence of an element
-    typedef std::vector<IPvXAddress> AddressSet;
-    mutable AddressSet activePeerList;
-
-    // a new comment
-    // I add a new comment
-
-    std::string m_name;
+    IPvXAddress m_sourceAddress;
 
     // -- Signal
     simsignal_t sig_size;
