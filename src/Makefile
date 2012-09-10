@@ -1,12 +1,12 @@
 #
-# OMNeT++/OMNEST Makefile for scamp
+# OMNeT++/OMNEST Makefile for so
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -I/usr/include/ -I/usr/include/c++/4.5 -I../../inet/src/networklayer/rsvp_te -I../../inet/src/networklayer/common -I../../inet/src/networklayer/icmpv6 -I../../inet/src/transport/tcp -I../../inet/src/networklayer/mpls -I../../inet/src/networklayer/ted -I../../inet/src/networklayer/contract -I../../inet/src/util -I../../inet/src/transport/contract -I../../inet/src/linklayer/mfcore -I../../inet/src/networklayer/ldp -I../../inet/src/applications/udpapp -I../../inet/src/networklayer/ipv4 -I../../inet/src/base -I../../inet/src/util/headerserializers -I../../inet/src/transport/sctp -I../../inet/src/networklayer/ipv6 -I../../inet/src/world -I../../inet/src/applications/pingapp -I../../inet/src/linklayer/contract -I../../inet/src/networklayer/arp -I../../inet/src/transport/udp -L../../inet/out/$(CONFIGNAME)/src -linet -KINET_PROJ=../../inet
+#  opp_makemake -f --deep -I/usr/include/ -I/usr/include/c++/4.6 -I/nix/workspace/omnet422-inet118/omnetpp-4.2.2/include/ -I../../inet/src/networklayer/common -I../../inet/src/networklayer/rsvp_te -I../../inet/src/networklayer/icmpv6 -I../../inet/src/transport/tcp -I../../inet/src/networklayer/mpls -I../../inet/src/networklayer/ted -I../../inet/src/networklayer/contract -I../../inet/src/util -I../../inet/src/transport/contract -I../../inet/src/linklayer/mfcore -I../../inet/src/networklayer/ldp -I../../inet/src/applications/udpapp -I../../inet/src/networklayer/ipv4 -I../../inet/src/base -I../../inet/src/util/headerserializers -I../../inet/src/networklayer/ipv6 -I../../inet/src/transport/sctp -I../../inet/src/world -I../../inet/src/applications/pingapp -I../../inet/src/linklayer/contract -I../../inet/src/networklayer/arp -I../../inet/src/transport/udp -L../../inet/out/$(CONFIGNAME)/src -linet -KINET_PROJ=../../inet
 #
 
 # Name of target to be created (-o option)
-TARGET = scamp$(EXE_SUFFIX)
+TARGET = so$(EXE_SUFFIX)
 
 # User interface (uncomment one) (-u option)
 USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
@@ -16,9 +16,10 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
 # C++ include paths (with -I)
 INCLUDE_PATH = \
     -I/usr/include/ \
-    -I/usr/include/c++/4.5 \
-    -I../../inet/src/networklayer/rsvp_te \
+    -I/usr/include/c++/4.6 \
+    -I/nix/workspace/omnet422-inet118/omnetpp-4.2.2/include/ \
     -I../../inet/src/networklayer/common \
+    -I../../inet/src/networklayer/rsvp_te \
     -I../../inet/src/networklayer/icmpv6 \
     -I../../inet/src/transport/tcp \
     -I../../inet/src/networklayer/mpls \
@@ -32,8 +33,8 @@ INCLUDE_PATH = \
     -I../../inet/src/networklayer/ipv4 \
     -I../../inet/src/base \
     -I../../inet/src/util/headerserializers \
-    -I../../inet/src/transport/sctp \
     -I../../inet/src/networklayer/ipv6 \
+    -I../../inet/src/transport/sctp \
     -I../../inet/src/world \
     -I../../inet/src/applications/pingapp \
     -I../../inet/src/linklayer/contract \
@@ -46,10 +47,10 @@ INCLUDE_PATH = \
     -Iapplications/common/messages \
     -Iapplications/common/streaming \
     -Iapplications/peer \
-    -Iapplications/peer/smc \
     -Iapplications/source \
     -Iglobal \
     -Iglobal/churn \
+    -Iglobal/logger \
     -Iglobal/observer \
     -Iglobal/statistic \
     -Inodes
@@ -96,6 +97,7 @@ OBJS = \
     $O/global/churn/ExponentialChurnModel.o \
     $O/global/churn/PoissonChurnModel.o \
     $O/global/churn/VelosoChurnModel.o \
+    $O/global/logger/Logger.o \
     $O/global/observer/MeshOverlayObserver.o \
     $O/global/statistic/GlobalStatistic.o \
     $O/global/statistic/Statistic.o \
@@ -184,7 +186,7 @@ msgheaders: $(MSGFILES:.msg=_m.h)
 
 clean:
 	-rm -rf $O
-	-rm -f scamp scamp.exe libscamp.so libscamp.a libscamp.dll libscamp.dylib
+	-rm -f so so.exe libso.so libso.a libso.dll libso.dylib
 	-rm -f ./*_m.cc ./*_m.h
 	-rm -f applications/*_m.cc applications/*_m.h
 	-rm -f applications/common/*_m.cc applications/common/*_m.h
@@ -192,10 +194,10 @@ clean:
 	-rm -f applications/common/messages/*_m.cc applications/common/messages/*_m.h
 	-rm -f applications/common/streaming/*_m.cc applications/common/streaming/*_m.h
 	-rm -f applications/peer/*_m.cc applications/peer/*_m.h
-	-rm -f applications/peer/smc/*_m.cc applications/peer/smc/*_m.h
 	-rm -f applications/source/*_m.cc applications/source/*_m.h
 	-rm -f global/*_m.cc global/*_m.h
 	-rm -f global/churn/*_m.cc global/churn/*_m.h
+	-rm -f global/logger/*_m.cc global/logger/*_m.h
 	-rm -f global/observer/*_m.cc global/observer/*_m.h
 	-rm -f global/statistic/*_m.cc global/statistic/*_m.h
 	-rm -f nodes/*_m.cc nodes/*_m.h
@@ -204,7 +206,7 @@ cleanall: clean
 	-rm -rf $(PROJECT_OUTPUT_DIR)
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/common/*.cc applications/common/membership/*.cc applications/common/messages/*.cc applications/common/streaming/*.cc applications/peer/*.cc applications/peer/smc/*.cc applications/source/*.cc global/*.cc global/churn/*.cc global/observer/*.cc global/statistic/*.cc nodes/*.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/common/*.cc applications/common/membership/*.cc applications/common/messages/*.cc applications/common/streaming/*.cc applications/peer/*.cc applications/source/*.cc global/*.cc global/churn/*.cc global/logger/*.cc global/observer/*.cc global/statistic/*.cc nodes/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/applications/CommBase.o: applications/CommBase.cc \
@@ -259,6 +261,7 @@ $O/applications/DonetBase.o: applications/DonetBase.cc \
 	global/AppSetting.h \
 	global/AppSettingDonet.h \
 	global/churn/IChurnGenerator.h \
+	global/logger/Logger.h \
 	global/observer/MeshOverlayObserver.h \
 	global/statistic/GlobalStatistic.h
 $O/applications/DummyMembership.o: applications/DummyMembership.cc \
@@ -356,6 +359,7 @@ $O/applications/common/Forwarder.o: applications/common/Forwarder.cc \
 	applications/common/AppCommon.h \
 	applications/common/Dispatcher.h \
 	applications/common/Forwarder.h \
+	applications/common/messages/DpControlInfo_m.h \
 	applications/common/messages/MeshPeerStreamingPacket_m.h \
 	applications/common/messages/PeerStreamingPacket_m.h \
 	applications/common/messages/VideoChunkPacket_m.h \
@@ -487,6 +491,7 @@ $O/applications/peer/DonetPeer.o: applications/peer/DonetPeer.cc \
 	global/AppSetting.h \
 	global/AppSettingDonet.h \
 	global/churn/IChurnGenerator.h \
+	global/logger/Logger.h \
 	global/observer/MeshOverlayObserver.h \
 	global/statistic/GlobalStatistic.h
 $O/applications/peer/Player.o: applications/peer/Player.cc \
@@ -591,6 +596,7 @@ $O/applications/source/DonetSource.o: applications/source/DonetSource.cc \
 	global/AppSetting.h \
 	global/AppSettingDonet.h \
 	global/churn/IChurnGenerator.h \
+	global/logger/Logger.h \
 	global/observer/MeshOverlayObserver.h \
 	global/statistic/GlobalStatistic.h
 $O/applications/source/ScampSource.o: applications/source/ScampSource.cc \
@@ -682,6 +688,13 @@ $O/global/churn/VelosoChurnModel.o: global/churn/VelosoChurnModel.cc \
 	$(INET_PROJ)/src/base/NotifierConsts.h \
 	global/churn/IChurnGenerator.h \
 	global/churn/VelosoChurnModel.h
+$O/global/logger/Logger.o: global/logger/Logger.cc \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	applications/common/AppCommon.h \
+	global/logger/Logger.h
 $O/global/observer/MeshOverlayObserver.o: global/observer/MeshOverlayObserver.cc \
 	$(INET_PROJ)/src/base/INETDefs.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \

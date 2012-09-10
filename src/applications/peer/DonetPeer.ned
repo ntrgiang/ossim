@@ -27,9 +27,10 @@ simple DonetPeer extends DonetBase
         // The following two are just for testing
         int nNeighbor_SchedulingStart = default(1);
         double waitingTime_SchedulingStart @unit(s) = default(0.25s);
+        double factor_requestList = default(1);
         
-        // int numberOfPartner = default(4);
-        // int minNOP = default(1); // Min number of partners
+        double baseValue_requestGreedyFactor = default(1.0);
+        
         int maxNOP = default(2); // Max number of partners
         int offsetNOP = default(1); // The difference between minNOP and maxNOP
         

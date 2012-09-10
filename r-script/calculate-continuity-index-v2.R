@@ -19,10 +19,6 @@
   dataset_maxNOP <- loadDataset(scalarFiles, add(select='module("Donet_Homo_oneRouter_Network.peerNode[0].peerApp.mesh") AND name("maxNOP")'))
   # print(dataset_maxNOP)
 
-#   c_runid <- dataset_hit$scalars$runid
-#   df_hit <- dataset_hit$scalars[,order(dataset_hit$scalars$runid)]
-#   df_miss <- dataset_miss$scalars[,order(dataset_miss$scalars$runid)]
-  
     df_hit <- dataset_hit$scalars
     df_miss <- dataset_miss$scalars
 
@@ -62,6 +58,30 @@
   #tapply(scalars$value, list(rowNames, columnNames), aggregate)
   m <- tapply(scalars_ci$value, list(rowNames, columnNames), aggregate)
   m
+  
+# Confidence Intervals
+  ci <- tapply(scalars_ci$value, list(rowNames, columnNames), conf.int(0.95) )
+  ci
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   # -- Function content
 #     runattrs <- getRunsInWideFormat(dataset$runattrs)

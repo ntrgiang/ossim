@@ -1,0 +1,588 @@
+version 2
+run Donet_Homo_oneRouter_Network-0-20120907-23:24:12-9712
+attr configname Donet_Homo_oneRouter_Network
+attr datetime 20120907-23:24:12
+attr experiment Donet_Homo_oneRouter_Network
+attr inifile ../../../so/simulations/DonetNetworkConfig.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network Donet_Homo_oneRouter_Network
+attr processid 9712
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+scalar Donet_Homo_oneRouter_Network.sourceNode.peerApp.mesh 	maxNOP 	8
+scalar Donet_Homo_oneRouter_Network.sourceNode.peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4800
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.sourceNode.peerApp.chunkGenerator 	chunkSeqNum:min 	0
+scalar Donet_Homo_oneRouter_Network.sourceNode.peerApp.chunkGenerator 	chunkSeqNum:max 	4799
+scalar Donet_Homo_oneRouter_Network.sourceNode.networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.sourceNode.networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.sourceNode.networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.sourceNode.networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.sourceNode.ppp[0].queue 	"packets received by queue" 	36426
+scalar Donet_Homo_oneRouter_Network.sourceNode.ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[0].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[0].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4646
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[0].peerApp.player 	ChunkSeek:count 	3771
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[0].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[0].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[0].peerApp.player 	ChunkHit:count 	3771
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[0].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[0].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[0].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[0].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[0].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[0].ppp[0].queue 	"packets received by queue" 	4593
+scalar Donet_Homo_oneRouter_Network.peerNode[0].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[1].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[1].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4564
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[1].peerApp.player 	ChunkSeek:count 	3747
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[1].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[1].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[1].peerApp.player 	ChunkHit:count 	3747
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[1].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[1].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[1].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[1].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[1].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[1].ppp[0].queue 	"packets received by queue" 	1009
+scalar Donet_Homo_oneRouter_Network.peerNode[1].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[2].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[2].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4627
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[2].peerApp.player 	ChunkSeek:count 	3652
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[2].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[2].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[2].peerApp.player 	ChunkHit:count 	3652
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[2].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[2].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[2].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[2].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[2].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[2].ppp[0].queue 	"packets received by queue" 	735
+scalar Donet_Homo_oneRouter_Network.peerNode[2].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[3].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[3].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	0
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[3].peerApp.player 	ChunkSeek:count 	0
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[3].peerApp.player 	CI:last 	-nan
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[3].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[3].peerApp.player 	ChunkHit:count 	0
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[3].peerApp.player 	CI:last 	-nan
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[3].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[3].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[3].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[3].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[3].ppp[0].queue 	"packets received by queue" 	3
+scalar Donet_Homo_oneRouter_Network.peerNode[3].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[4].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[4].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4945
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[4].peerApp.player 	ChunkSeek:count 	3761
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[4].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[4].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[4].peerApp.player 	ChunkHit:count 	3761
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[4].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[4].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[4].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[4].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[4].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[4].ppp[0].queue 	"packets received by queue" 	3580
+scalar Donet_Homo_oneRouter_Network.peerNode[4].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[5].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[5].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	5054
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[5].peerApp.player 	ChunkSeek:count 	3797
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[5].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[5].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[5].peerApp.player 	ChunkHit:count 	3797
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[5].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[5].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[5].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[5].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[5].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[5].ppp[0].queue 	"packets received by queue" 	5659
+scalar Donet_Homo_oneRouter_Network.peerNode[5].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[6].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[6].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	5198
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[6].peerApp.player 	ChunkSeek:count 	3884
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[6].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[6].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[6].peerApp.player 	ChunkHit:count 	3884
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[6].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[6].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[6].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[6].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[6].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[6].ppp[0].queue 	"packets received by queue" 	6566
+scalar Donet_Homo_oneRouter_Network.peerNode[6].ppp[0].queue 	"packets dropped by queue" 	186
+scalar Donet_Homo_oneRouter_Network.peerNode[7].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[7].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4589
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[7].peerApp.player 	ChunkSeek:count 	3723
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[7].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[7].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[7].peerApp.player 	ChunkHit:count 	3723
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[7].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[7].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[7].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[7].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[7].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[7].ppp[0].queue 	"packets received by queue" 	1872
+scalar Donet_Homo_oneRouter_Network.peerNode[7].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[8].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[8].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4766
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[8].peerApp.player 	ChunkSeek:count 	4017
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[8].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[8].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[8].peerApp.player 	ChunkHit:count 	4017
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[8].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[8].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[8].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[8].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[8].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[8].ppp[0].queue 	"packets received by queue" 	5065
+scalar Donet_Homo_oneRouter_Network.peerNode[8].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[9].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[9].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	5168
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[9].peerApp.player 	ChunkSeek:count 	3860
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[9].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[9].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[9].peerApp.player 	ChunkHit:count 	3860
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[9].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[9].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[9].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[9].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[9].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[9].ppp[0].queue 	"packets received by queue" 	6082
+scalar Donet_Homo_oneRouter_Network.peerNode[9].ppp[0].queue 	"packets dropped by queue" 	3
+scalar Donet_Homo_oneRouter_Network.peerNode[10].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[10].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4777
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[10].peerApp.player 	ChunkSeek:count 	3906
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[10].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[10].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[10].peerApp.player 	ChunkHit:count 	3906
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[10].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[10].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[10].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[10].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[10].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[10].ppp[0].queue 	"packets received by queue" 	5373
+scalar Donet_Homo_oneRouter_Network.peerNode[10].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[11].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[11].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	5023
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[11].peerApp.player 	ChunkSeek:count 	3913
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[11].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[11].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[11].peerApp.player 	ChunkHit:count 	3913
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[11].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[11].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[11].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[11].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[11].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[11].ppp[0].queue 	"packets received by queue" 	6532
+scalar Donet_Homo_oneRouter_Network.peerNode[11].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[12].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[12].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4728
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[12].peerApp.player 	ChunkSeek:count 	3853
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[12].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[12].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[12].peerApp.player 	ChunkHit:count 	3853
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[12].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[12].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[12].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[12].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[12].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[12].ppp[0].queue 	"packets received by queue" 	5477
+scalar Donet_Homo_oneRouter_Network.peerNode[12].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[13].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[13].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4800
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[13].peerApp.player 	ChunkSeek:count 	4035
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[13].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[13].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[13].peerApp.player 	ChunkHit:count 	4035
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[13].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[13].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[13].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[13].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[13].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[13].ppp[0].queue 	"packets received by queue" 	4813
+scalar Donet_Homo_oneRouter_Network.peerNode[13].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[14].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[14].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4717
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[14].peerApp.player 	ChunkSeek:count 	3780
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[14].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[14].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[14].peerApp.player 	ChunkHit:count 	3780
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[14].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[14].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[14].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[14].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[14].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[14].ppp[0].queue 	"packets received by queue" 	4643
+scalar Donet_Homo_oneRouter_Network.peerNode[14].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[15].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[15].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4808
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[15].peerApp.player 	ChunkSeek:count 	4069
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[15].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[15].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[15].peerApp.player 	ChunkHit:count 	4069
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[15].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[15].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[15].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[15].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[15].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[15].ppp[0].queue 	"packets received by queue" 	4346
+scalar Donet_Homo_oneRouter_Network.peerNode[15].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[16].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[16].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4554
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[16].peerApp.player 	ChunkSeek:count 	3748
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[16].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[16].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[16].peerApp.player 	ChunkHit:count 	3748
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[16].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[16].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[16].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[16].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[16].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[16].ppp[0].queue 	"packets received by queue" 	1053
+scalar Donet_Homo_oneRouter_Network.peerNode[16].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[17].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[17].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4810
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[17].peerApp.player 	ChunkSeek:count 	4136
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[17].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[17].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[17].peerApp.player 	ChunkHit:count 	4136
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[17].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[17].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[17].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[17].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[17].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[17].ppp[0].queue 	"packets received by queue" 	4200
+scalar Donet_Homo_oneRouter_Network.peerNode[17].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[18].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[18].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	4850
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[18].peerApp.player 	ChunkSeek:count 	3976
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[18].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[18].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[18].peerApp.player 	ChunkHit:count 	3976
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[18].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[18].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[18].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[18].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[18].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[18].ppp[0].queue 	"packets received by queue" 	5617
+scalar Donet_Homo_oneRouter_Network.peerNode[18].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[19].peerApp.mesh 	maxNOP 	5
+scalar Donet_Homo_oneRouter_Network.peerNode[19].peerApp.videoBuffer 	SeqNum_RecevedChunk:count 	5059
+attr source  SeqNum_RecevedChunk
+attr title  "Sequence Number of received chunks, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[19].peerApp.player 	ChunkSeek:count 	3807
+attr source  Signal_ChunkSeek
+attr title  "Number of chunk Seek, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[19].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[19].peerApp.player 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+attr title  "Number of chunk Miss, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[19].peerApp.player 	ChunkHit:count 	3807
+attr source  Signal_ChunkHit
+attr title  "Number of chunk hit, count"
+scalar Donet_Homo_oneRouter_Network.peerNode[19].peerApp.player 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkSeek)
+attr title  "Continuity Index, last"
+scalar Donet_Homo_oneRouter_Network.peerNode[19].networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[19].networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[19].networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[19].networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.peerNode[19].ppp[0].queue 	"packets received by queue" 	3177
+scalar Donet_Homo_oneRouter_Network.peerNode[19].ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.networkLayer.arp 	"ARP requests sent" 	0
+scalar Donet_Homo_oneRouter_Network.router.networkLayer.arp 	"ARP replies sent" 	0
+scalar Donet_Homo_oneRouter_Network.router.networkLayer.arp 	"ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.router.networkLayer.arp 	"failed ARP resolutions" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[0].queue 	"packets received by queue" 	2737
+scalar Donet_Homo_oneRouter_Network.router.ppp[0].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[1].queue 	"packets received by queue" 	5871
+scalar Donet_Homo_oneRouter_Network.router.ppp[1].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[2].queue 	"packets received by queue" 	5216
+scalar Donet_Homo_oneRouter_Network.router.ppp[2].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[3].queue 	"packets received by queue" 	5157
+scalar Donet_Homo_oneRouter_Network.router.ppp[3].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[4].queue 	"packets received by queue" 	3
+scalar Donet_Homo_oneRouter_Network.router.ppp[4].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[5].queue 	"packets received by queue" 	6242
+scalar Donet_Homo_oneRouter_Network.router.ppp[5].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[6].queue 	"packets received by queue" 	6086
+scalar Donet_Homo_oneRouter_Network.router.ppp[6].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[7].queue 	"packets received by queue" 	6636
+scalar Donet_Homo_oneRouter_Network.router.ppp[7].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[8].queue 	"packets received by queue" 	5601
+scalar Donet_Homo_oneRouter_Network.router.ppp[8].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[9].queue 	"packets received by queue" 	5907
+scalar Donet_Homo_oneRouter_Network.router.ppp[9].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[10].queue 	"packets received by queue" 	6477
+scalar Donet_Homo_oneRouter_Network.router.ppp[10].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[11].queue 	"packets received by queue" 	5852
+scalar Donet_Homo_oneRouter_Network.router.ppp[11].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[12].queue 	"packets received by queue" 	6393
+scalar Donet_Homo_oneRouter_Network.router.ppp[12].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[13].queue 	"packets received by queue" 	6122
+scalar Donet_Homo_oneRouter_Network.router.ppp[13].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[14].queue 	"packets received by queue" 	6145
+scalar Donet_Homo_oneRouter_Network.router.ppp[14].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[15].queue 	"packets received by queue" 	5661
+scalar Donet_Homo_oneRouter_Network.router.ppp[15].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[16].queue 	"packets received by queue" 	6185
+scalar Donet_Homo_oneRouter_Network.router.ppp[16].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[17].queue 	"packets received by queue" 	5246
+scalar Donet_Homo_oneRouter_Network.router.ppp[17].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[18].queue 	"packets received by queue" 	6161
+scalar Donet_Homo_oneRouter_Network.router.ppp[18].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[19].queue 	"packets received by queue" 	6124
+scalar Donet_Homo_oneRouter_Network.router.ppp[19].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.router.ppp[20].queue 	"packets received by queue" 	6301
+scalar Donet_Homo_oneRouter_Network.router.ppp[20].queue 	"packets dropped by queue" 	0
+scalar Donet_Homo_oneRouter_Network.globalStatistic 	"Reach Ratio" 	-nan
+scalar Donet_Homo_oneRouter_Network.globalStatistic 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkNeed)
+scalar Donet_Homo_oneRouter_Network.globalStatistic 	Rebuffering:count 	0
+attr source  Signal_Rebuffering
+scalar Donet_Homo_oneRouter_Network.globalStatistic 	ChunkSeek:count 	73435
+attr source  Signal_ChunkSeek
+scalar Donet_Homo_oneRouter_Network.globalStatistic 	ChunkMiss:count 	0
+attr source  Signal_ChunkMiss
+scalar Donet_Homo_oneRouter_Network.globalStatistic 	ChunkHit:count 	73435
+attr source  Signal_ChunkHit
+scalar Donet_Homo_oneRouter_Network.globalStatistic 	CI:last 	1
+attr source  count(Signal_ChunkHit)/count(Signal_ChunkNeed)

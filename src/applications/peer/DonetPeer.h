@@ -47,10 +47,15 @@ private:
 
     // Chunk scheduling
     bool should_be_requested(void);
+    bool should_be_requested(SEQUENCE_NUMBER_T seq_num);
     void initializeSchedulingWindow(void);
     bool shouldStartChunkScheduling();
     void chunkScheduling(void);
     void randomChunkScheduling(void);
+    int numberOfChunkToRequestPerCycle(void);
+    double currentRequestGreedyFactor(void);
+    bool recentlyRequestedChunk(SEQUENCE_NUMBER_T seq_num);
+    void refreshListRequestedChunk(void);
 
     void donetChunkScheduling(void);
     int selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candidate1, IPvXAddress candidate2, IPvXAddress &supplier);
@@ -73,6 +78,8 @@ private:
     int     param_nNeighbor_SchedulingStart;
     double  param_interval_findMorePartner;
     double  param_interval_starPlayer;
+    double  param_baseValue_requestGreedyFactor;
+    double  param_factor_requestList;
 
     // -- Pointers to "global" modules
     IChurnGenerator *m_churn;
@@ -96,12 +103,18 @@ private:
 
     // -- Partnership size
     int param_minNOP;
-    int param_maxNOP;
+    //int param_maxNOP;
     int param_offsetNOP;
 
     // -- Scheduling
     int m_nChunkRequested_perSchedulingInterval;
-    int m_nChunk_perSchedulingInterval;
+    //int m_nChunk_perSchedulingInterval;
+    int m_nChunk_toRequest_perCycle;
+
+    // -- Easy version with a vector
+    vector<SEQUENCE_NUMBER_T> m_list_requestedChunk;
+
+
 
     // -- Time stampt value objects
     // cTimestampedValue
