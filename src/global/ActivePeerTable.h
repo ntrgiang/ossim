@@ -121,7 +121,8 @@ protected:
     typedef std::vector<IPvXAddress> AddressSet;
     mutable AddressSet activePeerList;
 
-    // just a test comment
+    // a new comment
+
 
     std::string m_name;
 
