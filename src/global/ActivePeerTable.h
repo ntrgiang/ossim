@@ -122,6 +122,7 @@ protected:
     mutable AddressSet activePeerList;
 
     // a new comment
+    // I add a new comment
 
     std::string m_name;
 
