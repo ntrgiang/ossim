@@ -121,8 +121,6 @@ protected:
     typedef std::vector<IPvXAddress> AddressSet;
     mutable AddressSet activePeerList;
 
-    // just a test comment
-
     std::string m_name;
 
     // -- Signal
