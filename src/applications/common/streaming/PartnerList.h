@@ -94,6 +94,7 @@ public:
 
     void clearAllSendBm(void);
     void updateBoundSendBm(SEQUENCE_NUMBER_T head, SEQUENCE_NUMBER_T start, SEQUENCE_NUMBER_T end) const;
+    void updateBoundSendBm(SEQUENCE_NUMBER_T start, SEQUENCE_NUMBER_T end) const;
 
     void clearAllTimeBudget(void);
 
@@ -111,6 +112,7 @@ private:
     int m_bufferSize;
 
     friend class DonetPeer;
+    friend class DonetBase;
 
 };
 

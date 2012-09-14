@@ -21,8 +21,12 @@ protected:
 
 public:
     void startPlayer(void);
+    SEQUENCE_NUMBER_T getCurrentPlaybackPoint(void);
+    bool playerStarted(void);
 
 protected:
+    // -- State variable
+    bool m_playerStarted;
     cMessage *timer_nextChunk;
     SEQUENCE_NUMBER_T m_id_nextChunk;
 

@@ -113,6 +113,15 @@ protected:
     IInterfaceTable *ift; // cached pointer
     NotificationBoard *nb; // cached pointer
 
+    typedef std::vector<IPvXAddress> AddressSet;
+    mutable AddressSet activePeerList;
+
+    // a new comment
+    // I add a new comment
+
+    std::string m_name;
+
+    // New stuff from this point
     map<IPvXAddress, ActivePeerInfo *> m_activePeerList;
 
     IPvXAddress m_sourceAddress;

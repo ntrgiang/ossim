@@ -60,6 +60,9 @@ void Player::initialize(int stage)
     m_interval_newChunk = m_appSetting->getIntervalNewChunk();
     m_chunkSize  = m_appSetting->getChunkSize();
 
+    // -- State variables
+    m_playerStarted = false;
+
     // -- Schedule the first event for the first chunk
 //    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);
 
@@ -138,4 +141,16 @@ void Player::startPlayer()
 
     m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
 
+    m_playerStarted = true;
+
+}
+
+SEQUENCE_NUMBER_T Player::getCurrentPlaybackPoint(void)
+{
+    return m_id_nextChunk;
+}
+
+bool Player::playerStarted(void)
+{
+    return m_playerStarted;
 }

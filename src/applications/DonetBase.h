@@ -70,6 +70,7 @@ protected:
     inline int getBufferMapSize(void) { return m_bufferMapSize_chunk; }
 
     void processChunkRequest(cPacket *pkt);
+    void printChunkRequestPacket(MeshChunkRequestPacket *reqPkt);
 
     MeshPartnershipAcceptPacket *generatePartnershipRequestAcceptPacket();
     MeshPartnershipRejectPacket *generatePartnershipRequestRejectPacket();

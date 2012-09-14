@@ -102,9 +102,10 @@ double DonetBase::getDownloadBw()
  */
 bool DonetBase::canAcceptMorePartner(void)
 {
-    Enter_Method("canAcceptMorePartner");
+    //Enter_Method("canAcceptMorePartner");
 
-    EV << "Current size of the partnerList: " << m_partnerList->getSize() << endl;
+    EV << "Current number of partners: " << m_partnerList->getSize() << endl;
+    EV << "Max number of partners to have: " << param_maxNOP << endl;
     if (m_partnerList->getSize() < param_maxNOP)
         return true;
 
@@ -136,6 +137,7 @@ void DonetBase::sendBufferMap(void)
         bmPkt->setBitLength(m_BufferMapPacketSize_bit);
         m_videoBuffer->fillBufferMapPacket(bmPkt);
 
+/*
     // 2. Get the partner List
     std::vector<IPvXAddress> nList = m_partnerList->getAddressList();
 
@@ -150,26 +152,41 @@ void DonetBase::sendBufferMap(void)
         // send the packet to this neighbor
         sendToDispatcher(bmPkt_copy, m_localPort, *iter, m_destPort);
 
-        #if(__DONET_PEER_DEBUG__)
-            EV << "A buffer map has been sent to " << *iter << endl;
-        #endif
+        EV << "A buffer map has been sent to " << *iter << endl;
     }
-    delete bmPkt;
+*/
+
+    // 3. Browse through the local NeighborList
+    //    & Send the BufferMap Packet to all of the neighbors in the list
+    map<IPvXAddress, NeighborInfo *>::iterator iter;
+    for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
+    {
+        // Create copies of the BufferMap packet
+        //MeshBufferMapPacket *bmPkt_copy = bmPkt->dup();
+
+        // send the packet to this neighbor
+        //sendToDispatcher(bmPkt_copy, m_localPort, iter->first, m_destPort);
+        sendToDispatcher(bmPkt->dup(), m_localPort, iter->first, m_destPort);
+
+        EV << "A buffer map has been sent to " << iter->first << endl;
+    }
+
+    delete bmPkt; bmPkt = NULL;
 }
 
 void DonetBase::bindToMeshModule(void)
 {
     cModule *temp = getParentModule()->getModuleByRelativePath("partnerList");
-    m_partnerList = dynamic_cast<PartnerList *>(temp);
-    if (m_partnerList == NULL) throw cException("m_partnerList == NULL is invalid");
+    m_partnerList = check_and_cast<PartnerList *>(temp);
+    EV << "Binding to PartnerList is completed successfully" << endl;
 
     temp = getParentModule()->getModuleByRelativePath("videoBuffer");
-    m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
-    if (m_videoBuffer == NULL) throw cException("m_videoBuffer == NULL is invalid");
+    m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
+    EV << "Binding to VideoBuffer is completed successfully" << endl;
 
     temp = getParentModule()->getModuleByRelativePath("forwarder");
-    m_forwarder = dynamic_cast<Forwarder *>(temp);
-    if (m_forwarder == NULL) throw cException("m_forwarder == NULL is invalid");
+    m_forwarder = check_and_cast<Forwarder *>(temp);
+    EV << "Binding to Forwarder is completed successfully" << endl;
 
 }
 
@@ -180,16 +197,16 @@ void DonetBase::bindToGlobalModule(void)
 
     // -- Some thing new to the function
     cModule *temp = simulation.getModuleByPath("appSetting");
-    m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    if (m_appSetting == NULL) throw cException("NULL pointer to module AppSetting");
+    m_appSetting = check_and_cast<AppSettingDonet *>(temp);
+    EV << "Binding to AppSettingDonet is completed successfully" << endl;
 
     temp = simulation.getModuleByPath("meshObserver");
-    m_meshOverlayObserver = dynamic_cast<MeshOverlayObserver *>(temp);
-    if (m_meshOverlayObserver == NULL) throw cException("NULL pointer to module MeshOverlayObserver");
+    m_meshOverlayObserver = check_and_cast<MeshOverlayObserver *>(temp);
+    EV << "Binding to MeshOverlayObserver is completed successfully" << endl;
 
     temp = simulation.getModuleByPath("logger");
-    m_logger = dynamic_cast<Logger *>(temp);
-    if (m_logger == NULL) throw cException("NULL pointer to module Logger");
+    m_logger = check_and_cast<Logger *>(temp);
+    EV << "Binding to Logger is completed successfully" << endl;
 
 }
 
@@ -241,7 +258,7 @@ const IPvXAddress& DonetBase::getSender(const cPacket *pkt) const
 
 void DonetBase::processChunkRequest(cPacket *pkt)
 {
-    EV << "Process chunk request" << endl;
+    EV << "---------- Process chunk request ------------------------------------" << endl;
     // Debug
     ++m_nChunkRequestReceived;
 
@@ -250,34 +267,25 @@ void DonetBase::processChunkRequest(cPacket *pkt)
     getSender(pkt, senderAddress, senderPort);
     MeshChunkRequestPacket *reqPkt = check_and_cast<MeshChunkRequestPacket *>(pkt);
 
-    // ---------------- Debugging starts ---------------------------------------
-        EV << "Chunk request received from " << senderAddress << ": " << endl;
-        EV << " -- Start: " << reqPkt->getSeqNumMapStart() << endl;
-        EV << " -- End: " << reqPkt->getSeqNumMapEnd() << endl;
-        EV << " -- Head: " << reqPkt->getSeqNumMapHead() << endl;
-        EV  << " -- The whole map of requested chunks:" << endl;
-
-        for (int i=0; i < m_bufferMapSize_chunk; ++i)
-        {
-            EV << reqPkt->getRequestMap(i);
-        }
-        EV << endl;
-    // ---------------- Debugging starts ---------------------------------------
+    EV << "Chunk request received from " << senderAddress << ": " << endl;
+    printChunkRequestPacket(reqPkt);
 
     // -- TODO: Need reply to chunk request here
     // -- Find the id of the requested chunk
     SEQUENCE_NUMBER_T start = reqPkt->getSeqNumMapStart();
-    for (int offset=0; offset < m_bufferMapSize_chunk; ++offset)
+    int size = reqPkt->getRequestMapArraySize();
+    //for (int offset=0; offset < m_bufferMapSize_chunk; ++offset)
+    for (int offset=0; offset < size; ++offset)
     {
         if (reqPkt->getRequestMap(offset) == true)
         {
             SEQUENCE_NUMBER_T seqNum_requestedChunk = offset + start;
-            EV << "\tChunk on request: " << seqNum_requestedChunk << endl;
+            EV << "-- Chunk on request: " << seqNum_requestedChunk << endl;
 
             // -- Look up to see if the requested chunk is available in the Video Buffer
             if (m_videoBuffer->isInBuffer(seqNum_requestedChunk) ==  true)
             {
-                EV << "\t\t in buffer" << endl;
+                EV << "  -- in buffer" << endl;
                 // -- If YES, send the chunk to the requesting peer VIA Forwarder
 
                 m_forwarder->sendChunk(seqNum_requestedChunk, senderAddress, senderPort);
@@ -326,6 +334,22 @@ void DonetBase::reportStatus()
         p.nBMrecv = m_nBufferMapRecv;
         p.partnerList = m_partnerList->getAddressList();
     m_meshOverlayObserver->writeToFile(p);
+}
+
+void DonetBase::printChunkRequestPacket(MeshChunkRequestPacket *reqPkt)
+{
+    if (ev.isGUI() == false)
+        return;
+
+    EV << "-- Start:\t" << reqPkt->getSeqNumMapStart()  << endl;
+    EV << "-- End:\t"   << reqPkt->getSeqNumMapEnd()    << endl;
+    EV << "-- Head:\t"  << reqPkt->getSeqNumMapHead()   << endl;
+
+    for (int i=0; i < m_bufferMapSize_chunk; ++i)
+    {
+        EV << reqPkt->getRequestMap(i);
+    }
+    EV << endl;
 }
 
 

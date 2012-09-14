@@ -23,7 +23,7 @@ void DonetPeer::initialize(int stage)
 {
     if (stage == 0)
     {
-        sig_chunkRequestSeqNum = registerSignal("chunkRequestSeqNum");
+        sig_chunkRequestSeqNum = registerSignal("Signal_chunkRequest");
         sig_partnerRequest      = registerSignal("Signal_PartnerRequest");
 
         return;
@@ -65,9 +65,12 @@ void DonetPeer::initialize(int stage)
     param_nNeighbor_SchedulingStart     = par("nNeighbor_SchedulingStart");
     param_waitingTime_SchedulingStart   = par("waitingTime_SchedulingStart");
 
-    param_baseValue_requestGreedyFactor = par("baseValue_requestGreedyFactor");
+    param_requestFactor_moderate        = par("requestFactor_moderate");
+    param_requestFactor_aggresive       = par("requestFactor_aggressive");
     param_maxNOP                        = par("maxNOP");
     param_offsetNOP                     = par("offsetNOP");
+    param_threshold_scarity             = par("threshold_scarity");
+
     param_minNOP = param_maxNOP - param_offsetNOP;
     param_factor_requestList            = par("factor_requestList").doubleValue();
 
@@ -96,7 +99,9 @@ void DonetPeer::initialize(int stage)
     m_seqNum_schedWinHead = 0L;
 
     // -- Unimportant signals:
-    signal_nPartner = registerSignal("Signal_nPartner");
+    //signal_nPartner         = registerSignal("Signal_nPartner");
+    sig_newchunkForRequest  = registerSignal("Signal_nNewChunkForRequestPerCycle");
+    sig_nPartner            = registerSignal("Signal_nPartner");
 
     // -- Debugging variables
     m_arrivalTime = -1.0;
@@ -196,14 +201,14 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
 
 void DonetPeer::processPacket(cPacket *pkt)
 {
-    PeerStreamingPacket *appMsg = dynamic_cast<PeerStreamingPacket *>(pkt);
-    EV << "appMsg->getMsgType() =" << appMsg->getPacketGroup() << endl;
+    PeerStreamingPacket *appMsg = check_and_cast<PeerStreamingPacket *>(pkt);
+    EV << "Packet group: " << appMsg->getPacketGroup() << endl;
     if (appMsg->getPacketGroup() != PACKET_GROUP_MESH_OVERLAY)
     {
         throw cException("Wrong packet type!");
     }
 
-    MeshPeerStreamingPacket *meshMsg = dynamic_cast<MeshPeerStreamingPacket *>(appMsg);
+    MeshPeerStreamingPacket *meshMsg = check_and_cast<MeshPeerStreamingPacket *>(appMsg);
     switch (meshMsg->getPacketType())
     {
     case MESH_PARTNERSHIP_REQUEST:
@@ -219,7 +224,6 @@ void DonetPeer::processPacket(cPacket *pkt)
     case MESH_BUFFER_MAP:
     {
         processPeerBufferMap(pkt);
-//        processPeerBufferMap2(pkt);
         break;
     }
     case MESH_CHUNK_REQUEST:
@@ -239,23 +243,23 @@ void DonetPeer::processPacket(cPacket *pkt)
     }
     } // switch
 
-    // EV << "going to delete packet ..." << endl;
     delete pkt;
 }
 
 void DonetPeer::processAcceptResponse(cPacket *pkt)
 {
-    EV << "Process Accept response" << endl;
+    EV << endl;
+    EV << "---------- Process Accept response ----------------------------------" << endl;
 
     // -- Extract the address of the accepter
     DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
     IPvXAddress acceptorAddress = controlInfo->getSrcAddr();
-    EV << "\tAccepter's address: " << acceptorAddress << endl;
+    EV << "-- Acceptor: " << acceptorAddress << endl;
 
     // -- Extract the upBw of the accepter peer
     MeshPartnershipAcceptPacket *acceptPkt = dynamic_cast<MeshPartnershipAcceptPacket *>(pkt);
     double upBw_remotePeer = acceptPkt->getUpBw();
-    EV << "\tAccepter's upload BW: " << upBw_remotePeer << endl;
+    EV << "-- BW of acceptor: " << upBw_remotePeer << endl;
 
     // 2. Store the address into its partner list
     m_partnerList->addAddress(acceptorAddress, upBw_remotePeer);
@@ -271,37 +275,36 @@ void DonetPeer::processAcceptResponse(cPacket *pkt)
     // TODO-Giang: state variable m_joined could be replaced by checking the size of the partnershiplist!!!
     if (m_joined == false)
     {
-        EV << "State changes from _NOT_JOINED_ to _JOINED_" << endl;
+        EV << "-- State will be changed from _IDLE_ to _JOINED_" << endl;
 
         // -- Register myself to the ActivePeerList
         IPvXAddress myAddress = getNodeAddress();
-        EV << "\tMy own address: " << myAddress << endl;
+        EV << "-- My own address: " << myAddress << endl;
 
         EV << "Register node's own address to ActivePeerTable" << endl;
         m_apTable->addPeerAddress(myAddress);
         m_apTable->printActivePeerTable();
 
         m_joined = true;
-//         m_firstJoinTime = simTime().dbl();
 
         // -- Start several timers
         // -- 1. Chunk Scheduling timers
-        //scheduleAt(simTime() + param_interval_chunkScheduling, timer_chunkScheduling);
-        scheduleAt(simTime() + uniform(0.0, 0.5), timer_chunkScheduling);
-        EV << "\tSchedule for chunk scheduling after " << param_interval_chunkScheduling << endl;
+        double rand_value = uniform(0.0, 1.0);
+        scheduleAt(simTime() + rand_value, timer_chunkScheduling);
+        EV << "-- Chunk scheduling starts after " << rand_value << " seconds" << endl;
 
         // -- 2. Send buffer map timers
-        // scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
-        scheduleAt(simTime() + uniform(0.0, 1.0), timer_sendBufferMap);
-        EV << "\tSchedule for sending Buffer Map after " << param_interval_bufferMap << endl;
+        rand_value = uniform(0.0, 0.5);
+        scheduleAt(simTime() + rand_value, timer_sendBufferMap);
+        EV << "-- Schedule for sending Buffer Map after " << rand_value << " seconds" << endl;
 
         // -- 3. Have more partner timers
         scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
-        EV << "\tSchedule for finding more partners after " << param_interval_findMorePartner << endl;
+        EV << "-- Finding more partners starts after " << param_interval_findMorePartner << " seconds" << endl;
 
         // -- 4. Start Player?
         scheduleAt(simTime() + param_interval_starPlayer, timer_startPlayer);
-        EV << "\tSchedule for starting Player after " << param_interval_starPlayer << endl;
+        EV << "-- Player will be tried to start after " << param_interval_starPlayer << " seconds" << endl;
 
         // -- Debug
         // m_gstat->reportMeshJoin();
@@ -310,12 +313,13 @@ void DonetPeer::processAcceptResponse(cPacket *pkt)
         m_joinTime = simTime().dbl();
 
     }
-
-    //delete pkt;
 }
 
 void DonetPeer::processRejectResponse(cPacket *pkt)
 {
+    EV << endl;
+    EV << "---------- Process partnership reject -------------------------------" << endl;
+
     // -- Extract the address of the accepter
     DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
     IPvXAddress rejectorAddress = controlInfo->getSrcAddr();
@@ -324,15 +328,15 @@ void DonetPeer::processRejectResponse(cPacket *pkt)
 //    m_activityLog << "--- processRejectResponse --- " << endl;
 //    m_activityLog << "\t at " << simTime().dbl() << " Got a REJECT from: " << rejectorAddress << endl;
 
-    EV << "\tNumber of rejected requests so far: " << m_nRejectSent << endl;
-
+    // TODO-Giang: has to verify this code, the logic seems not very clear
     ++m_nRejectSent;
+    EV << "-- Number of rejected requests so far: " << m_nRejectSent << endl;
 
     if (m_nRejectSent == m_nRequestSent)
     {
 //        m_activityLog << "\tAll requests were rejected --> join() again!" << endl;
 
-        EV << "\tm_nRejectSent == m_nRequestSent --> rejoin()!" << endl;
+        EV << "m_nRejectSent == m_nRequestSent --> rejoin()!" << endl;
 
         // Reset state-variables
         m_nRequestSent = -1;
@@ -345,28 +349,28 @@ void DonetPeer::processRejectResponse(cPacket *pkt)
 
 void DonetPeer::join()
 {
+    EV << "---------- Joint ----------------------------------------------------" << endl;
+
     int init_number = min(param_maxNOP/2 + 1, param_minNOP);
     std::vector<IPvXAddress> listRandPeer = m_apTable->getNPeer(init_number);
     EV << listRandPeer.size() << " peers will be requested!" << endl;
 
 //    m_nRequestSent = listRandPeer.size();
 
+    // -- Only send a partnership request if not enough partners
+    if (m_partnerList->getSize() >= param_minNOP)
+        return;
+
     for (std::vector<IPvXAddress>::iterator iter = listRandPeer.begin(); iter != listRandPeer.end(); ++iter)
     {
-        // -- Only send a partnership request if not enough partners
-        if (m_partnerList->getSize() < param_minNOP)
-        {
-            IPvXAddress addressRandPeer = *iter;
-            EV << "\tRequested peer: " << endl;
+        //IPvXAddress addressRandPeer = *iter;
+        EV << "-- Peer to be requested: " << *iter << endl;
 
-            MeshPartnershipRequestPacket *reqPkt = new MeshPartnershipRequestPacket("MESH_PEER_JOIN_REQUEST");
-                reqPkt->setUpBw(param_upBw);
-                reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
+        MeshPartnershipRequestPacket *reqPkt = new MeshPartnershipRequestPacket("MESH_PEER_JOIN_REQUEST");
+            reqPkt->setUpBw(param_upBw);
+            reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
 
-            sendToDispatcher(reqPkt, m_localPort, addressRandPeer, m_destPort);
-
-            EV << "Node " << getNodeAddress() << " sends JOIN_REQ to " << addressRandPeer << endl;
-        }
+        sendToDispatcher(reqPkt, m_localPort, *iter, m_destPort);
     }
 
 }
@@ -441,6 +445,7 @@ bool DonetPeer::shouldStartChunkScheduling(void)
     return false;
 }
 
+/*
 bool DonetPeer::should_be_requested(void)
 {
     EV << "Number of chunks requested so far per cycle: " \
@@ -450,19 +455,49 @@ bool DonetPeer::should_be_requested(void)
 
     return true;
 }
+*/
 
 bool DonetPeer::should_be_requested(SEQUENCE_NUMBER_T seq_num)
 {
-    EV << "Number of chunks requested so far per cycle: " \
-            << m_nChunkRequested_perSchedulingInterval << endl;
+    EV << endl;
+    EV << "%%%" << endl;
+    EV << "Number of chunks requested in this cycle: " \
+       << m_nChunkRequested_perSchedulingInterval << endl;
 
     // -- Check if already requested too many chunks
-    if (m_nChunkRequested_perSchedulingInterval >= numberOfChunkToRequestPerCycle())
-        return false;
+//    if (m_nChunkRequested_perSchedulingInterval >= numberOfChunkToRequestPerCycle())
+//        return false;
+
+    int nChunkPerCycle = numberOfChunkToRequestPerCycle();
+    EV << "numberOfChunkToRequestPerCycle(): " << nChunkPerCycle << endl;
+
+    if (numberOfChunkToRequestPerCycle() > 0)
+    {
+        // -- Case of limited requests
+        EV << "-- Limited number of chunks to request" << endl;
+        if (m_nChunkRequested_perSchedulingInterval >= nChunkPerCycle)
+        {
+            EV << "-- Limit was exceeded" << endl;
+            return false;
+        }
+    }
+    else
+    {
+        EV << "-- Unlimited number of chunks to request" << endl;
+    }
 
     // -- Check if the chunk has been recently requested
     if (recentlyRequestedChunk(seq_num) == true)
+    {
         return false;
+    }
+
+    SEQUENCE_NUMBER_T current_playbackPoint = m_player->getCurrentPlaybackPoint();
+    if (seq_num < current_playbackPoint)
+    {
+        EV << "-- Chunk " << seq_num << " is behind play-back point " << current_playbackPoint << endl;
+        return false;
+    }
 
     return true;
 }
@@ -474,7 +509,6 @@ bool DonetPeer::should_be_requested(SEQUENCE_NUMBER_T seq_num)
 //{
 //    // Relative lag
 //
-//
 //    // Absolute lag
 //}
 
@@ -483,16 +517,6 @@ bool DonetPeer::should_be_requested(SEQUENCE_NUMBER_T seq_num)
  */
 void DonetPeer::chunkScheduling(void)
 {
-    // The logic of the following lines were moved into another function, shouldStartChunkScheduling()
-    // !!!
-    // -- Get the number of neighbors
-    // if exceeding some threshold (default = 1) --> start scheduling
-    // if (m_partnerList->getSize() < param_nNeighbor_SchedulingStart)
-    //     return;
-
-    // -- Debug
-    // EV << "Start chunk scheduling" << endl;
-
     if (m_partnerList->getSize() <= 0)
     {
         EV << "No partner just yet, exiting from chunk scheduling" << endl;
@@ -505,6 +529,8 @@ void DonetPeer::chunkScheduling(void)
         return;
     }
 
+    emit(sig_nPartner, m_partnerList->getSize());
+
     randomChunkScheduling();
     //    donetChunkScheduling();
 }
@@ -512,7 +538,9 @@ void DonetPeer::chunkScheduling(void)
 
 void DonetPeer::randomChunkScheduling(void)
 {
-    EV << "Random chunk scheduling triggered! " << endl;
+    EV << endl;
+    EV << "---------- Random chunk scheduling ----------------------------------" << endl;
+    //srand(time(NULL));
 
     // -- Clear state variables
     m_nChunkRequested_perSchedulingInterval = 0;
@@ -525,36 +553,39 @@ void DonetPeer::randomChunkScheduling(void)
     long lower_bound = std::max(0L, m_seqNum_schedWinHead-m_bufferMapSize_chunk+1);
 
     // -- Update bounds of all sendBM
-    m_partnerList->updateBoundSendBm(m_seqNum_schedWinHead, lower_bound, lower_bound+m_bufferMapSize_chunk-1);
+    //m_partnerList->updateBoundSendBm(m_seqNum_schedWinHead, lower_bound, lower_bound+m_bufferMapSize_chunk-1);
+    m_partnerList->updateBoundSendBm(lower_bound, lower_bound+m_bufferMapSize_chunk-1);
 
-    EV << "\tScheduling window: [" << lower_bound << " - " << upper_bound << "]" << endl;
-    EV << "\tThis node has " << m_partnerList->getSize() << " partners" << endl;
+    EV << "-- Scheduling window: [" << lower_bound << " - " << upper_bound << "]" << endl;
+    EV << "-- This node has " << m_partnerList->getSize() << " partners" << endl;
+    EV << "-- Initial state of the request Bm:" << endl;
     m_partnerList->printAllSendBm();
 
-        //EV << "My partners: ";
-        //m_partnerList->print();
+    int nNewChunkForRequest_perSchedulingCycle = 0;
 
+    EV << "----- Browsing through the chunks within the scheduling windows-----" << endl;
     // -- Looking for chunk to request
     for (SEQUENCE_NUMBER_T seq_num = lower_bound; seq_num <= upper_bound; ++seq_num)
     {
-        EV << "\tInvestigating chunk " << seq_num << ": ";
+        EV << "-- Investigating chunk " << seq_num << ": ";
         if (m_videoBuffer->isInBuffer(seq_num) == false)
         {
-            EV << "\t\tThis chunk is not in the Buffer" << endl;
+            EV << "-- This chunk is NOT in the Buffer" << endl;
+            // -- Debug -- Counting
+            ++nNewChunkForRequest_perSchedulingCycle;
+
             if (should_be_requested(seq_num) == false)
             {
-                EV << "\t\tThis chunk should not be requested this time" << endl;
+                EV << "----> This chunk should NOT be requested this time" << endl;
                 continue;
             }
-
-            EV << "\t\tLooking for supplier of the chunk ... ";
 
             // -- Get list of neighbors which has this chunk in their buffer map
             std::vector<IPvXAddress> holderList;
             m_partnerList->getHolderList(seq_num, holderList);
             int nHolder = holderList.size();
 
-            EV << "\t\tThere are " << nHolder << " suppliers" << endl;
+            EV << "-- There are " << nHolder << " suppliers" << endl;
 
             // if there is at least one neighbor
             if (nHolder > 0)
@@ -562,16 +593,16 @@ void DonetPeer::randomChunkScheduling(void)
                 int index = 0;
                 if (nHolder == 1)
                 {
-                    EV << "\t\t\tThere is only one holder of the chunk." << endl;
+                    EV << "-- There is only one holder of the chunk." << endl;
                     index = 0;
                 }
                 else
                 {
-                    EV << "\t\t\tThere are multiple holders, get a random holder with index: " << index << endl;
                     index = (int)(rand() % holderList.size());
+                    EV << "-- There are multiple holders, random index: " << index << endl;
                 } // if
 
-                EV << "\t\t\tHolder for chunk " << seq_num << " is " << holderList[index] << endl;
+                EV << "-- Holder for chunk " << seq_num << " is " << holderList[index] << endl;
 
                 // -- Preparing to access record of partner to set the sendBM
                 NeighborInfo *nbr_info = m_partnerList->getNeighborInfo(holderList[index]);
@@ -585,7 +616,7 @@ void DonetPeer::randomChunkScheduling(void)
                 m_list_requestedChunk.push_back(seq_num);
                 ++m_nChunkRequested_perSchedulingInterval;
 
-                // -- Emitting signals for statistics collection
+                // -- Emit signal for statistics collection
                 emit(sig_chunkRequestSeqNum, seq_num);
 
             } // if (nHolder > 0)
@@ -595,7 +626,12 @@ void DonetPeer::randomChunkScheduling(void)
         {
             EV << "this is already in VideoBuffer" << endl;
         }
+
+        EV << "-----" << endl;
+
     } // end of for
+
+    emit(sig_newchunkForRequest, nNewChunkForRequest_perSchedulingCycle);
 
     // -- Browse through the list of partners to see which one have been set the sendBm
     // -- For each of those one, prepare a suitable ChunkRequestPacket and send to that one
@@ -620,6 +656,7 @@ void DonetPeer::randomChunkScheduling(void)
     // -- Now refreshing the m_list_requestedChunk
     refreshListRequestedChunk();
 
+    EV << endl;
 } // Random Chunk Scheduling
 
 
@@ -653,7 +690,8 @@ void DonetPeer::donetChunkScheduling(void)
     m_partnerList->resetAllAvailableTime(m_videoBuffer->getBufferStartSeqNum(), lower_bound, m_videoBuffer->getChunkInterval());
 
     // -- Update bounds of all sendBM
-    m_partnerList->updateBoundSendBm(m_seqNum_schedWinHead, lower_bound, lower_bound+m_bufferMapSize_chunk-1);
+    //m_partnerList->updateBoundSendBm(m_seqNum_schedWinHead, lower_bound, lower_bound+m_bufferMapSize_chunk-1);
+    m_partnerList->updateBoundSendBm(lower_bound, lower_bound+m_bufferMapSize_chunk-1);
 
     // -- Finding the expected set
     std::vector<SEQUENCE_NUMBER_T> expected_set;
@@ -809,8 +847,12 @@ void DonetPeer::donetChunkScheduling(void)
     } // end of for
 } // Donet Chunk Scheduling
 
+/**
+ * Used for Donet chunk scheduling
+ */
 int DonetPeer::selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candidate1, IPvXAddress candidate2, IPvXAddress &supplier)
 {
+
     int ret = 0;
     // -- Get pointer to the respective NeighborInfo
     NeighborInfo *info_candidate1 = m_partnerList->getNeighborInfo(candidate1);
@@ -871,7 +913,8 @@ void DonetPeer::bindToGlobalModule(void)
     // -- Churn
     cModule *temp = simulation.getModuleByPath("churnModerator");
     m_churn = check_and_cast<IChurnGenerator *>(temp);
-    if (m_churn == NULL) throw cException("m_churn == NULL is invalid");
+    //if (m_churn == NULL) throw cException("m_churn == NULL is invalid");
+    EV << "Binding to churnModerator is completed successfully" << endl;
 }
 
 void DonetPeer::bindToMeshModule(void)
@@ -880,39 +923,39 @@ void DonetPeer::bindToMeshModule(void)
 
     // -- Player
     cModule *temp = getParentModule()->getModuleByRelativePath("player");
-    m_player = dynamic_cast<Player *>(temp);
-    if (!m_player)
-        throw cException("Null pointer to Player module!");
+    m_player = check_and_cast<Player *>(temp);
+    EV << "Binding to churnModerator is completed successfully" << endl;
 
 }
 
 void DonetPeer::processPartnershipRequest(cPacket *pkt)
 {
+    EV << endl;
+    EV << "-------- Process partnership Request --------------------------------" << endl;
+
     // -- Get the identifier (IP:port) of the requester
     IPvXAddress requesterAddress;
     int requesterPort;
     getSender(pkt, requesterAddress, requesterPort);
     EV << "Requester: " << requesterAddress << ":" << requesterPort << endl; // Debug
 
-    EV << "--- Partnership Request --- " << endl;
-    EV << "\tGot a REQUEST from: " << requesterAddress << endl;
-    EV << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
+    EV << "-- Got a REQUEST from: " << requesterAddress << endl;
 
-    //if (m_partnerList->getSize() < param_maxNOP)
+    // TODO-Giang: the logic of this join process has flaws, try to fix it ASAP
     if (canAcceptMorePartner())
     {
-        EV << "\tCurrent number of partners: " << m_partnerList->getSize() << " --> can accept this partnership request" << endl;
+        EV << "-- Can accept this request" << endl;
         // -- Debug
         emit(sig_partnerRequest, m_partnerList->getSize());
 
         // 1.1. Get the upBw of the remote peer
         MeshPartnershipRequestPacket *memPkt = check_and_cast<MeshPartnershipRequestPacket *>(pkt);
         double upBw_remotePeer = memPkt->getUpBw();
-        EV << "\tRemote peer's upload bandwidth: " << upBw_remotePeer << endl;
+        EV << "-- Remote peer's upload bandwidth: " << upBw_remotePeer << endl;
 
         m_partnerList->addAddress(requesterAddress, upBw_remotePeer);
 
-        // m_partnerList->print(); // Debug:
+        m_partnerList->print(); // Debug
 
         MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
         sendToDispatcher(acceptPkt, m_localPort, requesterAddress, requesterPort);
@@ -920,19 +963,21 @@ void DonetPeer::processPartnershipRequest(cPacket *pkt)
     }
     else // cannot accept any more partner
     {
-        EV << "\tEnough partners (" << m_partnerList->getSize() << ") --> cannot accept more partners" << endl;
+        EV << "-- Enough partners --> cannot accept this request." << endl;
         emit(sig_partnerRequest, 0);
 
         // -- Create a Partnership message and send it to the remote peer
         MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
         sendToDispatcher(rejectPkt, m_localPort, requesterAddress, requesterPort);
-
     }
 }
 
 
 void DonetPeer::processPeerBufferMap(cPacket *pkt)
 {
+    EV << endl;
+    EV << "---------- Process received buffer map ------------------------------" << endl;
+
     /*
     MeshBufferMapPacket *bmPkt = check_and_cast<MeshBufferMapPacket *>(appMsg);
     int countOne = 0;
@@ -946,17 +991,22 @@ void DonetPeer::processPeerBufferMap(cPacket *pkt)
     IPvXAddress senderAddress = getSender(pkt);
     NeighborInfo *nbr_info = m_partnerList->getNeighborInfo(senderAddress);
 
-    EV << "Received a buffer map from " << senderAddress << endl;
+    EV << "-- Received a buffer map from " << senderAddress << endl;
 
     // Get the record respective to the address of the partner
     if (nbr_info == NULL)
     {
-        EV << "\tBuffer Map is received from a non-partner peer!" << endl;
+        EV << "-- Buffer Map is received from a non-partner peer!" << endl;
         return;
     }
 
     // -- Cast to the BufferMap packet
     MeshBufferMapPacket *bmPkt = check_and_cast<MeshBufferMapPacket *>(pkt);
+
+    EV << "-- Buffer Map information: " << endl;
+    EV << "  -- Start:\t"   << bmPkt->getBmStartSeqNum()    << endl;
+    EV << "  -- End:\t"     << bmPkt->getBmEndSeqNum()      << endl;
+    EV << "  -- Head:\t"    << bmPkt->getHeadSeqNum()       << endl;
 
     // -- Copy the BufferMap content to the current record
     nbr_info->copyFrom(bmPkt);
@@ -967,12 +1017,12 @@ void DonetPeer::processPeerBufferMap(cPacket *pkt)
     // -- Update the range of the scheduling window
     m_seqNum_schedWinHead = (bmPkt->getHeadSeqNum() > m_seqNum_schedWinHead)?
             bmPkt->getHeadSeqNum():m_seqNum_schedWinHead;
-    EV << "\t\tNew head for the scheduling window: " << m_seqNum_schedWinHead << endl;
+    EV << "-- New head for the scheduling window: " << m_seqNum_schedWinHead << endl;
 
     // -- Debug
     ++m_nBufferMapRecv;
-    m_partnerList->printRecvBm(senderAddress);
-    //EV << endl;
+    nbr_info->printRecvBm();
+    // m_partnerList->printRecvBm(senderAddress);
 
 }
 
@@ -993,9 +1043,11 @@ void DonetPeer::startPlayer(void)
 
 bool DonetPeer::shouldStartPlayer(void)
 {
+    EV << "---------- Check whether should start the Player --------------------" << endl;
+    EV << "-- Threshold: " << m_bufferMapSize_chunk / 2 << endl;
     if (m_videoBuffer->getNumberFilledChunk() >= m_bufferMapSize_chunk / 2)
     {
-        EV << "Half of the buffer is filled with chunks --> Player should start now!" << endl;
+        EV << "-- The Player should start now!" << endl;
 
         m_video_startTime = simTime().dbl();
         m_head_videoStart = m_videoBuffer->getHeadReceivedSeqNum();
@@ -1003,10 +1055,11 @@ bool DonetPeer::shouldStartPlayer(void)
         return true;
     }
 
-    EV << "The buffer is not filled with enough chunks to start now --> wait a bit more!" << endl;
+    EV << "-- Not enough chunks to start now --> wait a bit more!" << endl;
     return false;
 }
 
+/*
 int DonetPeer::numberOfChunkToRequestPerCycle(void)
 {
     int ret = (int)(m_nChunk_toRequest_perCycle * param_baseValue_requestGreedyFactor);
@@ -1014,16 +1067,52 @@ int DonetPeer::numberOfChunkToRequestPerCycle(void)
 
     return ret;
 }
+*/
 
+int DonetPeer::numberOfChunkToRequestPerCycle(void)
+{
+    int ret = 0;
+    if (m_player->playerStarted() == false)
+    {
+        // -- Chunks will be requested orderly to avoid congestion at requested peer
+        // -- Trade-off is longer startup delays
+
+        ret = (int)(m_nChunk_toRequest_perCycle * param_requestFactor_moderate);
+    }
+    else if (inScarityState() == true)
+    {
+        // -- In "sensitive" state, since the play might soon be stalled because of no chunks in the buffer
+
+        ret = (int)(m_nChunk_toRequest_perCycle * param_requestFactor_aggresive);
+    }
+    else
+    {
+        // -- Request chunks "freely", since there would be not so many chunks available anyway
+
+        ret = -1; // Unlimited
+    }
+
+    //EV << "Number of chunk to request per scheduling cycle: " << ret << endl;
+
+    return ret;
+}
+
+/*
 double DonetPeer::currentRequestGreedyFactor(void)
 {
     return param_baseValue_requestGreedyFactor;
 }
+*/
 
 bool DonetPeer::recentlyRequestedChunk(SEQUENCE_NUMBER_T seq_num)
 {
+    EV << endl;
+    EV << "%%%" << endl;
     vector<SEQUENCE_NUMBER_T>::iterator it;
     it = find (m_list_requestedChunk.begin(), m_list_requestedChunk.end(), seq_num);
+
+    // -- Debug
+    printListOfRequestedChunk();
 
     if (it == m_list_requestedChunk.end())
     {
@@ -1044,9 +1133,31 @@ void DonetPeer::refreshListRequestedChunk(void)
     int nRedundantElement = m_list_requestedChunk.size() - expectedSize;
     if (nRedundantElement > 0)
     {
-        EV << nRedundantElement << " element should be deleted" << endl;
+        EV << "-- " << nRedundantElement << " element should be deleted" << endl;
         m_list_requestedChunk.erase(m_list_requestedChunk.begin(), m_list_requestedChunk.begin()+nRedundantElement);
-        //for (int i = 0; i < nRedundantElement; ++i)
-            //m_list_requestedChunk.pop_back();
     }
+}
+
+bool DonetPeer::inScarityState(void)
+{
+    int offset = m_videoBuffer->getHeadReceivedSeqNum() - m_player->getCurrentPlaybackPoint();
+
+    if (offset < (int)(m_videoStreamChunkRate * param_threshold_scarity))
+        return true;
+
+    return false;
+}
+
+void DonetPeer::printListOfRequestedChunk(void)
+{
+    if (ev.isGUI() == false)
+        return;
+
+    EV << "Recently requested chunks: " << endl;
+    vector<SEQUENCE_NUMBER_T>::iterator iter;
+    for (iter = m_list_requestedChunk.begin(); iter != m_list_requestedChunk.end(); ++iter)
+    {
+        EV << *iter << " ";
+    }
+    EV << endl;
 }

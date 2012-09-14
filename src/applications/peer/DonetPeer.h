@@ -46,7 +46,7 @@ private:
     bool m_timerDeleted;
 
     // Chunk scheduling
-    bool should_be_requested(void);
+    // bool should_be_requested(void);
     bool should_be_requested(SEQUENCE_NUMBER_T seq_num);
     void initializeSchedulingWindow(void);
     bool shouldStartChunkScheduling();
@@ -56,6 +56,8 @@ private:
     double currentRequestGreedyFactor(void);
     bool recentlyRequestedChunk(SEQUENCE_NUMBER_T seq_num);
     void refreshListRequestedChunk(void);
+    void printListOfRequestedChunk(void);
+    bool inScarityState(void);
 
     void donetChunkScheduling(void);
     int selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candidate1, IPvXAddress candidate2, IPvXAddress &supplier);
@@ -78,8 +80,12 @@ private:
     int     param_nNeighbor_SchedulingStart;
     double  param_interval_findMorePartner;
     double  param_interval_starPlayer;
-    double  param_baseValue_requestGreedyFactor;
+    //double  param_baseValue_requestGreedyFactor;
+    //double  param_aggressiveValue_requestGreedyFactor
+    double  param_requestFactor_moderate;
+    double  param_requestFactor_aggresive;
     double  param_factor_requestList;
+    double  param_threshold_scarity;
 
     // -- Pointers to "global" modules
     IChurnGenerator *m_churn;
@@ -121,9 +127,12 @@ private:
 
     // -- Signals
     simsignal_t sig_chunkRequestSeqNum;
-    simsignal_t signal_nPartner;
+    //simsignal_t signal_nPartner;
+    simsignal_t sig_newchunkForRequest;
+    simsignal_t sig_nPartner;
 
     simsignal_t sig_partnerRequest;
+
 };
 
 #endif

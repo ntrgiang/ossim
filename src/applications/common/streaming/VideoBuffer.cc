@@ -34,7 +34,7 @@ void VideoBuffer::initialize(int stage)
 {
     if (stage == 0)
     {
-        signal_seqNum_receivedChunk = registerSignal("SeqNum_RecevedChunk");
+        signal_seqNum_receivedChunk = registerSignal("Signal_RecevedChunk");
     }
 
     if (stage != 3)
@@ -72,12 +72,12 @@ void VideoBuffer::handleMessage(cMessage *)
 
 void VideoBuffer::insertPacket(VideoChunkPacket *packet)
 {
-    Enter_Method("insertPacket()");
+    //Enter_Method("insertPacket()");
 
-    EV << "Insert a packet into video buffer:" << endl;
+    EV << "---------- Insert a packet into video buffer ------------------------" << endl;
 
     long seq_num = packet->getSeqNumber();
-    EV << "\tSequence number of chunk: " << seq_num << " --> element: " << seq_num % m_bufferSize_chunk << endl;
+    EV << "-- Sequence number of chunk: " << seq_num << " --> element: " << seq_num % m_bufferSize_chunk << endl;
 
     // Stats
     emit(signal_seqNum_receivedChunk, seq_num);
@@ -86,14 +86,14 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
 
     if (elem.m_chunk != NULL)
     {
-        EV << "\tExisting chunk needs to be deleted: " << seq_num % m_bufferSize_chunk << endl;
+        EV << "-- Existing chunk needs to be deleted: " << seq_num % m_bufferSize_chunk << endl;
         delete elem.m_chunk;
         elem.m_chunk = NULL;
 
         if (__VIDEOBUFFER_CROSSCHECK__) --m_nActiveElement;
     }
 
-    EV << "\tNew chunk was attached to the Buffer" << endl;
+    EV << "-- New chunk was attached to the Buffer" << endl;
     elem.m_chunk = packet;
 
     if (__VIDEOBUFFER_CROSSCHECK__) ++m_nActiveElement;
@@ -114,14 +114,14 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
 #elif (BUFFER_IMPL_VERSION == _VERSION_3)
     if (seq_num > m_head_received_seqNum)
     {
-        EV << "\tUpdate the range of the Video Buffer:" << endl;
+        EV << "-- Update the range of the Video Buffer:" << endl;
 
         m_head_received_seqNum = seq_num;
         m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
         m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
-        EV << "\t-- head: " << m_head_received_seqNum << endl;
-        EV << "\t-- start: " << m_bufferStart_seqNum << endl;
-        EV << "\t-- end: " << m_bufferEnd_seqNum << endl;
+        EV << "  -- start:\t"   << m_bufferStart_seqNum     << endl;
+        EV << "  -- end:\t"     << m_bufferEnd_seqNum       << endl;
+        EV << "  -- head:\t"    << m_head_received_seqNum   << endl;
     }
 #endif
 
@@ -228,8 +228,8 @@ void VideoBuffer::captureVideoBuffer(BufferMap *bm)
 
 void VideoBuffer::printStatus()
 {
-    Enter_Method("printStatus()");
-
+    if (ev.isGUI() == false)
+        return;
 /*
     // Version 1
     std::vector<STREAM_BUFFER_ELEMENT_T>::iterator iter;
@@ -245,8 +245,13 @@ void VideoBuffer::printStatus()
 */
 
     // Version 2
+    EV << endl;
+    EV << "%%%" << endl;
+    EV << "-- Start:\t" << m_bufferStart_seqNum     << endl;
+    EV << "-- End:\t"   << m_bufferEnd_seqNum       << endl;
+    EV << "-- Head:\t"  << m_head_received_seqNum   << endl;
+
     std::vector<STREAM_BUFFER_ELEMENT_T>::iterator iter;
-    EV << "[" << m_bufferStart_seqNum << ", " << m_bufferEnd_seqNum << "] --- ";
     for(iter = m_streamBuffer.begin(); iter != m_streamBuffer.end(); ++ iter)
     {
         STREAM_BUFFER_ELEMENT_T &elem = *iter;
@@ -254,14 +259,15 @@ void VideoBuffer::printStatus()
         bit = (elem.m_chunk != NULL)?1:0;
         EV << bit << " ";
     }
-    EV << std::endl;
+    EV << endl;
 
 }
 
 void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
 {
-    Enter_Method("fillBufferMapPacket()");
-    EV << "Mapping from Buffer Map into BM packet: " << endl;
+    EV << endl;
+    EV << "%%%" << endl;
+    EV << "Copy set bits from Buffer Map into BM packet: " << endl;
 
     // bmPkt->setBufferMapArraySize(m_bufferSize_chunk);
     // bmPkt->setIdStart(m_id_bufferStart);
@@ -270,11 +276,11 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
     bmPkt->setBmEndSeqNum(m_bufferEnd_seqNum);
     bmPkt->setHeadSeqNum(m_head_received_seqNum);
 
-    EV << "\tBuffer Map info: " << endl;
-    EV  << "\t-- m_bufferSize_chunk = "   << m_bufferSize_chunk       << endl \
-        << "\t-- m_bufferStart_seqNum = " << m_bufferStart_seqNum     << endl \
-        << "\t-- m_bufferEnd_seqNum = "   << m_bufferEnd_seqNum       << endl \
-        << "\t-- m_head_received_seqNum ="  << m_head_received_seqNum   << endl;
+    EV << "-- Buffer Map info: " << endl;
+    EV << "  -- m_bufferSize_chunk =\t"        << m_bufferSize_chunk       << endl;
+    EV << "  -- Start:\t"   << m_bufferStart_seqNum     << endl;
+    EV << "  -- End:\t"     << m_bufferEnd_seqNum       << endl;
+    EV << "  -- Head:\t"    << m_head_received_seqNum   << endl;
 
     // -- Initialize all of the element of the BM to false
     for (int i = 0; i < m_bufferSize_chunk; i++)
@@ -283,30 +289,29 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
     }
 
     // this block has problem?
+    int offset = 0;
     std::vector<STREAM_BUFFER_ELEMENT_T>::iterator iter;
     for (iter = m_streamBuffer.begin(); iter != m_streamBuffer.end(); ++iter)
     {
+        EV << "Slot with offset = " << offset << " :: ";
+
         // if the element stores no chunk
         if (iter->m_chunk == NULL)
+        {
+            EV << "No chunk!" << endl;
             continue;
+        }
 
         // if the id of the packet at that element is too "old"
-        // if (iter->m_chunk->getSeqNumber() < m_id_bufferStart)
         if (iter->m_chunk->getSeqNumber() < m_bufferStart_seqNum)
+        {
+            EV << "Chunk is out-dated!" << endl;
             continue;
+        }
 
-        // int idx = iter->m_chunk->getSeqNumber() - m_id_bufferStart;
-        int idx = iter->m_chunk->getSeqNumber() - m_bufferStart_seqNum;
-        #if (__VIDEO_BUFFER_DEBUG__)
-            EV << "idx = " << idx << endl;
-        #endif
-        bmPkt->setBufferMap(idx, true);
-//        r_index.record(iter->m_chunk->getSeqNumber());
-//        r_index.record(m_id_bufferStart);
-//        r_index.record(1);
-
-//        int idx = iter->m_chunk->getSeqNumber() - m_id_bufferStart;
-//        bm->setElement(idx, true); // TODO: find out the problem of this line
+        EV << "with seq_num " << iter->m_chunk->getSeqNumber() << " is set to true!" << endl;
+        bmPkt->setBufferMap(offset, true);
+        offset++;
     }
 
 }

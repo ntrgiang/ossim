@@ -99,6 +99,7 @@ void NeighborInfo::copyFrom(MeshBufferMapPacket *bmPkt)
     {
         m_recvBm[i] = bmPkt->getBufferMap(i);
     }
+
 }
 
 void NeighborInfo::copyTo(BufferMap *bm)
@@ -133,35 +134,56 @@ void NeighborInfo::copyTo(MeshChunkRequestPacket *reqPkt)
 
 void NeighborInfo::printRecvBm(void)
 {
-    EV << "Print Received Buffer Map:" << endl;
+    if (ev.isGUI() == false)
+        return;
 
-    EV << "--- Start: " << m_seqNum_recvBmStart << endl
-       << "--- End: " << m_seqNum_recvBmEnd << endl
-       << "--- Head " << m_seqNum_recvBmHead
-       << endl;
+    EV << endl;
+    EV << "%%%" << endl;
+    EV << "recvBm::" << endl;
 
+    EV << "  -- Start:\t"    << m_seqNum_recvBmStart << endl
+       << "  -- End:\t"      << m_seqNum_recvBmEnd   << endl
+       << "  -- Head:\t"     << m_seqNum_recvBmHead  << endl;
+
+    int k = 1;
     for (int i = 0; i < m_bufferSize; ++i)
     {
-        EV << m_recvBm[i] << " ";
-    }
+        EV << m_recvBm[i];
 
+        // -- For better presenting the bit array
+        if (k % 10 == 0) EV << "  ";
+        if (k % 100 == 0) EV << endl;
+        k++;
+    }
     EV << endl;
 }
 
 void NeighborInfo::printSendBm(void)
 {
-    EV << "sendBm:: << endl"
-            << " -- m_sendBmModified: " << m_sendBmModified << endl
-            << " -- Start: " << m_seqNum_sendBmStart << endl
-            << " -- End: " << m_seqNum_sendBmEnd << endl
-            << " -- Head: " << m_seqNum_sendBmHead
-            << endl;
+    if (ev.isGUI() == false)
+        return;
 
+    EV << endl;
+    EV << "%%%" << endl;
+    EV << "requestBm:: " << endl
+            << "  -- m_sendBmModified: " << m_sendBmModified << endl
+            << "  -- Start:\t"  << m_seqNum_sendBmStart << endl
+            << "  -- End:\t"    << m_seqNum_sendBmEnd   << endl
+            << "  -- Head:\t"   << m_seqNum_sendBmHead  << endl;
+
+    int countOne = 0;
+    int k = 1;
     for (int i = 0; i < m_bufferSize; ++i)
     {
-        EV << m_sendBm[i] << " ";
+        EV << m_sendBm[i];
+        if (m_sendBm[i] == 1) ++countOne;
+
+        // -- For better presenting the bit array
+        if (k % 10 == 0) EV << "  ";
+        if (k % 100 == 0) EV << endl;
+        k++;
     }
-    EV << endl;
+    EV << "Total number of chunks to request: " << countOne << endl;
 }
 
 void NeighborInfo::clearSendBm(void)

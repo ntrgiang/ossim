@@ -64,26 +64,31 @@ void PartnerList::handleMessage(cMessage *)
 
 void PartnerList::print() const
 {
-    Enter_Method("print()");
+    if (ev.isGUI() == false)
+        return;
 
+    EV << endl;
+    EV << "%%%" << endl;
     std::map<IPvXAddress, NeighborInfo*>::iterator iter;
     int i = 1;
     for(iter = m_map.begin(); iter != m_map.end(); ++iter)
     {
-        // EV << "Partner " << i++ << ": " << iter->first << endl;
-        EV << "Partner " << i++ << ": " << iter->first << " -- upload bw: " << iter->second->getUpBw() << endl;
+        EV << "Partner " << i++ << ": " << iter->first
+           << " -- upload bw: " << iter->second->getUpBw() << endl;
     }
 }
 
 void PartnerList::printAllSendBm() const
 {
-//    Enter_Method_Silent("printpartnerList");
-    Enter_Method("print()");
+
+    if (ev.isGUI() == false)
+        return;
 
     std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+    int i = 0;
     for(iter = m_map.begin(); iter != m_map.end(); ++iter)
     {
-        EV << "Partner " << iter->first << " -- map: ";
+        EV << "Partner " << ++i << ": " << iter->first;
         iter->second->printSendBm();
 
         // -- For Donet chunk scheduling
@@ -97,13 +102,26 @@ void PartnerList::updateBoundSendBm(SEQUENCE_NUMBER_T head,
                                     SEQUENCE_NUMBER_T start,
                                     SEQUENCE_NUMBER_T end) const
 {
-//    Enter_Method_Silent("printpartnerList");
     Enter_Method("print()");
 
     std::map<IPvXAddress, NeighborInfo*>::iterator iter;
     for(iter = m_map.begin(); iter != m_map.end(); ++iter)
     {
         iter->second->setSeqNumSendBmHead(head);
+        iter->second->setSeqNumSendBmStart(start);
+        iter->second->setSeqNumSendBmEnd(end);
+    }
+}
+
+void PartnerList::updateBoundSendBm(SEQUENCE_NUMBER_T start,
+                                    SEQUENCE_NUMBER_T end) const
+{
+    Enter_Method("print()");
+
+    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+    for(iter = m_map.begin(); iter != m_map.end(); ++iter)
+    {
+        iter->second->setSeqNumSendBmHead(-1L);
         iter->second->setSeqNumSendBmStart(start);
         iter->second->setSeqNumSendBmEnd(end);
     }

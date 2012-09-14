@@ -57,12 +57,17 @@ void ActivePeerTable::receiveChangeNotification(int category, const cPolymorphic
 
 void ActivePeerTable::printActivePeerTable() const
 {
-    EV << "-- Active peer table --\n";
+    if (ev.isGUI() == false)
+        return;
 
-    AddressSet::iterator it;
-    for (it = activePeerList.begin(); it != activePeerList.end(); it++)
+    EV << endl;
+    EV << "%%%" << endl;
+    EV << "-- Active peer table:" << endl;
+
+    AddressSet::iterator iter;
+    for (iter = activePeerList.begin(); iter != activePeerList.end(); ++iter)
     {
-        EV << it->get4() << endl;
+        EV << iter->get4() << endl;
     }
 }
 
@@ -73,7 +78,7 @@ void ActivePeerTable::setName(std::string name)
 
 bool ActivePeerTable::isActivePeer(const IPvXAddress& dest) const
 {
-    Enter_Method("isActivePeer()");
+    //Enter_Method("isActivePeer()");
 
 //    AddressSet::iterator it = activePeerList.search(dest);
     AddressSet::iterator it;
