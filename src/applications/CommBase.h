@@ -41,6 +41,7 @@ protected:
     int getBufferMapSize(void);
 
     // -- Utility functions
+    void findNodeAddress(void);
     IPvXAddress getNodeAddress(void);
 
     // -- Binding to external modules
@@ -50,6 +51,8 @@ protected:
     IChurnGenerator *m_churn;
     ActivePeerTable *m_apTable;
     GlobalStatistic *m_gstat;
+
+    IPvXAddress m_localAddress;
 };
 
 #endif /* COMMBASE_H_ */

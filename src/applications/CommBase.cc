@@ -61,20 +61,20 @@ void CommBase::printPacket(cPacket *pkt)
 {
     DpControlInfo *ctrl = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
 
-    IPvXAddress srcAddr = ctrl->getSrcAddr();
-    IPvXAddress destAddr = ctrl->getDestAddr();
-    int srcPort = ctrl->getSrcPort();
-    int destPort = ctrl->getDestPort();
+    EV  << ctrl->getSrcAddr() << ":"
+        << ctrl->getSrcPort() << " --> "
+        << ctrl->getDestAddr() << ":"
+        << ctrl->getDestPort() << " :: ";
 
-    ev  << pkt << "  (" << pkt->getByteLength() << " bytes)" << endl;
-    ev  << srcAddr << " :" << srcPort << " --> " << destAddr << ":" << destPort << endl;
+    EV  << pkt->getName() << "  (" << pkt->getByteLength() << " bytes)" << endl;
 }
 
 void CommBase::sendToDispatcher(cPacket *pkt, int srcPort, const IPvXAddress& destAddr, int destPort)
 {
-    EV << "Send a packet to Dispatcher" << endl;
+    EV << "Sending a packet to Dispatcher ... ";
 
     DpControlInfo *ctrl = new DpControlInfo();
+        ctrl->setSrcAddr(getNodeAddress());
         ctrl->setSrcPort(srcPort);
         ctrl->setDestAddr(destAddr);
         ctrl->setDestPort(destPort);
@@ -82,11 +82,10 @@ void CommBase::sendToDispatcher(cPacket *pkt, int srcPort, const IPvXAddress& de
 
     printPacket(pkt);
 
-    EV << "\tPayload size: " << pkt->getByteLength() << "(bytes)" << endl;;
-
     send(pkt, "dpOut");
 }
 
+/*
 IPvXAddress CommBase::getNodeAddress(void)
 {
     IInterfaceTable *inet_ift;
@@ -104,16 +103,40 @@ IPvXAddress CommBase::getNodeAddress(void)
 
     return myAddress;
 }
+*/
+
+void CommBase::findNodeAddress(void)
+{
+    IInterfaceTable *inet_ift;
+    inet_ift = InterfaceTableAccess().get();
+
+    EV << "Number of interfaces: " << inet_ift->getNumInterfaces() << endl;
+    if (inet_ift->getNumInterfaces() < 2) throw cException("Less than 2 interfaces");
+
+    // EV << "Interface 1: " << inet_ift->getInterface(0)->ipv4Data()->getIPAddress() << endl;
+    // EV << "Interface 2: " << inet_ift->getInterface(1)->ipv4Data()->getIPAddress() << endl;
+
+    m_localAddress = (IPvXAddress)inet_ift->getInterface(1)->ipv4Data()->getIPAddress();
+    EV << "Node's own address is: " << m_localAddress << endl;
+
+}
+
+IPvXAddress CommBase::getNodeAddress(void)
+{
+    return m_localAddress;
+}
 
 void CommBase::bindToGlobalModule(void)
 {
     // -- Active Peer Table
     cModule *temp = simulation.getModuleByPath("activePeerTable");
     m_apTable = check_and_cast<ActivePeerTable *>(temp);
-    if (m_apTable == NULL) throw cException("m_apTable == NULL is invalid");
+    if (m_apTable == NULL) throw cException("NULL pointer to module activePeerTable");
+    EV << "Binding to activePeerTable is completed successfully" << endl;
 
     // -- Global Statistic
     temp = simulation.getModuleByPath("globalStatistic");
     m_gstat = check_and_cast<GlobalStatistic *>(temp);
-    if (m_gstat == NULL) throw cException("m_gstat == NULL is invalid");
+    if (m_gstat == NULL) throw cException("NULL pointer to module globalStatistic");
+    EV << "Binding to globalStatistic is completed successfully" << endl;
 }

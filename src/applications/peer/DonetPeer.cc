@@ -37,6 +37,8 @@ void DonetPeer::initialize(int stage)
     getAppSetting();
     readChannelRate();
 
+    findNodeAddress();
+
     // -------------------------------------------------------------------------
     // --------------------------- State variables------------------------------
     // -------------------------------------------------------------------------
@@ -118,6 +120,7 @@ void DonetPeer::initialize(int stage)
     // --------------------------- WATCH ---------------------------------------
     // -------------------------------------------------------------------------
 
+    WATCH(m_localAddress);
     WATCH(m_localPort);
     WATCH(m_destPort);
 
@@ -349,7 +352,7 @@ void DonetPeer::processRejectResponse(cPacket *pkt)
 
 void DonetPeer::join()
 {
-    EV << "---------- Joint ----------------------------------------------------" << endl;
+    EV << "---------- Join -----------------------------------------------------" << endl;
 
     int init_number = min(param_maxNOP/2 + 1, param_minNOP);
     std::vector<IPvXAddress> listRandPeer = m_apTable->getNPeer(init_number);
@@ -585,24 +588,24 @@ void DonetPeer::randomChunkScheduling(void)
             m_partnerList->getHolderList(seq_num, holderList);
             int nHolder = holderList.size();
 
-            EV << "-- There are " << nHolder << " suppliers" << endl;
+            // EV << "-- There are " << nHolder << " suppliers" << endl;
 
             // if there is at least one neighbor
             if (nHolder > 0)
             {
-                int index = 0;
+                int index = -1;
                 if (nHolder == 1)
                 {
-                    EV << "-- There is only one holder of the chunk." << endl;
+                    EV << "  -- There is only one holder of the chunk." << " -- ";
                     index = 0;
                 }
                 else
                 {
                     index = (int)(rand() % holderList.size());
-                    EV << "-- There are multiple holders, random index: " << index << endl;
+                    EV << "  -- There are " << nHolder << " holders, random index: " << index << " -- ";
                 } // if
 
-                EV << "-- Holder for chunk " << seq_num << " is " << holderList[index] << endl;
+                EV << "  -- Holder for chunk " << seq_num << " is " << holderList[index] << endl;
 
                 // -- Preparing to access record of partner to set the sendBM
                 NeighborInfo *nbr_info = m_partnerList->getNeighborInfo(holderList[index]);
@@ -620,11 +623,15 @@ void DonetPeer::randomChunkScheduling(void)
                 emit(sig_chunkRequestSeqNum, seq_num);
 
             } // if (nHolder > 0)
+            else
+            {
+                EV << "  -- There is no holder" << endl;
+            }
 
         } // end of if(inBuffer)
         else
         {
-            EV << "this is already in VideoBuffer" << endl;
+            EV << "-- this is already in VideoBuffer" << endl;
         }
 
         EV << "-----" << endl;
@@ -1044,10 +1051,10 @@ void DonetPeer::startPlayer(void)
 bool DonetPeer::shouldStartPlayer(void)
 {
     EV << "---------- Check whether should start the Player --------------------" << endl;
-    EV << "-- Threshold: " << m_bufferMapSize_chunk / 2 << endl;
+    EV << "-- Threshold: " << m_bufferMapSize_chunk / 2 << " ";
     if (m_videoBuffer->getNumberFilledChunk() >= m_bufferMapSize_chunk / 2)
     {
-        EV << "-- The Player should start now!" << endl;
+        EV << "-- Enough chunks --> The Player should start now!" << endl;
 
         m_video_startTime = simTime().dbl();
         m_head_videoStart = m_videoBuffer->getHeadReceivedSeqNum();
@@ -1055,7 +1062,7 @@ bool DonetPeer::shouldStartPlayer(void)
         return true;
     }
 
-    EV << "-- Not enough chunks to start now --> wait a bit more!" << endl;
+    EV << "-- Not enough chunks --> wait a bit more!" << endl;
     return false;
 }
 
@@ -1154,10 +1161,14 @@ void DonetPeer::printListOfRequestedChunk(void)
         return;
 
     EV << "Recently requested chunks: " << endl;
+    int count = 1;
     vector<SEQUENCE_NUMBER_T>::iterator iter;
     for (iter = m_list_requestedChunk.begin(); iter != m_list_requestedChunk.end(); ++iter)
     {
         EV << *iter << " ";
+        if (count % 10 == 0) EV << "\t";
+        if (count % 30 == 0) EV << endl;
+        count++;
     }
     EV << endl;
 }

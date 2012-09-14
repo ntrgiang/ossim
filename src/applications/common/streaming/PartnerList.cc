@@ -293,6 +293,7 @@ void PartnerList::getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddre
         NeighborInfo *nbr_info = iter->second;
         if (nbr_info->getLastRecvBmTime() != -1)
         {
+            EV << "  -- At peer " << iter->first << ": ";
             if (nbr_info->isInRecvBufferMap(seq_num))
             {
                 holderList.push_back(iter->first);

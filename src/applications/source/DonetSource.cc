@@ -26,6 +26,8 @@ void DonetSource::initialize(int stage)
     getAppSetting();
     readChannelRate();
 
+    findNodeAddress();
+
     param_maxNOP = par("maxNOP");
 
     // -------------------------------------------------------------------------
@@ -52,6 +54,7 @@ void DonetSource::initialize(int stage)
     // -------------------------------------------------------------------------
     // -------------------------------- WATCH ----------------------------------
     // -------------------------------------------------------------------------
+    WATCH(m_localAddress);
     WATCH(m_localPort);
     WATCH(m_destPort);
 

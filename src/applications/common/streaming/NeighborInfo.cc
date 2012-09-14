@@ -37,23 +37,27 @@ NeighborInfo::~NeighborInfo()
 
 bool NeighborInfo::isInRecvBufferMap(SEQUENCE_NUMBER_T seq_num)
 {
-    //Enter_Method("isInRecvBufferMap");
-
-    EV << "Checking whether a chunk is in the RecvBufferMap" << endl;
-    EV << " -- seq_num = " << seq_num << endl;
-    EV << " -- start = " << m_seqNum_recvBmStart << endl;
-    EV << " -- end = " << m_seqNum_recvBmEnd << endl;
+    EV << " -- Sequence number of the chunk " << seq_num;
 
     long offset = seq_num - m_seqNum_recvBmStart;
 
     // -- Debug
     // printRecvBm();
 
-    if (seq_num > m_seqNum_recvBmEnd) return false;
+    if (seq_num > m_seqNum_recvBmEnd || seq_num < m_seqNum_recvBmStart)
+    {
+        EV << " is NOT in range [" << m_seqNum_recvBmStart << ", " \
+                                   << m_seqNum_recvBmEnd << "]" << endl;
+        return false;
+    }
 
-    if (seq_num < m_seqNum_recvBmStart) return false;
+    bool isIn = m_recvBm[offset];
 
-    return (m_recvBm[offset]);
+    EV << " is in range [" << m_seqNum_recvBmStart << ", " \
+                           << m_seqNum_recvBmEnd << "]"
+                           << " and isIn = " << isIn << endl;
+
+    return (isIn);
 }
 
 void NeighborInfo::setElementSendBm(SEQUENCE_NUMBER_T seq_num, bool val)

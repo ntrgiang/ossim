@@ -110,7 +110,7 @@ void Dispatcher::processMsgFromOverlay(cMessage *overlayData)
 
     PeerStreamingPacket *pkt = check_and_cast<PeerStreamingPacket *>(overlayData);
 
-    EV << "\tPayload size: " << pkt->getByteLength() << "(bytes)" << endl;
+    EV << "-- Payload size: " << pkt->getByteLength() << "(bytes)" << endl;
 
     sendToUDP(pkt, dpCtrl->getSrcPort(),
             dpCtrl->getDestAddr(),

@@ -168,7 +168,7 @@ void DonetBase::sendBufferMap(void)
         //sendToDispatcher(bmPkt_copy, m_localPort, iter->first, m_destPort);
         sendToDispatcher(bmPkt->dup(), m_localPort, iter->first, m_destPort);
 
-        EV << "A buffer map has been sent to " << iter->first << endl;
+        //EV << "A buffer map has been sent to " << iter->first << endl;
     }
 
     delete bmPkt; bmPkt = NULL;

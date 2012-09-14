@@ -29,16 +29,23 @@ simple DonetPeer extends DonetBase
         double waitingTime_SchedulingStart @unit(s) = default(0.25s);
         double factor_requestList = default(1);
         
-        double baseValue_requestGreedyFactor = default(1.0);
+        double requestFactor_moderate = default(1.0);
+        double requestFactor_aggressive = default(2.0);
+        double threshold_scarity = default(1);
         
         int maxNOP = default(2); // Max number of partners
         int offsetNOP = default(1); // The difference between minNOP and maxNOP
         
         // -- Possible signals to collect
-        @signal[chunkRequestSeqNum](type=long);
+        @signal[Signal_chunkRequest](type=long);
+        @statistic[chunkRequest](title="Sequence Number of chunk requests"; source=Signal_chunkRequest; record=count, vector);
+
+        @signal[Signal_nNewChunkForRequestPerCycle](type=long);    
+        @statistic[newChunkForRequest](title="Number of new chunk for scheduling per cycle"; source=Signal_nNewChunkForRequestPerCycle; record=vector);
         
+        @signal[Signal_nPartner](type=integer);    
+        @statistic[nPartner](title="Number of partners"; source=Signal_nPartner; record=last,vector);            
         // -- Statistics
-//        @statistic[chunkRequestSeqNum](title="Sequence Number of chunk requests"; record=count, vector);
         
 //        @statistic[nPartner](source=Signal_nPartner; record=last, vector);
         
