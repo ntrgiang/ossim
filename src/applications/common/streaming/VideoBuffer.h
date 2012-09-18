@@ -121,6 +121,10 @@ private:
     // -- Validation / Cross-check
     int m_nActiveElement;
 
+    // -- To know the current status
+    double m_time_firstChunk;
+    long m_nChunkReceived;
+
     // -- signals for statistical analysis
     simsignal_t signal_seqNum_receivedChunk;
 

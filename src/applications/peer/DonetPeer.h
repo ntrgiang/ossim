@@ -133,6 +133,13 @@ private:
 
     simsignal_t sig_partnerRequest;
 
+    simsignal_t sig_joinTime;
+    simsignal_t sig_playerStartTime;
+
+    simsignal_t sig_pRequestSent;
+    simsignal_t sig_pRejectReceived;
+
+
 };
 
 #endif
