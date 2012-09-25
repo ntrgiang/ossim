@@ -61,6 +61,9 @@ void VideoBuffer::initialize(int stage)
 
     m_bufferStart_seqNum = m_bufferEnd_seqNum = m_head_received_seqNum = 0;
 
+    m_time_firstChunk = -1.0;
+    m_nChunkReceived = 0L;
+
     WATCH(m_bufferSize_chunk);
     WATCH(m_chunkInterval);
 }
@@ -72,7 +75,7 @@ void VideoBuffer::handleMessage(cMessage *)
 
 void VideoBuffer::insertPacket(VideoChunkPacket *packet)
 {
-    //Enter_Method("insertPacket()");
+    Enter_Method("insertPacket()");
 
     EV << "---------- Insert a packet into video buffer ------------------------" << endl;
 
@@ -125,6 +128,21 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
     }
 #endif
 
+    // -- To know the status
+    ++m_nChunkReceived;
+    if (m_time_firstChunk < 0)
+    {
+        // This received chunk is the first one received so far
+        m_time_firstChunk = simTime().dbl();
+    }
+    else
+    {
+        double delta_time = simTime().dbl() - m_time_firstChunk;
+        if (delta_time > 0)
+            EV << "Average received chunk rate: " << (double)m_nChunkReceived / delta_time << endl;
+        else
+            throw cException("delta_time is invalid");
+    }
 
 }
 
@@ -322,12 +340,12 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
     for (iter = m_streamBuffer.begin(); iter != m_streamBuffer.end(); ++iter)
     {
         ++offset;
-        EV << "BM slot with offset = " << offset << " :: ";
+        //EV << "BM slot with offset = " << offset << " :: ";
 
         // if the element stores no chunk
         if (iter->m_chunk == NULL)
         {
-            EV << "No chunk! --> set to false" << endl;
+            //EV << "No chunk! --> set to false" << endl;
             bmPkt->setBufferMap(offset, false);
             continue;
         }
@@ -335,12 +353,12 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
         // if the id of the packet at that element is too "old"
         if (iter->m_chunk->getSeqNumber() < m_bufferStart_seqNum)
         {
-            EV << "Chunk is out-dated! --> set to false" << endl;
+            //EV << "Chunk is out-dated! --> set to false" << endl;
             bmPkt->setBufferMap(offset, false);
             continue;
         }
 
-        EV << "has chunk with seq_num " << iter->m_chunk->getSeqNumber() << " in range --> is set to true!" << endl;
+        //EV << "has chunk with seq_num " << iter->m_chunk->getSeqNumber() << " in range --> is set to true!" << endl;
         bmPkt->setBufferMap(offset, true);
     }
 }

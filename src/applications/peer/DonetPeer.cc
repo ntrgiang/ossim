@@ -105,6 +105,12 @@ void DonetPeer::initialize(int stage)
     sig_newchunkForRequest  = registerSignal("Signal_nNewChunkForRequestPerCycle");
     sig_nPartner            = registerSignal("Signal_nPartner");
 
+    sig_joinTime            = registerSignal("Signal_joinTime");
+    sig_playerStartTime     = registerSignal("Signal_playerStartTime");
+
+    sig_pRequestSent        = registerSignal("Signal_pRequestSent");
+    sig_pRejectReceived     = registerSignal("Signal_pRejectReceived");
+
     // -- Debugging variables
     m_arrivalTime = -1.0;
     m_joinTime = -1.0;
@@ -315,6 +321,9 @@ void DonetPeer::processAcceptResponse(cPacket *pkt)
         // -- Record join time (first accept response)
         m_joinTime = simTime().dbl();
 
+        // Debuging with signals
+        emit(sig_joinTime, simTime().dbl());
+
     }
 }
 
@@ -347,6 +356,8 @@ void DonetPeer::processRejectResponse(cPacket *pkt)
         join();
     }
 
+    emit (sig_pRejectReceived, m_nRejectSent);
+
 }
 
 
@@ -364,6 +375,8 @@ void DonetPeer::join()
     if (m_partnerList->getSize() >= param_minNOP)
         return;
 
+    int s = listRandPeer.size();
+
     for (std::vector<IPvXAddress>::iterator iter = listRandPeer.begin(); iter != listRandPeer.end(); ++iter)
     {
         //IPvXAddress addressRandPeer = *iter;
@@ -374,6 +387,9 @@ void DonetPeer::join()
             reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
 
         sendToDispatcher(reqPkt, m_localPort, *iter, m_destPort);
+
+        // Debuging with signals
+        emit(sig_pRequestSent, s);
     }
 
 }
@@ -424,6 +440,8 @@ void DonetPeer::findMorePartner()
         reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
 
     sendToDispatcher(reqPkt, m_localPort, addressRandPeer, m_destPort);
+
+    emit(sig_pRequestSent, 1);
 }
 
 void DonetPeer::initializeSchedulingWindow()
@@ -1039,6 +1057,8 @@ void DonetPeer::startPlayer(void)
     {
         EV << "Player should start now. " << endl;
         m_player->startPlayer();
+
+        emit(sig_playerStartTime, simTime().dbl());
     }
     else
     {

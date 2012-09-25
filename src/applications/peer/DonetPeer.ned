@@ -45,12 +45,23 @@ simple DonetPeer extends DonetBase
         
         @signal[Signal_nPartner](type=integer);    
         @statistic[nPartner](title="Number of partners"; source=Signal_nPartner; record=last,vector);            
-        // -- Statistics
+
+        // -- Trying new signals
+        @statistic[joinTime](title="Joining time of a individual peer"; source=Signal_joinTime; record=last,vector?);            
         
-//        @statistic[nPartner](source=Signal_nPartner; record=last, vector);
+        @statistic[playerStartTime](title="Start time of player"; source=Signal_playerStartTime; record=last,vector?);            
         
-//        @statistic[partnerRequest](title="Partnership Request"; source=Signal_PartnerRequest; record=vector);
+        @statistic[pRequestSent](title="Partnership request sent"; source=Signal_pRequestSent; record=count,last,vector);            
         
+        @statistic[pRejectReceived](title="Partnership reject received"; source=Signal_pRejectReceived; record=count,last,vector);
+
+//    sig_joinTime            = registerSignal("Signal_joinTime");
+//    sig_playerStartTime     = registerSignal("Signal_playerStartTime");
+//
+//    sig_pRequestSent        = registerSignal("Signal_pRequestSent");
+//    sig_pRejectReceived     = registerSignal("Signal_pRejectReceived");          
+        
+                
 }
 
 
