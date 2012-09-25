@@ -1,0 +1,12 @@
+/nix/workspace/omnet422-inet118/so/src/applications
+/nix/workspace/omnet422-inet118/so/src/applications/common
+/nix/workspace/omnet422-inet118/so/src/applications/common/membership
+/nix/workspace/omnet422-inet118/so/src/applications/common/messages
+/nix/workspace/omnet422-inet118/so/src/applications/common/streaming
+/nix/workspace/omnet422-inet118/so/src/applications/peer
+/nix/workspace/omnet422-inet118/so/src/applications/source
+/nix/workspace/omnet422-inet118/so/src/global
+/nix/workspace/omnet422-inet118/so/src/global/churn
+/nix/workspace/omnet422-inet118/so/src/global/logger
+/nix/workspace/omnet422-inet118/so/src/global/observer
+/nix/workspace/omnet422-inet118/so/src/global/statistic
