@@ -23,8 +23,9 @@ void DonetPeer::initialize(int stage)
 {
     if (stage == 0)
     {
-        sig_chunkRequestSeqNum = registerSignal("Signal_chunkRequest");
+        sig_chunkRequestSeqNum  = registerSignal("Signal_chunkRequest");
         sig_partnerRequest      = registerSignal("Signal_PartnerRequest");
+        sig_nJoin               = registerSignal("Signal_Join");
 
         return;
     }
@@ -42,7 +43,11 @@ void DonetPeer::initialize(int stage)
     // -------------------------------------------------------------------------
     // --------------------------- State variables------------------------------
     // -------------------------------------------------------------------------
-    m_joined = m_scheduling_started = false;
+//    m_state_joined = false;
+    m_state = MESH_STATE_IDLE;
+    m_scheduling_started = false;
+    // -- Join status
+//    m_joinState = MESH_STATE_JOIN_IDLE;
 
     // -------------------------------------------------------------------------
     // -------------------------------- Timers ---------------------------------
@@ -56,12 +61,15 @@ void DonetPeer::initialize(int stage)
     timer_sendBufferMap     = new cMessage("MESH_PEER_TIMER_SEND_BUFFERMAP");
     timer_findMorePartner   = new cMessage("MESH_PEER_TIMER_FIND_MORE_PARTNER");
     timer_startPlayer       = new cMessage("MESH_PEER_TIMER_START_PLAYER");
+//    timer_rejoin            = new cMessage("MESH_PEER_TIMER_REJOIN");
 
     // Parameters of the module itself
     // param_bufferMapInterval             = par("bufferMapInterval");
     //param_chunkSchedulingInterval       = par("chunkSchedulingInterval");
     param_interval_chunkScheduling      = par("interval_chunkScheduling");
     param_interval_findMorePartner      = par("interval_findMorePartner");
+//    param_interval_rejoin               = par("interval_rejoin");
+    param_interval_timeout_joinReqAck   = par("interval_timeout_joinReqAck");
     param_interval_starPlayer           = par("interval_startPlayer");
 
     param_nNeighbor_SchedulingStart     = par("nNeighbor_SchedulingStart");
@@ -159,7 +167,7 @@ void DonetPeer::finish()
         cancelAndDeleteAllTimer();
 
         // -- Debug
-//    m_gstat->reportNumberOfPartner(m_partnerList->getSize());
+    m_gstat->reportNumberOfPartner(m_partnerList->getSize());
 
     //reportStatus();
 }
@@ -188,7 +196,8 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
     }
     else if (msg == timer_findMorePartner)
     {
-        findMorePartner();
+        //findMorePartner();
+        handleTimerFindMorePartner();
         scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
     }
     else if (msg == timer_startPlayer)
@@ -203,15 +212,22 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
     }
     else if (msg == timer_join)
     {
-        join();
-    }
+        //join();
+        handleTimerJoin();
 
+        // -- Schedule for a rejoin (if any)
+        // scheduleAt(simTime() + param_interval_rejoin, timer_join);
+    }
+    else if (msg == timer_timeout_waiting_accept)
+    {
+        handleTimerTimeoutWaitingAccept();
+    }
 }
 
 void DonetPeer::processPacket(cPacket *pkt)
 {
     PeerStreamingPacket *appMsg = check_and_cast<PeerStreamingPacket *>(pkt);
-    EV << "Packet group: " << appMsg->getPacketGroup() << endl;
+    EV << "Packet group: " << appMsg->getPacketGroup() << " --> for mesh module" << endl;
     if (appMsg->getPacketGroup() != PACKET_GROUP_MESH_OVERLAY)
     {
         throw cException("Wrong packet type!");
@@ -220,14 +236,9 @@ void DonetPeer::processPacket(cPacket *pkt)
     MeshPeerStreamingPacket *meshMsg = check_and_cast<MeshPeerStreamingPacket *>(appMsg);
     switch (meshMsg->getPacketType())
     {
-    case MESH_PARTNERSHIP_REQUEST:
+    case MESH_CHUNK_REQUEST:
     {
-        processPartnershipRequest(pkt);
-        break;
-    }
-    case MESH_PARTNERSHIP_ACCEPT:
-    {
-        processAcceptResponse(pkt);
+        processChunkRequest(pkt);
         break;
     }
     case MESH_BUFFER_MAP:
@@ -235,14 +246,19 @@ void DonetPeer::processPacket(cPacket *pkt)
         processPeerBufferMap(pkt);
         break;
     }
-    case MESH_CHUNK_REQUEST:
+    case MESH_PARTNERSHIP_REQUEST:
     {
-        processChunkRequest(pkt);
+        processPartnershipRequest(pkt);
+        break;
+    }
+    case MESH_PARTNERSHIP_ACCEPT:
+    {
+        processPartnershipAccept(pkt);
         break;
     }
     case MESH_PARTNERSHIP_REJECT:
     {
-        processRejectResponse(pkt);
+        processPartnershipReject(pkt);
         break;
     }
     default:
@@ -255,65 +271,129 @@ void DonetPeer::processPacket(cPacket *pkt)
     delete pkt;
 }
 
-void DonetPeer::processAcceptResponse(cPacket *pkt)
+//void DonetPeer::processAcceptResponse(cPacket *pkt)
+//{
+//    EV << endl;
+//    EV << "---------- Process Accept response ----------------------------------" << endl;
+
+//    // -- Extract the address of the accepter
+//    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
+//    IPvXAddress acceptorAddress = controlInfo->getSrcAddr();
+//    EV << "-- Acceptor: " << acceptorAddress << endl;
+
+//    // -- Extract the upBw of the accepter peer
+//    MeshPartnershipAcceptPacket *acceptPkt = dynamic_cast<MeshPartnershipAcceptPacket *>(pkt);
+//    double upBw_remotePeer = acceptPkt->getUpBw();
+//    EV << "-- BW of acceptor: " << upBw_remotePeer << endl;
+
+//    // 2. Store the address into its partner list
+//    m_partnerList->addAddress(acceptorAddress, upBw_remotePeer);
+
+////    m_activityLog << "--- processAcceptResponse --- " << endl;
+////    m_activityLog << "\tGot an ACCEPT from: " << acceptorAddress << endl;
+////    m_activityLog << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
+
+//    m_nRequestSent = -1;
+//    m_nRejectSent = 0;
+
+//    ///// The following actions will be done
+//    // TODO-Giang: state variable m_state_joined could be replaced by checking the size of the partnershiplist!!!
+//    if (m_state_joined == false)
+//    {
+//        EV << "-- State will be changed from _IDLE_ to _JOINED_" << endl;
+
+//        // -- Register myself to the ActivePeerList
+//        IPvXAddress myAddress = getNodeAddress();
+//        EV << "-- My own address: " << myAddress << endl;
+
+//        EV << "Register node's own address to ActivePeerTable" << endl;
+//        m_apTable->addPeerAddress(myAddress);
+//        m_apTable->printActivePeerTable();
+
+//        m_state_joined = true;
+
+//        // -- Start several timers
+//        // -- 1. Chunk Scheduling timers
+//        double rand_value = uniform(0.0, 1.0);
+//        scheduleAt(simTime() + rand_value, timer_chunkScheduling);
+//        EV << "-- Chunk scheduling starts after " << rand_value << " seconds" << endl;
+
+//        // -- 2. Send buffer map timers
+//        rand_value = uniform(0.0, 0.5);
+//        scheduleAt(simTime() + rand_value, timer_sendBufferMap);
+//        EV << "-- Schedule for sending Buffer Map after " << rand_value << " seconds" << endl;
+
+//        // -- 3. Have more partner timers
+//        scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
+//        EV << "-- Finding more partners starts after " << param_interval_findMorePartner << " seconds" << endl;
+
+//        // -- 4. Start Player?
+//        scheduleAt(simTime() + param_interval_starPlayer, timer_startPlayer);
+//        EV << "-- Player will be tried to start after " << param_interval_starPlayer << " seconds" << endl;
+
+//        // -- Debug
+//        // m_gstat->reportMeshJoin();
+
+//        // -- Record join time (first accept response)
+//        m_joinTime = simTime().dbl();
+
+//        // Debuging with signals
+//        emit(sig_joinTime, simTime().dbl());
+
+//    }
+//}
+
+void DonetPeer::processPartnershipAccept(cPacket *pkt)
 {
     EV << endl;
-    EV << "---------- Process Accept response ----------------------------------" << endl;
+    EV << "---------- Processing a partnership ACCEPT packet -------------------" << endl;
 
     // -- Extract the address of the accepter
-    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
-    IPvXAddress acceptorAddress = controlInfo->getSrcAddr();
-    EV << "-- Acceptor: " << acceptorAddress << endl;
-
-    // -- Extract the upBw of the accepter peer
+    PendingPartnershipRequest acceptor;
     MeshPartnershipAcceptPacket *acceptPkt = dynamic_cast<MeshPartnershipAcceptPacket *>(pkt);
-    double upBw_remotePeer = acceptPkt->getUpBw();
-    EV << "-- BW of acceptor: " << upBw_remotePeer << endl;
+    //DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
+        getSender(pkt, acceptor.address, acceptor.port);
+        acceptor.upBW = acceptPkt->getUpBw();
 
-    // 2. Store the address into its partner list
-    m_partnerList->addAddress(acceptorAddress, upBw_remotePeer);
+    EV << "Acceptor: " << endl
+       << "-- Address:\t\t"         << acceptor.address
+       << "-- Port:\t\t"            << acceptor.port << endl
+       << "-- Upload bandwidth:\t"  << acceptor.upBW << endl;
 
-//    m_activityLog << "--- processAcceptResponse --- " << endl;
-//    m_activityLog << "\tGot an ACCEPT from: " << acceptorAddress << endl;
-//    m_activityLog << "\tCurrent partnership size: " << m_partnerList->getSize() << endl;
-
-    m_nRequestSent = -1;
-    m_nRejectSent = 0;
-
-    ///// The following actions will be done
-    // TODO-Giang: state variable m_joined could be replaced by checking the size of the partnershiplist!!!
-    if (m_joined == false)
+    switch(m_state)
     {
-        EV << "-- State will be changed from _IDLE_ to _JOINED_" << endl;
+    case MESH_STATE_IDLE_WAITING:
+    {
+        // -- Store the address of acceptor into its partner list
+        m_partnerList->addAddress(acceptor.address, acceptor.upBW);
 
-        // -- Register myself to the ActivePeerList
-        IPvXAddress myAddress = getNodeAddress();
-        EV << "-- My own address: " << myAddress << endl;
-
-        EV << "Register node's own address to ActivePeerTable" << endl;
-        m_apTable->addPeerAddress(myAddress);
+        // -- Register itself to the APT
+        m_apTable->addPeerAddress(getNodeAddress());
         m_apTable->printActivePeerTable();
 
-        m_joined = true;
+        // -- Cancel timer
+        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
+        timer_timeout_waiting_accept = NULL;
 
+        double rand_value;
         // -- Start several timers
         // -- 1. Chunk Scheduling timers
-        double rand_value = uniform(0.0, 1.0);
+            rand_value = uniform(0.0, 1.0);
+            EV << "-- Chunk scheduling will be triggered after " << rand_value << " seconds" << endl;
         scheduleAt(simTime() + rand_value, timer_chunkScheduling);
-        EV << "-- Chunk scheduling starts after " << rand_value << " seconds" << endl;
 
         // -- 2. Send buffer map timers
-        rand_value = uniform(0.0, 0.5);
+            rand_value = uniform(0.0, 0.5);
+            EV << "-- Sending Buffer Map will be triggered after " << rand_value << " seconds" << endl;
         scheduleAt(simTime() + rand_value, timer_sendBufferMap);
-        EV << "-- Schedule for sending Buffer Map after " << rand_value << " seconds" << endl;
 
         // -- 3. Have more partner timers
+            EV << "-- Finding more partners will be triggered after " << param_interval_findMorePartner << " seconds" << endl;
         scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
-        EV << "-- Finding more partners starts after " << param_interval_findMorePartner << " seconds" << endl;
 
         // -- 4. Start Player?
+            EV << "-- Player will be tried to start after " << param_interval_starPlayer << " seconds" << endl;
         scheduleAt(simTime() + param_interval_starPlayer, timer_startPlayer);
-        EV << "-- Player will be tried to start after " << param_interval_starPlayer << " seconds" << endl;
 
         // -- Debug
         // m_gstat->reportMeshJoin();
@@ -324,75 +404,216 @@ void DonetPeer::processAcceptResponse(cPacket *pkt)
         // Debuging with signals
         emit(sig_joinTime, simTime().dbl());
 
+        EV << "State changes from MESH_STATE_IDLE_WAITING to MESH_STATE_JOINED" << endl;
+        m_state = MESH_STATE_JOINED;
+        break;
     }
+    case MESH_STATE_JOINED_WAITING:
+    {
+        // -- Store the address of acceptor into its partner list
+        m_partnerList->addAddress(acceptor.address, acceptor.upBW);
+
+        // -- Cancel timer
+        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
+        timer_timeout_waiting_accept = NULL;
+
+        EV << "State changes from MESH_STATE_JOINED_WAITING to MESH_STATE_JOINED" << endl;
+        m_state = MESH_STATE_JOINED;
+        break;
+    }
+    case MESH_STATE_JOINED:
+    {
+        EV << "ACCEPT message arrived too late, will be ignored!" << endl;
+        m_state = MESH_STATE_JOINED;
+        break;
+    }
+    case MESH_STATE_IDLE:
+    {
+        //throw cException("ACCEPT message is not expected for IDLE state");
+        EV << "ACCEPT message arrived too late, will be ignored!" << endl;
+        m_state = MESH_STATE_IDLE;
+        break;
+    }
+    default:
+    {
+        throw cException("Uncovered state, check assignment of state variable!");
+        break;
+    }
+    } // switch()
+
 }
 
-void DonetPeer::processRejectResponse(cPacket *pkt)
+
+//void DonetPeer::processRejectResponse(cPacket *pkt)
+//{
+//    EV << endl;
+//    EV << "---------- Process partnership reject -------------------------------" << endl;
+
+//    // -- Extract the address of the accepter
+//    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
+//    IPvXAddress rejectorAddress = controlInfo->getSrcAddr();
+//    EV << "Rejector's address: " << rejectorAddress << endl;
+
+////    m_activityLog << "--- processRejectResponse --- " << endl;
+////    m_activityLog << "\t at " << simTime().dbl() << " Got a REJECT from: " << rejectorAddress << endl;
+
+//    // TODO-Giang: has to verify this code, the logic seems not very clear
+//    ++m_nRejectSent;
+//    EV << "-- Number of rejected requests so far: " << m_nRejectSent << endl;
+
+//    if (m_nRejectSent == m_nRequestSent)
+//    {
+////        m_activityLog << "\tAll requests were rejected --> join() again!" << endl;
+
+//        EV << "m_nRejectSent == m_nRequestSent --> rejoin()!" << endl;
+
+//        // Reset state-variables
+//        m_nRequestSent = -1;
+//        m_nRejectSent = 0;
+//        join();
+//    }
+
+//    emit (sig_pRejectReceived, m_nRejectSent);
+
+//}
+
+
+void DonetPeer::processPartnershipReject(cPacket *pkt)
 {
     EV << endl;
-    EV << "---------- Process partnership reject -------------------------------" << endl;
+    EV << "-------- Process partnership Reject ---------------------------------" << endl;
+
+    switch(m_state)
+    {
+    case MESH_STATE_JOINED_WAITING:
+    {
+        EV << "Try to contact another peer, later on ..." << endl;
+
+        // -- Cancel timer
+        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
+        timer_timeout_waiting_accept = NULL;
+
+        EV << "State changes from MESH_STATE_JOINED_WAITING to MESH_STATE_JOINED" << endl;
+        m_state = MESH_STATE_JOINED;
+        break;
+    }
+    case MESH_STATE_IDLE_WAITING:
+    {
+        EV << "Should find another partner NOW ..." << endl;
+        // -- Cancel timer
+        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
+        timer_timeout_waiting_accept = NULL;
+
+        EV << "State as MESH_STATE_IDLE_WAITING after trigger finding partner immediately" << endl;
+        m_state = MESH_STATE_IDLE;
+
+        scheduleAt(simTime() + uniform(0, 0.5), timer_join);
+        // findPartner();
+        break;
+    }
+    case MESH_STATE_JOINED:
+    {
+        throw cException("PARTNERSHIP_REJECT is not expected for state JOINED");
+        break;
+    }
+    case MESH_STATE_IDLE:
+    {
+        throw cException("PARTNERSHIP_REJECT is not expected for state IDLE");
+        break;
+    }
+    default:
+    {
+        throw cException("Uncovered state, check assignment of state variable!");
+        break;
+    }
+    } // switch()
+
 
     // -- Extract the address of the accepter
-    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
-    IPvXAddress rejectorAddress = controlInfo->getSrcAddr();
-    EV << "Rejector's address: " << rejectorAddress << endl;
+//    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
+//    IPvXAddress rejectorAddress = controlInfo->getSrcAddr();
+//    EV << "Rejector's address: " << rejectorAddress << endl;
 
-//    m_activityLog << "--- processRejectResponse --- " << endl;
-//    m_activityLog << "\t at " << simTime().dbl() << " Got a REJECT from: " << rejectorAddress << endl;
-
-    // TODO-Giang: has to verify this code, the logic seems not very clear
-    ++m_nRejectSent;
-    EV << "-- Number of rejected requests so far: " << m_nRejectSent << endl;
-
-    if (m_nRejectSent == m_nRequestSent)
-    {
-//        m_activityLog << "\tAll requests were rejected --> join() again!" << endl;
-
-        EV << "m_nRejectSent == m_nRequestSent --> rejoin()!" << endl;
-
-        // Reset state-variables
-        m_nRequestSent = -1;
-        m_nRejectSent = 0;
-        join();
-    }
-
-    emit (sig_pRejectReceived, m_nRejectSent);
-
+    //emit (sig_pRejectReceived, m_nRejectSent);
 }
 
 
-void DonetPeer::join()
-{
-    EV << "---------- Join -----------------------------------------------------" << endl;
+//void DonetPeer::join()
+//{
+//    EV << endl;
+//    EV << "---------- Join -----------------------------------------------------" << endl;
 
-    int init_number = min(param_maxNOP/2 + 1, param_minNOP);
-    std::vector<IPvXAddress> listRandPeer = m_apTable->getNPeer(init_number);
-    EV << listRandPeer.size() << " peers will be requested!" << endl;
+//    if (m_state != MESH_STATE_IDLE)
+//    {
+//        throw cException("Not in expected state (IDLE), something wrong!");
+//    }
 
-//    m_nRequestSent = listRandPeer.size();
+//    // TODO: This code is very unlikely, should be removed later on
+//    // -- Only send a partnership request if not enough partners
+//    if (m_partnerList->getSize() >= param_minNOP)
+//    {
+//        EV << "Has enough partners, should not request more" << endl;
+//        return;
+//    }
 
-    // -- Only send a partnership request if not enough partners
-    if (m_partnerList->getSize() >= param_minNOP)
-        return;
+//    int init_number = min(param_maxNOP/2 + 1, param_minNOP);
+//    m_list_randPeer = m_apTable->getNPeer(init_number);
+//    if (m_list_randPeer.size() == 0)
+//    {
+//        throw cException("Empty list of random peers from APT");
+//    }
+//    else
+//    {
+//        EV << "Got a list of " << m_list_randPeer.size() << " peers. Stored!" << endl;
+//    }
 
-    int s = listRandPeer.size();
+//    IPvXAddress aRandPeer = m_list_randPeer[0];
 
-    for (std::vector<IPvXAddress>::iterator iter = listRandPeer.begin(); iter != listRandPeer.end(); ++iter)
-    {
-        //IPvXAddress addressRandPeer = *iter;
-        EV << "-- Peer to be requested: " << *iter << endl;
+//    // -- Prepare the JOIN_REQUEST packet and then send it to the remote peer
+//    MeshPartnershipRequestPacket *reqPkt = new MeshPartnershipRequestPacket("MESH_PEER_JOIN_REQUEST");
+//        reqPkt->setUpBw(param_upBw);
+//        reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
+//    sendToDispatcher(reqPkt, m_localPort, aRandPeer, m_destPort);
 
-        MeshPartnershipRequestPacket *reqPkt = new MeshPartnershipRequestPacket("MESH_PEER_JOIN_REQUEST");
-            reqPkt->setUpBw(param_upBw);
-            reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
+//    // -- Remove the peer which was requested
+//    m_list_randPeer.erase(m_list_randPeer.begin());
+//    EV << "Number of elements after deleting the first one: " << m_list_randPeer.size() << endl;
 
-        sendToDispatcher(reqPkt, m_localPort, *iter, m_destPort);
+//    // Debuging with signals
+//    // emit(sig_pRequestSent, s);
 
-        // Debuging with signals
-        emit(sig_pRequestSent, s);
-    }
+//    // -- Issue a timer for timeout to receive ACK for those requests
+//    cMessage *timer_timeout_joinReqAccept = new cMessage("MESH_TIMER_TIMEOUT_JOIN_REQ_ACK");
+//    scheduleAt(simTime() + param_interval_timeout_joinReqAck, timer_timeout_joinReqAccept);
 
-}
+//    // -- Update the joinState
+//    m_state = MESH_STATE_IDLE_WAITING;
+
+//    // m_joinState = MESH_STATE_JOIN_WAITING_ACCEPT;
+
+////    m_nRequestSent = listRandPeer.size();
+
+////    int s = listRandPeer.size();
+
+////    for (std::vector<IPvXAddress>::iterator iter = m_list_randPeer.begin(); iter != m_list_randPeer.end(); ++iter)
+////    {
+////        //IPvXAddress addressRandPeer = *iter;
+////        EV << "-- Peer to be requested: " << *iter << endl;
+
+////        MeshPartnershipRequestPacket *reqPkt = new MeshPartnershipRequestPacket("MESH_PEER_JOIN_REQUEST");
+////            reqPkt->setUpBw(param_upBw);
+////            reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
+
+////        sendToDispatcher(reqPkt, m_localPort, *iter, m_destPort);
+
+////        // Debuging with signals
+////        emit(sig_pRequestSent, s);
+
+////        // -- Store the addresses of the requested peers to the list for later query
+////        m_list_joinRequestedNode.push_back(*iter);
+////    }
+
+//}
 
 /**
  * Each time triggered, get a random peer from tracker
@@ -400,14 +621,54 @@ void DonetPeer::join()
  * - if NOT --> send request
  * - in both case, sleep another T before triggered again
  */
-void DonetPeer::findMorePartner()
+//void DonetPeer::findMorePartner()
+//{
+//    if (m_partnerList->getSize() >= param_minNOP)
+//    {
+////        emit(signal_nPartner, -1);
+////
+////        m_activityLog << "--- Find more partner --- " << endl;
+////        m_activityLog << "\tBut has enough (mininum number of) partners!" << endl;
+//        EV << "Minimum number of partners has been reach --> stop finding more partner for the moment." << endl;
+//        return;
+//    }
+
+//    IPvXAddress addressRandPeer;
+//    do
+//    {
+//         addressRandPeer = m_apTable->getARandPeer();
+//    } while (addressRandPeer == getNodeAddress());
+
+
+//    if (m_partnerList->have(addressRandPeer))
+//    {
+////        emit(signal_nPartner, -2);
+
+////        m_activityLog << "--- Find more partner --- " << endl;
+////        m_activityLog << "\tBut already had partner!" << endl;
+//        EV << "The peer has already been node's partner. No more request will be sent out." << endl;
+//        return;
+//    }
+////    m_activityLog << "--- Find more partner --- " << endl;
+////    m_activityLog << "\tPartner to contat: " << addressRandPeer << endl;
+
+////    emit(signal_nPartner, m_partnerList->size());
+
+//    EV << "Peer " << addressRandPeer << " will be requested!" << endl;
+
+//    MeshPartnershipRequestPacket *reqPkt = new MeshPartnershipRequestPacket("MESH_PEER_JOIN_REQUEST");
+//        reqPkt->setUpBw(param_upBw);
+//        reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
+
+//    sendToDispatcher(reqPkt, m_localPort, addressRandPeer, m_destPort);
+
+//    emit(sig_pRequestSent, 1);
+//}
+
+void DonetPeer::findPartner()
 {
     if (m_partnerList->getSize() >= param_minNOP)
     {
-//        emit(signal_nPartner, -1);
-//
-//        m_activityLog << "--- Find more partner --- " << endl;
-//        m_activityLog << "\tBut has enough (mininum number of) partners!" << endl;
         EV << "Minimum number of partners has been reach --> stop finding more partner for the moment." << endl;
         return;
     }
@@ -415,23 +676,16 @@ void DonetPeer::findMorePartner()
     IPvXAddress addressRandPeer;
     do
     {
-         addressRandPeer = m_apTable->getARandPeer();
-    } while (addressRandPeer == getNodeAddress());
+        addressRandPeer = m_apTable->getARandPeer();
+    }
+    while (addressRandPeer == getNodeAddress());
 
 
     if (m_partnerList->have(addressRandPeer))
     {
-//        emit(signal_nPartner, -2);
-
-//        m_activityLog << "--- Find more partner --- " << endl;
-//        m_activityLog << "\tBut already had partner!" << endl;
         EV << "The peer has already been node's partner. No more request will be sent out." << endl;
         return;
     }
-//    m_activityLog << "--- Find more partner --- " << endl;
-//    m_activityLog << "\tPartner to contat: " << addressRandPeer << endl;
-
-//    emit(signal_nPartner, m_partnerList->size());
 
     EV << "Peer " << addressRandPeer << " will be requested!" << endl;
 
@@ -444,9 +698,90 @@ void DonetPeer::findMorePartner()
     emit(sig_pRequestSent, 1);
 }
 
+void DonetPeer::handleTimerJoin(void)
+{
+    EV << endl;
+    EV << "----------------------- Handle timer JOIN ---------------------------" << endl;
+
+    m_gstat->reportNumberOfJoin(1);
+    emit(sig_nJoin, 1);
+
+    switch(m_state)
+    {
+    case MESH_STATE_IDLE:
+    {
+        findPartner();
+
+        EV << "State changes from MESH_STATE_IDLE to MESH_STATE_IDLE_WAITING" << endl;
+        m_state = MESH_STATE_IDLE_WAITING;
+        break;
+    }
+    case MESH_STATE_JOINED_WAITING:
+    {
+        EV << "Join action cannot be done in JOINED_WAITING state" << endl;
+        break;
+    }
+    case MESH_STATE_JOINED:
+    {
+        //EV << "Join action cannot be done in JOINED state" << endl;
+        throw cException("Join action cannot be done in JOINED state");
+        break;
+    }
+    case MESH_STATE_IDLE_WAITING:
+    {
+        //EV << "Join action cannot be done in IDLE_WAITING state" << endl;
+        throw cException("Join action cannot be done in JOINED state");
+        break;
+    }
+    default:
+    {
+        throw cException("Not in an expected state");
+        break;
+    }
+    } // switch()
+}
+
+
+void DonetPeer::handleTimerFindMorePartner(void)
+{
+    switch(m_state)
+    {
+    case MESH_STATE_JOINED:
+    {
+        findPartner();
+
+        m_state = MESH_STATE_JOINED_WAITING;
+        break;
+    }
+    case MESH_STATE_JOINED_WAITING:
+    {
+        // -- Do NOTHING, here!
+
+        EV << "State remains as MESH_STATE_JOINED_WAITING" << endl;
+        m_state = MESH_STATE_JOINED_WAITING;
+        //return;
+        break;
+    }
+    case MESH_STATE_IDLE:
+    {
+        EV << "Cannot find new partner when state is IDLE" << endl;
+        break;
+    }
+    case MESH_STATE_IDLE_WAITING:
+    {
+        EV << "Cannot start finding new partner when state is IDLE_WAITING" << endl;
+        break;
+    }
+    default:
+    {
+        throw cException("Not in an expected state");
+        break;
+    }
+    } // switch()
+}
+
 void DonetPeer::initializeSchedulingWindow()
 {
-
 }
 
 bool DonetPeer::shouldStartChunkScheduling(void)
@@ -953,49 +1288,76 @@ void DonetPeer::bindToMeshModule(void)
 
 }
 
-void DonetPeer::processPartnershipRequest(cPacket *pkt)
-{
-    EV << endl;
-    EV << "-------- Process partnership Request --------------------------------" << endl;
+//void DonetPeer::processPartnershipRequest(cPacket *pkt)
+//{
+//    EV << endl;
+//    EV << "-------- Process partnership Request --------------------------------" << endl;
 
-    // -- Get the identifier (IP:port) of the requester
-    IPvXAddress requesterAddress;
-    int requesterPort;
-    getSender(pkt, requesterAddress, requesterPort);
-    EV << "Requester: " << requesterAddress << ":" << requesterPort << endl; // Debug
+//    // -- Get the identifier (IP:port) of the requester
+//    IPvXAddress address_requesteringNode;
+//    int port_requestingNode;
+//    getSender(pkt, address_requesteringNode, port_requestingNode);
+//    EV << "Requester: " << address_requesteringNode << ":" << port_requestingNode << endl; // Debug
 
-    EV << "-- Got a REQUEST from: " << requesterAddress << endl;
+//    switch(m_state)
+//    {
+//    case MESH_STATE_JOINED:
+//    {
+//        // TODO-Giang: the logic of this join process has flaws, try to fix it ASAP
+//        if (canAcceptMorePartner())
+//        {
+//            EV << "-- Can accept this request" << endl;
+//            // -- Debug
+//            emit(sig_partnerRequest, m_partnerList->getSize());
 
-    // TODO-Giang: the logic of this join process has flaws, try to fix it ASAP
-    if (canAcceptMorePartner())
-    {
-        EV << "-- Can accept this request" << endl;
-        // -- Debug
-        emit(sig_partnerRequest, m_partnerList->getSize());
+//            // 1.1. Get the upBw of the remote peer
+//            MeshPartnershipRequestPacket *memPkt = check_and_cast<MeshPartnershipRequestPacket *>(pkt);
+//                m_address_candidate = address_requesteringNode;
+//                m_upBw_candidate    = memPkt->getUpBw();
+//            EV << "-- Candidate for partnership: " << m_address_candidate
+//               << "with upload bandwidth: " << m_upBw_candidate << endl;
 
-        // 1.1. Get the upBw of the remote peer
-        MeshPartnershipRequestPacket *memPkt = check_and_cast<MeshPartnershipRequestPacket *>(pkt);
-        double upBw_remotePeer = memPkt->getUpBw();
-        EV << "-- Remote peer's upload bandwidth: " << upBw_remotePeer << endl;
+//            //m_partnerList->addAddress(requesterAddress, upBw_remotePeer);
 
-        m_partnerList->addAddress(requesterAddress, upBw_remotePeer);
+//            //m_partnerList->print(); // Debug
 
-        m_partnerList->print(); // Debug
+//            MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
+//            sendToDispatcher(acceptPkt, m_localPort, address_requesteringNode, port_requestingNode);
 
-        MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
-        sendToDispatcher(acceptPkt, m_localPort, requesterAddress, requesterPort);
+//            m_state = MESH_STATE_JOINED_WAITING;
+//        }
+//        else
+//        {
+//            EV << "-- Enough partners --> cannot accept this request." << endl;
+//            emit(sig_partnerRequest, 0);
 
-    }
-    else // cannot accept any more partner
-    {
-        EV << "-- Enough partners --> cannot accept this request." << endl;
-        emit(sig_partnerRequest, 0);
+//            // -- Create a Partnership message and send it to the remote peer
+//            MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
+//            sendToDispatcher(rejectPkt, m_localPort, address_requesteringNode, port_requestingNode);
+//        }
 
-        // -- Create a Partnership message and send it to the remote peer
-        MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
-        sendToDispatcher(rejectPkt, m_localPort, requesterAddress, requesterPort);
-    }
-}
+//        break;
+//    }
+//    case MESH_STATE_JOINED_WAITING:
+//    {
+//        m_list_joinRequestingNode.push_back(address_requesteringNode);
+//        m_state = MESH_STATE_JOINED_WAITING; // state remains
+//        break;
+//    }
+//    case MESH_STATE_IDLE:
+//    case MESH_STATE_IDLE_WAITING:
+//    {
+//        throw cException("Unexpected event: A join request could not be sent to an idel node");
+//        break;
+//    }
+//    default:
+//    {
+//        throw cException("Uncovered state");
+//        break;
+//    }
+//    } // switch()
+
+//}
 
 
 void DonetPeer::processPeerBufferMap(cPacket *pkt)
@@ -1191,4 +1553,96 @@ void DonetPeer::printListOfRequestedChunk(void)
         count++;
     }
     EV << endl;
+}
+
+//void DonetPeer::processTimeoutJoinRequestAccept(cMessage *msg)
+//{
+//    Enter_Method("processTimeoutJoinRequestAccept");
+//    EV << "Time is over to wait for all Accept packets" << endl;
+
+//    switch(m_state)
+//    {
+//    case MESH_STATE_IDLE_WAITING:
+//    {
+//        // -- Clear list of requested nodes
+//        m_list_joinRequestedNode.clear();
+
+//        // -- Cancel event, delete timer message
+//        cancelAndDelete(msg); msg = NULL;
+
+//        // -- Process list of requesting nodes
+//        break;
+//    }
+//    case MESH_STATE_JOIN_ALL_ACCEPT_RECEIVED:
+//    {
+//        // -- Double check the list of requested node (it should be empty now)
+//        if (m_list_joinRequestedNode.size() != 0)
+//            throw cException("Mismatch between state and list_joinRequestedNode");
+
+//        // -- Cancel event, delete timer message
+//        cancelAndDelete(msg); msg = NULL;
+//        break;
+//    }
+////    case MESH_STATE_JOIN_IDLE:
+////    case MESH_STATE_JOIN_WAITING_ACCEPT_ACK:
+//    default:
+//    {
+//        throw cException("At a wrong state");
+//    }
+//    }
+//}
+
+
+void DonetPeer::handleTimerTimeoutWaitingAccept()
+{
+    EV << endl;
+    EV << "------------------------- Handle timeout_waitingAccept --------------" << endl;
+
+    switch(m_state)
+    {
+    case MESH_STATE_IDLE_WAITING:
+    {
+        // -- Update the state
+        EV << "State changes from MESH_STATE_IDLE_WAITING to MESH_STATE_IDLE" << endl;
+        m_state = MESH_STATE_IDLE;
+
+        // -- Schedule for new JOIN
+        // this event, in turn, triggers findPartner()
+        scheduleAt(simTime() + uniform(0.0, 0.5), timer_join);
+        //scheduleAt(simTime(), timer_join);
+        break;
+    }
+    case MESH_STATE_JOINED_WAITING:
+    {
+        // -- Process pending requests
+        // There should not be any pending request at this time
+        vector<PendingPartnershipRequest>::iterator iter = m_list_partnershipRequestingNode.begin();
+        for (; iter != m_list_partnershipRequestingNode.end(); ++iter)
+        {
+            considerAcceptPartner(*iter);
+        }
+        m_list_partnershipRequestingNode.clear();
+
+        EV << "State changes from MESH_STATE_JOINED_WAITING to MESH_STATE_JOINED" << endl;
+        m_state = MESH_STATE_JOINED;
+        break;
+    }
+    case MESH_STATE_JOINED:
+    {
+        //EV << "Timeout happens when the peer is in JOINED state" << endl;
+        throw cException("Timeout happens when the peer is in JOINED state");
+        break;
+    }
+    case MESH_STATE_IDLE:
+    {
+        //EV << "Timeout happens when the peer is in IDLE state" << endl;
+        throw cException("Timeout happens when the peer is in IDLE state");
+        break;
+    }
+    default:
+    {
+        throw cException("Not in an expected state");
+        break;
+    }
+    } // switch()
 }

@@ -31,12 +31,28 @@ private:
 
     void cancelAndDeleteAllTimer();
 
+    // *************************************************************************
+    // *************************************************************************
     // -- Partnership
-    void join();
-    void findMorePartner();
-    void processPartnershipRequest(cPacket *pkt);
-    void processAcceptResponse(cPacket *pkt);
-    void processRejectResponse(cPacket *pkt);
+    void handleTimerJoin(void);
+    void handleTimerFindMorePartner(void);
+    void findPartner(); // New interface for the FSM
+//    void processPartnershipRequest(cPacket *pkt);
+    // void processAcceptResponse(cPacket *pkt); // should be obsolete
+    void processPartnershipAccept(cPacket *pkt);
+    void processPartnershipReject(cPacket *pkt);
+
+    void processTimeoutJoinRequestAccept(cMessage *msg);
+    void handleTimerTimeoutWaitingAccept();
+
+    // !!! obsolete !!!
+//    void join();
+//    void findMorePartner();
+    //void processRejectResponse(cPacket *pkt);
+    // *************************************************************************
+    // *************************************************************************
+
+
     void processPeerBufferMap(cPacket *pkt);
 //    void processChunkRequest(cPacket *pkt);
 
@@ -72,6 +88,11 @@ private:
     cMessage *timer_chunkScheduling;
     cMessage *timer_findMorePartner;
     cMessage *timer_startPlayer;
+    cMessage *timer_timeout_joinReqAccept;
+
+    cMessage *timer_timeout_waiting_accept;
+    cMessage *timer_timeout_waiting_ack;
+//    cMessage *timer_rejoin;
 
     bool    param_moduleDebug;
     double  param_chunkSchedulingInterval;
@@ -80,12 +101,21 @@ private:
     int     param_nNeighbor_SchedulingStart;
     double  param_interval_findMorePartner;
     double  param_interval_starPlayer;
+    double  param_interval_rejoin;
+    double  param_interval_timeout_joinReqAck;
     //double  param_baseValue_requestGreedyFactor;
     //double  param_aggressiveValue_requestGreedyFactor
     double  param_requestFactor_moderate;
     double  param_requestFactor_aggresive;
     double  param_factor_requestList;
     double  param_threshold_scarity;
+
+    // -- Partnership size
+    int param_minNOP;
+    int param_offsetNOP;
+
+    // -- To store list of random peers got from APT
+    vector<IPvXAddress> m_list_randPeer;
 
     // -- Pointers to "global" modules
     IChurnGenerator *m_churn;
@@ -94,7 +124,6 @@ private:
     Player *m_player;
 
     // State variables
-    bool m_joined;
     bool m_scheduling_started;
 
     int m_schedulingWindowSize;     /* in [chunks] */
@@ -107,11 +136,6 @@ private:
     SEQUENCE_NUMBER_T m_seqNum_schedWinEnd;
     SEQUENCE_NUMBER_T m_seqNum_schedWinHead;
 
-    // -- Partnership size
-    int param_minNOP;
-    //int param_maxNOP;
-    int param_offsetNOP;
-
     // -- Scheduling
     int m_nChunkRequested_perSchedulingInterval;
     //int m_nChunk_perSchedulingInterval;
@@ -119,8 +143,6 @@ private:
 
     // -- Easy version with a vector
     vector<SEQUENCE_NUMBER_T> m_list_requestedChunk;
-
-
 
     // -- Time stampt value objects
     // cTimestampedValue
@@ -138,6 +160,8 @@ private:
 
     simsignal_t sig_pRequestSent;
     simsignal_t sig_pRejectReceived;
+
+    simsignal_t sig_nJoin;
 
 
 };

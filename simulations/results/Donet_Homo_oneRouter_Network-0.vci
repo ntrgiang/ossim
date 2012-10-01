@@ -1,340 +1,144 @@
-file 17197207 1347053069                                        
+file 183879 1348838526                                          
 version 2
-run Donet_Homo_oneRouter_Network-0-20120907-23:24:12-9712
+run Donet_Homo_oneRouter_Network-0-20120928-15:21:59-22623
 attr configname Donet_Homo_oneRouter_Network
-attr datetime 20120907-23:24:12
+attr datetime 20120928-15:21:59
 attr experiment Donet_Homo_oneRouter_Network
-attr inifile ../../../so/simulations/DonetNetworkConfig.ini
+attr inifile /nix/workspace/omnet422-inet118/so/simulations/DonetNetworkConfig.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network Donet_Homo_oneRouter_Network
-attr processid 9712
+attr processid 22623
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
 
-vector 4  Donet_Homo_oneRouter_Network.sourceNode.peerApp.chunkGenerator  chunkSeqNum:vector  ETV
-vector 3  Donet_Homo_oneRouter_Network.sourceNode.peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
+vector 5  Donet_Homo_oneRouter_Network.sourceNode.peerApp.chunkGenerator  chunkSeqNum:vector  ETV
+vector 4  Donet_Homo_oneRouter_Network.sourceNode.peerApp.videoBuffer  receivedChunk:vector  ETV
+attr source  Signal_RecevedChunk
 attr title  "Sequence Number of received chunks, vector"
-vector 85  Donet_Homo_oneRouter_Network.sourceNode.ppp[0].queue  "queue length"  ETV
-vector 159  Donet_Homo_oneRouter_Network.router.ppp[16].queue  "queue length"  ETV
-vector 65  Donet_Homo_oneRouter_Network.peerNode[15].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 121  Donet_Homo_oneRouter_Network.peerNode[17].ppp[0].queue  "queue length"  ETV
-vector 117  Donet_Homo_oneRouter_Network.peerNode[15].ppp[0].queue  "queue length"  ETV
-vector 163  Donet_Homo_oneRouter_Network.router.ppp[18].queue  "queue length"  ETV
-vector 73  Donet_Homo_oneRouter_Network.peerNode[17].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 113  Donet_Homo_oneRouter_Network.peerNode[13].ppp[0].queue  "queue length"  ETV
-vector 123  Donet_Homo_oneRouter_Network.peerNode[18].ppp[0].queue  "queue length"  ETV
-vector 77  Donet_Homo_oneRouter_Network.peerNode[18].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 109  Donet_Homo_oneRouter_Network.peerNode[11].ppp[0].queue  "queue length"  ETV
-vector 155  Donet_Homo_oneRouter_Network.router.ppp[14].queue  "queue length"  ETV
-vector 57  Donet_Homo_oneRouter_Network.peerNode[13].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 103  Donet_Homo_oneRouter_Network.peerNode[8].ppp[0].queue  "queue length"  ETV
-vector 145  Donet_Homo_oneRouter_Network.router.ppp[9].queue  "queue length"  ETV
-vector 165  Donet_Homo_oneRouter_Network.router.ppp[19].queue  "queue length"  ETV
-vector 37  Donet_Homo_oneRouter_Network.peerNode[8].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 151  Donet_Homo_oneRouter_Network.router.ppp[12].queue  "queue length"  ETV
-vector 49  Donet_Homo_oneRouter_Network.peerNode[11].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 111  Donet_Homo_oneRouter_Network.peerNode[12].ppp[0].queue  "queue length"  ETV
-vector 125  Donet_Homo_oneRouter_Network.peerNode[19].ppp[0].queue  "queue length"  ETV
-vector 99  Donet_Homo_oneRouter_Network.peerNode[6].ppp[0].queue  "queue length"  ETV
-vector 141  Donet_Homo_oneRouter_Network.router.ppp[7].queue  "queue length"  ETV
-vector 29  Donet_Homo_oneRouter_Network.peerNode[6].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 87  Donet_Homo_oneRouter_Network.peerNode[0].ppp[0].queue  "queue length"  ETV
-vector 53  Donet_Homo_oneRouter_Network.peerNode[12].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 89  Donet_Homo_oneRouter_Network.peerNode[1].ppp[0].queue  "queue length"  ETV
-vector 81  Donet_Homo_oneRouter_Network.peerNode[19].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 153  Donet_Homo_oneRouter_Network.router.ppp[13].queue  "queue length"  ETV
-vector 95  Donet_Homo_oneRouter_Network.peerNode[4].ppp[0].queue  "queue length"  ETV
-vector 105  Donet_Homo_oneRouter_Network.peerNode[9].ppp[0].queue  "queue length"  ETV
-vector 147  Donet_Homo_oneRouter_Network.router.ppp[10].queue  "queue length"  ETV
+vector 3  Donet_Homo_oneRouter_Network.globalStatistic  NumberOfJoin:vector  ETV
+attr source  Signal_nJoin
+attr title  "Number Of Join, vector"
+vector 11  Donet_Homo_oneRouter_Network.peerNode[0].peerApp.mesh  NumberOfJoin:vector  ETV
+attr source  Signal_Join
+attr title  "Number of Joins, vector"
 vector 0  Donet_Homo_oneRouter_Network.activePeerTable  aptSize:vector  ETV
 attr source  Signal_Size
 attr title  "Active Peer Table Size, vector"
-vector 41  Donet_Homo_oneRouter_Network.peerNode[9].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
+vector 9  Donet_Homo_oneRouter_Network.peerNode[0].peerApp.mesh  pRequestSent:vector  ETV
+attr source  Signal_pRequestSent
+attr title  "Partnership request sent, vector"
+vector 21  Donet_Homo_oneRouter_Network.peerNode[1].peerApp.mesh  NumberOfJoin:vector  ETV
+attr source  Signal_Join
+attr title  "Number of Joins, vector"
+vector 19  Donet_Homo_oneRouter_Network.peerNode[1].peerApp.mesh  pRequestSent:vector  ETV
+attr source  Signal_pRequestSent
+attr title  "Partnership request sent, vector"
+vector 36  Donet_Homo_oneRouter_Network.sourceNode.ppp[0].queue  "queue length"  ETV
+vector 31  Donet_Homo_oneRouter_Network.peerNode[2].peerApp.mesh  NumberOfJoin:vector  ETV
+attr source  Signal_Join
+attr title  "Number of Joins, vector"
+vector 29  Donet_Homo_oneRouter_Network.peerNode[2].peerApp.mesh  pRequestSent:vector  ETV
+attr source  Signal_pRequestSent
+attr title  "Partnership request sent, vector"
+vector 40  Donet_Homo_oneRouter_Network.peerNode[1].ppp[0].queue  "queue length"  ETV
+vector 18  Donet_Homo_oneRouter_Network.peerNode[1].peerApp.mesh  nPartner:vector  ETV
+attr source  Signal_nPartner
+attr title  "Number of partners, vector"
+vector 16  Donet_Homo_oneRouter_Network.peerNode[1].peerApp.mesh  chunkRequest:vector  ETV
+attr source  Signal_chunkRequest
+attr title  "Sequence Number of chunk requests, vector"
+vector 17  Donet_Homo_oneRouter_Network.peerNode[1].peerApp.mesh  newChunkForRequest:vector  ETV
+attr source  Signal_nNewChunkForRequestPerCycle
+attr title  "Number of new chunk for scheduling per cycle, vector"
+vector 48  Donet_Homo_oneRouter_Network.router.ppp[2].queue  "queue length"  ETV
+vector 22  Donet_Homo_oneRouter_Network.peerNode[1].peerApp.videoBuffer  receivedChunk:vector  ETV
+attr source  Signal_RecevedChunk
 attr title  "Sequence Number of received chunks, vector"
-vector 107  Donet_Homo_oneRouter_Network.peerNode[10].ppp[0].queue  "queue length"  ETV
-vector 149  Donet_Homo_oneRouter_Network.router.ppp[11].queue  "queue length"  ETV
-vector 5  Donet_Homo_oneRouter_Network.peerNode[0].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
+vector 8  Donet_Homo_oneRouter_Network.peerNode[0].peerApp.mesh  nPartner:vector  ETV
+attr source  Signal_nPartner
+attr title  "Number of partners, vector"
+vector 6  Donet_Homo_oneRouter_Network.peerNode[0].peerApp.mesh  chunkRequest:vector  ETV
+attr source  Signal_chunkRequest
+attr title  "Sequence Number of chunk requests, vector"
+vector 7  Donet_Homo_oneRouter_Network.peerNode[0].peerApp.mesh  newChunkForRequest:vector  ETV
+attr source  Signal_nNewChunkForRequestPerCycle
+attr title  "Number of new chunk for scheduling per cycle, vector"
+vector 46  Donet_Homo_oneRouter_Network.router.ppp[1].queue  "queue length"  ETV
+vector 12  Donet_Homo_oneRouter_Network.peerNode[0].peerApp.videoBuffer  receivedChunk:vector  ETV
+attr source  Signal_RecevedChunk
 attr title  "Sequence Number of received chunks, vector"
-vector 45  Donet_Homo_oneRouter_Network.peerNode[10].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
+vector 28  Donet_Homo_oneRouter_Network.peerNode[2].peerApp.mesh  nPartner:vector  ETV
+attr source  Signal_nPartner
+attr title  "Number of partners, vector"
+vector 26  Donet_Homo_oneRouter_Network.peerNode[2].peerApp.mesh  chunkRequest:vector  ETV
+attr source  Signal_chunkRequest
+attr title  "Sequence Number of chunk requests, vector"
+vector 27  Donet_Homo_oneRouter_Network.peerNode[2].peerApp.mesh  newChunkForRequest:vector  ETV
+attr source  Signal_nNewChunkForRequestPerCycle
+attr title  "Number of new chunk for scheduling per cycle, vector"
+vector 32  Donet_Homo_oneRouter_Network.peerNode[2].peerApp.videoBuffer  receivedChunk:vector  ETV
+attr source  Signal_RecevedChunk
 attr title  "Sequence Number of received chunks, vector"
-vector 129  Donet_Homo_oneRouter_Network.router.ppp[1].queue  "queue length"  ETV
-vector 21  Donet_Homo_oneRouter_Network.peerNode[4].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 137  Donet_Homo_oneRouter_Network.router.ppp[5].queue  "queue length"  ETV
-vector 91  Donet_Homo_oneRouter_Network.peerNode[2].ppp[0].queue  "queue length"  ETV
-vector 167  Donet_Homo_oneRouter_Network.router.ppp[20].queue  "queue length"  ETV
-vector 9  Donet_Homo_oneRouter_Network.peerNode[1].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 93  Donet_Homo_oneRouter_Network.peerNode[3].ppp[0].queue  "queue length"  ETV
-vector 13  Donet_Homo_oneRouter_Network.peerNode[2].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 131  Donet_Homo_oneRouter_Network.router.ppp[2].queue  "queue length"  ETV
-vector 101  Donet_Homo_oneRouter_Network.peerNode[7].ppp[0].queue  "queue length"  ETV
-vector 97  Donet_Homo_oneRouter_Network.peerNode[5].ppp[0].queue  "queue length"  ETV
-vector 33  Donet_Homo_oneRouter_Network.peerNode[7].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 25  Donet_Homo_oneRouter_Network.peerNode[5].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 139  Donet_Homo_oneRouter_Network.router.ppp[6].queue  "queue length"  ETV
-vector 115  Donet_Homo_oneRouter_Network.peerNode[14].ppp[0].queue  "queue length"  ETV
-vector 133  Donet_Homo_oneRouter_Network.router.ppp[3].queue  "queue length"  ETV
-vector 157  Donet_Homo_oneRouter_Network.router.ppp[15].queue  "queue length"  ETV
-vector 61  Donet_Homo_oneRouter_Network.peerNode[14].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 119  Donet_Homo_oneRouter_Network.peerNode[16].ppp[0].queue  "queue length"  ETV
-vector 69  Donet_Homo_oneRouter_Network.peerNode[16].peerApp.videoBuffer  SeqNum_RecevedChunk:vector  ETV
-attr source  SeqNum_RecevedChunk
-attr title  "Sequence Number of received chunks, vector"
-vector 143  Donet_Homo_oneRouter_Network.router.ppp[8].queue  "queue length"  ETV
-vector 161  Donet_Homo_oneRouter_Network.router.ppp[17].queue  "queue length"  ETV
-vector 76  Donet_Homo_oneRouter_Network.peerNode[17].peerApp.player  ChunkSeek:vector  ETV
+vector 42  Donet_Homo_oneRouter_Network.peerNode[2].ppp[0].queue  "queue length"  ETV
+vector 50  Donet_Homo_oneRouter_Network.router.ppp[3].queue  "queue length"  ETV
+vector 15  Donet_Homo_oneRouter_Network.peerNode[0].peerApp.player  ChunkSeek:vector  ETV
 attr source  Signal_ChunkSeek
 attr title  "Number of chunk Seek, vector"
-vector 74  Donet_Homo_oneRouter_Network.peerNode[17].peerApp.player  ChunkHit:vector  ETV
+vector 13  Donet_Homo_oneRouter_Network.peerNode[0].peerApp.player  ChunkHit:vector  ETV
 attr source  Signal_ChunkHit
 attr title  "Number of chunk hit, vector"
-vector 68  Donet_Homo_oneRouter_Network.peerNode[15].peerApp.player  ChunkSeek:vector  ETV
+vector 25  Donet_Homo_oneRouter_Network.peerNode[1].peerApp.player  ChunkSeek:vector  ETV
 attr source  Signal_ChunkSeek
 attr title  "Number of chunk Seek, vector"
-vector 66  Donet_Homo_oneRouter_Network.peerNode[15].peerApp.player  ChunkHit:vector  ETV
+vector 23  Donet_Homo_oneRouter_Network.peerNode[1].peerApp.player  ChunkHit:vector  ETV
 attr source  Signal_ChunkHit
 attr title  "Number of chunk hit, vector"
-vector 60  Donet_Homo_oneRouter_Network.peerNode[13].peerApp.player  ChunkSeek:vector  ETV
+vector 35  Donet_Homo_oneRouter_Network.peerNode[2].peerApp.player  ChunkSeek:vector  ETV
 attr source  Signal_ChunkSeek
 attr title  "Number of chunk Seek, vector"
-vector 58  Donet_Homo_oneRouter_Network.peerNode[13].peerApp.player  ChunkHit:vector  ETV
+vector 33  Donet_Homo_oneRouter_Network.peerNode[2].peerApp.player  ChunkHit:vector  ETV
 attr source  Signal_ChunkHit
 attr title  "Number of chunk hit, vector"
-vector 40  Donet_Homo_oneRouter_Network.peerNode[8].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 38  Donet_Homo_oneRouter_Network.peerNode[8].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 80  Donet_Homo_oneRouter_Network.peerNode[18].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 78  Donet_Homo_oneRouter_Network.peerNode[18].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 52  Donet_Homo_oneRouter_Network.peerNode[11].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 50  Donet_Homo_oneRouter_Network.peerNode[11].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 48  Donet_Homo_oneRouter_Network.peerNode[10].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 46  Donet_Homo_oneRouter_Network.peerNode[10].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 32  Donet_Homo_oneRouter_Network.peerNode[6].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 30  Donet_Homo_oneRouter_Network.peerNode[6].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 44  Donet_Homo_oneRouter_Network.peerNode[9].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 42  Donet_Homo_oneRouter_Network.peerNode[9].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 56  Donet_Homo_oneRouter_Network.peerNode[12].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 54  Donet_Homo_oneRouter_Network.peerNode[12].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 84  Donet_Homo_oneRouter_Network.peerNode[19].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 82  Donet_Homo_oneRouter_Network.peerNode[19].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 28  Donet_Homo_oneRouter_Network.peerNode[5].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 26  Donet_Homo_oneRouter_Network.peerNode[5].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 64  Donet_Homo_oneRouter_Network.peerNode[14].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 62  Donet_Homo_oneRouter_Network.peerNode[14].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 8  Donet_Homo_oneRouter_Network.peerNode[0].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 6  Donet_Homo_oneRouter_Network.peerNode[0].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 106  Donet_Homo_oneRouter_Network.peerNode[9].ppp[0].queue  drops  ETV
-vector 24  Donet_Homo_oneRouter_Network.peerNode[4].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 22  Donet_Homo_oneRouter_Network.peerNode[4].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 72  Donet_Homo_oneRouter_Network.peerNode[16].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 70  Donet_Homo_oneRouter_Network.peerNode[16].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 12  Donet_Homo_oneRouter_Network.peerNode[1].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 10  Donet_Homo_oneRouter_Network.peerNode[1].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 36  Donet_Homo_oneRouter_Network.peerNode[7].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 34  Donet_Homo_oneRouter_Network.peerNode[7].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 16  Donet_Homo_oneRouter_Network.peerNode[2].peerApp.player  ChunkSeek:vector  ETV
-attr source  Signal_ChunkSeek
-attr title  "Number of chunk Seek, vector"
-vector 14  Donet_Homo_oneRouter_Network.peerNode[2].peerApp.player  ChunkHit:vector  ETV
-attr source  Signal_ChunkHit
-attr title  "Number of chunk hit, vector"
-vector 100  Donet_Homo_oneRouter_Network.peerNode[6].ppp[0].queue  drops  ETV
-0	14340 666 28608 933489 8.575396869182 51.70342068733 25 0 17 191 2079
-3	15006 97902 1 2411760 0 119.975 4800 0 4799 11517600 36852480800
-4	112908 97902 1 2411760 0 119.975 4800 0 4799 11517600 36852480800
-5	210810 140871 34743 2412225 8.981371829179 119.990698641534 4646 0 4615 10724380 32962726972
-6	351681 111665 362776 2412368 25.74630335862 119.99630335862 3771 0 3770 7108335 17867984745
-8	463346 111665 362776 2412368 25.74630335862 119.99630335862 3771 0 3770 7108335 17867984745
-9	575011 138669 49136 2412353 9.993191992409 119.996072141534 4564 0 4565 10359531 31319500533
-10	713680 118463 375919 2411873 26.334046686702 119.984046686702 3747 0 3746 7018131 17528951861
-12	832143 118463 375919 2411873 26.334046686702 119.984046686702 3747 0 3746 7018131 17528951861
-13	950606 141871 60885 2412425 10.73968308634 119.99876108634 4627 0 4628 10641230 32695023890
-14	1092477 111865 426111 2411800 28.70342068733 119.97842068733 3652 0 3651 6666726 16229033326
-16	1204342 111865 426111 2411800 28.70342068733 119.97842068733 3652 0 3651 6666726 16229033326
-21	1316207 155318 38568 2411862 9.314754641105 119.983044572413 4945 0 4597 11200225 33857307589
-22	1471525 118897 368755 2411833 25.981088482013 119.981088482013 3761 0 3760 7070680 17726194760
-24	1590422 118897 368755 2411833 25.981088482013 119.981088482013 3761 0 3760 7070680 17726194760
-25	1709319 158700 78725 2412461 11.912141493448 119.999687609353 5054 0 4648 11904137 36707623405
-26	1868019 120012 348404 2411817 25.079226132217 119.979226132217 3797 0 3796 7206706 18240172886
-28	1988031 120012 348404 2411817 25.079226132217 119.979226132217 3797 0 3796 7206706 18240172886
-29	2108043 162597 21076 2384867 7.676336375197 118.68515722519 5198 0 4699 12033759 36932732271
-30	2270640 122710 299498 2411864 22.908229558331 119.983229558331 3884 0 3883 7540786 19523094954
-32	2393350 122710 299498 2411864 22.908229558331 119.983229558331 3884 0 3883 7540786 19523094954
-33	2516060 142517 76671 2411840 11.774549911337 119.982529911337 4589 0 4608 10363709 31368890465
-34	2658577 117719 390770 2412181 26.938864660912 119.988864660912 3723 0 3722 6928503 17194234945
-36	2776296 117719 390770 2412181 26.938864660912 119.988864660912 3723 0 3722 6928503 17194234945
-37	2894015 149326 9100 2412460 5.924279202746 119.999687609353 4766 0 4756 11321291 35880561131
-38	3043341 126832 229133 2411762 19.575396869182 119.975396869182 4017 0 4016 8066136 21598423496
-40	3170173 126832 229133 2411762 19.575396869182 119.975396869182 4017 0 4016 8066136 21598423496
-41	3297005 162194 30591 2391315 8.757036641105 118.928932739117 5168 0 4699 11674246 35720334004
-42	3459199 121965 314649 2411770 23.501223973126 119.976223973126 3860 0 3859 7447870 19163369510
-44	3581164 121965 314649 2411770 23.501223973126 119.976223973126 3860 0 3859 7447870 19163369510
-45	3703129 150090 36788 2412439 9.161457467847 119.999282998273 4777 0 4745 11300311 35676741545
-46	3853219 123392 287222 2412326 22.370057840907 119.995057840907 3906 0 3905 7626465 19856772705
-48	3976611 123392 287222 2412326 22.370057840907 119.995057840907 3906 0 3905 7626465 19856772705
-49	4100003 156842 10186 2412389 6.249462667587 119.997881294311 5023 0 4721 11448466 35528109934
-50	4256845 123609 283490 2411863 22.183142802931 119.983142802931 3913 0 3912 7653828 19963734700
-52	4380454 123609 283490 2411863 22.183142802931 119.983142802931 3913 0 3912 7653828 19963734700
-53	4504063 147267 22145 2411825 7.77695101481 119.980113845496 4728 0 4670 10966308 33828884480
-54	4651330 121748 317069 2411761 23.675329702746 119.975329702746 3853 0 3852 7420878 19059288330
-56	4773078 121748 317069 2411761 23.675329702746 119.975329702746 3853 0 3852 7420878 19059288330
-57	4894826 150166 6432 2412404 5.372386554847 119.998234707624 4800 0 4757 11336489 35903882349
-58	5044992 127391 221936 2411882 19.134464220671 119.984464220671 4035 0 4034 8138595 21890107685
-60	5172383 127391 221936 2411882 19.134464220671 119.984464220671 4035 0 4034 8138595 21890107685
-61	5299774 147656 95762 2406747 12.858100054172 119.790236054847 4717 0 4679 11061959 34508036965
-62	5447430 119486 358498 2412375 25.522765554847 119.997765554847 3780 0 3779 7142310 17996240430
-64	5566916 119486 358498 2412375 25.522765554847 119.997765554847 3780 0 3779 7142310 17996240430
-65	5686402 150299 610 2404336 3.289081575268 119.629801998273 4808 0 4759 11345468 35947243564
-66	5836701 128445 203513 2412259 18.292589751044 119.992589751044 4069 0 4068 8276346 22448209134
-68	5965146 128445 203513 2412259 18.292589751044 119.992589751044 4069 0 4068 8276346 22448209134
-69	6093591 143634 122175 2411832 14.331397911337 119.980789911337 4554 0 4578 10367374 31473063770
-70	6237225 118494 375693 2412296 26.318861245686 119.993861245686 3748 0 3747 7021878 17542991870
-72	6355719 118494 375693 2412296 26.318861245686 119.993861245686 3748 0 3747 7021878 17542991870
-73	6474213 150276 1827 2397807 4.011736355523 119.212820355523 4810 0 4759 11354560 35956269110
-74	6624489 130522 168995 2411818 16.604974420828 119.979974420828 4136 0 4135 8551180 23575603260
-76	6755011 130522 168995 2411818 16.604974420828 119.979974420828 4136 0 4135 8551180 23575603260
-77	6885533 150815 5027 2404146 5.032073702746 119.611569855523 4850 0 4719 11286588 35292112522
-78	7036348 125562 248782 2412212 20.614631007323 119.989631007323 3976 0 3975 7902300 20943729100
-80	7161910 125562 248782 2412212 20.614631007323 119.989631007323 3976 0 3975 7902300 20943729100
-81	7287472 158935 22811 2404780 7.837001949195 119.694308572413 5059 0 4621 11436943 34576286231
-82	7446407 120323 341335 2412159 24.837799989888 119.987799989888 3807 0 3806 7244721 18384686991
-84	7566730 120323 341335 2412159 24.837799989888 119.987799989888 3807 0 3806 7244721 18384686991
-85	7687053 2066416 524 2412427 3.282779797491 119.999027072081 71194 0 137 1989023 86603445
-87	9753469 252626 21602 2412234 7.74430835862 119.990916141534 8685 0 121 238967 12476451
-89	10006095 37604 22700 2411128 7.831481686702 119.968064492409 1302 0 11 1933 6479
-91	10043699 22303 41591 2404921 9.70085568733 119.71368558634 772 0 6 750 1210
-93	10066002 104 59870 59894 10.65813991803 10.65927991803 4 0 2 4 6
-95	10066106 190135 27802 2412355 8.479663482013 119.996257911337 6535 0 76 90962 2647852
-97	10256241 334319 71845 2411891 11.576661132217 119.985642783327 11149 0 149 732815 61558495
-99	10590560 377934 19706 2412406 7.406908266665 119.998512572413 12595 0 200 1131672 134657122
-100	10968494 5424 883555 1408936 49.392681411337 73.288691411337 186 1 1 186 186
-101	10973918 85269 70503 2406055 11.436299660912 119.749422411337 2862 0 22 8721 62107
-103	11059187 296434 7986 2412312 5.574075577516 119.994531609353 9762 0 113 315849 16505125
-105	11355621 360939 27989 2412290 8.49990268146 119.99360508634 11933 0 200 712531 62729515
-106	11716560 87 363007 363009 25.749639911337 25.749639911337 3 1 1 3 3
-107	11716647 321694 32044 2408860 8.868166549241 119.873190345496 10546 0 139 357801 18081417
-109	12038341 399415 5540 2412413 5.181251511265 119.998572641534 12967 0 168 880420 77067880
-111	12437756 320319 12636 2405478 6.499686143157 119.724862930977 10578 0 133 321759 18269737
-113	12758075 277317 2172 2407740 4.133142929005 119.813310054847 9204 0 99 188594 6335106
-115	13035392 270838 87033 2411850 12.446707104856 119.98288508634 8938 0 99 286855 13736473
-117	13306230 244847 1377 2406620 3.766197791062 119.778357791062 8170 0 166 264713 19476785
-119	13551077 41588 105693 2406907 13.316866245686 119.792475283327 1398 0 13 1789 5127
-121	13592665 233422 1290 2409985 3.604223129162 119.918045173327 7848 0 171 212560 15629776
-123	13826087 330474 3494 2412335 4.613206007323 119.995581845496 10929 0 137 376347 20738241
-125	14156561 171581 18851 2412391 7.335804989888 119.997997911337 5733 0 50 55699 1033347
-129	14328142 42315 37694 2411287 9.223703829179 119.970074641534 1436 0 3 786 858
-131	14370457 45005 63122 2399703 10.919155992409 119.343799992409 1512 0 3 858 972
-133	14415462 29041 89812 2405621 12.70469518733 119.73064908634 994 0 2 571 645
-137	14444503 60447 39369 2403661 9.374133875197 119.580843411337 2040 0 6 1446 2280
-139	14504950 56517 80487 2406966 12.011356014172 119.794324345496 1902 0 2 1005 1059
-141	14561467 329159 19761 2384869 7.408190766665 118.68591722519 10864 0 97 231258 7183948
-143	14890626 69852 138678 2408098 15.112847911337 119.836421911337 2374 0 3 1653 2191
-145	14960478 293846 8042 2412448 5.575358077516 119.999687609353 9704 0 64 164772 3795236
-147	15254324 266190 28137 2391204 8.50118518146 118.923776739117 8778 0 64 135519 3097345
-149	15520514 267747 32130 2412433 8.870019049241 119.999282998273 8808 0 65 142470 3270492
-151	15788261 245697 10146 2412431 6.245452445364 119.999027072081 8126 0 62 105575 2190779
-153	16033958 35059 24870 2395997 8.020217164757 119.106792572413 1178 0 3 665 749
-155	16069017 286315 6374 2412398 5.368376332624 119.998234707624 9450 0 53 151171 3268009
-157	16355332 44412 95687 2400752 12.853471449195 119.398380054847 1508 0 3 804 858
-159	16399744 299826 584 2404339 3.285071353045 119.630561998273 9934 0 52 164233 3628255
-161	16699570 39736 140362 2409928 15.214292783327 119.915896783327 1336 0 2 784 900
-163	16739306 292676 1801 2397818 4.0077261333 119.214340355523 9688 0 65 163184 3793924
-165	17031982 92022 8392 2403821 5.667101701158 119.590945855523 3108 0 4 2178 2958
-167	17124004 73203 45533 2403829 9.855598641105 119.591188572413 2466 0 6 1691 2589
+vector 2  Donet_Homo_oneRouter_Network.globalStatistic  NumberOfPartner:vector  ETV
+attr source  Signal_NumberOfPartner
+attr title  "Number Of Partner, vector"
+0	5896 113 35 1012 2.249585931151 3.50316063071 5 0 2 2 4
+2	6009 52 29547 29547 30 30 4 1 3 8 18
+3	6061 67 35 183 2.249585931151 2.50173563071 3 1 1 3 3
+4	6128 4649 1 29480 0 29.9 300 0 299 44850 8955050
+5	10777 4649 1 29480 0 29.9 300 0 299 44850 8955050
+6	15426 7806 664 28630 3.384166755706 29.384166755706 290 0 289 41905 8087665
+7	23232 712 664 28630 3.384166755706 29.384166755706 27 10 30 380 6440
+8	23944 685 664 28630 3.384166755706 29.384166755706 27 1 1 27 27
+9	24629 22 35 35 2.249585931151 2.249585931151 1 1 1 1 1
+11	24651 23 35 35 2.249585931151 2.249585931151 1 1 1 1 1
+12	24674 8104 796 28874 3.391122608483 29.437526608483 290 0 289 41905 8087665
+13	32778 4037 14953 29544 15.750337222817 29.950337222817 143 0 142 10153 964535
+15	36815 4037 14953 29544 15.750337222817 29.950337222817 143 0 142 10153 964535
+16	40852 8233 266 29028 2.640689050892 29.640689050892 295 0 294 43365 8513995
+17	49085 766 266 29028 2.640689050892 29.640689050892 28 10 25 344 4760
+18	49851 738 266 29028 2.640689050892 29.640689050892 28 2 2 56 112
+19	50589 24 100 100 2.497826667119 2.497826667119 1 1 1 1 1
+21	50613 24 100 100 2.497826667119 2.497826667119 1 1 1 1 1
+22	50637 8233 398 29249 2.647644903669 29.694048903669 295 0 294 43365 8513995
+23	58870 3979 15068 29545 15.998577958785 29.998577958785 141 0 140 9870 924490
+25	62849 3979 15068 29545 15.998577958785 29.998577958785 141 0 140 9870 924490
+26	66828 8265 1358 29253 3.721719304922 29.721719304922 295 0 294 43365 8513995
+27	75093 741 1358 29253 3.721719304922 29.721719304922 27 10 33 416 7924
+28	75834 714 1358 29253 3.721719304922 29.721719304922 27 2 2 54 108
+29	76548 47 183 1012 2.50173563071 3.50316063071 2 1 1 2 2
+31	76595 23 183 183 2.50173563071 2.50173563071 1 1 1 1 1
+32	76618 8265 1465 29474 3.748306804922 29.775079157699 295 0 294 43365 8513995
+33	84883 3810 15132 29481 16.00316063071 29.90316063071 140 0 139 9730 904890
+35	88693 3810 15132 29481 16.00316063071 29.90316063071 140 0 139 9730 904890
+36	92503 42925 154 29393 2.5 29.732685379915 1678 0 11 7035 43847
+40	135428 5697 236 28998 2.505238964219 29.506486964219 220 0 11 392 1730
+42	141125 3374 1628 29518 3.941771235208 29.943019235208 128 0 1 64 64
+46	144499 13798 770 28861 3.38711238626 29.432370608483 526 0 9 2237 12543
+48	158297 13946 372 29236 2.643634681446 29.688892903669 534 0 9 2227 12251
+50	172243 11636 2615 29461 4.724664935476 29.769923157699 438 0 8 1559 7615

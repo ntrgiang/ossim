@@ -92,6 +92,7 @@ public:
     void reportMeshJoin();
 
     void reportNumberOfPartner(int nPartner);
+    void reportNumberOfJoin(int val);
 
 private:
     NotificationBoard *nb; // cached pointer
@@ -143,6 +144,7 @@ private:
     simsignal_t sig_meshJoin;
 
     simsignal_t sig_nPartner;
+    simsignal_t sig_nJoin;
 };
 
 #endif /* GLOBAL_STATISTIC_H_ */

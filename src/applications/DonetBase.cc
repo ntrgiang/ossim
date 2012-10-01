@@ -372,3 +372,117 @@ MeshBufferMapPacket *DonetBase::generateBufferMapPacket()
 
     return bmPacket;
 }*/
+
+void DonetBase::processPartnershipRequest(cPacket *pkt)
+{
+    EV << endl;
+    EV << "-------- Process partnership Request --------------------------------" << endl;
+
+    // -- Get the identifier (IP:port) and upBw of the requester
+    PendingPartnershipRequest requester;
+    MeshPartnershipRequestPacket *memPkt = check_and_cast<MeshPartnershipRequestPacket *>(pkt);
+        getSender(pkt, requester.address, requester.port);
+        requester.upBW = memPkt->getUpBw();
+
+    EV << "Requester: " << endl
+       << "-- Address:\t\t"         << requester.address << endl
+       << "-- Port:\t\t"            << requester.port << endl
+       << "-- Upload BW:\t"  << requester.upBW << endl;
+
+    switch(m_state)
+    {
+    case MESH_STATE_JOINED:
+    {
+        considerAcceptPartner(requester);
+
+        EV << "State remains as MESH_STATE_JOINED" << endl;
+        m_state = MESH_STATE_JOINED; // state remains
+        break;
+    }
+    case MESH_STATE_JOINED_WAITING:
+    {
+        m_list_partnershipRequestingNode.push_back(requester);
+
+        EV << "State remains as MESH_STATE_JOINED_WAITING" << endl;
+        m_state = MESH_STATE_JOINED_WAITING;
+        break;
+    }
+    case MESH_STATE_IDLE:
+    {
+        throw cException("JOIN_REQUEST is not expected for unjoined nodes");
+        break;
+    }
+    case MESH_STATE_IDLE_WAITING:
+    {
+        throw cException("something wrong!!! very wrong!!!");
+        break;
+    }
+    default:
+    {
+        throw cException("Uncovered state, check assignment of state variable!");
+        break;
+    }
+    } // switch()
+
+}
+
+void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
+{
+    if (canAcceptMorePartner())
+    {
+        EV << "-- Can accept this request" << endl;
+        // -- Debug
+        //emit(sig_partnerRequest, m_partnerList->getSize());
+
+        // -- Add peer directly to
+        m_partnerList->addAddress(requester.address, requester.upBW);
+
+        // -- Store the peer as a candidate
+        // m_candidate = requester;
+
+        MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
+        sendToDispatcher(acceptPkt, m_localPort, requester.address, requester.port);
+    }
+    else
+    {
+        EV << "-- Enough partners --> cannot accept this request." << endl;
+        //emit(sig_partnerRequest, 0);
+
+        // -- Create a Partnership message and send it to the remote peer
+        MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
+        sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
+    }
+
+}
+
+/*******************************************************************************
+ *
+ * Functions handling timers
+ *
+ *******************************************************************************
+ */
+
+//void DonetBase::handleTimerTimeoutWaitingAck()
+//{
+//    switch(m_state)
+//    {
+//    case MESH_STATE_JOINED_WAITING:
+//    {
+//        // -- Clear list of candidates
+//        // TODO
+
+//        // -- Move back to the JOINED state
+//        m_state = MESH_STATE_JOINED;
+//        break;
+//    }
+//    case MESH_STATE_IDLE_WAITING:
+//    case MESH_STATE_JOINED:
+//    case MESH_STATE_IDLE:
+//    default:
+//    {
+//        throw cException("ACK message is not expected for current state %d", m_state);
+//        break;
+//    }
+//    } // switch()
+//}
+

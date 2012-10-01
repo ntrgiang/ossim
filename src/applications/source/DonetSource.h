@@ -17,11 +17,11 @@ protected:
     virtual void finish();
 
     virtual void processPacket(cPacket *pkt);
-	void handleTimerMessage(cMessage *msg);
+    void handleTimerMessage(cMessage *msg);
 
 private:
 	// -- Partnership Management
-	void processPartnershipRequest(cPacket *pkt);
+//	void processPartnershipRequest(cPacket *pkt);
 	void acceptJoinRequestFromPeer(IPvXAddress &reqPeerAddress, double bw);
 	//bool canHaveMorePartner(void);
 

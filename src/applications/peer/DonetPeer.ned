@@ -17,6 +17,9 @@ simple DonetPeer extends DonetBase
         double interval_findMorePartner @unit(s) = default(0.0s);
         
         double interval_startPlayer     @unit(s) = default(0.5s); // 
+
+        double interval_rejoin               @unit(s) = default(1s);
+        double interval_timeout_joinReqAck   @unit(s) = default(1s);
         
         // double keepAliveInterval        @unit(s) = default(1s);
         
@@ -35,6 +38,8 @@ simple DonetPeer extends DonetBase
         
         int maxNOP = default(2); // Max number of partners
         int offsetNOP = default(1); // The difference between minNOP and maxNOP
+
+         // ------------------------------ Statistics ------------------------------------
         
         // -- Possible signals to collect
         @signal[Signal_chunkRequest](type=long);
@@ -55,13 +60,8 @@ simple DonetPeer extends DonetBase
         
         @statistic[pRejectReceived](title="Partnership reject received"; source=Signal_pRejectReceived; record=count,last,vector);
 
-//    sig_joinTime            = registerSignal("Signal_joinTime");
-//    sig_playerStartTime     = registerSignal("Signal_playerStartTime");
-//
-//    sig_pRequestSent        = registerSignal("Signal_pRequestSent");
-//    sig_pRejectReceived     = registerSignal("Signal_pRejectReceived");          
-        
-                
+      @statistic[NumberOfJoin](title="Number of Joins"; source=Signal_Join; record=count,vector);
+
 }
 
 

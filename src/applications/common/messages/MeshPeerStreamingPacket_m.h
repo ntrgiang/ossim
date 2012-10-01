@@ -30,9 +30,11 @@
  *     MESH_CHUNK_REQUEST  = 3;
  *     MESH_CHUNK_REPLY    = 4;
  *     MESH_VIDEO_CHUNK    = 5;
+ *     
  *     MESH_PARTNERSHIP_REQUEST    = 10;
  *     MESH_PARTNERSHIP_ACCEPT     = 11;
  *     MESH_PARTNERSHIP_REJECT     = 12;
+ *     
  * }
  * </pre>
  */

@@ -45,6 +45,7 @@ void GlobalStatistic::initialize(int stage)
 
         sig_meshJoin    = registerSignal("Signal_MeshJoin");
         sig_nPartner    = registerSignal("Signal_NumberOfPartner");
+        sig_nJoin       = registerSignal("Signal_nJoin");
 
 //        std::vector<cIListener*> localListener;
 //        localListener = getLocalSignalListeners(sig_dummy_chunkHit);
@@ -322,4 +323,9 @@ void GlobalStatistic::reportMeshJoin()
 void GlobalStatistic::reportNumberOfPartner(int nPartner)
 {
     emit(sig_nPartner, nPartner);
+}
+
+void GlobalStatistic::reportNumberOfJoin(int val)
+{
+    emit(sig_nJoin, val);
 }

@@ -50,11 +50,17 @@ void AppSettingDonet::initialize()
     constant_packet_size_mesh_partnership_request   = 5;
         // 1 byte: Packet type
         // 4 byte: Information about upload bandwidth of the requester
+
     constant_packet_size_mesh_partnership_accept    = 5;
         // 1 byte: Packet type
         // 4 byte: Information about upload bandwidth of the accepter
+
     constant_packet_size_mesh_partnership_reject    = 1;
         // 1 byte: Packet type
+
+    constant_packet_size_mesh_partnership_accept_ack = 1;
+        // 1 byte: Packet type
+
     if (m_bufferMapSize_chunk % 8 == 0)
         constant_packet_size_mesh_buffer_map = 1 + 4 + m_bufferMapSize_chunk / 8;
             // 1 (Byte): Packet Type
@@ -132,6 +138,11 @@ int AppSettingDonet::getPacketSizePartnershipAccept(void) const
 int AppSettingDonet::getPacketSizePartnershipReject(void) const
 {
     return constant_packet_size_mesh_partnership_reject;
+}
+
+int AppSettingDonet::getPacketSizePartnershipAcceptAck(void) const
+{
+    return constant_packet_size_mesh_partnership_accept_ack;
 }
 
 int AppSettingDonet::getPacketSizeBufferMap(void) const

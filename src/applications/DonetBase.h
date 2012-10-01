@@ -56,13 +56,25 @@ protected:
 
     // -- Overloading functions
     void bindToGlobalModule(void);
-
     void bindToMeshModule(void);
 
+    // *************************************************************************
+    // *************************************************************************
     // -- Partner Management
-    void acceptJoinRequest(IPvXAddress &reqPeerAddress, double upBw_remotePeer);
-    void addToNeighborList(cPacket *pkt);
+    void processPartnershipRequest(cPacket *pkt);
+    void considerAcceptPartner(PendingPartnershipRequest requester);
     bool canAcceptMorePartner(void);
+
+    // !!! obsolete !!!
+    void addToNeighborList(cPacket *pkt);
+    void acceptJoinRequest(IPvXAddress &reqPeerAddress, double upBw_remotePeer);
+    //void handleTimerTimeoutWaitingAccept();
+    // *************************************************************************
+    // *************************************************************************
+
+    // Timer
+    void handleTimerTimeoutWaitingAccept();
+    void handleTimerTimeoutWaitingAck();
 
     // -- BufferMap
 //    MeshBufferMapPacket *generateBufferMapPacket();
@@ -124,6 +136,24 @@ protected:
     long m_nChunkRequestReceived;
     long m_nChunkSent;
     long m_nBufferMapRecv;
+
+    // -- Join process
+    IPvXAddress m_address_candidate;
+    double      m_upBw_candidate;
+
+    // -- For join request & response
+    // IP addresses of nodes to send JOIN_REQ to will be stored here
+    //vector<IPvXAddress> m_list_joinRequestedNode;
+    // IP addresses of nodes to send JOIN_ACCEPT to will be stored here
+    //vector<IPvXAddress> m_list_joinAcceptedNode;
+    // IP addresses of nodes which sent JOIN_REQ to this node
+    vector<PendingPartnershipRequest> m_list_partnershipRequestingNode;
+    PendingPartnershipRequest m_candidate;
+
+    bool m_state_joined;
+    short m_joinState;
+
+    Mesh_State m_state;
 
 };
 

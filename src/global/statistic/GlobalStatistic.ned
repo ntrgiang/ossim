@@ -17,8 +17,8 @@ package simpleoverlay.global.statistic;
 
 simple GlobalStatistic
 {
-    parameters:
-        // --- Signals
+   parameters:
+      // --- Signals
         @signal[Signal_ChunkHit](type="long");
         @signal[Signal_ChunkMiss](type="long");
         @signal[Signal_ChunkNeed](type="long");
@@ -36,5 +36,7 @@ simple GlobalStatistic
         @statistic[MeshJoin](source=Signal_MeshJoin; record=vector);
         
         @statistic[NumberOfPartner](title="Number Of Partner"; source=Signal_NumberOfPartner; record=vector);
+
+      @statistic[NumberOfJoin](title="Number Of Join"; source=Signal_nJoin; record=sum,vector);
 
 }
