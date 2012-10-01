@@ -153,10 +153,12 @@ void ContactView::removeContact(const Contact& contact)
 
 Contact ContactView::getOneRandomContact(void)
 {
-    int rand_num = rand();
+//    int rand_num = rand();
+//    rand_num %= m_contactList.size();
 
-    rand_num %= m_contactList.size();
+    int rand_num = (int)intrand(m_contactList.size());
     return m_contactList[rand_num];
+
 }
 
 //prints out the contacts in the contact view list

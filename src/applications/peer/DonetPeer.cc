@@ -954,7 +954,8 @@ void DonetPeer::randomChunkScheduling(void)
                 }
                 else
                 {
-                    index = (int)(rand() % holderList.size());
+                    //index = (int)(rand() % holderList.size());
+                    index = (int)intrand(holderList.size());
                     EV << "  -- There are " << nHolder << " holders, random index: " << index << " -- ";
                 } // if
 

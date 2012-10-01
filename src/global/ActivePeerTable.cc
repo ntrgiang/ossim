@@ -189,8 +189,9 @@ IPvXAddress ActivePeerTable::getARandPeer()
 //
 //    return resultList[0];
     int size = activePeerList.size();
-    int aRandomNumber = rand();
-    int aRandomIndex = aRandomNumber % size;
+//    int aRandomNumber = rand();
+//    int aRandomIndex = aRandomNumber % size;
+    int aRandomIndex = (int)intrand(size);
 
     //emit(sig_size, size);
     emit(sig_size, aRandomIndex);
