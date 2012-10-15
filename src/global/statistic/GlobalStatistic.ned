@@ -39,4 +39,13 @@ simple GlobalStatistic
 
       @statistic[NumberOfJoin](title="Number Of Join"; source=Signal_nJoin; record=sum,vector);
 
+        @statistic[requestedChunk](source=Signal_RequestedChunk; record=count);
+        @statistic[receivedChunk](source=Signal_ReceivedChunk; record=count);
+        @statistic[lateChunk](source=Signal_LateChunk; record=count);
+        @statistic[inrangeChunk](source=Signal_InrangeChunk; record=count);
+        @statistic[duplicatedChunk](source=Signal_DuplicatedChunk; record=count);
+
+      @statistic[newCI](source="count(Signal_InrangeChunk)/count(Signal_ReceivedChunk)"; record=last);
+//@statistic[newCI](source="count(Signal_InrangeChunk)/(count(Signal_ReceivedChunk)-count(Signal_DuplicatedChunk))"; record=last);
+
 }

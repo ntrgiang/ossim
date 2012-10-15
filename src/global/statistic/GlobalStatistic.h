@@ -89,6 +89,11 @@ public:
     void reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num);
     void reportRebuffering(const SEQUENCE_NUMBER_T &seq_num);
 
+    void reportRequestedChunk(const SEQUENCE_NUMBER_T &seq_num);
+    void reportDuplicatedChunk(const SEQUENCE_NUMBER_T &seq_num);
+    void reportLateChunk(const SEQUENCE_NUMBER_T &seq_num);
+    void reportInrangeChunk(const SEQUENCE_NUMBER_T &seq_num);
+
     void reportMeshJoin();
 
     void reportNumberOfPartner(int nPartner);
@@ -145,6 +150,8 @@ private:
 
     simsignal_t sig_nPartner;
     simsignal_t sig_nJoin;
+
+    simsignal_t sig_requestedChunk, sig_receivedChunk, sig_duplicatedChunk, sig_lateChunk, sig_inrangeChunk;
 };
 
 #endif /* GLOBAL_STATISTIC_H_ */

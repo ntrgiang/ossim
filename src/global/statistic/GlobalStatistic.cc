@@ -40,6 +40,12 @@ void GlobalStatistic::initialize(int stage)
         sig_chunkMiss   = registerSignal("Signal_ChunkMiss");
         sig_chunkNeed   = registerSignal("Signal_ChunkNeed");
 
+        sig_requestedChunk      = registerSignal("Signal_RequestedChunk");
+        sig_receivedChunk       = registerSignal("Signal_ReceivedChunk");
+        sig_lateChunk           = registerSignal("Signal_LateChunk");
+        sig_inrangeChunk        = registerSignal("Signal_InrangeChunk");
+        sig_duplicatedChunk     = registerSignal("Signal_DuplicatedChunk");
+
         sig_chunkSeek   = registerSignal("Signal_ChunkSeek");
         sig_rebuffering   = registerSignal("Signal_Rebuffering");
 
@@ -308,6 +314,28 @@ void GlobalStatistic::reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_chunkSeek, seq_num);
     emit(sig_chunkNeed, seq_num);
+}
+
+void GlobalStatistic::reportRequestedChunk(const SEQUENCE_NUMBER_T &seq_num)
+{
+    emit(sig_requestedChunk, seq_num);
+}
+
+void GlobalStatistic::reportDuplicatedChunk(const SEQUENCE_NUMBER_T &seq_num)
+{
+    emit(sig_duplicatedChunk, seq_num);
+}
+
+void GlobalStatistic::reportLateChunk(const SEQUENCE_NUMBER_T &seq_num)
+{
+    emit(sig_lateChunk, seq_num);
+    emit(sig_receivedChunk, seq_num);
+}
+
+void GlobalStatistic::reportInrangeChunk(const SEQUENCE_NUMBER_T &seq_num)
+{
+    emit(sig_inrangeChunk, seq_num);
+    emit(sig_receivedChunk, seq_num);
 }
 
 void GlobalStatistic::reportRebuffering(const SEQUENCE_NUMBER_T &seq_num)

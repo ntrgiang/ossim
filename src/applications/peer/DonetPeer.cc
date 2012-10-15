@@ -61,6 +61,8 @@ void DonetPeer::initialize(int stage)
     timer_sendBufferMap     = new cMessage("MESH_PEER_TIMER_SEND_BUFFERMAP");
     timer_findMorePartner   = new cMessage("MESH_PEER_TIMER_FIND_MORE_PARTNER");
     timer_startPlayer       = new cMessage("MESH_PEER_TIMER_START_PLAYER");
+
+    timer_timeout_waiting_accept = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
 //    timer_rejoin            = new cMessage("MESH_PEER_TIMER_REJOIN");
 
     // Parameters of the module itself
@@ -372,8 +374,9 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
         m_apTable->printActivePeerTable();
 
         // -- Cancel timer
-        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
-        timer_timeout_waiting_accept = NULL;
+//        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
+//        timer_timeout_waiting_accept = NULL;
+        cancelEvent(timer_timeout_waiting_accept);
 
         double rand_value;
         // -- Start several timers
@@ -414,8 +417,9 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
         m_partnerList->addAddress(acceptor.address, acceptor.upBW);
 
         // -- Cancel timer
-        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
-        timer_timeout_waiting_accept = NULL;
+//        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
+//        timer_timeout_waiting_accept = NULL;
+        cancelEvent(timer_timeout_waiting_accept);
 
         EV << "State changes from MESH_STATE_JOINED_WAITING to MESH_STATE_JOINED" << endl;
         m_state = MESH_STATE_JOINED;
@@ -490,8 +494,9 @@ void DonetPeer::processPartnershipReject(cPacket *pkt)
         EV << "Try to contact another peer, later on ..." << endl;
 
         // -- Cancel timer
-        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
-        timer_timeout_waiting_accept = NULL;
+//        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
+//        timer_timeout_waiting_accept = NULL;
+        cancelEvent(timer_timeout_waiting_accept);
 
         EV << "State changes from MESH_STATE_JOINED_WAITING to MESH_STATE_JOINED" << endl;
         m_state = MESH_STATE_JOINED;
@@ -501,8 +506,9 @@ void DonetPeer::processPartnershipReject(cPacket *pkt)
     {
         EV << "Should find another partner NOW ..." << endl;
         // -- Cancel timer
-        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
-        timer_timeout_waiting_accept = NULL;
+//        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
+//        timer_timeout_waiting_accept = NULL;
+        cancelEvent(timer_timeout_waiting_accept);
 
         EV << "State as MESH_STATE_IDLE_WAITING after trigger finding partner immediately" << endl;
         m_state = MESH_STATE_IDLE;
@@ -713,6 +719,7 @@ void DonetPeer::handleTimerJoin(void)
         findPartner();
 
         EV << "State changes from MESH_STATE_IDLE to MESH_STATE_IDLE_WAITING" << endl;
+        //timer_timeout_waiting_accept = new c
         m_state = MESH_STATE_IDLE_WAITING;
         break;
     }
@@ -975,6 +982,7 @@ void DonetPeer::randomChunkScheduling(void)
 
                 // -- Emit signal for statistics collection
                 emit(sig_chunkRequestSeqNum, seq_num);
+                m_gstat->reportRequestedChunk(seq_num);
 
             } // if (nHolder > 0)
             else

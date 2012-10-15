@@ -33,4 +33,6 @@ simple VideoBuffer
         
          @signal[Signal_InrangeChunk](type=long);
          @statistic[inrangeChunk](title="Sequence Number of in-range chunks"; source=Signal_InrangeChunk; record=count,vector);
+
+         @statistic[duplicatedChunk](title="Sequence Number of duplicated chunks"; source=Signal_DuplicatedChunk; record=count,vector);
 }

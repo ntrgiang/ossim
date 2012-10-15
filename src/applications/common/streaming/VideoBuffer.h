@@ -25,11 +25,10 @@
 #include "VideoChunkPacket_m.h"
 #include "AppCommon.h"
 #include "BufferMap.h"
-//#include "AppSettingDonet.h"
+#include "GlobalStatistic.h"
 
-typedef struct __STRM_BUF_ELEM{
+typedef struct __STRM_BUF_ELEM {
     __STRM_BUF_ELEM() : m_chunk(NULL) {};
-
     //MeshVideoChunkPacket *m_chunk;
     VideoChunkPacket *m_chunk;
     SEQUENCE_NUMBER_T m_recved_time;
@@ -73,6 +72,7 @@ public:
 //    void insertPacket(MeshVideoChunkPacket *packet, SIM_TIME_T current_time);
 //    void insertPacket(MeshVideoChunkPacket *packet);
     void insertPacket(VideoChunkPacket *packet);
+    void insertPacketDirect(VideoChunkPacket *packet);
     VideoChunkPacket *getChunk(SEQUENCE_NUMBER_T seq_num);
     int getNumberFilledChunk();
 
@@ -113,6 +113,8 @@ private:
 //    int param_videoStreamBitRate;
 //    int param_chunkSize;
 
+    GlobalStatistic *m_gstat;
+
     int m_bufferSize_chunk;
 
     // -- Expected time interval between chunks [seconds]
@@ -127,7 +129,7 @@ private:
 
     // -- signals for statistical analysis
     simsignal_t signal_seqNum_receivedChunk;
-    simsignal_t signal_lateChunk, signal_nonsenseChunk, signal_inrangeChunk;
+    simsignal_t signal_lateChunk, signal_inrangeChunk, signal_duplicatedChunk;
 
 // Debug
 private:

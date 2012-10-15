@@ -99,7 +99,8 @@ void ChunkGenerator::handleTimerMessage(cMessage *msg)
         ++m_id_newChunk;
 
 
-        m_videoBuffer->insertPacket(chunk);
+        //m_videoBuffer->insertPacket(chunk);
+        m_videoBuffer->insertPacketDirect(chunk);
 //        m_videoBuffer->printStatus();
     }
     else

@@ -36,8 +36,8 @@ void VideoBuffer::initialize(int stage)
     {
         signal_seqNum_receivedChunk = registerSignal("Signal_RecevedChunk");
         signal_lateChunk            = registerSignal("Signal_Latechunk");
-        signal_nonsenseChunk        = registerSignal("Signal_NonsenseChunk");
         signal_inrangeChunk         = registerSignal("Signal_InrangeChunk");
+        signal_duplicatedChunk      = registerSignal("Signal_DuplicatedChunk");
     }
 
     if (stage != 3)
@@ -47,6 +47,9 @@ void VideoBuffer::initialize(int stage)
 
     cModule *temp = simulation.getModuleByPath("appSetting");
     AppSettingDonet *m_appSetting = check_and_cast<AppSettingDonet *>(temp);
+
+    temp = simulation.getModuleByPath("globalStatistic");
+    m_gstat = check_and_cast<GlobalStatistic *>(temp);
 
     m_bufferSize_chunk  = m_appSetting->getBufferMapSizeChunk();
     m_chunkInterval     = m_appSetting->getIntervalNewChunk();
@@ -91,15 +94,19 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
     {
         EV << "The chunk arrived too late, should be discarded." << endl;
         emit(signal_lateChunk, seq_num);
+        m_gstat->reportLateChunk(seq_num);
         return;
     }
-    else if (seq_num > m_bufferEnd_seqNum)
-    {
-        emit(signal_nonsenseChunk, seq_num);
-        throw cException("Received chunks has a non-sense sequence number");
-    }
-
     emit(signal_inrangeChunk, seq_num);
+    m_gstat->reportInrangeChunk(seq_num);
+
+    if (isInBuffer(seq_num) == true)
+    {
+        EV << "The chunk already existed in the buffer, should be discarded." << endl;
+        emit(signal_duplicatedChunk, seq_num);
+        m_gstat->reportDuplicatedChunk(seq_num);
+        return;
+    }
 
     // Stats
     emit(signal_seqNum_receivedChunk, seq_num);
@@ -178,6 +185,62 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
 
 }
 
+void VideoBuffer::insertPacketDirect(VideoChunkPacket *packet)
+{
+    Enter_Method("insertPacket()");
+
+    EV << "---------- Insert a packet into video buffer ------------------------" << endl;
+
+    long seq_num = packet->getSeqNumber();
+    EV << "-- Sequence number of chunk: " << seq_num << " --> element: " << seq_num % m_bufferSize_chunk << endl;
+    EV << "\t-- Buffer_start:\t" << m_bufferStart_seqNum << endl;
+    EV << "\t-- Buffer_end:\t" << m_bufferEnd_seqNum << endl;
+
+    STREAM_BUFFER_ELEMENT_T & elem = m_streamBuffer[seq_num % m_bufferSize_chunk];
+
+    if (elem.m_chunk != NULL)
+    {
+        EV << "-- Existing chunk needs to be deleted: " << seq_num % m_bufferSize_chunk << endl;
+        delete elem.m_chunk;
+        elem.m_chunk = NULL;
+
+        if (__VIDEOBUFFER_CROSSCHECK__) --m_nActiveElement;
+    }
+
+    EV << "-- New chunk was attached to the Buffer" << endl;
+    elem.m_chunk = packet;
+
+    if (__VIDEOBUFFER_CROSSCHECK__) ++m_nActiveElement;
+
+    if (seq_num > m_head_received_seqNum)
+    {
+        EV << "-- Update the range of the Video Buffer:" << endl;
+
+        m_head_received_seqNum = seq_num;
+        m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
+        m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
+        EV << "  -- start:\t"   << m_bufferStart_seqNum     << endl;
+        EV << "  -- end:\t"     << m_bufferEnd_seqNum       << endl;
+        EV << "  -- head:\t"    << m_head_received_seqNum   << endl;
+    }
+
+//    // -- To know the status
+//    ++m_nChunkReceived;
+//    if (m_time_firstChunk < 0)
+//    {
+//        // This received chunk is the first one received so far
+//        m_time_firstChunk = simTime().dbl();
+//    }
+//    else
+//    {
+//        double delta_time = simTime().dbl() - m_time_firstChunk;
+//        if (delta_time > 0)
+//            EV << "Average received chunk rate: " << (double)m_nChunkReceived / delta_time << endl;
+//        else
+//            throw cException("delta_time is invalid");
+//    }
+
+}
 
 // TODO: verification!!!
 bool VideoBuffer::isInBuffer(SEQUENCE_NUMBER_T seq_num)
