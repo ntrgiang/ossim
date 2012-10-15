@@ -35,6 +35,9 @@ void VideoBuffer::initialize(int stage)
     if (stage == 0)
     {
         signal_seqNum_receivedChunk = registerSignal("Signal_RecevedChunk");
+        signal_lateChunk            = registerSignal("Signal_Latechunk");
+        signal_nonsenseChunk        = registerSignal("Signal_NonsenseChunk");
+        signal_inrangeChunk         = registerSignal("Signal_InrangeChunk");
     }
 
     if (stage != 3)
@@ -81,6 +84,22 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
 
     long seq_num = packet->getSeqNumber();
     EV << "-- Sequence number of chunk: " << seq_num << " --> element: " << seq_num % m_bufferSize_chunk << endl;
+    EV << "\t-- Buffer_start:\t" << m_bufferStart_seqNum << endl;
+    EV << "\t-- Buffer_end:\t" << m_bufferEnd_seqNum << endl;
+
+    if (seq_num < m_bufferStart_seqNum)
+    {
+        EV << "The chunk arrived too late, should be discarded." << endl;
+        emit(signal_lateChunk, seq_num);
+        return;
+    }
+    else if (seq_num > m_bufferEnd_seqNum)
+    {
+        emit(signal_nonsenseChunk, seq_num);
+        throw cException("Received chunks has a non-sense sequence number");
+    }
+
+    emit(signal_inrangeChunk, seq_num);
 
     // Stats
     emit(signal_seqNum_receivedChunk, seq_num);
@@ -100,7 +119,7 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
     elem.m_chunk = packet;
 
     if (__VIDEOBUFFER_CROSSCHECK__) ++m_nActiveElement;
-
+/*
 #if (BUFFER_IMPL_VERSION == _VERSION_1)
     if (seq_num > m_id_bufferEnd)
     {
@@ -127,6 +146,19 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
         EV << "  -- head:\t"    << m_head_received_seqNum   << endl;
     }
 #endif
+*/
+
+    if (seq_num > m_head_received_seqNum)
+    {
+        EV << "-- Update the range of the Video Buffer:" << endl;
+
+        m_head_received_seqNum = seq_num;
+        m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
+        m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
+        EV << "  -- start:\t"   << m_bufferStart_seqNum     << endl;
+        EV << "  -- end:\t"     << m_bufferEnd_seqNum       << endl;
+        EV << "  -- head:\t"    << m_head_received_seqNum   << endl;
+    }
 
     // -- To know the status
     ++m_nChunkReceived;

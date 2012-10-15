@@ -127,6 +127,7 @@ private:
 
     // -- signals for statistical analysis
     simsignal_t signal_seqNum_receivedChunk;
+    simsignal_t signal_lateChunk, signal_nonsenseChunk, signal_inrangeChunk;
 
 // Debug
 private:
