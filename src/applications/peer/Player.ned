@@ -2,10 +2,15 @@ package simpleoverlay.applications.peer;
 
 simple Player
 {
-    parameters:
-        @class(Player); 
+   parameters:
+      @class(Player);
         
-        double interval_recheckVideoBuffer @unit(s) = default(0.1s);
+      double interval_recheckVideoBuffer @unit(s) = default(0.1s);
+
+      double percent_buffer_low = default(0.0);
+      double percent_buffer_high = default(1.0);
+      int max_skipped_chunk = default(3);
+      double interval_probe_playerStart @unit(s) = default(1s);
         
 		// --- Possible signals to collect
 		@signal[rebuffering_Local](type=long);

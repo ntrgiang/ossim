@@ -317,6 +317,49 @@ STREAM_BUFFER_ELEMENT_T & VideoBuffer::getBufferElement(SEQUENCE_NUMBER_T seq_nu
 
 }
 
+double VideoBuffer::getPercentFill()
+{
+    int count_fill = getNumberOfChunkFill();
+    return (double)count_fill / m_bufferSize_chunk;
+}
+
+int VideoBuffer::getNumberOfChunkFill()
+{
+    // !!! Asuming that the ref_ori is a valid value between seq_num_start & seq_num_end
+    int count_fill = 0;
+    for (SEQUENCE_NUMBER_T seq_num = m_bufferStart_seqNum; seq_num <= m_bufferEnd_seqNum; ++seq_num)
+    {
+        if (inBuffer(seq_num))
+            ++count_fill;
+    }
+
+    return count_fill;
+}
+
+int VideoBuffer::getNumberOfChunkFillAhead(SEQUENCE_NUMBER_T ref_ori)
+{
+    // !!! Asuming that the ref_ori is a valid value between seq_num_start & seq_num_end
+    int count_fill = 0;
+    for (SEQUENCE_NUMBER_T seq_num = ref_ori; seq_num <= m_bufferEnd_seqNum; ++seq_num)
+    {
+        if (inBuffer(seq_num))
+            ++count_fill;
+    }
+
+    return count_fill;
+}
+
+double VideoBuffer::getPercentFillAhead(SEQUENCE_NUMBER_T ref_ori)
+{
+    int count_fill_ahead = getNumberOfChunkFillAhead(ref_ori);
+    int count_total_chunk_ahead = m_bufferEnd_seqNum - ref_ori;
+
+    EV << "count_fill_ahead: " << count_fill_ahead << endl;
+    EV << "count_total_chunk_ahead: " << count_total_chunk_ahead << endl;
+
+    return (double)count_fill_ahead / (double)count_total_chunk_ahead;
+}
+
 void VideoBuffer::captureVideoBuffer(BufferMap *bm)
 {
     Enter_Method("captureVideoBuffer()");
@@ -486,14 +529,14 @@ int VideoBuffer::getNumberActiveElement(void)
     return m_nActiveElement;
 }
 
-int VideoBuffer::getNumberFilledChunk()
-{
-    int count = 0;
-    for (SEQUENCE_NUMBER_T i = m_bufferStart_seqNum; i <= m_bufferEnd_seqNum; ++i)
-    {
-        if (inBuffer(i))
-            ++count;
-    }
-    EV << "Number of chunks in the video buffer: " << count << endl;
-    return count;
-}
+//int VideoBuffer::getNumberFilledChunk()
+//{
+//    int count = 0;
+//    for (SEQUENCE_NUMBER_T i = m_bufferStart_seqNum; i <= m_bufferEnd_seqNum; ++i)
+//    {
+//        if (inBuffer(i))
+//            ++count;
+//    }
+//    EV << "Number of chunks in the video buffer: " << count << endl;
+//    return count;
+//}

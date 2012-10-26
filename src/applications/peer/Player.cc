@@ -24,6 +24,7 @@ Player::Player() {
 Player::~Player()
 {
     if (timer_nextChunk != NULL) { delete cancelEvent(timer_nextChunk); timer_nextChunk = NULL; }
+    if (timer_playerStart) cancelAndDelete(timer_playerStart);
 }
 
 void Player::initialize(int stage)
@@ -42,20 +43,33 @@ void Player::initialize(int stage)
 
     // -- pointing to the Video Buffer
     cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
-    m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
-    if (!m_videoBuffer) throw cException("Null pointer for the VideoBuffer module");
+    m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
+    //    m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
+//    if (!m_videoBuffer) throw cException("Null pointer for the VideoBuffer module");
 
     temp = simulation.getModuleByPath("appSetting");
-    m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    if (!m_videoBuffer) throw cException("Null pointer for the AppSetting module");
+    m_appSetting = check_and_cast<AppSettingDonet *>(temp);
+    //    m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
+//    if (!m_videoBuffer) throw cException("Null pointer for the AppSetting module");
 
     temp = simulation.getModuleByPath("globalStatistic");
-    m_stat = dynamic_cast<GlobalStatistic *>(temp);
-    if (!m_stat) throw cException("Null pointer for the GlobalStatistic module");
+    m_stat = check_and_cast<GlobalStatistic *>(temp);
+    //    m_stat = dynamic_cast<GlobalStatistic *>(temp);
+//    if (!m_stat) throw cException("Null pointer for the GlobalStatistic module");
 
-    timer_nextChunk      = new cMessage("PLAYER_TIMER_NEXT_CHUNK");
+    timer_nextChunk     = new cMessage("PLAYER_TIMER_NEXT_CHUNK");
+    timer_playerStart   = new cMessage("PLAYER_TIMER_START");
 
+    // -- Reading parameters from module itself
     param_interval_recheckVideoBuffer = par("interval_recheckVideoBuffer");
+
+    // -- for the FSM
+    param_percent_buffer_low = par("percent_buffer_low").doubleValue();
+    param_percent_buffer_high = par("percent_buffer_high").doubleValue();
+    param_max_skipped_chunk = (int) par("max_skipped_chunk").doubleValue();
+    param_interval_probe_playerStart = par("interval_probe_playerStart").doubleValue();
+    m_state = PLAYER_STATE_IDLE;
+    m_skip = 0;
 
     m_interval_newChunk = m_appSetting->getIntervalNewChunk();
     m_chunkSize  = m_appSetting->getChunkSize();
@@ -72,9 +86,19 @@ void Player::initialize(int stage)
     WATCH(m_interval_newChunk);
 }
 
+void Player::activate(void)
+{
+    if (m_state != PLAYER_STATE_IDLE)
+        throw cException("Wrong Player state %d while expecting %d", m_state, PLAYER_STATE_IDLE);
+
+    m_state = PLAYER_STATE_BUFFERING;
+    scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
+
+}
+
 void Player::finish()
 {
-    if (timer_nextChunk != NULL) { delete cancelEvent(timer_nextChunk); timer_nextChunk = NULL; }
+
 }
 
 void Player::handleMessage(cMessage *msg)
@@ -90,46 +114,167 @@ void Player::handleMessage(cMessage *msg)
 
 void Player::handleTimerMessage(cMessage *msg)
 {
-    if (msg == timer_nextChunk)
+    if (msg == timer_playerStart)
     {
-        scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
-
-        emit(sig_chunkSeek, m_id_nextChunk);
-        m_stat->reportChunkSeek(m_id_nextChunk);
-
-        if (m_videoBuffer->isInBuffer(m_id_nextChunk))
+        switch (m_state)
         {
-            EV << "\tChunk " << m_id_nextChunk << " is in the buffer." << endl;
-
-            emit(sig_chunkHit, m_id_nextChunk);
-            m_stat->reportChunkHit(m_id_nextChunk);
-        }
-        else
+        case PLAYER_STATE_BUFFERING:
         {
-            EV << "\tChunk " << m_id_nextChunk << " is NOT in the buffer." << endl;
-
-            emit(sig_chunkMiss, m_id_nextChunk);
-            m_stat->reportChunkMiss(m_id_nextChunk);
-
-            if (m_id_nextChunk >= m_videoBuffer->getBufferEndSeqNum())
+            if (m_videoBuffer->getPercentFill() < param_percent_buffer_high)
             {
-                EV << "\t\tNo more chunk in the buffer to play out --> rebuffering!" << endl;
-                cancelEvent(timer_nextChunk);
-                scheduleAt(simTime() + param_interval_recheckVideoBuffer, timer_nextChunk);
+                scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
+            }
+            else
+            {
+                m_state = PLAYER_STATE_PLAYING;
 
-                // -- recording re-buffering events
-                emit(sig_rebuffering_local, m_id_nextChunk);
-                m_stat->reportRebuffering(m_id_nextChunk);
+                if (m_id_nextChunk <= m_videoBuffer->getBufferStartSeqNum())
+                    m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
+                else if (m_id_nextChunk > m_videoBuffer->getBufferEndSeqNum())
+                    throw cException("Expected sequence number %ld is out of range [%ld, %ld]",
+                                     m_id_nextChunk,
+                                     m_videoBuffer->getBufferStartSeqNum(),
+                                     m_videoBuffer->getBufferEndSeqNum());
+
+                scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+            }
+            break;
+        }
+        default:
+        {
+            throw cException("Wrong state %d while expecting %d", m_state, PLAYER_STATE_BUFFERING);
+        }
+        }
+    }
+    else if (msg == timer_nextChunk)
+    {
+        if (m_videoBuffer->inBuffer(m_id_nextChunk))
+        {
+            switch (m_state)
+            {
+            case PLAYER_STATE_PLAYING:
+            {
+                ++m_id_nextChunk;
+                scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+
+                // -- State remains
+
+                break;
+            }
+            case PLAYER_STATE_STALLED:
+            {
+                if (m_id_nextChunk < m_videoBuffer->getBufferStartSeqNum() ||
+                        m_id_nextChunk > m_videoBuffer->getBufferEndSeqNum())
+                throw cException("Expected sequence number %ld is out of range [%ld, %ld]",
+                                 m_id_nextChunk,
+                                 m_videoBuffer->getBufferStartSeqNum(),
+                                 m_videoBuffer->getBufferEndSeqNum());
+
+                if (shouldResumePlaying(m_id_nextChunk))
+                {
+                    ++m_id_nextChunk;
+                    scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+
+                    m_state = PLAYER_STATE_PLAYING;
+                }
+                else
+                {
+                    scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+                    //-- State remains
+                }
+                break;
+            }
+            default:
+            {
+                throw cException("Unexpected state %d", m_state);
+            }
             }
         }
+        else // expected chunk is NOT in buffer
+        {
+            switch (m_state)
+            {
+            case PLAYER_STATE_PLAYING:
+            {
+                if (m_skip < param_max_skipped_chunk)
+                {
+                    ++m_skip;
+                    scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+                    //-- State remains
+                }
+                else
+                {
+                    m_skip = 0;
+                    scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
 
-        ++m_id_nextChunk;
+                    m_state = PLAYER_STATE_STALLED;
+                }
+                break;
+            }
+            case PLAYER_STATE_STALLED:
+            {
+                if (m_videoBuffer->getPercentFill() >= param_percent_buffer_low)
+                {
+                    scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+                    // -- State remains
+                }
+                else
+                {
 
+                    scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+
+                    m_state = PLAYER_STATE_BUFFERING;
+                }
+                break;
+            }
+            default:
+            {
+                throw cException("Unexpected state %d", m_state);
+            }
+            }
+        }
     }
-    else
-    {
-        throw cException("Wrong timer at Player module!");
-    }
+
+//    if (msg == timer_nextChunk)
+//    {
+//        scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
+
+//        emit(sig_chunkSeek, m_id_nextChunk);
+//        m_stat->reportChunkSeek(m_id_nextChunk);
+
+//        if (m_videoBuffer->isInBuffer(m_id_nextChunk))
+//        {
+//            EV << "\tChunk " << m_id_nextChunk << " is in the buffer." << endl;
+
+//            emit(sig_chunkHit, m_id_nextChunk);
+//            m_stat->reportChunkHit(m_id_nextChunk);
+//        }
+//        else
+//        {
+//            EV << "\tChunk " << m_id_nextChunk << " is NOT in the buffer." << endl;
+
+//            emit(sig_chunkMiss, m_id_nextChunk);
+//            m_stat->reportChunkMiss(m_id_nextChunk);
+
+//            if (m_id_nextChunk >= m_videoBuffer->getBufferEndSeqNum())
+//            {
+//                EV << "\t\tNo more chunk in the buffer to play out --> rebuffering!" << endl;
+//                cancelEvent(timer_nextChunk);
+//                scheduleAt(simTime() + param_interval_recheckVideoBuffer, timer_nextChunk);
+
+//                // -- recording re-buffering events
+//                emit(sig_rebuffering_local, m_id_nextChunk);
+//                m_stat->reportRebuffering(m_id_nextChunk);
+//            }
+//        }
+
+//        ++m_id_nextChunk;
+
+//    }
+//    else
+//    {
+//        throw cException("Wrong timer at Player module!");
+//    }
 }
 
 void Player::startPlayer()
@@ -153,4 +298,14 @@ SEQUENCE_NUMBER_T Player::getCurrentPlaybackPoint(void)
 bool Player::playerStarted(void)
 {
     return m_playerStarted;
+}
+
+bool Player::shouldResumePlaying(SEQUENCE_NUMBER_T seq_num)
+{
+    // !!! Asuming that the seq_num is a valid value within the range [id_start, id_end]
+
+    if (m_videoBuffer->getPercentFillAhead(seq_num) >= 0.5)
+        return true;
+
+    return false;
 }

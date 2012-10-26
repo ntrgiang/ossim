@@ -64,6 +64,9 @@ public:
     inline SEQUENCE_NUMBER_T getBufferEndSeqNum(void) { return m_bufferEnd_seqNum; }
     inline SEQUENCE_NUMBER_T getHeadReceivedSeqNum(void) { return m_head_received_seqNum; }
 
+    double getPercentFill(void);
+    int getNumberOfChunkFill(void);
+
 //    inline void setSize(int size) { m_bufferSize_chunk = size; }
     inline int getSize() { return m_bufferSize_chunk; }
 
@@ -74,7 +77,7 @@ public:
     void insertPacket(VideoChunkPacket *packet);
     void insertPacketDirect(VideoChunkPacket *packet);
     VideoChunkPacket *getChunk(SEQUENCE_NUMBER_T seq_num);
-    int getNumberFilledChunk();
+//    int getNumberFilledChunk();
 
     bool isInBuffer(SEQUENCE_NUMBER_T seq_num);
     bool inBuffer(SEQUENCE_NUMBER_T seq_num);
@@ -83,6 +86,10 @@ public:
     STREAM_BUFFER_ELEMENT_T & getBufferElement(SEQUENCE_NUMBER_T seq_num);
     void captureVideoBuffer(BufferMap *bm);
     void fillBufferMapPacket(MeshBufferMapPacket *bmPkt);
+
+    bool shouldResumePlaying(SEQUENCE_NUMBER_T seq_num) const;
+    int getNumberOfChunkFillAhead(SEQUENCE_NUMBER_T ref_ori);
+    double getPercentFillAhead(SEQUENCE_NUMBER_T ref_ori);
 
 //    double getDeadline(SEQUENCE_NUMBER_T seq_num) const;
 

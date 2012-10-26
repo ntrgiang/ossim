@@ -1443,7 +1443,7 @@ bool DonetPeer::shouldStartPlayer(void)
 {
     EV << "---------- Check whether should start the Player --------------------" << endl;
     EV << "-- Threshold: " << m_bufferMapSize_chunk / 2 << " ";
-    if (m_videoBuffer->getNumberFilledChunk() >= m_bufferMapSize_chunk / 2)
+    if (m_videoBuffer->getNumberOfChunkFill() >= m_bufferMapSize_chunk / 2)
     {
         EV << "-- Enough chunks --> The Player should start now!" << endl;
 
