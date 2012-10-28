@@ -182,6 +182,12 @@ void DonetPeer::cancelAndDeleteAllTimer()
     if (timer_chunkScheduling != NULL)  { delete cancelEvent(timer_chunkScheduling);    timer_chunkScheduling   = NULL; }
     if (timer_findMorePartner != NULL)  { delete cancelEvent(timer_findMorePartner);    timer_findMorePartner   = NULL; }
     if (timer_startPlayer != NULL)      { delete cancelEvent(timer_startPlayer);        timer_startPlayer       = NULL; }
+    if (timer_timeout_waiting_accept != NULL)
+    {
+        delete cancelEvent(timer_timeout_waiting_accept);
+        timer_timeout_waiting_accept       = NULL;
+    }
+
 }
 
 void DonetPeer::handleTimerMessage(cMessage *msg)
@@ -396,7 +402,9 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
 
         // -- 4. Start Player?
             EV << "-- Player will be tried to start after " << param_interval_starPlayer << " seconds" << endl;
-        scheduleAt(simTime() + param_interval_starPlayer, timer_startPlayer);
+            // -- Activate the Player
+            m_player->activate();
+        //scheduleAt(simTime() + param_interval_starPlayer, timer_startPlayer);
 
         // -- Debug
         // m_gstat->reportMeshJoin();

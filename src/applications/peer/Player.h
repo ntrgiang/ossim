@@ -67,6 +67,9 @@ protected:
     simsignal_t sig_chunkSeek;
     simsignal_t sig_rebuffering_local;
 
+    simsignal_t sig_rebuffering;
+    simsignal_t sig_stall;
+
 };
 
 #endif /* PLAYER_H_ */

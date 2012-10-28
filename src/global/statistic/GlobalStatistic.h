@@ -88,6 +88,8 @@ public:
     void reportChunkMiss(const SEQUENCE_NUMBER_T &seq_num);
     void reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num);
     void reportRebuffering(const SEQUENCE_NUMBER_T &seq_num);
+    void reportRebuffering();
+    void reportStall();
 
     void reportRequestedChunk(const SEQUENCE_NUMBER_T &seq_num);
     void reportDuplicatedChunk(const SEQUENCE_NUMBER_T &seq_num);
@@ -145,6 +147,8 @@ private:
 
     simsignal_t sig_chunkSeek;
     simsignal_t sig_rebuffering;
+    simsignal_t sig_stall;
+
 
     simsignal_t sig_meshJoin;
 

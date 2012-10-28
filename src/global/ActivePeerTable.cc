@@ -110,6 +110,8 @@ void ActivePeerTable::addPeerAddress(const IPvXAddress &address)
         return;
 
     activePeerList.push_back(address);
+
+    emit(sig_size, activePeerList.size());
 }
 
 //bool ActivePeerTable::deletePeerAddress(const IPvXAddress *address)
@@ -194,7 +196,7 @@ IPvXAddress ActivePeerTable::getARandPeer()
     int aRandomIndex = (int)intrand(size);
 
     //emit(sig_size, size);
-    emit(sig_size, aRandomIndex);
+//    emit(sig_size, aRandomIndex);
 
     return activePeerList[aRandomIndex];
 }

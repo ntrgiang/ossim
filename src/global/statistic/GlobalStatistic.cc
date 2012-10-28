@@ -46,8 +46,9 @@ void GlobalStatistic::initialize(int stage)
         sig_inrangeChunk        = registerSignal("Signal_InrangeChunk");
         sig_duplicatedChunk     = registerSignal("Signal_DuplicatedChunk");
 
-        sig_chunkSeek   = registerSignal("Signal_ChunkSeek");
-        sig_rebuffering   = registerSignal("Signal_Rebuffering");
+        sig_chunkSeek       = registerSignal("Signal_ChunkSeek");
+        sig_rebuffering     = registerSignal("Signal_Rebuffering");
+        sig_stall           = registerSignal("Signal_Stall");
 
         sig_meshJoin    = registerSignal("Signal_MeshJoin");
         sig_nPartner    = registerSignal("Signal_NumberOfPartner");
@@ -342,6 +343,17 @@ void GlobalStatistic::reportRebuffering(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_rebuffering, seq_num);
 }
+
+void GlobalStatistic::reportRebuffering()
+{
+    emit(sig_rebuffering, 1);
+}
+
+void GlobalStatistic::reportStall()
+{
+    emit(sig_stall, 1);
+}
+
 
 void GlobalStatistic::reportMeshJoin()
 {

@@ -28,6 +28,7 @@ simple GlobalStatistic
         @statistic[ChunkMiss](source=Signal_ChunkMiss; record=count);
         @statistic[ChunkSeek](source=Signal_ChunkSeek; record=count);
         @statistic[Rebuffering](source=Signal_Rebuffering; record=count);
+        @statistic[Stall](source=Signal_Stall; record=count);
         
         //@statistic[CI](source="count(Signal_ChunkHit)/(count(Signal_ChunkHit)+count(Signal_ChunkMiss))"; record=last);
         @statistic[CI](source="count(Signal_ChunkHit)/count(Signal_ChunkNeed)"; record=last);

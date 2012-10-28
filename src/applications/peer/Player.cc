@@ -35,6 +35,8 @@ void Player::initialize(int stage)
         sig_chunkMiss           = registerSignal("Signal_ChunkMiss");
         sig_chunkSeek           = registerSignal("Signal_ChunkSeek");
         sig_rebuffering_local   = registerSignal("rebuffering_Local");
+        sig_rebuffering         = registerSignal("Signal_Rebuffering");
+        sig_stall               = registerSignal("Signal_Stall");
         return;
     }
 
@@ -159,6 +161,12 @@ void Player::handleTimerMessage(cMessage *msg)
 
                 // -- State remains
 
+                // -- Statistics collection
+                emit(sig_chunkHit, m_id_nextChunk);
+                emit(sig_chunkSeek, m_id_nextChunk);
+                m_stat->reportChunkHit(m_id_nextChunk);
+                m_stat->reportChunkSeek(m_id_nextChunk);
+
                 break;
             }
             case PLAYER_STATE_STALLED:
@@ -201,13 +209,24 @@ void Player::handleTimerMessage(cMessage *msg)
                     ++m_skip;
                     scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
                     //-- State remains
+
+                    // -- Statistics collection
+                    emit(sig_chunkMiss, m_id_nextChunk);
+                    emit(sig_chunkSeek, m_id_nextChunk);
+                    m_stat->reportChunkMiss(m_id_nextChunk);
+                    m_stat->reportChunkSeek(m_id_nextChunk);
                 }
                 else
                 {
+                    // -- Reset the counter for skips
                     m_skip = 0;
                     scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
 
                     m_state = PLAYER_STATE_STALLED;
+
+                    // -- Statistics collection
+                    emit(sig_stall, 1);
+                    m_stat->reportStall();
                 }
                 break;
             }
@@ -224,6 +243,10 @@ void Player::handleTimerMessage(cMessage *msg)
                     scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
 
                     m_state = PLAYER_STATE_BUFFERING;
+
+                    // -- Statistics collection
+                    emit(sig_rebuffering, 1);
+                    m_stat->reportRebuffering();
                 }
                 break;
             }

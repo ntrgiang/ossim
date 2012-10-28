@@ -19,7 +19,7 @@ protected:
     void handleTimerMessage(cMessage *msg);
 
 protected:
-    VideoChunkPacket *generateNewVideoChunk(SEQUENCE_NUMBER_T seq_num);
+    //VideoChunkPacket *generateNewVideoChunk(SEQUENCE_NUMBER_T seq_num);
 
 protected:
     cMessage *timer_newChunk;

@@ -90,24 +90,30 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
     EV << "\t-- Buffer_start:\t" << m_bufferStart_seqNum << endl;
     EV << "\t-- Buffer_end:\t" << m_bufferEnd_seqNum << endl;
 
+    // ------------- Out of range ------------------
     if (seq_num < m_bufferStart_seqNum)
     {
         EV << "The chunk arrived too late, should be discarded." << endl;
         emit(signal_lateChunk, seq_num);
         m_gstat->reportLateChunk(seq_num);
+
+        delete packet; packet = NULL;
         return;
     }
     emit(signal_inrangeChunk, seq_num);
     m_gstat->reportInrangeChunk(seq_num);
 
+    // ------------- Duplication ------------------
     if (isInBuffer(seq_num) == true)
     {
         EV << "The chunk already existed in the buffer, should be discarded." << endl;
         emit(signal_duplicatedChunk, seq_num);
         m_gstat->reportDuplicatedChunk(seq_num);
+        delete packet; packet = NULL;
         return;
     }
 
+    // ------------- "Valid" packets ------------------
     // Stats
     emit(signal_seqNum_receivedChunk, seq_num);
 
@@ -155,6 +161,7 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
 #endif
 */
 
+    // ------------- Adjust the window ------------------
     if (seq_num > m_head_received_seqNum)
     {
         EV << "-- Update the range of the Video Buffer:" << endl;

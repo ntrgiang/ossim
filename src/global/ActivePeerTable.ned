@@ -16,6 +16,6 @@ simple ActivePeerTable
     parameters:
         @display("i=block/table");
         
-        @statistic[aptSize](title="Active Peer Table Size"; source=Signal_Size; record=vector);
+        @statistic[aptSize](title="Active Peer Table Size"; source=Signal_Size; record=last,vector);
 }
 
