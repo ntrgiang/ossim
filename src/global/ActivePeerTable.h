@@ -73,8 +73,8 @@ public:
 
 //    virtual std::vector<IPvXAddress> getNPeer(long int N) const;
 
-    //virtual IPvXAddress getARandPeer() const;
     IPvXAddress getARandPeer();
+    IPvXAddress getARandPeer(IPvXAddress address);
 
     vector<IPvXAddress> getListActivePeer(void);
 //    virtual std::vector<IPAddress> gatherPeerAddresses() const;

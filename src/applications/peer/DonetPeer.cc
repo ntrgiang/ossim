@@ -704,9 +704,14 @@ bool DonetPeer::findPartner()
     }
 
     IPvXAddress addressRandPeer;
+    int count = 0;
     do
     {
-        addressRandPeer = m_apTable->getARandPeer();
+         count++;
+//        addressRandPeer = m_apTable->getARandPeer();
+         addressRandPeer = m_apTable->getARandPeer(getNodeAddress());
+        if (count > 10)
+           return false;
     }
     while (addressRandPeer == getNodeAddress());
 
