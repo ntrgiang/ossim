@@ -36,7 +36,7 @@ private:
     // -- Partnership
     void handleTimerJoin(void);
     void handleTimerFindMorePartner(void);
-    void findPartner(); // New interface for the FSM
+    bool findPartner(); // New interface for the FSM
 //    void processPartnershipRequest(cPacket *pkt);
     // void processAcceptResponse(cPacket *pkt); // should be obsolete
     void processPartnershipAccept(cPacket *pkt);
@@ -90,8 +90,9 @@ private:
     cMessage *timer_startPlayer;
     cMessage *timer_timeout_joinReqAccept;
 
-    cMessage *timer_timeout_waiting_accept;
-    cMessage *timer_timeout_waiting_ack;
+    //cMessage *timer_timeout_waiting_accept;
+    //cMessage *timer_timeout_waiting_ack;
+    cMessage *timer_timeout_waiting_response;
 //    cMessage *timer_rejoin;
 
     bool    param_moduleDebug;
@@ -103,6 +104,7 @@ private:
     double  param_interval_starPlayer;
     double  param_interval_rejoin;
     double  param_interval_timeout_joinReqAck;
+    double  param_interval_waitingPartnershipResponse;
     //double  param_baseValue_requestGreedyFactor;
     //double  param_aggressiveValue_requestGreedyFactor
     double  param_requestFactor_moderate;

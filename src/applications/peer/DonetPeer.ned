@@ -15,6 +15,7 @@ simple DonetPeer extends DonetBase
         
         double interval_chunkScheduling @unit(s) = default(0.0s); // to replace the above params
         double interval_findMorePartner @unit(s) = default(0.0s);
+        double interval_waitingPartnershipResponse @unit(s) = default(0.5s);
         
         double interval_startPlayer     @unit(s) = default(0.5s); // 
 

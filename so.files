@@ -158,10 +158,6 @@ src/nodes/DonetSourceNode.ned
 src/nodes/ScampPeerNode.ned
 src/nodes/ScampSourceNode.ned
 src/package.ned
-src/scamp
-src/simpleOverlay
-src/so
-src/valgrind.log
 build.sh
 CHANGES
 parameter-study.txt

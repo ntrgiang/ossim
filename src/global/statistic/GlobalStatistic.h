@@ -16,6 +16,8 @@
 #include "IChurnGenerator.h"
 #include "NotificationBoard.h"
 #include "AppCommon.h"
+#include "IPvXAddress.h"
+#include <fstream>
 //#include "ccomponent.h"
 
 #ifndef GLOBAL_STATISTIC_H_
@@ -44,6 +46,8 @@ public:
 
 // -- Real interfaces
 public:
+
+    void writeActivePeerTable2File(vector<IPvXAddress>);
     void recordSizeInView(int size);
     void recordSizePartialView(int size);
 
@@ -113,6 +117,8 @@ private:
 //    cStdDev m_finalSizePV;
 
     cOutVector m_joinTime;
+
+    ofstream m_outFile;
 
     // -- Counting subscription messages
     long m_count_NEW;

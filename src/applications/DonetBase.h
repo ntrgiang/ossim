@@ -32,6 +32,18 @@
 
 //class Logger;
 
+//#define MESH_STATE_JOIN_IDLE                    0
+//#define MESH_STATE_JOIN_WAITING_ACCEPT          1
+//#define MESH_STATE_JOIN_ALL_ACCEPT_RECEIVED     2
+//#define MESH_STATE_JOIN_WAITING_ACCEPT_ACK      3
+
+enum Mesh_Join_State {
+    MESH_JOIN_STATE_IDLE            = 0,
+    MESH_JOIN_STATE_IDLE_WAITING    = 1,
+    MESH_JOIN_STATE_ACTIVE          = 2,
+    MESH_JOIN_STATE_ACTIVE_WAITING  = 3
+};
+
 class DonetBase : public CommBase
 {
 public:
@@ -153,7 +165,7 @@ protected:
     bool m_state_joined;
     short m_joinState;
 
-    Mesh_State m_state;
+    Mesh_Join_State m_state;
 
 };
 

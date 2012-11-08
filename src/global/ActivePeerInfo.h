@@ -9,14 +9,23 @@
 #define ACTIVE_PEER_INFO_H_
 
 #include <vector>
-#include <IPvXAddress.h>
+//#include <IPvXAddress.h>
 using namespace std;
+
+struct Struct_ActivePeerInfo
+{
+   int m_maxNOP;
+   int m_current_nPartner;
+   double m_joinTime;
+};
 
 class ActivePeerInfo
 {
 public:
-    ActivePeerInfo(int bmSize=0);
-    virtual ~ActivePeerInfo();
+    ActivePeerInfo();
+    ActivePeerInfo(int maxNOP, int current_nPartner, double joinTime);
+//    ActivePeerInfo(int bmSize);
+    ~ActivePeerInfo();
 
 public:
 //    inline void setTimeBudget(double time) { m_timeBudget = time; }
@@ -24,12 +33,20 @@ public:
 
     // -- For debugging --
     void printStatus(void);
+//    void incrementNPartner(void);
+//    void decrementNPartner(void);
+
+    //void setMaxNop(int maxNOP);
+    int getMaxNop(void) { return m_maxNOP; }
+    int getCurrentNumberOfPartner(void) { return m_current_nPartner; }
+    double getJoinTime(void) { return m_joinTime; }
 
 // Data member
 private:
-    // -- Available time to transmit a specific chunk
-    vector<IPvXAddress> m_partnerList;
+    int m_maxNOP;
+    int m_current_nPartner;
     double m_joinTime;
+    //vector<IPvXAddress> m_partnerList;
 };
 
 

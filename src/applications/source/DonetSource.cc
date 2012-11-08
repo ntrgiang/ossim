@@ -36,13 +36,13 @@ void DonetSource::initialize(int stage)
     timer_sendBufferMap = new cMessage("MESH_SOURCE_TIMER_SEND_BUFFERMAP");
 
     // -- Register itself to the Active Peer Table
-    m_apTable->addPeerAddress(getNodeAddress());
+    m_apTable->addSourceAddress(getNodeAddress(), param_maxNOP);
 
     // -- Schedule events
     scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
 
     // -- States
-    m_state = MESH_STATE_JOINED;
+    m_state = MESH_JOIN_STATE_ACTIVE;
 //    m_state_joined = true;
 //    m_joinState = MESH_STATE_JOIN_IDLE;
 

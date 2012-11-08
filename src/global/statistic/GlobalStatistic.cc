@@ -75,6 +75,9 @@ void GlobalStatistic::initialize(int stage)
     nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
     nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
 
+    m_outFile.open(par("gstatLog").stringValue(), fstream::out);
+    m_outFile << "test" << endl;
+
 //    cNumericResultRecorder *listener = new cNumericResultRecorder;
 //    simulation.getSystemModule()->subscribe("chunkHit_Global", listener);
 
@@ -109,6 +112,8 @@ void GlobalStatistic::initialize(int stage)
     m_countSelfAppMsg = 0L;
 
     m_countReach = 0L;
+
+    WATCH(m_outFile);
 }
 
 void GlobalStatistic::handleMessage(cMessage *)
@@ -123,6 +128,9 @@ void GlobalStatistic::receiveChangeNotification(int category, const cPolymorphic
 
 void GlobalStatistic::finish()
 {
+    // -- Close the log file
+    m_outFile.close();
+
 //    EV << "Everage size of InView: " << getAverageSizeInView() << endl;
 //    EV << "Everage size of PartialView: " << getAverageSizePartialView() << endl;
 
@@ -164,6 +172,17 @@ void GlobalStatistic::finish()
 }
 
 // ----------------- Interface in effect -------------------------
+
+void GlobalStatistic::writeActivePeerTable2File(vector<IPvXAddress> activePeerList)
+{
+    m_outFile << "List of active peers" << endl;
+
+    for (vector<IPvXAddress>::iterator iter = activePeerList.begin();
+         iter != activePeerList.end(); ++iter)
+    {
+        m_outFile << *iter << endl;
+    }
+}
 
 /**
  * ****************************************************************************

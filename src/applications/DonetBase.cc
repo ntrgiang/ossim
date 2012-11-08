@@ -391,30 +391,34 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
 
     switch(m_state)
     {
-    case MESH_STATE_JOINED:
+    case MESH_JOIN_STATE_ACTIVE:
     {
         considerAcceptPartner(requester);
+        EV << "State remains as MESH_JOIN_STATE_ACTIVE" << endl;
 
-        EV << "State remains as MESH_STATE_JOINED" << endl;
-        m_state = MESH_STATE_JOINED; // state remains
+        // -- State remains
+        // m_state = MESH_JOIN_STATE_ACTIVE; // state remains
         break;
     }
-    case MESH_STATE_JOINED_WAITING:
+    case MESH_JOIN_STATE_ACTIVE_WAITING:
     {
+        EV << "I am waiting for a partnership response. Your request will be stored in a queue." << endl;
         m_list_partnershipRequestingNode.push_back(requester);
 
-        EV << "State remains as MESH_STATE_JOINED_WAITING" << endl;
-        m_state = MESH_STATE_JOINED_WAITING;
+        EV << "State remains as MESH_JOIN_STATE_ACTIVE_WAITING" << endl;
+
+        // -- State changes
+        m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
         break;
     }
-    case MESH_STATE_IDLE:
+    case MESH_JOIN_STATE_IDLE:
     {
-        throw cException("JOIN_REQUEST is not expected for unjoined nodes");
+        throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE) nodes");
         break;
     }
-    case MESH_STATE_IDLE_WAITING:
+    case MESH_JOIN_STATE_IDLE_WAITING:
     {
-        throw cException("something wrong!!! very wrong!!!");
+        throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE_WAITING) nodes");
         break;
     }
     default:
@@ -434,8 +438,12 @@ void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
         // -- Debug
         //emit(sig_partnerRequest, m_partnerList->getSize());
 
-        // -- Add peer directly to
+        // -- Add peer directly to Partner List
         m_partnerList->addAddress(requester.address, requester.upBW);
+
+        // -- Report to Active Peer Table to update the information
+        EV << "Increment number of partner " << endl;
+        m_apTable->incrementNPartner(getNodeAddress());
 
         // -- Store the peer as a candidate
         // m_candidate = requester;
@@ -466,17 +474,17 @@ void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
 //{
 //    switch(m_state)
 //    {
-//    case MESH_STATE_JOINED_WAITING:
+//    case MESH_JOIN_STATE_ACTIVE_WAITING:
 //    {
 //        // -- Clear list of candidates
 //        // TODO
 
 //        // -- Move back to the JOINED state
-//        m_state = MESH_STATE_JOINED;
+//        m_state = MESH_JOIN_STATE_ACTIVE;
 //        break;
 //    }
 //    case MESH_STATE_IDLE_WAITING:
-//    case MESH_STATE_JOINED:
+//    case MESH_JOIN_STATE_ACTIVE:
 //    case MESH_STATE_IDLE:
 //    default:
 //    {

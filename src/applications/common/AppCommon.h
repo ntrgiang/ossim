@@ -29,17 +29,17 @@ using namespace std;
 #define MESH_PEER_JOIN_ACCEPTED 1
 */
 
-#define MESH_STATE_JOIN_IDLE                    0
-#define MESH_STATE_JOIN_WAITING_ACCEPT          1
-#define MESH_STATE_JOIN_ALL_ACCEPT_RECEIVED     2
-#define MESH_STATE_JOIN_WAITING_ACCEPT_ACK      3
+//#define MESH_STATE_JOIN_IDLE                    0
+//#define MESH_STATE_JOIN_WAITING_ACCEPT          1
+//#define MESH_STATE_JOIN_ALL_ACCEPT_RECEIVED     2
+//#define MESH_STATE_JOIN_WAITING_ACCEPT_ACK      3
 
-enum Mesh_State {
-    MESH_STATE_IDLE = 0,
-    MESH_STATE_IDLE_WAITING = 1,
-    MESH_STATE_JOINED = 2,
-    MESH_STATE_JOINED_WAITING = 3
-};
+//enum Mesh_State {
+//    MESH_STATE_IDLE = 0,
+//    MESH_STATE_IDLE_WAITING = 1,
+//    MESH_STATE_JOINED = 2,
+//    MESH_STATE_JOINED_WAITING = 3
+//};
 
 struct PendingPartnershipRequest
 {
