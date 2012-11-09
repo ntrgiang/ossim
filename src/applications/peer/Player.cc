@@ -78,6 +78,7 @@ void Player::initialize(int stage)
 
     // -- State variables
     m_playerStarted = false;
+    m_id_nextChunk = -1L;
 
     // -- Schedule the first event for the first chunk
 //    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);

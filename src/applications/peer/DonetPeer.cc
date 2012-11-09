@@ -221,6 +221,7 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
     else if (msg == timer_getJoinTime)
     {
         m_arrivalTime = m_churn->getArrivalTime();
+        EV << "Scheduled arrival time: " << simTime().dbl() + m_arrivalTime << endl;
         scheduleAt(simTime() + m_arrivalTime, timer_join);
     }
     else if (msg == timer_join)
@@ -1452,7 +1453,7 @@ void DonetPeer::processPeerBufferMap(cPacket *pkt)
     // -- Update the range of the scheduling window
     m_seqNum_schedWinHead = (bmPkt->getHeadSeqNum() > m_seqNum_schedWinHead)?
             bmPkt->getHeadSeqNum():m_seqNum_schedWinHead;
-    EV << "-- New head for the scheduling window: " << m_seqNum_schedWinHead << endl;
+    EV << "-- Head for the scheduling window: " << m_seqNum_schedWinHead << endl;
 
     // -- Debug
     ++m_nBufferMapRecv;
