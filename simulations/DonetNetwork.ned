@@ -1,19 +1,19 @@
-package simpleoverlay.simulations;
+package so.simulations;
 
 import ned.DatarateChannel;
 
-import simpleoverlay.global.ActivePeerTable;
-import simpleoverlay.global.churn.IChurnModel;
-import simpleoverlay.global.churn.StaticChurn;
-import simpleoverlay.global.statistic.GlobalStatistic;
-import simpleoverlay.global.statistic.Statistic;
-import simpleoverlay.global.observer.MeshOverlayObserver;
-import simpleoverlay.global.logger.Logger;
+import so.global.ActivePeerTable;
+import so.global.churn.IChurnModel;
+import so.global.churn.StaticChurn;
+import so.global.statistic.GlobalStatistic;
+import so.global.statistic.Statistic;
+import so.global.observer.MeshOverlayObserver;
+import so.global.logger.Logger;
 
-import simpleoverlay.global.AppSettingDonet;
+import so.global.AppSettingDonet;
 
-import simpleoverlay.nodes.DonetPeerNode;
-import simpleoverlay.nodes.DonetSourceNode;
+import so.mesh.donet.DonetPeerNode;
+import so.mesh.donet.DonetSourceNode;
 
 import inet.nodes.inet.Router;
 import inet.nodes.ethernet.EtherSwitch;

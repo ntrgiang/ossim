@@ -10,7 +10,7 @@
 /nix/workspace/omnet422-inet118/so/src/global/logger
 /nix/workspace/omnet422-inet118/so/src/global/observer
 /nix/workspace/omnet422-inet118/so/src/global/statistic
-/nix/workspace/omnet422-inet118/omnetpp-4.2.2/src/*.*
+/nix/workspace/omnet422-inet118/omnetpp-4.2.2/src
 /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include
 /nix/workspace/omnet422-inet118/inet/src
 /nix/workspace/omnet422-inet118/inet/src/networklayer/contract/

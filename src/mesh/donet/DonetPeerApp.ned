@@ -1,13 +1,13 @@
-package simpleoverlay.applications.peer;
+package so.mesh.donet;
 
-import simpleoverlay.applications.DummyMembership;
-import simpleoverlay.applications.peer.DonetPeer;
-import simpleoverlay.applications.peer.Player;
-import simpleoverlay.applications.common.Forwarder;
-import simpleoverlay.applications.common.membership.MCache;
-import simpleoverlay.applications.common.streaming.VideoBuffer;
-import simpleoverlay.applications.common.streaming.PartnerList;
-import simpleoverlay.applications.common.Dispatcher;
+import so.common.Dispatcher;
+import so.membership.dummy.DummyMembership;
+import so.membership.MCache;
+import so.mesh.donet.DonetPeer;
+import so.mesh.PartnerList;
+import so.payload.Forwarder;
+import so.payload.VideoBuffer;
+import so.payload.Player;
 //import simpleoverlay.global.AppSettingDonet;
 
 module DonetPeerApp

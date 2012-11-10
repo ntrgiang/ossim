@@ -1,5 +1,5 @@
 
-package simpleoverlay.applications.common.streaming;
+package so.mesh;
 
 //
 // Stores the (IP) addresses of neighbor peers.

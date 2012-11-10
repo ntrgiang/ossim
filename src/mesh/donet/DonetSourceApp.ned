@@ -1,14 +1,13 @@
-package simpleoverlay.applications.source;
+package so.mesh.donet;
 
-import simpleoverlay.applications.DummyMembership;
-import simpleoverlay.applications.source.DonetSource;
-import simpleoverlay.applications.source.ChunkGenerator;
-import simpleoverlay.applications.common.Forwarder;
-import simpleoverlay.applications.common.membership.MCache;
-import simpleoverlay.applications.common.streaming.VideoBuffer;
-import simpleoverlay.applications.common.streaming.PartnerList;
-import simpleoverlay.applications.common.Dispatcher;
-//import simpleoverlay.global.AppSettingDonet;
+import so.common.Dispatcher;
+import so.membership.MCache;
+import so.membership.dummy.DummyMembership;
+import so.mesh.donet.DonetSource;
+import so.mesh.PartnerList;
+import so.payload.ChunkGenerator;
+import so.payload.Forwarder;
+import so.payload.VideoBuffer;
 
 module DonetSourceApp
 {

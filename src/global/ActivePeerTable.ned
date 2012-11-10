@@ -1,5 +1,5 @@
 
-package simpleoverlay.global;
+package so.global;
 
 //
 // Stores the (IP) addresses of active peers.

@@ -1,9 +1,8 @@
-//package giang.simpleOverlay.tracker;
-package simpleoverlay.applications.source;
+package so.membership.scamp;
 
 import inet.applications.udpapp.UDPApp;
 
-import simpleoverlay.applications.ScampBase;
+import so.membership.scamp.ScampBase;
 
 //
 // TODO auto-generated module

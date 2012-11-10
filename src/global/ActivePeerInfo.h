@@ -19,18 +19,15 @@ struct Struct_ActivePeerInfo
    double m_joinTime;
 };
 
+/*
 class ActivePeerInfo
 {
 public:
     ActivePeerInfo();
     ActivePeerInfo(int maxNOP, int current_nPartner, double joinTime);
-//    ActivePeerInfo(int bmSize);
     ~ActivePeerInfo();
 
 public:
-//    inline void setTimeBudget(double time) { m_timeBudget = time; }
-//    inline double getTimeBudget(void) { return m_timeBudget; }
-
     // -- For debugging --
     void printStatus(void);
 //    void incrementNPartner(void);
@@ -48,6 +45,6 @@ private:
     double m_joinTime;
     //vector<IPvXAddress> m_partnerList;
 };
-
+*/
 
 #endif /* ACTIVE_PEER_INFO_H_ */

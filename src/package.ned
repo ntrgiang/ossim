@@ -1,3 +1,3 @@
-package simpleoverlay;
+package so;
 
 @license(LGPL);

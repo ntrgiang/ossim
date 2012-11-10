@@ -1,6 +1,6 @@
-package simpleoverlay.applications.source;
+package so.mesh.donet;
 
-import simpleoverlay.applications.DonetBase;
+import so.mesh.donet.DonetBase;
 
 simple DonetSource extends DonetBase
 {

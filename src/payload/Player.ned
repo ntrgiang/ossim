@@ -1,4 +1,4 @@
-package simpleoverlay.applications.peer;
+package so.payload;
 
 simple Player
 {

@@ -1,6 +1,4 @@
-package simpleoverlay.applications.source;
-
-//import simpleoverlay.applications.DonetBase;
+package so.payload;
 
 simple ChunkGenerator
 {

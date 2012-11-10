@@ -1,12 +1,12 @@
-package simpleoverlay.simulations;
+package so.simulations;
 
-import simpleoverlay.global.ActivePeerTable;
-import simpleoverlay.global.churn.IChurnModel;
-import simpleoverlay.global.churn.StaticChurn;
-import simpleoverlay.global.statistic.GlobalStatistic;
+import so.global.ActivePeerTable;
+import so.global.churn.IChurnModel;
+import so.global.churn.StaticChurn;
+import so.global.statistic.GlobalStatistic;
 
-import simpleoverlay.nodes.ScampPeerNode;
-import simpleoverlay.nodes.ScampSourceNode;
+import so.nodes.ScampPeerNode;
+import so.nodes.ScampSourceNode;
 
 import inet.nodes.inet.Router;
 import inet.nodes.ethernet.EtherSwitch;

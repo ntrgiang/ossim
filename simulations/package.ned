@@ -1,3 +1,3 @@
-package simpleoverlay.simulations;
+package so.simulations;
 
 @license(LGPL);

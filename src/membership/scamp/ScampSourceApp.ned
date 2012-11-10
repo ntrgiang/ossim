@@ -1,9 +1,7 @@
-//package giang.simpleOverlay.tracker;
-package simpleoverlay.applications.source;
+package so.membership.scamp;
 
-//import inet.applications.udpapp.UDPBasicApp;
-import simpleoverlay.applications.source.ScampSource;
-import simpleoverlay.applications.common.Dispatcher;
+import so.membership.scamp.ScampSource;
+import so.common.Dispatcher;
 
 
 module ScampSourceApp
