@@ -39,8 +39,16 @@ ScampPeer::ScampPeer()
 }
 
 ScampPeer::~ScampPeer() {
-    // TODO Auto-generated destructor stub
+    // -- Cancel all scheduled events
+    if (timer_getJoinTime)      delete cancelEvent(timer_getJoinTime);
+    if (timer_join)             delete cancelEvent(timer_join);
 
+    if (timer_isolationCheck)   delete cancelEvent(timer_isolationCheck);
+    if (timer_heartbeatSending) delete cancelEvent(timer_heartbeatSending);
+    if (timer_sendAppMessage)   delete cancelEvent(timer_sendAppMessage);
+
+    // -- Delete regular messages:
+    delete m_heartbeatMsg;
 }
 
 void ScampPeer::initialize(int stage)
@@ -70,26 +78,17 @@ void ScampPeer::initialize(int stage)
 
         // -- Read parameters
         readParameter();
-
-        // -- Parameter for debugging
-        if(hasPar("moduleDebug"))
-            param_moduleDebug = par("moduleDebug").boolValue();
-        else
-            param_moduleDebug = false;
-
-//        bindToPort(m_localPort);
+        findNodeAddress();
 
         m_active = false;
+
+        // -- State
+        m_state = SCAMP_STATE_IDLE;
 
         scheduleAt(simTime() + par("startTime").doubleValue(), timer_getJoinTime);
 
         // -- Gossiped Application messages
         m_messageId = 0L;
-
-        // ------------------------- STATISTICS ------------------------------
-//        stat_sizeIV.setName("sizeIV");
-
-        // ------------------------- WATCH ------------------------------------
 
         WATCH(m_localPort);
         WATCH(m_destPort);
@@ -100,39 +99,12 @@ void ScampPeer::initialize(int stage)
         WATCH(m_churn);
         WATCH(m_dispatcher);
     }
-
 }
 
 void ScampPeer::finish()
 {
-    // -- Cancel all scheduled events
-    if (timer_getJoinTime)      delete cancelEvent(timer_getJoinTime);
-    if (timer_join)             delete cancelEvent(timer_join);
-
-    if (timer_isolationCheck)   delete cancelEvent(timer_isolationCheck);
-    if (timer_heartbeatSending) delete cancelEvent(timer_heartbeatSending);
-    if (timer_sendAppMessage)   delete cancelEvent(timer_sendAppMessage);
-
-    // -- Delete regular messages:
-    delete m_heartbeatMsg;
-
     // -- To report the final size of InView and PartialView
-//    m_gstat->collectSizeIV(m_inView.getViewSize());
-//    m_gstat->collectSizePV(m_partialView.getViewSize());
-
-//    m_gstat->recordPartialViewSize(m_partialView.getViewSize());
-
-    // -- for the histogram of the partialView sizes
-//    m_gstat->collectPartialViewSize(m_partialView.getViewSize());
-//    m_gstat->collectInViewSize(m_inView.getViewSize());
-
-//    EV << "------------------------------ at " << simTime() << ": " << getNodeAddress() << endl;
-//    EV << "Partial View (with size: " << m_partialView.getViewSize() << "): " << endl;
-//    m_partialView.print();
-//    EV << "InView: (with size: " << m_inView.getViewSize() << "): " << endl;
-//    m_inView.print();
-
-//    m_gstat->collectAllPVsizes(m_partialView.getViewSize());
+    // m_gstat->reportPvSize(m_partialView.getViewSize());
 }
 
 void ScampPeer::handleTimerMessage(cMessage *msg)
@@ -147,14 +119,6 @@ void ScampPeer::handleTimerMessage(cMessage *msg)
 
         // -- Schedule for the next isolation check
         scheduleAt(simTime() + param_isoCheckInterval, timer_isolationCheck);
-
-        // -- Statistic for module validation
-//        stat_sizeIV.record(m_inView.getViewSize());
-
-        // -- Global statistic collection
-//        m_gstat->recordSizeInView(m_inView.getViewSize());
-//        m_gstat->recordSizePartialView(m_partialView.getViewSize());
-
     }
     else if (msg == timer_heartbeatSending)
     {
@@ -164,71 +128,24 @@ void ScampPeer::handleTimerMessage(cMessage *msg)
     }
     else if (msg == timer_sendAppMessage)
     {
-        sendGossipAppMessage();
+        //sendGossipAppMessage();
 
         scheduleAt(simTime() + param_appMessageInterval, timer_sendAppMessage);
     }
     else if (msg == timer_getJoinTime)
     {
-        #if (__DONET_PEER_DEBUG__)
-            EV << "in get_arrival_time" << endl;
-        #endif
-
-        double joinTime = m_churn->getArrivalTime();
-//        double sessionDuration = m_churn->getDepartTime()
-//        double leaveTime = joinTime +
-        scheduleAt(simTime() + joinTime, timer_join);
-//        scheduleAt()
+        double arrivalTime = m_churn->getArrivalTime();
+        EV << "Expected arrival time: " << arrivalTime << endl;
+        scheduleAt(simTime() + arrivalTime, timer_join);
     }
     else if (msg == timer_join)
     {
         join();
-//        m_gstat->recordJoinTime(simTime().dbl());
 
         // -- Start sending the gossiped application messages
-        scheduleAt(simTime() + param_appMessageInterval, timer_sendAppMessage);
+//        scheduleAt(simTime() + param_appMessageInterval, timer_sendAppMessage);
     }
 }
-
-
-//void ScampPeer::handleExternalMessage(cMessage *pkt) {}
-
-/*
-void ScampPeer::processPacket(cPacket *pkt)
-{
-    Enter_Method("processPacket(pkt)");
-
-    // -- Get the address of the source node of the Packet
-    //UDPControlInfo *controlInfo = check_and_cast<UDPControlInfo *>(pkt->getControlInfo());
-//    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
-//    IPvXAddress sourceAddress = controlInfo->getSrcAddr();
-//
-//    PeerStreamingPacket *appPkt = check_and_cast<PeerStreamingPacket *>(pkt);
-
-    processGossipPacket(pkt);
-
-    // EV << "going to delete packet ..." << endl;
-    // delete pkt;
-}
-*/
-
-/*
-void ScampPeer::startSendingHeartbeat()
-{
-    Enter_Method("startSendingHeartbeat()");
-
-    std::vector<IPvXAddress> updateList;
-    updateList = m_partnerList->getAddressList();
-
-    std::vector<IPvXAddress>::iterator it;
-    for (it=updateList.begin(); it != updateList.end(); ++it)
-    {
-        cPacket *heartbeatPkt = new cPacket("MESH_PEER_KEEP_ALIVE");
-        sendToUDP(heartbeatPkt, localPort, *it, destPort);
-    }
-}
-
-*/
 
 void ScampPeer::join()
 {
@@ -237,27 +154,13 @@ void ScampPeer::join()
     // long int nActivePeer = m_aptable->getNumActivePeer();
     // EV << "Number of Active Peers: " << nActivePeer << endl;
 
-    // -- Initial PartialView consists of only itself
-    // m_partialView.addContact(getNodeAddress(), m_localPort);
+    EV << "Joining ..." << endl;
 
     // -- Gossip
     subscribe();
 
-    // -- Streaming Overlay
-    /*
-    for (int i=0; i<nActivePeer; ++i)
-    {
-        IPvXAddress addressRandPeer = m_aptable->getARandPeer();
+    m_state = SCAMP_STATE_JOINING;
 
-        // -- Partner establishment
-        MeshPartnershipPacket *pkt_join_req = new MeshPartnershipPacket("MESH_PEER_JOIN");
-        pkt_join_req->setPacketType(MESH_PARTNERSHIP);
-        pkt_join_req->setCommand(CMD_MESH_PARTNERSHIP_REQUEST);
-
-        sendToUDP(pkt_join_req, localPort, addressRandPeer, destPort);
-
-    } // end of for(i)
-    */
 }
 
 

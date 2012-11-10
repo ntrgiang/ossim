@@ -1,10 +1,8 @@
 
-
 package so.membership.scamp;
 
 import so.membership.MembershipBase;
 
-//simple ScampBase extends CommBase
 simple ScampBase extends MembershipBase
 {
     parameters:
@@ -16,7 +14,7 @@ simple ScampBase extends MembershipBase
         double appMessageInterval   @unit(s) = default(0.5s);
         
         // Join
-        double startTime            @unit(s) = default(uniform(0.5s,1s));
+        volatile double startTime   @unit(s) = default(uniform(0.5s,1s));
 
         // SCAMP protocol parameter
         int c = default(0); 

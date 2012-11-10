@@ -2,7 +2,7 @@
 
 package so.membership.scamp;
 
-import simpleoverlay.applications.ScampBase;
+import so.membership.scamp.ScampBase;
 
 simple ScampPeer extends ScampBase
 {

@@ -1,6 +1,4 @@
 
-
-
 package so.membership.scamp;
 
 import so.membership.scamp.ScampPeerApp;
@@ -47,11 +45,6 @@ module ScampPeerNode
         inout pppg[] @labels(PPPFrame-conn);
         inout ethg[] @labels(EtherFrame-conn);
     submodules:
-        //        namTrace: NAMTraceWriter {
-        //            parameters:
-        //                namid = namid;
-        //                @display("p=57,294");
-        //        }
         notificationBoard: NotificationBoard {
             parameters:
                 @display("p=57,54");
@@ -68,37 +61,13 @@ module ScampPeerNode
                 @display("p=57,214");
         }
         scampPeerApp: ScampPeerApp {
-//        peerApp: VideoSourceApp {
             parameters:
                 @display("p=163,67");
         }
-        //        tcpApp[numTcpApps]: <tcpAppType> like TCPApp {
-        //            parameters:
-        //                @display("p=186,54");
-        //        }
-        //        tcp: <tcpType> like ITCP {
-        //            parameters:
-        //                @display("p=186,141");
-        //        }
-        //        udpApp[numUdpApps]: <udpAppType> like UDPApp {
-        //            parameters:
-        //                @display("p=336,54");
-        //        }
         udp: UDP {
             parameters:
                 @display("p=336,141");
         }
-        //        sctpApp[numSctpApps]: <sctpAppType> like SCTPApp {
-        //            parameters:
-        //                @display("p=501,54");
-        //        }
-        //        sctp: SCTP {
-        //            @display("p=501,141;i=block/wheelbarrow");
-        //        }
-        //        pingApp: PingApp {
-        //            parameters:
-        //                @display("p=501,230");
-        //        }
         networkLayer: NetworkLayer {
             parameters:
                 proxyARP = false;
@@ -115,10 +84,6 @@ module ScampPeerNode
             parameters:
                 @display("p=336,390,row,90;q=txQueue");
         }
-        //        ext[numExtInterfaces]: ExtInterface {
-        //            parameters:
-        //                @display("p=501,390,row,90;q=txQueue;i=block/ifcard");
-        //        }
         tcpdump: TCPDump {
             parameters:
                 @display("p=336,302;i=abstract/cache_s");
@@ -129,36 +94,12 @@ module ScampPeerNode
                 out2[sizeof(pppg)+sizeof(ethg)+numExtInterfaces];
         }
     connections allowunconnected:
-//        peerApp.tcpOut --> tcp.appIn++;
-//        peerApp.tcpIn <-- tcp.appOut++;
 
         scampPeerApp.udpOut --> udp.appIn++;
         scampPeerApp.udpIn <-- udp.appOut++;
-//        for i=0..numTcpApps-1 {
-//            tcpApp[i].tcpOut --> tcp.appIn++;
-//            tcpApp[i].tcpIn <-- tcp.appOut++;
-//        }
-
-//        tcp.ipOut --> networkLayer.tcpIn;
-//        tcp.ipIn <-- networkLayer.tcpOut;
-
-//        for i=0..numUdpApps-1 {
-//            udpApp[i].udpOut --> udp.appIn++;
-//            udpApp[i].udpIn <-- udp.appOut++;
-//        }
 
         udp.ipOut --> networkLayer.udpIn;
         udp.ipIn <-- networkLayer.udpOut;
-
-//        for i=0..numSctpApps-1 {
-//            sctpApp[i].sctpOut --> sctp.from_appl++;
-//            sctp.to_appl++ --> sctpApp[i].sctpIn;
-//        }
-//        sctp.to_ip --> networkLayer.sctpIn;
-//        networkLayer.sctpOut --> sctp.from_ip;
-
-//        networkLayer.pingOut --> pingApp.pingIn;
-//        networkLayer.pingIn <-- pingApp.pingOut;
 
         // connections to network outside
         for i=0..sizeof(pppg)-1 {
@@ -178,9 +119,7 @@ module ScampPeerNode
         }
 
         for i=0..numExtInterfaces-1 {
-            //            ext[i].netwOut --> tcpdump.ifIn[sizeof(pppg)+sizeof(ethg)+i];
             tcpdump.out2[sizeof(pppg)+sizeof(ethg)+i] --> networkLayer.ifIn[sizeof(pppg)+sizeof(ethg)+i];
-            //            ext[i].netwIn <-- tcpdump.ifOut[sizeof(pppg)+sizeof(ethg)+i];
             tcpdump.in2[sizeof(pppg)+sizeof(ethg)+i] <-- networkLayer.ifOut[sizeof(pppg)+sizeof(ethg)+i];
         }
 }

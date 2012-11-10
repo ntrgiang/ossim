@@ -22,10 +22,12 @@ ScampSource::ScampSource()
 
 ScampSource::~ScampSource()
 {
+    // -- Cancel and delete timer messages
+    if (timer_isolationCheck)   delete cancelEvent(timer_isolationCheck);
+    if (timer_sendAppMessage)   delete cancelEvent(timer_sendAppMessage);
 }
 
 void ScampSource::initialize(int stage)
-//void GossipVideoSource::initialize()
 {
     if (stage == 4)
     {
@@ -37,6 +39,8 @@ void ScampSource::initialize(int stage)
         timer_isolationCheck    = new cMessage("GOSSIP_ISOLATION_CHECK");
         timer_sendAppMessage    = new cMessage("GOSSIP_SEND_APP_MESSAGE");
 
+        //timer_reportPvSize      = new cMessage("GOSSIP_REPORT_PV_SIZE");
+
         // Regular messages
 //        m_heartbeatMsg = new GossipHeartbeatPacket("GOSSIP_HEARTBEAT");
 
@@ -46,8 +50,9 @@ void ScampSource::initialize(int stage)
 
         // -- Reading values for parameters
         readParameter();
+        findNodeAddress();
 
-//        bindToPort(m_localPort);
+        m_simDuration = getSimDuration();
 
         // -- Add the IP address of the video source to the Active Peer Table
         // -- (so that other peers could have at least one address in the list to contact to)
@@ -56,28 +61,27 @@ void ScampSource::initialize(int stage)
         // -- Declare itself that it is active now
         m_active = true;
 
+        // -- State
+        m_state = SCAMP_STATE_JOINED;
+
         // -- Set up timer to check isolation
         scheduleAt(simTime() + param_isoCheckInterval, timer_isolationCheck);
-        scheduleAt(SimTime() + param_appMessageInterval, timer_sendAppMessage);
+//        scheduleAt(m_simDuration - 0.01, timer_reportPvSize);
+        //scheduleAt(SimTime() + param_appMessageInterval, timer_sendAppMessage);
+
 
         // m_apTable->printActivePeerTable();
 
         WATCH(m_localPort);
         WATCH(m_apTable);
+        WATCH(m_simDuration);
     }
 }
 
 void ScampSource::finish()
 {
-    // -- Cancel and delete timer messages
-    if (timer_isolationCheck)   delete cancelEvent(timer_isolationCheck);
-    if (timer_sendAppMessage)   delete cancelEvent(timer_sendAppMessage);
-
     // -- To report the final size of InView and PartialView
-//    m_gstat->collectSizeIV(m_inView.getViewSize());
-//    m_gstat->collectSizePV(m_partialView.getViewSize());
-
-//    m_gstat->recordPartialViewSize(m_partialView.getViewSize());
+    // m_gstat->reportPvSize(m_partialView.getViewSize());
 }
 
 /**
@@ -103,6 +107,11 @@ void ScampSource::handleTimerMessage(cMessage *msg)
         sendGossipAppMessage();
         scheduleAt(simTime() + param_appMessageInterval, timer_sendAppMessage);
     }
+//    else if (msg == timer_reportPvSize)
+//    {
+//        EV << "report pv size: " << m_partialView.getViewSize() << endl;
+//        m_gstat->reportPvSize(m_partialView.getViewSize());
+//    }
 
 }
 

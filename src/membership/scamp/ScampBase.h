@@ -16,6 +16,11 @@
 #ifndef SCAMP_BASE_H_
 #define SCAMP_BASE_H_
 
+#define SCAMP_STATE_IDLE      0
+#define SCAMP_STATE_JOINING   1
+#define SCAMP_STATE_JOINED    2
+#define SCAMP_STATE_LEAVE     3
+
 #include "CommBase.h"
 
 #include "IPv4InterfaceData.h"
@@ -47,7 +52,7 @@ protected:
     virtual void handleTimerMessage(cMessage *msg) = 0;
 
     void readParameter(void);
-//    void bindToGlobalModule(void);
+    void bindToGlobalModule(void);
     void bindToParentModule(void);
 
     // -- Helper functions
@@ -68,9 +73,13 @@ protected:
     // -- Heartbeat
     void handleHeartbeat(cPacket *pkt);
 
+    void handleAckPacket(cPacket *pkt);
+
     // -- Gossiped Application Message
     void sendGossipAppMessage();
     void handleAppPacket(cPacket *pkt);
+
+    double getSimDuration(void);
 
 //    void sendToDispatcher(cPacket *pkt, int srcPort, const IPvXAddress& destAddr, int destPort);
 //    void printPacket(cPacket *pkt);
@@ -94,10 +103,8 @@ protected:
     cMessage *timer_heartbeatSending;
     cMessage *timer_sendAppMessage;
 
-    // -- Pointers to /global/ modules
-//    IChurnGenerator *m_churn;
-//    ActivePeerTable *m_apTable;
-//    GlobalStatistic *m_gstat;
+    //cMessage *timer_reportPvSize;
+
     Dispatcher *m_dispatcher;
 
     // -- Internal modules
@@ -111,10 +118,10 @@ protected:
     // -- Id for each gossiped Application message
     long m_messageId;
 
-    // -- Statistics
-    // cOutVector stat_sizeIV;
-    // double stat_pvSize;
-    // cLongHistogram stat_pvSize;
+    double m_simDuration;
+
+    int m_state;
+
 };
 
 #endif /* SCAMP_BASE_H_ */
