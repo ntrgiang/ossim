@@ -55,11 +55,11 @@ public:
 //    virtual void addPeerAddress(const IPvXAddress *address);
 
     // -- Temporary, for Scamp
-    void addPeerAddress(const IPvXAddress &address);
-    void addSourceAddress(const IPvXAddress &address);
+//    void addPeerAddress(const IPvXAddress &address);
+//    void addSourceAddress(const IPvXAddress &address);
 
-    void addPeerAddress(const IPvXAddress &address, int maxNOP);
-    void addSourceAddress(const IPvXAddress &address, int maxNOP);
+    void addPeerAddress(const IPvXAddress &address, int maxNOP=0);
+    void addSourceAddress(const IPvXAddress &address, int maxNOP=0);
 
     void incrementNPartner(const IPvXAddress &addr);
     void decrementNPartner(const IPvXAddress &addr);

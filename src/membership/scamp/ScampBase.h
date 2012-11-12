@@ -30,13 +30,15 @@
 //#include "IChurnGenerator.h"
 //#include "GlobalStatistic.h"
 
+#include "MembershipBase.h"
 #include "AppCommon.h"
 #include "Contact.h"
 #include "MessageLogger.h"
 #include "Dispatcher.h"
 #include "GossipMembershipPacket_m.h"
 
-class ScampBase : public CommBase
+//class ScampBase : public CommBase
+class ScampBase : public MembershipBase
 {
 public:
     ScampBase();
@@ -46,6 +48,19 @@ public:
 
 protected:
     virtual void finish();
+
+    // Define functions in Base class
+public:
+    IPvXAddress getARandPeer();
+    IPvXAddress getARandPeer(IPvXAddress address);
+
+    void addPeerAddress(const IPvXAddress &address, int maxNOP=0);
+    void addSourceAddress(const IPvXAddress &address, int maxNOP=0);
+
+    bool deletePeerAddress(const IPvXAddress &address);
+
+    void incrementNPartner(const IPvXAddress &addr);
+    void decrementNPartner(const IPvXAddress &addr);
 
 protected:
 //    virtual void processPacket(cPacket *pkt) = 0;

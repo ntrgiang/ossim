@@ -505,3 +505,45 @@ void ScampBase::handleAckPacket(cPacket *pkt)
 
     delete pkt;
 }
+
+IPvXAddress ScampBase::getARandPeer()
+{
+   // Dummy implementation
+   return m_apTable->getARandPeer();
+}
+
+IPvXAddress ScampBase::getARandPeer(IPvXAddress address)
+{
+   // Dummy implementation
+   return m_apTable->getARandPeer(address);
+}
+
+void ScampBase::addPeerAddress(const IPvXAddress &address, int maxNOP)
+{
+   // Dummy implementation
+   m_apTable->addPeerAddress(address, maxNOP);
+}
+
+void ScampBase::addSourceAddress(const IPvXAddress &address, int maxNOP)
+{
+   // Dummy implementation
+   m_apTable->addSourceAddress(address, maxNOP);
+}
+
+bool ScampBase::deletePeerAddress(const IPvXAddress &address)
+{
+   // Dummy implementation
+   return true;
+}
+
+void ScampBase::incrementNPartner(const IPvXAddress &addr)
+{
+   // TODO: implementation should be placed here
+   return;
+}
+
+void ScampBase::decrementNPartner(const IPvXAddress &addr)
+{
+   // TODO: implementation should be placed here
+   return;
+}

@@ -13,61 +13,58 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "DummyMembership.h"
+#include "OracleMembership.h"
 
-Define_Module(DummyMembership);
+Define_Module(OracleMembership);
 
-DummyMembership::DummyMembership() {
+OracleMembership::OracleMembership() {
     // TODO Auto-generated constructor stub
 
 }
 
-DummyMembership::~DummyMembership() {
+OracleMembership::~OracleMembership() {
     // TODO Auto-generated destructor stub
 }
 
-void DummyMembership::initialize(int stage)
+void OracleMembership::initialize(int stage)
 {
    if (stage != 3)
       return;
+
+   bindToGlobalModule();
 }
 
-IPvXAddress DummyMembership::getARandPeer()
+IPvXAddress OracleMembership::getARandPeer()
 {
-   // Dummy implementation
    return m_apTable->getARandPeer();
 }
 
-IPvXAddress DummyMembership::getARandPeer(IPvXAddress address)
+IPvXAddress OracleMembership::getARandPeer(IPvXAddress address)
 {
-   // Dummy implementation
    return m_apTable->getARandPeer(address);
 }
 
-void DummyMembership::addPeerAddress(const IPvXAddress &address, int maxNOP)
+void OracleMembership::addPeerAddress(const IPvXAddress &address, int maxNOP)
 {
-   // Dummy implementation
    m_apTable->addPeerAddress(address, maxNOP);
 }
 
-void DummyMembership::addSourceAddress(const IPvXAddress &address, int maxNOP)
+void OracleMembership::addSourceAddress(const IPvXAddress &address, int maxNOP)
 {
-   // Dummy implementation
    m_apTable->addSourceAddress(address, maxNOP);
 }
 
-bool DummyMembership::deletePeerAddress(const IPvXAddress &address)
+bool OracleMembership::deletePeerAddress(const IPvXAddress &address)
 {
-   // Dummy implementation
-   return true;
+   return m_apTable->deletePeerAddress(address);
 }
 
-void DummyMembership::incrementNPartner(const IPvXAddress &addr)
+void OracleMembership::incrementNPartner(const IPvXAddress &address)
 {
-
+   m_apTable->incrementNPartner(address);
 }
 
-void DummyMembership::decrementNPartner(const IPvXAddress &addr)
+void OracleMembership::decrementNPartner(const IPvXAddress &address)
 {
-
+   m_apTable->decrementNPartner(address);
 }

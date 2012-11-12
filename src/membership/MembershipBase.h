@@ -23,10 +23,22 @@ public:
     MembershipBase();
     virtual ~MembershipBase();
 
-    void initialize();
+    //virtual void initialize() = 0;
 
-protected:
-    void writeToMcache(void);
+public:
+    virtual IPvXAddress getARandPeer() = 0;
+    virtual IPvXAddress getARandPeer(IPvXAddress address) = 0;
+
+    virtual void addPeerAddress(const IPvXAddress &address, int maxNOP=0) = 0;
+    virtual void addSourceAddress(const IPvXAddress &address, int maxNOP=0) = 0;
+
+    virtual bool deletePeerAddress(const IPvXAddress &address) = 0;
+
+    virtual void incrementNPartner(const IPvXAddress &addr) = 0;
+    virtual void decrementNPartner(const IPvXAddress &addr) = 0;
+
+//protected:
+//    virtual void writeToMcache(void) = 0;
 };
 
 #endif /* MEMBERSHIPBASE_H_ */

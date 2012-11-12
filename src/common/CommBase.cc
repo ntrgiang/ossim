@@ -131,12 +131,12 @@ void CommBase::bindToGlobalModule(void)
     // -- Active Peer Table
     cModule *temp = simulation.getModuleByPath("activePeerTable");
     m_apTable = check_and_cast<ActivePeerTable *>(temp);
-    if (m_apTable == NULL) throw cException("NULL pointer to module activePeerTable");
+    //if (m_apTable == NULL) throw cException("NULL pointer to module activePeerTable");
     EV << "Binding to activePeerTable is completed successfully" << endl;
 
     // -- Global Statistic
     temp = simulation.getModuleByPath("globalStatistic");
     m_gstat = check_and_cast<GlobalStatistic *>(temp);
-    if (m_gstat == NULL) throw cException("NULL pointer to module globalStatistic");
+    //if (m_gstat == NULL) throw cException("NULL pointer to module globalStatistic");
     EV << "Binding to globalStatistic is completed successfully" << endl;
 }

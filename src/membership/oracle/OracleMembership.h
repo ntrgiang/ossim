@@ -13,15 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef DUMMYMEMBERSHIP_H_
-#define DUMMYMEMBERSHIP_H_
+#ifndef ORACLEMEMBERSHIP_H_
+#define ORACLEMEMBERSHIP_H_
 
 #include "MembershipBase.h"
 
-class DummyMembership : public MembershipBase {
+class OracleMembership : public MembershipBase {
 public:
-    DummyMembership();
-    virtual ~DummyMembership();
+    OracleMembership();
+    virtual ~OracleMembership();
 
     virtual int numInitStages() const  {return 4;}
     virtual void initialize(int stage);
@@ -39,4 +39,4 @@ public:
     void decrementNPartner(const IPvXAddress &addr);
 };
 
-#endif /* DUMMYMEMBERSHIP_H_ */
+#endif /* ORACLEMEMBERSHIP_H_ */

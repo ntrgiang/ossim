@@ -2,7 +2,9 @@ package so.mesh.donet;
 
 import so.common.Dispatcher;
 import so.membership.dummy.DummyMembership;
+import so.membership.oracle.OracleMembership;
 import so.membership.MCache;
+
 import so.mesh.donet.DonetPeer;
 import so.mesh.PartnerList;
 import so.payload.Forwarder;
@@ -14,7 +16,6 @@ module DonetPeerApp
 {
     parameters:
         @display("bgb=270,294");
-        
 //        @statistic[hitCount_global](source=chunkHit_Global; record=count);
 
     gates:
@@ -24,6 +25,7 @@ module DonetPeerApp
     submodules:
         //membership: ScampPeer {
         membership: DummyMembership {
+        //membership: OracleMembership {
             @display("p=51,173;i=block/users");
         }
         mesh: DonetPeer {

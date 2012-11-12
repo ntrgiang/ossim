@@ -177,6 +177,7 @@ int ActivePeerTable::getNumActivePeer() const
  * cannot be modified; you must delete and re-add them instead.
  */
 //void ActivePeerTable::addPeerAddress(const IPvXAddress *address)
+/*
 void ActivePeerTable::addPeerAddress(const IPvXAddress &address)
 {
     Enter_Method("addPeerAddress()");
@@ -186,6 +187,7 @@ void ActivePeerTable::addPeerAddress(const IPvXAddress &address)
     //m_activePeerList[address] = 1;
     emit(sig_size, m_activePeerList.size());
 }
+*/
 
 void ActivePeerTable::addPeerAddress(const IPvXAddress &address, int maxNOP)
 {
@@ -202,6 +204,7 @@ void ActivePeerTable::addPeerAddress(const IPvXAddress &address, int maxNOP)
     emit(sig_size, m_activePeerList.size());
 }
 
+/*
 void ActivePeerTable::addSourceAddress(const IPvXAddress &address)
 {
     Enter_Method("addSourceAddress()");
@@ -212,6 +215,7 @@ void ActivePeerTable::addSourceAddress(const IPvXAddress &address)
 
     emit(sig_size, m_activePeerList.size());
 }
+*/
 
 void ActivePeerTable::addSourceAddress(const IPvXAddress &address, int maxNOP)
 {
@@ -249,11 +253,11 @@ void ActivePeerTable::incrementNPartner(const IPvXAddress &addr)
    EV << "***********************************************************************************" << endl;
 }
 
-//void ActivePeerTable::decrementNPartner(const IPvXAddress &addr)
-//{
-//  //m_activePeerList[addr] -= 1;
-//   m_activePeerList[addr].m_current_nPartner -= 1;
-//}
+void ActivePeerTable::decrementNPartner(const IPvXAddress &addr)
+{
+  //m_activePeerList[addr] -= 1;
+   m_activePeerList[addr].m_current_nPartner -= 1;
+}
 
 /**
  * Deletes the given peer address from the table.
