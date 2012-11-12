@@ -34,40 +34,35 @@ void DummyMembership::initialize(int stage)
 
 IPvXAddress DummyMembership::getARandPeer()
 {
-   // Dummy implementation
    return m_apTable->getARandPeer();
 }
 
 IPvXAddress DummyMembership::getARandPeer(IPvXAddress address)
 {
-   // Dummy implementation
    return m_apTable->getARandPeer(address);
 }
 
 void DummyMembership::addPeerAddress(const IPvXAddress &address, int maxNOP)
 {
-   // Dummy implementation
    m_apTable->addPeerAddress(address, maxNOP);
 }
 
 void DummyMembership::addSourceAddress(const IPvXAddress &address, int maxNOP)
 {
-   // Dummy implementation
    m_apTable->addSourceAddress(address, maxNOP);
 }
 
 bool DummyMembership::deletePeerAddress(const IPvXAddress &address)
 {
-   // Dummy implementation
-   return true;
+   return m_apTable->deletePeerAddress(address);
 }
 
-void DummyMembership::incrementNPartner(const IPvXAddress &addr)
+void DummyMembership::incrementNPartner(const IPvXAddress &address)
 {
-
+   m_apTable->incrementNPartner(address);
 }
 
-void DummyMembership::decrementNPartner(const IPvXAddress &addr)
+void DummyMembership::decrementNPartner(const IPvXAddress &address)
 {
-
+   m_apTable->decrementNPartner(address);
 }
