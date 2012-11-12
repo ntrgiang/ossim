@@ -127,6 +127,8 @@ void ScampBase::processGossipPacket(cPacket *pkt)
     {
         EV << "I received an ACK for the subscription packet!" << endl;
 
+        delete pkt; pkt = NULL;
+
         break;
     }
     default:
