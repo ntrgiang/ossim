@@ -27,7 +27,7 @@ public:
     virtual void initialize(int stage);
 
 public:
-    IPvXAddress getARandPeer();
+    //IPvXAddress getARandPeer();
     IPvXAddress getARandPeer(IPvXAddress address);
 
     void addPeerAddress(const IPvXAddress &address, int maxNOP=0);

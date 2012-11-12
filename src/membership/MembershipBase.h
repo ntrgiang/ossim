@@ -26,12 +26,44 @@ public:
     //virtual void initialize() = 0;
 
 public:
-    virtual IPvXAddress getARandPeer() = 0;
+    //virtual IPvXAddress getARandPeer() = 0;
+
+    /**
+     * @brief getARandPeer
+     * @param address
+     * @return a random address of existing active peers
+     * This returned address should be different from the address in the parameter list
+     */
     virtual IPvXAddress getARandPeer(IPvXAddress address) = 0;
 
-    virtual void addPeerAddress(const IPvXAddress &address, int maxNOP=0) = 0;
+    /**
+     * @brief addSourceAddress
+     * @param address
+     * @param maxNOP
+     * This function is triggered by the source peer
+     * This function should:
+     * - Inform the Active Peer Table to add the peer's address
+     * - Initialize the membership management overlay
+     */
     virtual void addSourceAddress(const IPvXAddress &address, int maxNOP=0) = 0;
 
+    /**
+     * @brief addPeerAddress
+     * @param address
+     * @param maxNOP
+     * This function is triggered when the new peer successfully joined the mesh overlay
+     * This function should:
+     * - Inform the Active Peer Table to add the peer's address
+     * - Perform protocol-specific actions to update the membership management overlay
+     */
+    virtual void addPeerAddress(const IPvXAddress &address, int maxNOP=0) = 0;
+
+    /**
+     * @brief deletePeerAddress
+     * @param address
+     * @return
+     *
+     */
     virtual bool deletePeerAddress(const IPvXAddress &address) = 0;
 
     virtual void incrementNPartner(const IPvXAddress &addr) = 0;

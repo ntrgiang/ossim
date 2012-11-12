@@ -34,10 +34,10 @@ void OracleMembership::initialize(int stage)
    bindToGlobalModule();
 }
 
-IPvXAddress OracleMembership::getARandPeer()
-{
-   return m_apTable->getARandPeer();
-}
+//IPvXAddress OracleMembership::getARandPeer()
+//{
+//   return m_apTable->getARandPeer();
+//}
 
 IPvXAddress OracleMembership::getARandPeer(IPvXAddress address)
 {

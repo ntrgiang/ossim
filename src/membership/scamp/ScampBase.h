@@ -51,7 +51,7 @@ protected:
 
     // Define functions in Base class
 public:
-    IPvXAddress getARandPeer();
+    //IPvXAddress getARandPeer();
     IPvXAddress getARandPeer(IPvXAddress address);
 
     void addPeerAddress(const IPvXAddress &address, int maxNOP=0);

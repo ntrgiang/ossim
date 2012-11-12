@@ -359,6 +359,7 @@ std::vector<IPvXAddress> ActivePeerTable::getNPeer(long int N) const
  * Utility function: Returns exactly one random address of the active nodes.
  * A wrapper of the getNPeer(long int N)
  */
+
 //IPvXAddress ActivePeerTable::getARandPeer() const
 IPvXAddress ActivePeerTable::getARandPeer()
 {
@@ -420,6 +421,7 @@ IPvXAddress ActivePeerTable::getARandPeer()
     //return activePeerList[aRandomIndex];
     //return m_activePeerList[aRandomIndex].first;
 }
+
 
 IPvXAddress ActivePeerTable::getARandPeer(IPvXAddress address)
 {

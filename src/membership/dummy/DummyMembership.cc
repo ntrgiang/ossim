@@ -32,10 +32,10 @@ void DummyMembership::initialize(int stage)
       return;
 }
 
-IPvXAddress DummyMembership::getARandPeer()
-{
-   return m_apTable->getARandPeer();
-}
+//IPvXAddress DummyMembership::getARandPeer()
+//{
+//   return m_apTable->getARandPeer();
+//}
 
 IPvXAddress DummyMembership::getARandPeer(IPvXAddress address)
 {

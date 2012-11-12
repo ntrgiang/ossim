@@ -17,6 +17,9 @@ struct Struct_ActivePeerInfo
    int m_maxNOP;
    int m_current_nPartner;
    double m_joinTime;
+   bool m_joined_membershipOverlay;
+   bool m_joined_meshOverlay;
+   bool m_joined_treeOverlay;
 };
 
 /*
