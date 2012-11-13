@@ -456,10 +456,17 @@ IPvXAddress ActivePeerTable::getARandPeer(IPvXAddress address)
 
    int size = m_tempList.size();
 
-   if (size <= 0) throw cException("Wrong size of the tempList %d", size);
-    int aRandomIndex = (int)intrand(size);
+   if (size <= 0)
+   {
+      //throw cException("Wrong size of the tempList %d", size);
 
-    return m_tempList[aRandomIndex];
+      // Hacking !!! (return the address of the source
+      return m_activePeerList.begin()->first;
+   }
+
+   int aRandomIndex = (int)intrand(size);
+
+   return m_tempList[aRandomIndex];
 }
 
 void ActivePeerTable::printActivePeerInfo(const IPvXAddress &address)
