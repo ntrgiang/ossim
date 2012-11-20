@@ -24,7 +24,7 @@ void DonetPeer::initialize(int stage)
     if (stage == 0)
     {
         sig_chunkRequestSeqNum  = registerSignal("Signal_chunkRequest");
-        sig_partnerRequest      = registerSignal("Signal_PartnerRequest");
+        //sig_partnerRequest      = registerSignal("Signal_PartnerRequest");
         sig_nJoin               = registerSignal("Signal_Join");
 
         return;
@@ -121,8 +121,19 @@ void DonetPeer::initialize(int stage)
     sig_joinTime            = registerSignal("Signal_joinTime");
     sig_playerStartTime     = registerSignal("Signal_playerStartTime");
 
-    sig_pRequestSent        = registerSignal("Signal_pRequestSent");
-    sig_pRejectReceived     = registerSignal("Signal_pRejectReceived");
+//    sig_pRequestSent        = registerSignal("Signal_pRequestSent");
+//    sig_pRejectRecv     = registerSignal("Signal_pRejectReceived");
+    // Number of requests SENT & RECV
+    sig_pRequestSent = registerSignal("Signal_pRequestSent");
+    sig_pRequestRecv = registerSignal("Signal_pRequestRecv");
+
+    // Number of rejects SENT & RECV
+    sig_pRejectRecv = registerSignal("Signal_pRejectRecv");
+    sig_pRejectSent = registerSignal("Signal_pRejectSent");
+
+    sig_pRequestRecv_whileWaiting = registerSignal("Signal_pRequestRecv_whileWaiting");
+
+    sig_timeout = registerSignal("Signal_timeout");
 
     // -- Debugging variables
     m_arrivalTime = -1.0;
@@ -404,7 +415,8 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
         scheduleAt(simTime() + rand_value, timer_sendBufferMap);
 
         // -- 3. Have more partner timers
-            EV << "-- Finding more partners will be triggered after " << param_interval_findMorePartner << " seconds" << endl;
+            EV << "-- Finding more partners will be triggered after "
+               << param_interval_findMorePartner << " seconds" << endl;
         scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
 
         // -- 4. Start Player?
@@ -505,6 +517,8 @@ void DonetPeer::processPartnershipReject(cPacket *pkt)
 {
     EV << endl;
     EV << "-------- Process partnership Reject ---------------------------------" << endl;
+
+    emit(sig_pRejectRecv, 1);
 
     switch(m_state)
     {
@@ -790,11 +804,15 @@ void DonetPeer::handleTimerFindMorePartner(void)
     {
         bool ret = findPartner();
 
-        // -- State changes to waiting mode
         if (ret == true)
-            m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
+        {
+           // -- State changes to waiting mode, since a request has been sent
+           m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
+        }
         else
+        {
            // State remains ACTIVE
+        }
 
         break;
     }
@@ -1647,6 +1665,8 @@ void DonetPeer::handleTimerTimeoutWaitingAccept()
     EV << endl;
     EV << "------------------------- Handle timeout_waitingAccept --------------" << endl;
 
+    emit(sig_timeout, 1);
+
     switch(m_state)
     {
     case MESH_JOIN_STATE_IDLE_WAITING:
@@ -1665,12 +1685,12 @@ void DonetPeer::handleTimerTimeoutWaitingAccept()
     {
         // -- Process pending requests
         // There should not be any pending request at this time
-        vector<PendingPartnershipRequest>::iterator iter = m_list_partnershipRequestingNode.begin();
-        for (; iter != m_list_partnershipRequestingNode.end(); ++iter)
-        {
-            considerAcceptPartner(*iter);
-        }
-        m_list_partnershipRequestingNode.clear();
+//        vector<PendingPartnershipRequest>::iterator iter = m_list_partnershipRequestingNode.begin();
+//        for (; iter != m_list_partnershipRequestingNode.end(); ++iter)
+//        {
+//            considerAcceptPartner(*iter);
+//        }
+//        m_list_partnershipRequestingNode.clear();
 
         EV << "State changes to MESH_JOIN_STATE_ACTIVEG" << endl;
         m_state = MESH_JOIN_STATE_ACTIVE;

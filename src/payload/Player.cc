@@ -129,6 +129,7 @@ void Player::handleTimerMessage(cMessage *msg)
             }
             else
             {
+               // -- Change state to PLAYING
                 m_state = PLAYER_STATE_PLAYING;
 
                 if (m_id_nextChunk <= m_videoBuffer->getBufferStartSeqNum())
@@ -241,7 +242,8 @@ void Player::handleTimerMessage(cMessage *msg)
                 else
                 {
 
-                    scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+                    //scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+                   scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
 
                     m_state = PLAYER_STATE_BUFFERING;
 

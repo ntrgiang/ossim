@@ -46,6 +46,10 @@ void DonetSource::initialize(int stage)
 //    m_state_joined = true;
 //    m_joinState = MESH_STATE_JOIN_IDLE;
 
+    sig_pRequestRecv = registerSignal("Signal_pRequestRecv");
+    sig_pRejectSent = registerSignal("Signal_pRejectSent");
+
+    sig_pRequestRecv_whileWaiting = registerSignal("Signal_pRequestRecv_whileWaiting");
 
     // --- For logging variables
     m_arrivalTime = -1.0;

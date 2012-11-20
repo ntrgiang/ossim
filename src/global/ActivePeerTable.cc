@@ -422,10 +422,12 @@ IPvXAddress ActivePeerTable::getARandPeer()
     //return m_activePeerList[aRandomIndex].first;
 }
 
-
+#if PARTNER_ASSIGNMENT == PARTNER_ASSIGNMENT_IMMEDIATE
 IPvXAddress ActivePeerTable::getARandPeer(IPvXAddress address)
 {
    Enter_Method("getARandPeer()");
+
+   IPvXAddress ret_address;
 
    if (m_activePeerList.size() == 1)
       return m_activePeerList.begin()->first;
@@ -468,6 +470,60 @@ IPvXAddress ActivePeerTable::getARandPeer(IPvXAddress address)
 
    return m_tempList[aRandomIndex];
 }
+
+#else
+
+IPvXAddress ActivePeerTable::getARandPeer(IPvXAddress address)
+{
+   Enter_Method("getARandPeer()");
+
+   IPvXAddress ret_address;
+
+   if (m_activePeerList.size() == 1)
+   {
+      ret_address = m_activePeerList.begin()->first;
+      return ret_address;
+   }
+
+   // -- Clear ALL content of the the tempList
+   m_tempList.clear();
+
+   //vector<IPvXAddress> tempList;
+   EV << "**********************************************************************" << endl;
+   EV << "**********************************************************************" << endl;
+   EV << "**********************************************************************" << endl;
+   Type_ActiveList::iterator iter;
+   for (iter = m_activePeerList.begin(); iter != m_activePeerList.end(); ++iter)
+   {
+      //for (int i = iter->second->getCurrentNumberOfPartner(); i <= iter->second->getMaxNop(); ++i)
+      if (iter->first == address)
+         continue;
+
+      for (int i = iter->second.m_current_nPartner; i < iter->second.m_maxNOP; ++i)
+      {
+         m_tempList.push_back(iter->first);
+         EV << "Address: " << iter->first << endl;
+      }
+   }
+   EV << "**********************************************************************" << endl;
+   EV << "**********************************************************************" << endl;
+   EV << "**********************************************************************" << endl;
+
+   int size = m_tempList.size();
+
+   if (size <= 0)
+   {
+      //throw cException("Wrong size of the tempList %d", size);
+
+      // Hacking !!! (return the address of the source
+      return m_activePeerList.begin()->first;
+   }
+
+   int aRandomIndex = (int)intrand(size);
+
+   return m_tempList[aRandomIndex];
+}
+#endif
 
 void ActivePeerTable::printActivePeerInfo(const IPvXAddress &address)
 {

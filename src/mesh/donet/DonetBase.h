@@ -167,6 +167,10 @@ protected:
 
     Mesh_Join_State m_state;
 
+    simsignal_t sig_pRejectSent;
+    simsignal_t sig_pRequestRecv;
+    simsignal_t sig_pRequestRecv_whileWaiting;
+
 };
 
 #endif /* DONETBASE_H_ */
