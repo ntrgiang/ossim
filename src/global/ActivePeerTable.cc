@@ -357,69 +357,32 @@ std::vector<IPvXAddress> ActivePeerTable::getNPeer(long int N) const
 
 /**
  * Utility function: Returns exactly one random address of the active nodes.
- * A wrapper of the getNPeer(long int N)
  */
-
-//IPvXAddress ActivePeerTable::getARandPeer() const
 IPvXAddress ActivePeerTable::getARandPeer()
 {
    Enter_Method("getARandPeer()");
 
-//    std::vector<IPvXAddress> resultList;
-//    resultList = getNPeer(1);
-//
-//    return resultList[0];
-    //int size = activePeerList.size();
-//    int aRandomNumber = rand();
-//    int aRandomIndex = aRandomNumber % size;
+   int size = m_activePeerList.size();
 
-   if (m_activePeerList.size() == 1)
+   if (size < 1)
+      throw cException("Invalid value (%d) for a size of the Active Peer Table", size);
+
+   if (size == 1)
       return m_activePeerList.begin()->first;
 
-   // -- Clear ALL content of the the tempList
+   // -- At this point, the size of the Active Peer Table should be greater than 1
    m_tempList.clear();
 
-   // -- Find out the max value of nPartner
-//   int max = 1;
-//   Type_ActiveList::iterator iter;
-//   for (iter = m_activePeerList.begin(); iter != m_activePeerList.end(); ++iter)
-//   {
-//      max = (max < iter->second)?iter->second:max;
-//   }
-
-//   EV << "max = " << max << endl;
-
-   //vector<IPvXAddress> tempList;
-   EV << "**********************************************************************" << endl;
-   EV << "**********************************************************************" << endl;
-   EV << "**********************************************************************" << endl;
    Type_ActiveList::iterator iter;
    for (iter = m_activePeerList.begin(); iter != m_activePeerList.end(); ++iter)
    {
-      //for (int i = iter->second->getCurrentNumberOfPartner(); i <= iter->second->getMaxNop(); ++i)
-      for (int i = iter->second.m_current_nPartner; i < iter->second.m_maxNOP; ++i)
-      {
-         m_tempList.push_back(iter->first);
-         EV << "Address: " << iter->first << endl;
-      }
+      m_tempList.push_back(iter->first);
    }
-   EV << "**********************************************************************" << endl;
-   EV << "**********************************************************************" << endl;
-   EV << "**********************************************************************" << endl;
 
-   int size = m_tempList.size();
-
-   if (size <= 0) throw cException("Wrong size of the tempList %d", size);
     int aRandomIndex = (int)intrand(size);
+    //EV << "A random index: " << aRandomIndex << endl;
 
-    //IPvXAddress randAddr = tempList[aRandomIndex];
     return m_tempList[aRandomIndex];
-
-    //emit(sig_size, size);
-//    emit(sig_size, aRandomIndex);
-
-    //return activePeerList[aRandomIndex];
-    //return m_activePeerList[aRandomIndex].first;
 }
 
 #if PARTNER_ASSIGNMENT == PARTNER_ASSIGNMENT_IMMEDIATE
