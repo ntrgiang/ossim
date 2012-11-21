@@ -76,7 +76,7 @@ void GlobalStatistic::initialize(int stage)
     nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
 
     m_outFile.open(par("gstatLog").stringValue(), fstream::out);
-    m_outFile << "test" << endl;
+    //m_outFile << "test" << endl;
 
 //    cNumericResultRecorder *listener = new cNumericResultRecorder;
 //    simulation.getSystemModule()->subscribe("chunkHit_Global", listener);
@@ -182,6 +182,21 @@ void GlobalStatistic::writeActivePeerTable2File(vector<IPvXAddress> activePeerLi
     {
         m_outFile << *iter << endl;
     }
+}
+
+void GlobalStatistic::writePartnerList2File(IPvXAddress node, vector<IPvXAddress> pList)
+{
+   //m_outFile << "---------------------------------------------------------------" << endl;
+   //m_outFile << "At " << simTime().dbl() << "(s) " << endl;
+   //m_outFile << "Peer " << node << " has " << pList.size() << " partners: " << endl;
+
+    for (vector<IPvXAddress>::iterator iter = pList.begin();
+         iter != pList.end(); ++iter)
+    {
+        //m_outFile << "\t" << *iter << endl;
+       m_outFile << node << " " << *iter << endl;
+    }
+    m_outFile << endl;
 }
 
 /**

@@ -87,6 +87,7 @@ protected:
     // Timer
     void handleTimerTimeoutWaitingAccept();
     void handleTimerTimeoutWaitingAck();
+    void handleTimerReport(void);
 
     // -- BufferMap
 //    MeshBufferMapPacket *generateBufferMapPacket();
@@ -126,6 +127,7 @@ protected:
 
     // -- Timer messages
     cMessage *timer_sendBufferMap;
+    cMessage *timer_sendReport;
 
     // -- Pointers to /global/ modules
     AppSettingDonet         *m_appSetting;

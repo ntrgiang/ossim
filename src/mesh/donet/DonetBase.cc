@@ -502,6 +502,10 @@ void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
  *
  *******************************************************************************
  */
+void DonetBase::handleTimerReport(void)
+{
+   m_gstat->writePartnerList2File(getNodeAddress(), m_partnerList->getAddressList());
+}
 
 //void DonetBase::handleTimerTimeoutWaitingAck()
 //{

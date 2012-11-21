@@ -31,6 +31,9 @@ protected:
     void sendToDispatcher(cPacket *pkt, int srcPort, const IPvXAddress& destAddr, int destPort);
     void printPacket(cPacket *pkt);
 
+    // -- Get parameter from simulation evironment
+    double getSimTimeLimit(void);
+
     // -- Get parameters from the AppSetting module
     int getLocalPort(void);
     int getDestPort(void);

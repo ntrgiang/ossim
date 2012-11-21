@@ -52,7 +52,7 @@ void ActivePeerTable::initialize(int stage)
 
 void ActivePeerTable::finish()
 {
-    m_gstat->writeActivePeerTable2File(getListActivePeer());
+    //m_gstat->writeActivePeerTable2File(getListActivePeer());
 
 }
 

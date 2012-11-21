@@ -61,6 +61,7 @@ void DonetPeer::initialize(int stage)
     timer_sendBufferMap     = new cMessage("MESH_PEER_TIMER_SEND_BUFFERMAP");
     timer_findMorePartner   = new cMessage("MESH_PEER_TIMER_FIND_MORE_PARTNER");
     timer_startPlayer       = new cMessage("MESH_PEER_TIMER_START_PLAYER");
+    timer_sendReport        = new cMessage("MESH_PEER_TIMER_SEND_REPORT");
 
     //timer_timeout_waiting_accept = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
     timer_timeout_waiting_response  = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
@@ -97,6 +98,12 @@ void DonetPeer::initialize(int stage)
                     * param_interval_chunkScheduling);
                     //* param_baseValue_requestGreedyFactor);
 //    m_bmPacket = generateBufferMapPacket();
+
+    // Schedule for writing to log file
+//    string s = ev.getConfig()->getConfigValue("sim-time-limit");
+//    s = s.erase(s.find('s'));
+//    double sim_time_limit = atof(s.c_str());
+    scheduleAt(getSimTimeLimit() - uniform(0.05, 0.95), timer_sendReport);
 
     // --------- Debug ------------
     m_joinTime = -1.0;
@@ -198,6 +205,8 @@ void DonetPeer::cancelAndDeleteAllTimer()
     if (timer_chunkScheduling != NULL)  { delete cancelEvent(timer_chunkScheduling);    timer_chunkScheduling   = NULL; }
     if (timer_findMorePartner != NULL)  { delete cancelEvent(timer_findMorePartner);    timer_findMorePartner   = NULL; }
     if (timer_startPlayer != NULL)      { delete cancelEvent(timer_startPlayer);        timer_startPlayer       = NULL; }
+    if (timer_sendReport != NULL)      { delete cancelEvent(timer_sendReport);        timer_sendReport       = NULL; }
+
     if (timer_timeout_waiting_response != NULL)
     {
         delete cancelEvent(timer_timeout_waiting_response);
@@ -224,6 +233,10 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
         handleTimerFindMorePartner();
         scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
     }
+    else if (msg == timer_timeout_waiting_response)
+    {
+        handleTimerTimeoutWaitingAccept();
+    }
     else if (msg == timer_startPlayer)
     {
         startPlayer();
@@ -243,9 +256,9 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
         // -- Schedule for a rejoin (if any)
         // scheduleAt(simTime() + param_interval_rejoin, timer_join);
     }
-    else if (msg == timer_timeout_waiting_response)
+    else if (msg == timer_sendReport)
     {
-        handleTimerTimeoutWaitingAccept();
+       handleTimerReport();
     }
 }
 

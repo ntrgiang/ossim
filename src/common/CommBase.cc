@@ -140,3 +140,12 @@ void CommBase::bindToGlobalModule(void)
     //if (m_gstat == NULL) throw cException("NULL pointer to module globalStatistic");
     EV << "Binding to globalStatistic is completed successfully" << endl;
 }
+
+double CommBase::getSimTimeLimit(void)
+{
+   string s = ev.getConfig()->getConfigValue("sim-time-limit");
+   s = s.erase(s.find('s'));
+   double sim_time_limit = atof(s.c_str());
+
+   return sim_time_limit;
+}
