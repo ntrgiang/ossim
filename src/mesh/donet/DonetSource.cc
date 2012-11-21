@@ -12,7 +12,15 @@ Define_Module(DonetSource);
 DonetSource::DonetSource() {}
 DonetSource::~DonetSource()
 {
-    if (timer_sendBufferMap  != NULL) { delete cancelEvent(timer_sendBufferMap);     timer_sendBufferMap = NULL; }
+    if (timer_sendBufferMap  != NULL)
+    {
+       delete cancelEvent(timer_sendBufferMap);    timer_sendBufferMap = NULL;
+    }
+
+    if (timer_sendReport != NULL)
+    {
+       delete cancelEvent(timer_sendReport);       timer_sendReport = NULL;
+    }
 }
 
 void DonetSource::initialize(int stage)
@@ -30,22 +38,31 @@ void DonetSource::initialize(int stage)
 
     param_maxNOP = par("maxNOP");
 
-    // -------------------------------------------------------------------------
-    // -------------------------------- Timers ---------------------------------
-    // -------------------------------------------------------------------------
     timer_sendBufferMap = new cMessage("MESH_SOURCE_TIMER_SEND_BUFFERMAP");
+    timer_sendReport    = new cMessage("MESH_SOURCE_TIMER_SEND_REPORT");
 
     // -- Register itself to the Active Peer Table
     m_apTable->addSourceAddress(getNodeAddress(), param_maxNOP);
 
+    // -------------------------------------------------------------------------
+    // -------------------------------- Timers ---------------------------------
+    // -------------------------------------------------------------------------
     // -- Schedule events
     scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
 
+    // -- Report Logged Statistic to global module
+//    string s = ev.getConfig()->getConfigValue("sim-time-limit");
+//    s = s.erase(s.find('s'));
+//    double sim_time_limit = atof(s.c_str());
+    scheduleAt(getSimTimeLimit() - uniform(0.05, 0.95), timer_sendReport);
+
     // -- States
     m_state = MESH_JOIN_STATE_ACTIVE;
-//    m_state_joined = true;
-//    m_joinState = MESH_STATE_JOIN_IDLE;
 
+    sig_pRequestRecv = registerSignal("Signal_pRequestRecv");
+    sig_pRejectSent = registerSignal("Signal_pRejectSent");
+
+    sig_pRequestRecv_whileWaiting = registerSignal("Signal_pRequestRecv_whileWaiting");
 
     // --- For logging variables
     m_arrivalTime = -1.0;
@@ -118,6 +135,10 @@ void DonetSource::handleTimerMessage(cMessage *msg)
         sendBufferMap();
         scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
 
+    }
+    else if (msg == timer_sendReport)
+    {
+       handleTimerReport();
     }
 }
 

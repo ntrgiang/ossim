@@ -21,6 +21,11 @@
 #include "GlobalStatistic.h"
 #include "ActivePeerInfo.h"
 
+#define PARTNER_ASSIGNMENT_IMMEDIATE 0
+#define PARTNER_ASSIGNMENT_REQUEST_REPLY 1
+//#define PARTNER_ASSIGNMENT PARTNER_ASSIGNMENT_IMMEDIATE
+#define PARTNER_ASSIGNMENT PARTNER_ASSIGNMENT_REQUEST_REPLY
+
 using namespace std;
 
 class ActivePeerTable: public cSimpleModule, protected INotifiable

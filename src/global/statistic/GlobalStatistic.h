@@ -48,6 +48,7 @@ public:
 public:
 
     void writeActivePeerTable2File(vector<IPvXAddress>);
+    void writePartnerList2File(IPvXAddress node, vector<IPvXAddress> pList);
     void recordSizeInView(int size);
     void recordSizePartialView(int size);
 
@@ -108,14 +109,6 @@ public:
 private:
     NotificationBoard *nb; // cached pointer
 
-//    long m_sizeInView;
-//    long m_countIV;
-//    long m_sizePartialView;
-//    long m_countPV;
-
-//    cStdDev m_finalSizeIV;
-//    cStdDev m_finalSizePV;
-
     cOutVector m_joinTime;
 
     ofstream m_outFile;
@@ -124,15 +117,6 @@ private:
     long m_count_NEW;
     long m_count_ACK;
     long m_count_IGN;
-
-    // -- Getting the final average of each run
-//    long m_accumulatedSizePV;
-//    int m_totalNode;
-
-    // -- Getting the histogram of view sizes
-//    cLongHistogram m_sizePV;
-//    cLongHistogram m_sizeIV;
-//     cStdDev m_sizePV;
 
     // -- For drawing the histogram of partial view sizes
     cOutVector m_allFinalPVsizes;
@@ -154,7 +138,6 @@ private:
     simsignal_t sig_chunkSeek;
     simsignal_t sig_rebuffering;
     simsignal_t sig_stall;
-
 
     simsignal_t sig_meshJoin;
 

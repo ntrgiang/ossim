@@ -146,24 +146,30 @@ private:
     // -- Easy version with a vector
     vector<SEQUENCE_NUMBER_T> m_list_requestedChunk;
 
-    // -- Time stampt value objects
-    // cTimestampedValue
+    // -------------------------------- Signals --------------------------------
 
-    // -- Signals
-    simsignal_t sig_chunkRequestSeqNum;
-    //simsignal_t signal_nPartner;
-    simsignal_t sig_newchunkForRequest;
-    simsignal_t sig_nPartner;
+    // -- Chunks
+       simsignal_t sig_chunkRequestSeqNum;
+       simsignal_t sig_newchunkForRequest;
 
-    simsignal_t sig_partnerRequest;
+    //simsignal_t sig_partnerRequest;
+
+    // -- Partnership
+      // Number of partners
+      simsignal_t sig_nPartner;
+
+      // Number of requests SENT & RECV
+      simsignal_t sig_pRequestSent;
+
+      // Number of rejects SENT & RECV
+      simsignal_t sig_pRejectRecv;
+
+    simsignal_t sig_nJoin;
 
     simsignal_t sig_joinTime;
     simsignal_t sig_playerStartTime;
-
-    simsignal_t sig_pRequestSent;
-    simsignal_t sig_pRejectReceived;
-
-    simsignal_t sig_nJoin;
+    // Accounting
+    simsignal_t sig_timeout;
 
 
 };

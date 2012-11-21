@@ -378,6 +378,8 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
     EV << endl;
     EV << "-------- Process partnership Request --------------------------------" << endl;
 
+    emit(sig_pRequestRecv, 1);
+
     // -- Get the identifier (IP:port) and upBw of the requester
     PendingPartnershipRequest requester;
     MeshPartnershipRequestPacket *memPkt = check_and_cast<MeshPartnershipRequestPacket *>(pkt);
@@ -403,7 +405,36 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
     case MESH_JOIN_STATE_ACTIVE_WAITING:
     {
         EV << "I am waiting for a partnership response. Your request will be stored in a queue." << endl;
-        m_list_partnershipRequestingNode.push_back(requester);
+        if (m_partnerList->size() + 1 < param_maxNOP)
+        {
+           //considerAcceptPartner(requester);
+           EV << "-- Can accept this request" << endl;
+
+           // -- Add peer directly to Partner List
+           m_partnerList->addAddress(requester.address, requester.upBW);
+
+           // -- Report to Active Peer Table to update the information
+           EV << "Increment number of partner " << endl;
+           m_apTable->incrementNPartner(getNodeAddress());
+
+           MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
+           sendToDispatcher(acceptPkt, m_localPort, requester.address, requester.port);
+        }
+        else
+        {
+           //m_list_partnershipRequestingNode.push_back(requester);
+
+           EV << "-- Enough partners --> cannot accept this request." << endl;
+           //emit(sig_partnerRequest, 0);
+
+           // -- Create a Partnership message and send it to the remote peer
+           MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
+           sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
+
+           emit(sig_pRejectSent, 1);
+        }
+
+        emit(sig_pRequestRecv_whileWaiting, 1);
 
         EV << "State remains as MESH_JOIN_STATE_ACTIVE_WAITING" << endl;
 
@@ -459,6 +490,8 @@ void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
         // -- Create a Partnership message and send it to the remote peer
         MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
         sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
+
+        emit(sig_pRejectSent, 1);
     }
 
 }
@@ -469,6 +502,10 @@ void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
  *
  *******************************************************************************
  */
+void DonetBase::handleTimerReport(void)
+{
+   m_gstat->writePartnerList2File(getNodeAddress(), m_partnerList->getAddressList());
+}
 
 //void DonetBase::handleTimerTimeoutWaitingAck()
 //{
