@@ -82,7 +82,7 @@ private:
     void startPlayer(void);
 
 private:
-    // -- Timers
+    // ----------------------------------- Timers
     cMessage *timer_getJoinTime;
     cMessage *timer_join;
     cMessage *timer_chunkScheduling;
@@ -95,6 +95,7 @@ private:
     cMessage *timer_timeout_waiting_response;
 //    cMessage *timer_rejoin;
 
+    // ----------------------------------- Parameters
     bool    param_moduleDebug;
     double  param_chunkSchedulingInterval;
     double  param_interval_chunkScheduling;     // as a potential replacement for the above
@@ -115,6 +116,9 @@ private:
     // -- Partnership size
     int param_minNOP;
     int param_offsetNOP;
+
+    // Address of the host whose response is expected
+    IPvXAddress address_responseExpected;
 
     // -- To store list of random peers got from APT
     vector<IPvXAddress> m_list_randPeer;

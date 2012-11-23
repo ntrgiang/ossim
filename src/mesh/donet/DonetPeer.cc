@@ -99,11 +99,8 @@ void DonetPeer::initialize(int stage)
                     //* param_baseValue_requestGreedyFactor);
 //    m_bmPacket = generateBufferMapPacket();
 
-    // Schedule for writing to log file
-//    string s = ev.getConfig()->getConfigValue("sim-time-limit");
-//    s = s.erase(s.find('s'));
-//    double sim_time_limit = atof(s.c_str());
-    scheduleAt(getSimTimeLimit() - uniform(0.05, 0.95), timer_sendReport);
+    // -- Schedule for writing to log file
+    //scheduleAt(getSimTimeLimit() - uniform(0.05, 0.95), timer_sendReport);
 
     // --------- Debug ------------
     m_joinTime = -1.0;
@@ -388,9 +385,9 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
 
     // -- Extract the address of the accepter
     PendingPartnershipRequest acceptor;
-    MeshPartnershipAcceptPacket *acceptPkt = dynamic_cast<MeshPartnershipAcceptPacket *>(pkt);
-    //DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
-        getSender(pkt, acceptor.address, acceptor.port);
+    getSender(pkt, acceptor.address, acceptor.port);
+    // MeshPartnershipAcceptPacket *acceptPkt = dynamic_cast<MeshPartnershipAcceptPacket *>(pkt);
+    MeshPartnershipAcceptPacket *acceptPkt = check_and_cast<MeshPartnershipAcceptPacket *>(pkt);
         acceptor.upBW = acceptPkt->getUpBw();
 
     EV << "Acceptor: " << endl
@@ -402,7 +399,15 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
     {
     case MESH_JOIN_STATE_IDLE_WAITING:
     {
-        // -- Store the address of acceptor into its partner list
+       // -- Store the address of acceptor into its partner list
+       if (acceptor.address != address_responseExpected)
+       {
+          EV << "IP address of acceptor: " <<  acceptor.address.str().c_str() << endl;
+          EV << "IP address expected: " << address_responseExpected.str().c_str() << endl;
+       }
+//           throw cException("ACK from %s, expected IP: %s. Strange behavior!",
+//           acceptor.address.str().c_str(),
+//           address_responseExpected.str().c_str());
         m_partnerList->addAddress(acceptor.address, acceptor.upBW);
 
         // -- Register itself to the APT
@@ -454,6 +459,12 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
     case MESH_JOIN_STATE_ACTIVE_WAITING:
     {
         // -- Store the address of acceptor into its partner list
+        if (acceptor.address != address_responseExpected)
+        {
+           // Not the ACK from expected peer
+           // State should remain
+           break;
+        }
         m_partnerList->addAddress(acceptor.address, acceptor.upBW);
         m_apTable->incrementNPartner(getNodeAddress());
 
@@ -725,6 +736,9 @@ bool DonetPeer::findPartner()
 {
    Enter_Method("findPartner()");
 
+   // Init
+   address_responseExpected = IPvXAddress("0.0.0.0");
+
     if (m_partnerList->getSize() >= param_minNOP)
     {
         EV << "Minimum number of partners has been reach --> stop finding more partner for the moment." << endl;
@@ -757,6 +771,7 @@ bool DonetPeer::findPartner()
         reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
 
     sendToDispatcher(reqPkt, m_localPort, addressRandPeer, m_destPort);
+    address_responseExpected = addressRandPeer;
 
     emit(sig_pRequestSent, 1);
     return true;
@@ -776,11 +791,19 @@ void DonetPeer::handleTimerJoin(void)
     {
     case MESH_JOIN_STATE_IDLE:
     {
-        findPartner();
-        scheduleAt(simTime() + param_interval_waitingPartnershipResponse, timer_timeout_waiting_response);
+        if (findPartner() == true)
+        {
+            // -- State changes to waiting mode, since a request has been sent
+            scheduleAt(simTime() + param_interval_waitingPartnershipResponse, timer_timeout_waiting_response);
 
-        EV << "State changes to waiting mode" << endl;
-        m_state = MESH_JOIN_STATE_IDLE_WAITING;
+            EV << "State changes to waiting mode" << endl;
+            m_state = MESH_JOIN_STATE_IDLE_WAITING;
+        }
+        else
+        {
+           // State remains ACTIVE
+        }
+
         break;
     }
     case MESH_JOIN_STATE_ACTIVE_WAITING:
