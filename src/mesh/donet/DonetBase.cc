@@ -1,18 +1,3 @@
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-// 
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
-
 #include "DonetBase.h"
 #include "DpControlInfo_m.h"
 
@@ -112,18 +97,6 @@ bool DonetBase::canAcceptMorePartner(void)
     return false;
 }
 
-void DonetBase::addToNeighborList(cPacket *pkt)
-{
-    Enter_Method("addToNeighborList(pkt)");
-
-    // 1. Get the IP-address of the peer
-    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
-    IPvXAddress reqPeerAddress = controlInfo->getSrcAddr();
-
-    // 2. Store the address into its neighbor list
-    m_partnerList->addAddress(reqPeerAddress);
-}
-
 void DonetBase::sendBufferMap(void)
 {
     if (m_partnerList->size() == 0)
@@ -204,33 +177,6 @@ void DonetBase::bindToGlobalModule(void)
     temp = simulation.getModuleByPath("logger");
     m_logger = check_and_cast<Logger *>(temp);
     EV << "Binding to Logger is completed successfully" << endl;
-
-}
-
-void DonetBase::acceptJoinRequest(IPvXAddress &reqPeerAddress, double upBw_remotePeer)
-{
-    // 1. Store the address into its neighbor list
-    // m_partnerList->addAddress(reqPeerAddress);
-    m_partnerList->addAddress(reqPeerAddress, upBw_remotePeer);
-
-    // Debug:
-    m_partnerList->print();
-
-    // 2. Send the explicit ACCEPT request
-//    MeshPartnershipAcceptPacket *acceptPkt = new MeshPartnershipAcceptPacket("MESH_PEER_JOIN_ACCEPT");
-//        acceptPkt->setUpBw(param_upBw);
-
-    MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
-
-    // 3. Send the packet
-    sendToDispatcher(acceptPkt, m_localPort, reqPeerAddress, m_destPort);
-
-    // 3. Send the explicit ACCEPT request
-//    MeshPartnershipPacket *acceptPkt = new MeshPartnershipPacket("MESH_PEER_JOIN_ACCEPT");
-//        acceptPkt->setPacketType(MESH_PARTNERSHIP);
-        // !!! has problem
-//        acceptPkt->setCommand(CMD_MESH_PARTNERSHIP_ACCEPT);
-//        acceptPkt->setUpBw(param_upBw);
 
 }
 

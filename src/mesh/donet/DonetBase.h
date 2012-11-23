@@ -77,20 +77,13 @@ protected:
     void considerAcceptPartner(PendingPartnershipRequest requester);
     bool canAcceptMorePartner(void);
 
-    // !!! obsolete !!!
-    void addToNeighborList(cPacket *pkt);
-    void acceptJoinRequest(IPvXAddress &reqPeerAddress, double upBw_remotePeer);
-    //void handleTimerTimeoutWaitingAccept();
-    // *************************************************************************
-    // *************************************************************************
-
     // Timer
     void handleTimerTimeoutWaitingAccept();
     void handleTimerTimeoutWaitingAck();
     void handleTimerReport(void);
 
     // -- BufferMap
-//    MeshBufferMapPacket *generateBufferMapPacket();
+    //    MeshBufferMapPacket *generateBufferMapPacket();
     void sendBufferMap(void);
     inline int getBufferMapSize(void) { return m_bufferMapSize_chunk; }
 
