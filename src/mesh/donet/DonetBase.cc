@@ -296,29 +296,6 @@ void DonetBase::printChunkRequestPacket(MeshChunkRequestPacket *reqPkt)
 }
 
 
-/*
-MeshBufferMapPacket *DonetBase::generateBufferMapPacket()
-{
-    MeshBufferMapPacket *bmPkt = new MeshBufferMapPacket("MESH_PEER_BUFFER_MAP");
-        bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);
-        //bmPkt->setBitLength(m_appSetting->getPacketSizeBufferMap() * 8);    // Convert sizes from Bytes --> bits
-        bmPkt->setBitLength(m_BufferMapPacketSize_bit);
-        m_videoBuffer->fillBufferMapPacket(bmPkt);
-
-    return bmPkt;
-}
-*/
-
-/*
-MeshBufferMapPacket *DonetBase::generateBufferMapPacket()
-{
-    MeshBufferMapPacket *bmPacket = new MeshBufferMapPacket("MESH_BUFFER_MAP_PACKET");
-        bmPacket->setBitLength(m_BufferMapPacketSize_bit);
-        bmPacket->setBufferMapArraySize(m_bufferMapSize_chunk);
-
-    return bmPacket;
-}*/
-
 void DonetBase::processPartnershipRequest(cPacket *pkt)
 {
     EV << endl;
@@ -357,7 +334,8 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
            EV << "-- Can accept this request" << endl;
 
            // -- Add peer directly to Partner List
-           m_partnerList->addAddress(requester.address, requester.upBW);
+           //m_partnerList->addAddress(requester.address, requester.upBW);
+           addPartner(requester.address, requester.upBW);
 
            // -- Report to Active Peer Table to update the information
            EV << "Increment number of partner " << endl;
@@ -416,7 +394,8 @@ void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
         //emit(sig_partnerRequest, m_partnerList->getSize());
 
         // -- Add peer directly to Partner List
-        m_partnerList->addAddress(requester.address, requester.upBW);
+        //m_partnerList->addAddress(requester.address, requester.upBW);
+        addPartner(requester.address, requester.upBW);
 
         // -- Report to Active Peer Table to update the information
         EV << "Increment number of partner " << endl;
@@ -453,27 +432,10 @@ void DonetBase::handleTimerReport(void)
    m_gstat->writePartnerList2File(getNodeAddress(), m_partnerList->getAddressList());
 }
 
-//void DonetBase::handleTimerTimeoutWaitingAck()
-//{
-//    switch(m_state)
-//    {
-//    case MESH_JOIN_STATE_ACTIVE_WAITING:
-//    {
-//        // -- Clear list of candidates
-//        // TODO
+void DonetBase::addPartner(IPvXAddress remote, double bw)
+{
+   m_partnerList->addAddress(remote, bw);
+   m_gstat->writePartnership2File(getNodeAddress(), remote);
+}
 
-//        // -- Move back to the JOINED state
-//        m_state = MESH_JOIN_STATE_ACTIVE;
-//        break;
-//    }
-//    case MESH_STATE_IDLE_WAITING:
-//    case MESH_JOIN_STATE_ACTIVE:
-//    case MESH_STATE_IDLE:
-//    default:
-//    {
-//        throw cException("ACK message is not expected for current state %d", m_state);
-//        break;
-//    }
-//    } // switch()
-//}
 

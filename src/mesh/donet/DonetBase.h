@@ -1,18 +1,3 @@
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-// 
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
-
 #ifndef DONETBASE_H_
 #define DONETBASE_H_
 
@@ -31,11 +16,6 @@
 #include <fstream>
 
 //class Logger;
-
-//#define MESH_STATE_JOIN_IDLE                    0
-//#define MESH_STATE_JOIN_WAITING_ACCEPT          1
-//#define MESH_STATE_JOIN_ALL_ACCEPT_RECEIVED     2
-//#define MESH_STATE_JOIN_WAITING_ACCEPT_ACK      3
 
 enum Mesh_Join_State {
     MESH_JOIN_STATE_IDLE            = 0,
@@ -76,6 +56,7 @@ protected:
     void processPartnershipRequest(cPacket *pkt);
     void considerAcceptPartner(PendingPartnershipRequest requester);
     bool canAcceptMorePartner(void);
+    void addPartner(IPvXAddress remote, double bw);
 
     // Timer
     void handleTimerTimeoutWaitingAccept();
@@ -83,7 +64,6 @@ protected:
     void handleTimerReport(void);
 
     // -- BufferMap
-    //    MeshBufferMapPacket *generateBufferMapPacket();
     void sendBufferMap(void);
     inline int getBufferMapSize(void) { return m_bufferMapSize_chunk; }
 
