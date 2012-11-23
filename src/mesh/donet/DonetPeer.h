@@ -37,7 +37,6 @@ private:
     void handleTimerJoin(void);
     void handleTimerFindMorePartner(void);
     bool findPartner(); // New interface for the FSM
-//    void processPartnershipRequest(cPacket *pkt);
     // void processAcceptResponse(cPacket *pkt); // should be obsolete
     void processPartnershipAccept(cPacket *pkt);
     void processPartnershipReject(cPacket *pkt);
