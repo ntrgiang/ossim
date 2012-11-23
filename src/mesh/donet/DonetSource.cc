@@ -51,10 +51,7 @@ void DonetSource::initialize(int stage)
     scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
 
     // -- Report Logged Statistic to global module
-//    string s = ev.getConfig()->getConfigValue("sim-time-limit");
-//    s = s.erase(s.find('s'));
-//    double sim_time_limit = atof(s.c_str());
-    scheduleAt(getSimTimeLimit() - uniform(0.05, 0.95), timer_sendReport);
+    // scheduleAt(getSimTimeLimit() - uniform(0.05, 0.95), timer_sendReport);
 
     // -- States
     m_state = MESH_JOIN_STATE_ACTIVE;
@@ -191,63 +188,3 @@ void DonetSource::processPacket(cPacket *pkt)
     delete pkt;
 }
 
-/*
- * 1. Store the address into its neighbor list
- * 2. Send the explicit ACCEPT request
- * 3. Check if this is the first neighbor
- */
-//void DonetSource::acceptJoinRequestFromPeer(IPvXAddress &reqPeerAddress, double upBw_remotePeer)
-//{
-//    Enter_Method("acceptJoinRequest(reqPeerAddress)");
-//    // 2. Store the address into its neighbor list
-//    m_partnerList->addAddress(reqPeerAddress, upBw_remotePeer);
-
-//    // Debug:
-//    m_partnerList->print();
-
-//    MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
-
-//    // -- Send the packet
-//    sendToDispatcher(acceptPkt, m_localPort, reqPeerAddress, m_destPort);
-//}
-
-//void DonetSource::processPartnershipRequest(cPacket *pkt)
-//{
-//    EV << "Processing partnership request:" << endl;
-//    // -- Get the IP-address of the peer
-//    IPvXAddress requesterAddress;
-//    int requesterPort;
-//    getSender(pkt, requesterAddress, requesterPort);
-//    EV << "\tRequester: " << requesterAddress << ":" << requesterPort << endl; // Debug
-
-//    if (!canAcceptMorePartner())
-//    {
-//        MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
-//        sendToDispatcher(rejectPkt, m_localPort, requesterAddress, requesterPort);
-
-//        return;
-//    }
-
-//    // 1.1. Get the upBw of the remote peer
-//    MeshPartnershipRequestPacket *memPkt = dynamic_cast<MeshPartnershipRequestPacket *>(pkt);
-//    double upBw_remotePeer = memPkt->getUpBw();
-//    EV << "up load bandwidth: " << upBw_remotePeer << endl;
-
-//    m_partnerList->addAddress(requesterAddress, upBw_remotePeer);
-
-//    // m_partnerList->print(); // Debug:
-
-//    MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
-//    sendToDispatcher(acceptPkt, m_localPort, requesterAddress, requesterPort);
-
-//}
-
-/*
-bool DonetSource::canHaveMorePartner(void)
-{
-    if (m_partnerList->getSize() < param_maxNOP)
-        return (true);
-
-    return (false);
-}
-*/
