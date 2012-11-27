@@ -1,4 +1,5 @@
 Makefile.generated
+out/
 out/gcc-debug/.last-copts
 out/gcc-debug/src/applications/
 out/gcc-debug/src/common/
@@ -14,6 +15,7 @@ simulations/results/Scamp_Homo_oneRouter_Network-0.sca
 simulations/results/check-links.sh~
 simulations/results/gstatlog.txt
 simulations/so-sim.out
+simulations/.tkenvrc
 so.config.backup
 so.creator.backup
 so.creator.user.backup
@@ -21,8 +23,5 @@ so.creator.user.old
 so.files.backup
 so.includes.backup
 src/Makefile.copy
-modified:   out/gcc-debug/src/.last-copts
-modified:   out/gcc-debug/src/so
-modified:   simulations/.tkenvrc
-modified:   src/so
+src/so
 
