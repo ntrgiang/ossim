@@ -21,7 +21,7 @@ struct Struct_ActivePeerInfo
    bool m_joined_meshOverlay;
    bool m_joined_treeOverlay;
 
-   std::vector<IPvXAddress> m_partner_waiting_list;
+   //std::vector<IPvXAddress> m_partner_waiting_list;
 };
 
 /*

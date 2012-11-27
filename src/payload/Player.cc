@@ -125,6 +125,7 @@ void Player::handleTimerMessage(cMessage *msg)
         {
             if (m_videoBuffer->getPercentFill() < param_percent_buffer_high)
             {
+                // Probe the status of the buffer again
                 scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
             }
             else

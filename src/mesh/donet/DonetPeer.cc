@@ -196,18 +196,52 @@ void DonetPeer::finish()
 
 void DonetPeer::cancelAndDeleteAllTimer()
 {
-    if (timer_getJoinTime != NULL)      { delete cancelEvent(timer_getJoinTime);        timer_getJoinTime       = NULL; }
-    if (timer_join != NULL)             { delete cancelEvent(timer_join);               timer_join              = NULL; }
-    if (timer_sendBufferMap != NULL)    { delete cancelEvent(timer_sendBufferMap);      timer_sendBufferMap     = NULL; }
-    if (timer_chunkScheduling != NULL)  { delete cancelEvent(timer_chunkScheduling);    timer_chunkScheduling   = NULL; }
-    if (timer_findMorePartner != NULL)  { delete cancelEvent(timer_findMorePartner);    timer_findMorePartner   = NULL; }
-    if (timer_startPlayer != NULL)      { delete cancelEvent(timer_startPlayer);        timer_startPlayer       = NULL; }
-    if (timer_sendReport != NULL)      { delete cancelEvent(timer_sendReport);        timer_sendReport       = NULL; }
+    if (timer_getJoinTime != NULL)
+    {
+       delete cancelEvent(timer_getJoinTime);
+       timer_getJoinTime       = NULL;
+    }
+
+    if (timer_join != NULL)
+    {
+       delete cancelEvent(timer_join);
+       timer_join              = NULL;
+    }
+
+    if (timer_sendBufferMap != NULL)
+    {
+       delete cancelEvent(timer_sendBufferMap);
+       timer_sendBufferMap     = NULL;
+    }
+
+    if (timer_chunkScheduling != NULL)
+    {
+       delete cancelEvent(timer_chunkScheduling);
+       timer_chunkScheduling   = NULL;
+    }
+
+    if (timer_findMorePartner != NULL)
+    {
+       delete cancelEvent(timer_findMorePartner);
+       timer_findMorePartner   = NULL;
+    }
+
+    if (timer_startPlayer != NULL)
+    {
+       delete cancelEvent(timer_startPlayer);
+       timer_startPlayer       = NULL;
+    }
+
+    if (timer_sendReport != NULL)
+    {
+       delete cancelEvent(timer_sendReport);
+       timer_sendReport       = NULL;
+    }
 
     if (timer_timeout_waiting_response != NULL)
     {
-        delete cancelEvent(timer_timeout_waiting_response);
-        timer_timeout_waiting_response       = NULL;
+       delete cancelEvent(timer_timeout_waiting_response);
+       timer_timeout_waiting_response       = NULL;
     }
 
 }
@@ -336,7 +370,8 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
 //           throw cException("ACK from %s, expected IP: %s. Strange behavior!",
 //           acceptor.address.str().c_str(),
 //           address_responseExpected.str().c_str());
-        m_partnerList->addAddress(acceptor.address, acceptor.upBW);
+        //m_partnerList->addAddress(acceptor.address, acceptor.upBW);
+        addPartner(acceptor.address, acceptor.upBW);
 
         // -- Register itself to the APT
         m_apTable->addPeerAddress(getNodeAddress(), param_maxNOP);
@@ -393,7 +428,9 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
            // State should remain
            break;
         }
-        m_partnerList->addAddress(acceptor.address, acceptor.upBW);
+        //m_partnerList->addAddress(acceptor.address, acceptor.upBW);
+        addPartner(acceptor.address, acceptor.upBW);
+
         m_apTable->incrementNPartner(getNodeAddress());
 
         // -- Cancel timer
@@ -927,7 +964,7 @@ void DonetPeer::randomChunkScheduling(void)
     EV << "---------- Random chunk scheduling ----------------------------------" << endl;
     //srand(time(NULL));
 
-    // -- Clear state variables
+    // -- Clear state variablesm
     m_nChunkRequested_perSchedulingInterval = 0;
 
     // -- Clear all request windows for all neighbors

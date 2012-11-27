@@ -6,7 +6,7 @@ simple GlobalStatistic
 {
    parameters:
 
-      string gstatLog = default(".//results//gstatlog.txt");
+      string gstatLog = default("..//results//gstatlog.txt");
 
       // --- Signals
         @signal[Signal_ChunkHit](type="long");

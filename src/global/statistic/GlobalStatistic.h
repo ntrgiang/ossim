@@ -49,6 +49,8 @@ public:
 
     void writeActivePeerTable2File(vector<IPvXAddress>);
     void writePartnerList2File(IPvXAddress node, vector<IPvXAddress> pList);
+    void writePartnership2File(IPvXAddress local, IPvXAddress remote);
+
     void recordSizeInView(int size);
     void recordSizePartialView(int size);
 

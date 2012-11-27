@@ -1,0 +1,28 @@
+Makefile.generated
+out/gcc-debug/.last-copts
+out/gcc-debug/src/applications/
+out/gcc-debug/src/common/
+out/gcc-debug/src/global/
+out/gcc-debug/src/membership/
+out/gcc-debug/src/mesh/
+out/gcc-debug/src/payload/
+out/gcc-debug/src/tree/
+simulations/results/Donet_Homo_oneRouter_Network-0.sca
+simulations/results/Donet_Homo_oneRouter_Network-0.vci
+simulations/results/Donet_Homo_oneRouter_Network-0.vec
+simulations/results/Scamp_Homo_oneRouter_Network-0.sca
+simulations/results/check-links.sh~
+simulations/results/gstatlog.txt
+simulations/so-sim.out
+so.config.backup
+so.creator.backup
+so.creator.user.backup
+so.creator.user.old
+so.files.backup
+so.includes.backup
+src/Makefile.copy
+modified:   out/gcc-debug/src/.last-copts
+modified:   out/gcc-debug/src/so
+modified:   simulations/.tkenvrc
+modified:   src/so
+

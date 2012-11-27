@@ -37,7 +37,6 @@ private:
     void handleTimerJoin(void);
     void handleTimerFindMorePartner(void);
     bool findPartner(); // New interface for the FSM
-    // void processAcceptResponse(cPacket *pkt); // should be obsolete
     void processPartnershipAccept(cPacket *pkt);
     void processPartnershipReject(cPacket *pkt);
 
@@ -64,9 +63,11 @@ private:
     // bool should_be_requested(void);
     bool should_be_requested(SEQUENCE_NUMBER_T seq_num);
     void initializeSchedulingWindow(void);
+
     bool shouldStartChunkScheduling();
     void chunkScheduling(void);
     void randomChunkScheduling(void);
+
     int numberOfChunkToRequestPerCycle(void);
     double currentRequestGreedyFactor(void);
     bool recentlyRequestedChunk(SEQUENCE_NUMBER_T seq_num);

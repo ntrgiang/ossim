@@ -5,6 +5,7 @@
 #include "VideoChunkPacket_m.h"
 #include "AppSettingDonet.h"
 #include "GlobalStatistic.h"
+//#include "DonetPeer.h"
 
 #define PLAYER_STATE_IDLE       0
 #define PLAYER_STATE_BUFFERING  1
@@ -37,6 +38,9 @@ private:
     bool shouldResumePlaying(SEQUENCE_NUMBER_T seq_num);
 
 protected:
+    // Pointer to other modules
+    //DonetPeer *m_
+
     // -- State variable
     bool m_playerStarted;
     cMessage *timer_nextChunk;
