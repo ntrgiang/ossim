@@ -13,24 +13,21 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "NewscastCacheEntry.h"
+#ifndef GOSSIPPROTOCOL_H_
+#define GOSSIPPROTOCOL_H_
 
-NewscastCacheEntry::NewscastCacheEntry() {
-    // TODO Auto-generated constructor stub
-}
+#include "IPvXAddress.h"
 
-NewscastCacheEntry::~NewscastCacheEntry() {
-    // TODO Auto-generated destructor stub
-    EV << "GETTING DELETED YAY" << endl;
-    if (m_value) delete m_value;
-}
+class GossipProtocol {
+public:
+    virtual GossipProtocol();
+    virtual ~GossipProtocol();
 
-long NewscastCacheEntry::getEstimatedSize(){
-    long ret = 0;
+    virtual bool joinNetwork(IPvXAddress bootstrap = NULL);
+    virtual void leaveNetwork();
 
-    ret = sizeof(m_address) + m_agent.size() + sizeof(m_timestamp) + sizeof(*m_value);
+    virtual IPvXAddress getRandomPeer();
+    virtual std::vector<IPvXAddress> getKnownPeers();
+};
 
-    //ret = m_agent.size();
-
-    return ret;
-}
+#endif /* GOSSIPPROTOCOL_H_ */

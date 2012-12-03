@@ -17,7 +17,6 @@
 #define NEWSCASTCACHE_H_
 
 #include "NewscastCacheEntry.h"
-//#include "cobject.h"
 #include "cownedobject.h"
 
 class NewscastCache : public ::cOwnedObject{
@@ -26,7 +25,7 @@ public:
     NewscastCache(){max = 5;};
     virtual ~NewscastCache();
 
-    void setEntry(std::string agent, IPvXAddress addr, simtime_t timestamp, float value);
+    void setEntry(std::string agent, IPvXAddress addr, simtime_t timestamp, cObject* value);
     void merge(NewscastCache* cache);
     int getSize(){ return currentCache.size(); }
     NewscastCacheEntry* getEntry(int index){ return currentCache.at(index);}
@@ -39,6 +38,10 @@ public:
 
     void printCache();
 
+    /*
+     * returns an estimation of the size of this cache in bytes
+     */
+    long getEstimatedSize();
 protected:
     typedef std::vector<NewscastCacheEntry*> CacheSet;
     mutable CacheSet currentCache;

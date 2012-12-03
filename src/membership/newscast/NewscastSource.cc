@@ -1,8 +1,7 @@
 /*
- * NewscastSource.cpp
+ * NewscastSource.cc
  *
- *  Created on: 05.11.2012
- *      Author: Fire
+ *      Author: Thorsten Jacobi
  */
 
 #include "NewscastSource.h"
@@ -10,8 +9,25 @@
 #include "regmacros.h"
 Define_Module(NewscastSource);
 
+
+class SpecialObject : public cObject {
+public:
+    int a;
+    int b;
+    int c;
+    int d;
+    SpecialObject() : cObject (){
+    };
+    ~SpecialObject(){
+    }
+
+    cObject* dup() const{
+        return new SpecialObject();
+    }
+};
+
 NewscastSource::NewscastSource() {
-    ownValue = 1.0f;
+    ownValue = new SpecialObject();
 }
 
 NewscastSource::~NewscastSource() {

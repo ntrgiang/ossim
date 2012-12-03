@@ -25,6 +25,8 @@
 
 // Cache
 #include "NewscastCache.h"
+// Agents
+#include "NewscastAgentInterface.h"
 
 #include "Dispatcher.h"
 class NewscastBase : public cSimpleModule {
@@ -34,9 +36,6 @@ public:
 
     virtual void handleMessage(cMessage* msg);
 
-    std::string ownName;
-    // temporary "own value"
-    float ownValue;
     // TODO: TEMP
     int counter;
 
@@ -58,20 +57,33 @@ protected:
     IPvXAddress getNodeAddress(void);
     // end global modules
 
+    // Messages for timers
     cMessage* timer_ExchangeCache;
     cMessage* timer_JoinNetwork;
 
+    // local objects
     NewscastCache* m_cache;
+    std::string ownName;    // name of the local agent
+    cObject* ownValue;      // value of the local agent
+
     void sendCacheExchangeRequest(IPvXAddress addr);
     void sendCacheExchangeReply(IPvXAddress addr);
-    bool checkBootstrap();
+    bool checkBootstrapNeeded();
     void doBootstrap();
     void doCacheExchange();
 
 private:
+
+    //listeners -> "agents"
+    typedef std::list<NewscastAgentInterface*> AgentList;
+    mutable AgentList localAgents;
+    void addAgent(NewscastAgentInterface* agent);
+    void removeAgent(NewscastAgentInterface* agent);
+
     void sendPacketTo(cPacket* pkt, IPvXAddress addr);
     void handlePacket(cPacket* pkt);
 
+    void updateOwnCache();
     void receivedCache(IPvXAddress from, NewscastCache* cache);
 #define MESSAGE_CODE_REQUEST "NEWSCAST_REQUEST"
 #define MESSAGE_CODE_REPLY   "NEWSCAST_REPLY"

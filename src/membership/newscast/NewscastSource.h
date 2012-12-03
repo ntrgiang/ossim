@@ -1,8 +1,7 @@
 /*
  * NewscastSource.h
  *
- *  Created on: 05.11.2012
- *      Author: Fire
+ *      Author: Thorsten Jacobi
  */
 
 #include "NewscastBase.h"

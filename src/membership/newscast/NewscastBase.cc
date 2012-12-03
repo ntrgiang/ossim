@@ -21,9 +21,10 @@
 #include "DpControlInfo_m.h"
 #include "NewscastPacket_m.h"
 
+#include "NewscastAgentInterface.h"
+
 NewscastBase::NewscastBase() {
-    // TODO Auto-generated constructor stub
-    ownValue = 0.0f;
+    ownValue = NULL;
     counter = 0;
 }
 
@@ -33,45 +34,46 @@ NewscastBase::~NewscastBase() {
     if (timer_ExchangeCache) delete cancelEvent(timer_ExchangeCache);
 
     if (m_cache) delete m_cache;
+    if (ownValue) delete ownValue;
+
+    localAgents.clear(); // only empty the list ... dont delete listeners!
 }
 
 void NewscastBase::initialize(int stage) {
 
     if (stage != 4) return;
 
-    /*EV << "0My name? " << getName() << endl;
-    EV << "1My name? " << getParentModule()->getName() << endl;
-    EV << "2My name? " << getParentModule()->getParentModule()->getName() << endl;
-    EV << "2My name? " << getParentModule()->getParentModule()->getId() << endl;
-    EV << "2My name? " << getParentModule()->getParentModule()->getFullName() << endl;*/
-
+    // get the name for the agent from the parent module
     ownName = getParentModule()->getParentModule()->getFullName();
-    EV << "my name: " << ownName << " value: " << ownValue <<  endl;
 
     bindToGlobalModule(); // connect to global modules
     findNodeAddress(); // find and store own address
 
+    // create a new cache
     m_cache = new NewscastCache((int)par("cacheSize"));
 
+    // create the messages used for timer actions
     timer_ExchangeCache = new cMessage("Newscast: ExchangeCacheTimer");
     timer_JoinNetwork   = new cMessage("Newscast: JoinNetworkTimer");
 
+    // schedule a timer to join the netwrok
     scheduleAt(simTime() + m_churn->getArrivalTime() , timer_JoinNetwork);
 }
 
 void NewscastBase::handleMessage(cMessage *msg){
     EV << "[NewscastBase] handleMessage" << endl;
+
     if (msg == timer_JoinNetwork){
 
         EV << "[NewscastBase] Join Network Timer!" << endl;
         m_apTable->addPeerAddress(m_localAddress);
         scheduleAt(simTime(), timer_ExchangeCache);
 
-    }else if (msg == timer_ExchangeCache){ // now do the algorithm ...
+    }else if (msg == timer_ExchangeCache){  // intervall for cache-exchange reached ...
 
         EV << "[NewscastBase] Timer!" << endl;
 
-        if (checkBootstrap()) // do we need a bootstrap?
+        if (checkBootstrapNeeded()) // do we need a bootstrap?
             doBootstrap();
         else{ // do a regular exchange
             doCacheExchange();
@@ -79,10 +81,9 @@ void NewscastBase::handleMessage(cMessage *msg){
 
         counter++;
         if (counter < 50)
-            scheduleAt(simTime() +10, timer_ExchangeCache);
+            scheduleAt(simTime() +10, timer_ExchangeCache); // schedule the next exchange ...
     }else{
 
-        EV << "BEFORE: " << msg->getName() << endl;
         handlePacket(PK(msg));
 
     }
@@ -92,147 +93,142 @@ void NewscastBase::handlePacket(cPacket* pkt){
 
     // -- Extract the IP and port of the responder
     DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
-/*
-    //EV << "START" << endl;
-    if (strcmp(pkt->getName(), MESSAGE_CODE_REQUEST) == 0){ // we got a request ... send our cache and update it
-        EV << "[NewscastBase] Got REQUEST!" << endl;
-        EV << "[NewscastBase] REQUEST PARAS COUNT: " << pkt->getParList().size() << endl;
 
+    // cast the "unknown" packet to our own packet-class
+    NewscastPacket* np = (NewscastPacket*) pkt;
 
-    }else if (strcmp(pkt->getName(), MESSAGE_CODE_REPLY) == 0){ // got a answer ... update our cache
-        EV << "[NewscastBase] Got REPLY!" << endl;
+    switch (np->getPacketType()){
+        case NEWSCAST_REQUEST:
+            EV << "GOT REQUEST" << endl;
+            // send our cache as a reply
+            sendCacheExchangeReply(controlInfo->getSrcAddr());
 
+            // calculate something?
+            receivedCache(controlInfo->getSrcAddr(), &np->getCache());
 
-    }else{ // should happen ...
-*/
-        NewscastPacket* np = (NewscastPacket*) pkt;
+            // merge the received cache
+            m_cache->merge(&np->getCache());
+            EV << "myCache: " << ownName << endl;
+            m_cache->printCache();
+            break;
+        case NEWSCAST_REPLY:
+            EV << "GOT REPLY" << endl;
 
-        switch (np->getPacketType()){
-            case NEWSCAST_REQUEST:
-                EV << "GOT REQUEST" << endl;
-                // send our cache as a reply
-                sendCacheExchangeReply(controlInfo->getSrcAddr());
+            // calculate something?
+            receivedCache(controlInfo->getSrcAddr(), &np->getCache());
 
-                // calculate something?
-                receivedCache(controlInfo->getSrcAddr(), &np->getCache());
-
-                // merge the received cache
-                m_cache->merge(&np->getCache());
-                EV << "myCache: " << ownName << endl;
-                m_cache->printCache();
-                break;
-            case NEWSCAST_REPLY:
-                EV << "GOT REPLY" << endl;
-
-                // calculate something?
-                receivedCache(controlInfo->getSrcAddr(), &np->getCache());
-
-                // merge the received cache
-                m_cache->merge(&np->getCache());
-                EV << "myCache: " << ownName << endl;
-                m_cache->printCache();
-                break;
-            default:
-                EV << "[NewscastBase] GOT UNKNOWN PACKET!" << endl;
-                break;
-        }
-
-    //}
-    //EV << "DONE" << endl;
+            // merge the received cache
+            m_cache->merge(&np->getCache());
+            EV << "myCache: " << ownName << endl;
+            m_cache->printCache();
+            break;
+        default:
+            EV << "[NewscastBase] GOT UNKNOWN PACKET!" << endl;
+            break;
+    }
 
     delete pkt; // QUESTION: do i have to do this?
 }
 
 void NewscastBase::sendCacheExchangeRequest(IPvXAddress addr) {
-    //EV << "sendCacheExchangeRequest: 1" << endl;
+
+    // create new request packet
     NewscastRequestPacket* pkt = new NewscastRequestPacket();
 
-    //EV << "sendCacheExchangeRequest: 2" << endl;
     // update own cache entry
-    m_cache->setEntry(ownName, m_localAddress, simTime(), ownValue);
+    updateOwnCache();
 
+    // add a duplicate of our cache to the packet
     pkt->setCache( *((NewscastCache*) m_cache->dup()) );
-    //pkt->addByteLength(m_cache->getByteLength());
+    pkt->addByteLength(m_cache->getEstimatedSize());
 
-    //EV << "myCache: " << ownName << endl;
-    m_cache->printCache();
+    //m_cache->printCache();
 
-    //EV << "sendCacheExchangeRequest: 3" << endl;
+    // send the packet to the destination
     sendPacketTo(pkt, addr);
-    //EV << "sendCacheExchangeRequest: 4" << endl;
 }
 
 void NewscastBase::sendCacheExchangeReply(IPvXAddress addr) {
-    //EV << "sendCacheExchangeReply: 1" << endl;
+
+    // create new reply packet
     NewscastReplyPacket*  pkt = new NewscastReplyPacket();
 
     // update own cache entry
-    //EV << "[before-set]my name: " << ownName << " value: " << ownValue <<  endl;
-    m_cache->setEntry(ownName, m_localAddress, simTime(), ownValue);
-    //EV << "[after-set]my name: " << ownName << " value: " << ownValue <<  endl;
+    updateOwnCache();
 
-    //EV << "sendCacheExchangeReply: 2" << endl;
+    // add a duplicate of our cache to the packet
     pkt->setCache( *((NewscastCache*) m_cache->dup()) );
+    pkt->addByteLength(m_cache->getEstimatedSize());
 
-    //EV << "sendCacheExchangeReply: 3" << endl;
+    // send the packet to the destination
     sendPacketTo(pkt, addr);
-    //EV << "sendCacheExchangeReply: 4" << endl;
 }
 
 void NewscastBase::sendPacketTo(cPacket* pkt, IPvXAddress addr){
-    //EV << "sendPacketTo: 1" << endl;
+
+    // generate a control info and set the sender and receiver
     DpControlInfo *ctrl = new DpControlInfo();
         ctrl->setSrcAddr(m_localAddress);
         ctrl->setSrcPort(m_localPort);
         ctrl->setDestAddr(addr);
-        ctrl->setDestPort(m_destPort); /// well ... this shouldnt work ...
-    //EV << "sendPacketTo: 2" << endl;
-    pkt->setControlInfo(ctrl);
-    //EV << "sendPacketTo: 3" << endl;
+        ctrl->setDestPort(m_destPort);
 
+    // add the info to the packet
+    pkt->setControlInfo(ctrl);
+
+    // send the packet
     send(pkt, "dpOut");
-    //EV << "sendPacketTo: 4" << endl;
 }
 
-bool NewscastBase::checkBootstrap(){
-    //EV << "checkBootstrap: 1" << endl;
-    if (m_cache->getSize() > 1) // there are at least 2 entries(ours + 1 else)
+bool NewscastBase::checkBootstrapNeeded(){
+
+    // if there are more than one entry in the cache we are fine
+    if (m_cache->getSize() > 1)
         return false;
 
-    //EV << "checkBootstrap: 2" << endl;
+    // if there is one entry in the cache which isnt ours we are fine too
     if ((m_cache->getSize() > 0) && (!m_cache->getEntry(0)->getAddress().equals(m_localAddress))) // just one entry ... but isnt ours -> we are fine
         return false;
 
-    //EV << "checkBootstrap: 3" << endl;
-    return true; // we need a bootstrap ..
+    // we need a bootstrap ...
+    return true;
 }
 
 void NewscastBase::doBootstrap(){
-    //EV << "doBootstrap: 1" << endl;
+
+    // check if we can get a peer from the table
     if (m_apTable->getNumActivePeer() == 0) // no active peers in the network?! this shouldnt happen ...
         return;
 
-    //EV << "doBootstrap: 2" << endl;
+    // get a random address
     IPvXAddress addr = m_apTable->getARandPeer();
 
-    //EV << "doBootstrap: 3" << endl;
-    if (addr.equals(m_localAddress) && (m_apTable->getNumActivePeer() == 1)) // we are the only entry :(
+    // if this address is ours and there is only one entry we cant do anything :(
+    if (addr.equals(m_localAddress) && (m_apTable->getNumActivePeer() == 1))
         return;
 
-    //EV << "doBootstrap: 4" << endl;
-    while(addr.equals(m_localAddress))   // loop until we find one that isnt ours ...
+    // getting random addresses until we find one that isnt ours
+    while(addr.equals(m_localAddress))
         addr = m_apTable->getARandPeer();
 
-    //EV << "doBootstrap: 5" << endl;
-    // query the new addr ...
+    // send a cache-exchange-request to the address
     sendCacheExchangeRequest(addr);
-    //EV << "doBootstrap: 6" << endl;
 }
 
 void NewscastBase::doCacheExchange(){
-    // find an address ...
+    // we have no entry in the cache :(
+    if (m_cache->getSize() == 0)
+        return;
+
+    // find a random address from our cache ...
     IPvXAddress addr = m_cache->getRandomEntry()->getAddress();
-    while(addr.equals(m_localAddress))   // loop until we find one that isnt ours ...
+
+    // if this address is ours and there is only one entry we cant do anything :(
+    if (addr.equals(m_localAddress) && (m_cache->getSize() == 1))
+        return;
+
+    // loop until we find one that isnt ours ...
+    while(addr.equals(m_localAddress))
         addr = m_cache->getRandomEntry()->getAddress();
 
     // send a request
@@ -283,12 +279,46 @@ IPvXAddress NewscastBase::getNodeAddress(void)
 
 // end code from CommBase
 
-
+/*
+ * called whenever a cache from a peer has been received
+ */
 void NewscastBase::receivedCache(IPvXAddress from, NewscastCache* cache){
-    NewscastCacheEntry* entry = cache->getEntry(from);
+    AgentList::iterator it;
+    for (it = localAgents.begin(); it != localAgents.end(); it++){
+        (*it)->onCacheReceived(from, cache);
+    }
+}
 
-    if (entry == NULL) return;
+/*
+ * inserts the entries of all local agents in our cache
+ */
+void NewscastBase::updateOwnCache(){
+    if (ownName.size() > 0)
+        m_cache->setEntry(ownName, m_localAddress, simTime(), ownValue);
 
-    ownValue = (ownValue + entry->getValue()) / 2;
-    EV << "estimated number of nodes: " << round(1 / ownValue) << " at " << counter << endl;
+    // query local Agents
+    AgentList::iterator it;
+    for (it = localAgents.begin(); it != localAgents.end(); it++){
+        if ((*it)->getAgentName().size() > 0)
+            m_cache->setEntry((*it)->getAgentName(), m_localAddress, simTime(), (*it)->getOwnData());
+    }
+}
+
+
+/*
+ * adds an agent to this instance
+ */
+void NewscastBase::addAgent(NewscastAgentInterface* agent){
+    removeAgent(agent);
+    localAgents.push_back(agent);
+}
+/*
+ * removes an agent from this instance
+ */
+void NewscastBase::removeAgent(NewscastAgentInterface* agent){
+    AgentList::iterator it;
+    for (it = localAgents.begin(); it != localAgents.end(); it++){
+        if (*it == agent)
+            localAgents.erase(it);
+    }
 }
