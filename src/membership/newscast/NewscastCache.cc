@@ -16,13 +16,13 @@
 #include "NewscastCache.h"
 
 NewscastCache::NewscastCache(int size) : cOwnedObject(){
-    max = size;
+    m_maxEntries = size;
     EV << "NewscastCache-> " << size << endl;
 }
 
 NewscastCache::~NewscastCache(){
     EV << "~NewscastCache()" << endl;
-    while(!currentCache.empty()) delete currentCache.back(), currentCache.pop_back();
+    //while(!currentCache.empty()) delete currentCache.back(), currentCache.pop_back();
     /*NewscastCacheEntry* entry;
     while (currentCache.size() > 0){
         entry = currentCache.at(currentCache.size()-1);
@@ -35,7 +35,7 @@ NewscastCache::~NewscastCache(){
 }
 
 cOwnedObject* NewscastCache::dup() const{
-    NewscastCache* ret = new NewscastCache(max);
+    NewscastCache* ret = new NewscastCache(m_maxEntries);
     CacheSet::iterator it;
     for (it = currentCache.begin(); it != currentCache.end(); it++){
         ret->setEntry( (*it)->getAgent(), (*it)->getAddress(), (*it)->getTimestamp(), (*it)->getValue() );
@@ -44,7 +44,7 @@ cOwnedObject* NewscastCache::dup() const{
     return ret;
 }
 
-void NewscastCache::setEntry(std::string agent, IPvXAddress addr, simtime_t timestamp, cObject* value){
+void NewscastCache::setEntry(std::string agent, IPvXAddress addr, simtime_t timestamp, GossipUserData* value){
     //EV << "[set-entry]my name: " << agent << " value: " << value <<  endl;
     NewscastCacheEntry* entry = findEntryForAgent(agent);
     if (entry == NULL){ // generate new entry
@@ -78,7 +78,7 @@ void NewscastCache::merge(NewscastCache* cache){
         setEntry( (*it)->getAgent(), (*it)->getAddress(), (*it)->getTimestamp(), (*it)->getValue() );
     }
 
-    while (currentCache.size() > max){  // while we have more than max ...
+    while (currentCache.size() > m_maxEntries){  // while we have more than m_maxEntries ...
         int oldest = 0; simtime_t time = currentCache.at(0)->getTimestamp();
 
         // find the oldest one
@@ -118,7 +118,7 @@ void NewscastCache::printCache(){
 }
 
 NewscastCacheEntry* NewscastCache::getRandomEntry(){
-    int aRandomIndex = rand() % currentCache.size();
+    int aRandomIndex = (int)intrand(currentCache.size());//rand() % currentCache.size();
 
     return currentCache.at(aRandomIndex);
 }
@@ -131,13 +131,24 @@ NewscastCacheEntry* NewscastCache::getEntry(IPvXAddress addr){
     return NULL;
 }
 
-long NewscastCache::getEstimatedSize(){
+std::vector<IPvXAddress> NewscastCache::getAllAddresses(){
+    std::vector<IPvXAddress> ret;
+
+    CacheSet::iterator it;
+    for (it = currentCache.begin(); it != currentCache.end(); it++)
+        ret.push_back( (*it)->getAddress());
+
+    return ret;
+}
+
+
+long NewscastCache::getEstimatedSizeInBits(){
 
     long ret = 0;
 
     CacheSet::iterator it;
     for (it = currentCache.begin(); it != currentCache.end(); it++){
-        ret += (*it)->getEstimatedSize();
+        ret += (*it)->getEstimatedSizeInBits();
     }
 
     return ret;

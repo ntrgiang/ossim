@@ -27,6 +27,11 @@
 #include "BufferMap.h"
 #include "GlobalStatistic.h"
 
+// listening support ->
+#include "VideoBufferListener.h"
+// <- listening support
+
+
 typedef struct __STRM_BUF_ELEM {
     __STRM_BUF_ELEM() : m_chunk(NULL) {};
     //MeshVideoChunkPacket *m_chunk;
@@ -141,6 +146,14 @@ private:
 // Debug
 private:
     cOutVector r_index;
+
+    // listening support ->
+private:
+    std::vector<VideoBufferListener*> mListeners;
+public:
+    void addListener(VideoBufferListener* listener);
+    void removeListener(VideoBufferListener* listener);
+    // <- listening support
 };
 
 #endif /* VIDEOBUFFER_H_ */

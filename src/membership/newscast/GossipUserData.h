@@ -13,22 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef GOSSIPPROTOCOL_H_
-#define GOSSIPPROTOCOL_H_
+#ifndef GOSSIPUSERDATA_H_
+#define GOSSIPUSERDATA_H_
 
-#include "IPvXAddress.h"
+#include "cObject.h"
 
-class GossipProtocol {
+class GossipUserData : cObject {
 public:
-    GossipProtocol();
-    virtual ~GossipProtocol();
+    GossipUserData();
+    virtual ~GossipUserData();
 
-    virtual bool joinNetwork(IPvXAddress bootstrap = "0.0.0.0");
-    virtual void leaveNetwork();
+    virtual GossipUserData* dup() const;
 
-    virtual IPvXAddress getRandomPeer();
-    virtual IPvXAddress getRandomPeer(IPvXAddress notThisAddress);
-    virtual std::vector<IPvXAddress> getKnownPeers();
+    virtual long getSizeInBits();
 };
 
-#endif /* GOSSIPPROTOCOL_H_ */
+#endif /* GOSSIPUSERDATA_H_ */

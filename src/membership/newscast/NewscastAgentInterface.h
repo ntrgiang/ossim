@@ -23,7 +23,7 @@ public:
     /*
      * should return the Data to be added to the local cache
      */
-    virtual cObject*    getOwnData();
+    virtual GossipUserData*    getOwnData();
 
     /*
      * this function gets called whenever a cache from another peer has been received

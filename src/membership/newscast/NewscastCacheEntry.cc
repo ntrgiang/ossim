@@ -17,6 +17,7 @@
 
 NewscastCacheEntry::NewscastCacheEntry() {
     // TODO Auto-generated constructor stub
+    EV << "NewscastCacheEntry::NewscastCacheEntry" << endl;
 }
 
 NewscastCacheEntry::~NewscastCacheEntry() {
@@ -25,12 +26,13 @@ NewscastCacheEntry::~NewscastCacheEntry() {
     if (m_value) delete m_value;
 }
 
-long NewscastCacheEntry::getEstimatedSize(){
+long NewscastCacheEntry::getEstimatedSizeInBits(){
     long ret = 0;
 
-    ret = sizeof(m_address) + m_agent.size() + sizeof(m_timestamp) + sizeof(*m_value);
+    ret = (sizeof(m_address) + m_agent.size() + sizeof(m_timestamp))*8;
 
-    //ret = m_agent.size();
+    if (m_value != NULL)
+        ret += m_value->getSizeInBits();
 
     return ret;
 }

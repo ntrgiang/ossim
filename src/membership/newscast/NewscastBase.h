@@ -27,17 +27,36 @@
 #include "NewscastCache.h"
 // Agents
 #include "NewscastAgentInterface.h"
+// Gossip Interface
+#include "GossipProtocolWithUserData.h"
+//stats
+#include "NewscastStatistic.h"
 
 #include "Dispatcher.h"
-class NewscastBase : public cSimpleModule {
+
+
+class NewscastBase : public cSimpleModule, public GossipProtocolWithUserData {
 public:
     NewscastBase();
     virtual ~NewscastBase();
 
     virtual void handleMessage(cMessage* msg);
 
-    // TODO: TEMP
-    int counter;
+    virtual void finish();
+
+public:
+    // Interface: GossipProtocolWithUserData -->
+    virtual void setOwnData(GossipUserData* data);
+    virtual GossipUserData* getPeerData(IPvXAddress addr);
+    // <-- Interface: GossipProtocolWithUserData
+
+    // Interface: GossipProtocol -->
+    bool joinNetwork(IPvXAddress bootstrap = "0.0.0.0");
+    void leaveNetwork();
+    IPvXAddress getRandomPeer();
+    IPvXAddress getRandomPeer(IPvXAddress notThisAddress);
+    std::vector<IPvXAddress> getKnownPeers();
+    // <-- Interface: GossipProtocol
 
 protected:
     // seems like the multiple stages are needed for the ip interface :/
@@ -48,8 +67,9 @@ protected:
     void bindToGlobalModule(void);
     IChurnGenerator *m_churn;
     ActivePeerTable *m_apTable;
-
     Dispatcher *m_dispatcher;
+    NewscastStatistic* m_statistics;
+
     // -- For communicating via UDP
     int m_localPort, m_destPort;
     IPvXAddress m_localAddress;
@@ -61,24 +81,27 @@ protected:
     cMessage* timer_ExchangeCache;
     cMessage* timer_JoinNetwork;
 
+private:
     // local objects
     NewscastCache* m_cache;
-    std::string ownName;    // name of the local agent
-    cObject* ownValue;      // value of the local agent
+    std::string m_ownName;    // name of the local agent
+    GossipUserData* m_ownValue;      // value of the local agent
+    bool m_Active; // indicates if this peer has joined the network
 
     void sendCacheExchangeRequest(IPvXAddress addr);
     void sendCacheExchangeReply(IPvXAddress addr);
     bool checkBootstrapNeeded();
-    void doBootstrap();
+    void doBootstrap(IPvXAddress hint = "0.0.0.0");
     void doCacheExchange();
 
-private:
-
+public:
     //listeners -> "agents"
-    typedef std::list<NewscastAgentInterface*> AgentList;
-    mutable AgentList localAgents;
     void addAgent(NewscastAgentInterface* agent);
     void removeAgent(NewscastAgentInterface* agent);
+private:
+    typedef std::list<NewscastAgentInterface*> AgentList;
+    mutable AgentList localAgents;
+
 
     void sendPacketTo(cPacket* pkt, IPvXAddress addr);
     void handlePacket(cPacket* pkt);

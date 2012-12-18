@@ -13,22 +13,29 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef GOSSIPPROTOCOL_H_
-#define GOSSIPPROTOCOL_H_
+#include <fstream>
+#include <iosfwd>
 
+#include "csimplemodule.h"
 #include "IPvXAddress.h"
 
-class GossipProtocol {
+#ifndef NEWSCASTSTATISTIC_H_
+#define NEWSCASTSTATISTIC_H_
+
+class NewscastStatistic : public cSimpleModule {
 public:
-    GossipProtocol();
-    virtual ~GossipProtocol();
+    NewscastStatistic();
+    virtual ~NewscastStatistic();
 
-    virtual bool joinNetwork(IPvXAddress bootstrap = "0.0.0.0");
-    virtual void leaveNetwork();
+    void writeGotRandomIP(IPvXAddress addr);
 
-    virtual IPvXAddress getRandomPeer();
-    virtual IPvXAddress getRandomPeer(IPvXAddress notThisAddress);
-    virtual std::vector<IPvXAddress> getKnownPeers();
+    void writeCacheConnections(IPvXAddress src, std::vector<IPvXAddress> knownPeers);
+protected:
+    virtual int numInitStages() const { return 5; }
+    virtual void initialize(int stage);
+private:
+    std::ofstream m_outFileRandomIPs;
+    std::ofstream m_outFileConnections;
 };
 
-#endif /* GOSSIPPROTOCOL_H_ */
+#endif /* NEWSCASTSTATISTIC_H_ */

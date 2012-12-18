@@ -13,22 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef GOSSIPPROTOCOL_H_
-#define GOSSIPPROTOCOL_H_
+#ifndef VIDEOBUFFERLISTENER_H_
+#define VIDEOBUFFERLISTENER_H_
 
-#include "IPvXAddress.h"
-
-class GossipProtocol {
+class VideoBufferListener {
 public:
-    GossipProtocol();
-    virtual ~GossipProtocol();
+    VideoBufferListener();
+    virtual ~VideoBufferListener();
 
-    virtual bool joinNetwork(IPvXAddress bootstrap = "0.0.0.0");
-    virtual void leaveNetwork();
-
-    virtual IPvXAddress getRandomPeer();
-    virtual IPvXAddress getRandomPeer(IPvXAddress notThisAddress);
-    virtual std::vector<IPvXAddress> getKnownPeers();
+    virtual void onNewChunk(int sequenceNumber);
 };
 
-#endif /* GOSSIPPROTOCOL_H_ */
+#endif /* VIDEOBUFFERLISTENER_H_ */
