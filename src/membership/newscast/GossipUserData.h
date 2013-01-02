@@ -16,7 +16,7 @@
 #ifndef GOSSIPUSERDATA_H_
 #define GOSSIPUSERDATA_H_
 
-#include "cObject.h"
+#include "cobject.h"
 
 class GossipUserData : cObject {
 public:
