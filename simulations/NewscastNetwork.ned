@@ -7,6 +7,7 @@ import so.global.statistic.GlobalStatistic;
 
 import so.membership.newscast.NewscastPeerNode;
 import so.membership.newscast.NewscastSourceNode;
+import so.membership.newscast.NewscastStatistic;
 
 import inet.nodes.inet.Router;
 import inet.nodes.ethernet.EtherSwitch;
@@ -32,6 +33,7 @@ network Newscast_Homo_oneRouter_Network extends BasicNetwork
             @display("p=306,150");
         }
 
+		NewscastStatistic : NewscastStatistic;
         flatNetworkConfigurator: FlatNetworkConfigurator {
             @display("p=77,29");
             networkAddress = "192.168.0.0";
@@ -235,6 +237,8 @@ network NewscastNetwork extends BasicNetwork
         churnModerator: <churnModel> like IChurnModel {
             @display("p=77,240");
         }
+		
+		NewscastStatistic: NewscastStatistic;
     connections:
         for i=0..numPeers-1 {
             NewscastPeerNode[i].pppg++ <--> ethernetline <--> router.pppg++;

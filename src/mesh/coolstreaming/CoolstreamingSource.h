@@ -13,26 +13,21 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "NewscastCacheEntry.h"
+#include "CoolstreamingBase.h"
 
-NewscastCacheEntry::NewscastCacheEntry() {
-    // TODO Auto-generated constructor stub
-    EV << "NewscastCacheEntry::NewscastCacheEntry" << endl;
-}
+#ifndef COOLSTREAMINGSOURCE_H_
+#define COOLSTREAMINGSOURCE_H_
 
-NewscastCacheEntry::~NewscastCacheEntry() {
-    // TODO Auto-generated destructor stub
-    EV << "GETTING DELETED YAY" << endl;
-    if (m_value) delete m_value;
-}
+class CoolstreamingSource : public CoolstreamingBase{
+public:
+    CoolstreamingSource();
+    virtual ~CoolstreamingSource();
 
-long NewscastCacheEntry::getEstimatedSizeInBits(){
-    long ret = 0;
+protected:
+    virtual int numInitStages() const { return 4; }
+    virtual void initialize(int stage);
 
-    ret = (sizeof(m_address) + m_agent.size() + sizeof(m_timestamp))*8;
+    void checkPartners();
+};
 
-    if (m_value != NULL)
-        ret += m_value->getSizeInBits();
-
-    return ret;
-}
+#endif /* COOLSTREAMINGSOURCE_H_ */

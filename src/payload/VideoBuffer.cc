@@ -190,6 +190,13 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
             throw cException("delta_time is invalid");
     }
 
+// listening support ->
+    std::vector<VideoBufferListener*>::iterator it;
+    for(it = mListeners.begin(); it != mListeners.end(); it++){
+        (*it)->onNewChunk(seq_num);
+    }
+// <- listening support
+
 }
 
 void VideoBuffer::insertPacketDirect(VideoChunkPacket *packet)
@@ -246,6 +253,13 @@ void VideoBuffer::insertPacketDirect(VideoChunkPacket *packet)
 //        else
 //            throw cException("delta_time is invalid");
 //    }
+
+// listening support ->
+    std::vector<VideoBufferListener*>::iterator it;
+    for(it = mListeners.begin(); it != mListeners.end(); it++){
+        (*it)->onNewChunk(seq_num);
+    }
+// <- listening support
 
 }
 
@@ -547,3 +561,19 @@ int VideoBuffer::getNumberActiveElement(void)
 //    EV << "Number of chunks in the video buffer: " << count << endl;
 //    return count;
 //}
+
+
+
+
+// listening support ->
+void VideoBuffer::addListener(VideoBufferListener* listener){
+    mListeners.push_back(listener);
+}
+void VideoBuffer::removeListener(VideoBufferListener* listener){
+    std::vector<VideoBufferListener*>::iterator it;
+    for(it = mListeners.begin(); it != mListeners.end(); it++){
+        if ( (*it) == listener )
+            mListeners.erase(it);
+    }
+}
+// <- listening support

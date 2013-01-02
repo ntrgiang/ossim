@@ -22,6 +22,9 @@ simple NewscastBase
 
 		// NEWSCAST protocol parameter
         int cacheSize = default(10); 
+        
+        // intervall for cache exchanges
+        double exchangeCacheIntervall @unit(s) = default(5.0s);
  
     gates:
         // -- Gates to the Dispatcher module

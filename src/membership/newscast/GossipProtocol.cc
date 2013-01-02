@@ -3,36 +3,40 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
-#include "NewscastCacheEntry.h"
+#include "GossipProtocol.h"
 
-NewscastCacheEntry::NewscastCacheEntry() {
-    // TODO Auto-generated constructor stub
-    EV << "NewscastCacheEntry::NewscastCacheEntry" << endl;
+GossipProtocol ::GossipProtocol(){
+
+}
+GossipProtocol::~GossipProtocol(){
+
 }
 
-NewscastCacheEntry::~NewscastCacheEntry() {
-    // TODO Auto-generated destructor stub
-    EV << "GETTING DELETED YAY" << endl;
-    if (m_value) delete m_value;
+bool GossipProtocol::joinNetwork(IPvXAddress bootstrap){
+    return false;
+}
+void GossipProtocol::leaveNetwork(){
+
 }
 
-long NewscastCacheEntry::getEstimatedSizeInBits(){
-    long ret = 0;
+IPvXAddress GossipProtocol::getRandomPeer(){
+    return NULL;
+}
+IPvXAddress GossipProtocol::getRandomPeer(IPvXAddress notThisAddress){
+    return NULL;
+}
 
-    ret = (sizeof(m_address) + m_agent.size() + sizeof(m_timestamp))*8;
-
-    if (m_value != NULL)
-        ret += m_value->getSizeInBits();
-
-    return ret;
+std::vector<IPvXAddress> GossipProtocol::getKnownPeers(){
+    std::vector<IPvXAddress> nul;
+    return nul;
 }

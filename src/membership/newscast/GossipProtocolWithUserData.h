@@ -13,26 +13,28 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "NewscastCacheEntry.h"
+#ifndef GOSSIPPROTOCOLWITHUSERDATA_H_
+#define GOSSIPPROTOCOLWITHUSERDATA_H_
 
-NewscastCacheEntry::NewscastCacheEntry() {
-    // TODO Auto-generated constructor stub
-    EV << "NewscastCacheEntry::NewscastCacheEntry" << endl;
-}
+#include "GossipProtocol.h"
+#include "GossipUserData.h"
 
-NewscastCacheEntry::~NewscastCacheEntry() {
-    // TODO Auto-generated destructor stub
-    EV << "GETTING DELETED YAY" << endl;
-    if (m_value) delete m_value;
-}
+class GossipProtocolWithUserData : public GossipProtocol {
+public:
+    GossipProtocolWithUserData();
+    virtual ~GossipProtocolWithUserData();
 
-long NewscastCacheEntry::getEstimatedSizeInBits(){
-    long ret = 0;
 
-    ret = (sizeof(m_address) + m_agent.size() + sizeof(m_timestamp))*8;
+    /*
+     * sets the data which should be send to other peers
+     */
+    virtual void setOwnData(GossipUserData* data);
 
-    if (m_value != NULL)
-        ret += m_value->getSizeInBits();
+    /*
+     * should return the known data of the peer
+     * or NULL if unknown
+     */
+    virtual GossipUserData* getPeerData(IPvXAddress addr);
+};
 
-    return ret;
-}
+#endif /* GOSSIPPROTOCOLWITHUSERDATA_H_ */

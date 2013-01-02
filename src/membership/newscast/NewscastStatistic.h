@@ -13,26 +13,29 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "NewscastCacheEntry.h"
+#include <fstream>
+#include <iosfwd>
 
-NewscastCacheEntry::NewscastCacheEntry() {
-    // TODO Auto-generated constructor stub
-    EV << "NewscastCacheEntry::NewscastCacheEntry" << endl;
-}
+#include "csimplemodule.h"
+#include "IPvXAddress.h"
 
-NewscastCacheEntry::~NewscastCacheEntry() {
-    // TODO Auto-generated destructor stub
-    EV << "GETTING DELETED YAY" << endl;
-    if (m_value) delete m_value;
-}
+#ifndef NEWSCASTSTATISTIC_H_
+#define NEWSCASTSTATISTIC_H_
 
-long NewscastCacheEntry::getEstimatedSizeInBits(){
-    long ret = 0;
+class NewscastStatistic : public cSimpleModule {
+public:
+    NewscastStatistic();
+    virtual ~NewscastStatistic();
 
-    ret = (sizeof(m_address) + m_agent.size() + sizeof(m_timestamp))*8;
+    void writeGotRandomIP(IPvXAddress addr);
 
-    if (m_value != NULL)
-        ret += m_value->getSizeInBits();
+    void writeCacheConnections(IPvXAddress src, std::vector<IPvXAddress> knownPeers);
+protected:
+    virtual int numInitStages() const { return 5; }
+    virtual void initialize(int stage);
+private:
+    std::ofstream m_outFileRandomIPs;
+    std::ofstream m_outFileConnections;
+};
 
-    return ret;
-}
+#endif /* NEWSCASTSTATISTIC_H_ */

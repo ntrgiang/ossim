@@ -13,26 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "NewscastCacheEntry.h"
+#ifndef VIDEOBUFFERLISTENER_H_
+#define VIDEOBUFFERLISTENER_H_
 
-NewscastCacheEntry::NewscastCacheEntry() {
-    // TODO Auto-generated constructor stub
-    EV << "NewscastCacheEntry::NewscastCacheEntry" << endl;
-}
+class VideoBufferListener {
+public:
+    VideoBufferListener();
+    virtual ~VideoBufferListener();
 
-NewscastCacheEntry::~NewscastCacheEntry() {
-    // TODO Auto-generated destructor stub
-    EV << "GETTING DELETED YAY" << endl;
-    if (m_value) delete m_value;
-}
+    virtual void onNewChunk(int sequenceNumber);
+};
 
-long NewscastCacheEntry::getEstimatedSizeInBits(){
-    long ret = 0;
-
-    ret = (sizeof(m_address) + m_agent.size() + sizeof(m_timestamp))*8;
-
-    if (m_value != NULL)
-        ret += m_value->getSizeInBits();
-
-    return ret;
-}
+#endif /* VIDEOBUFFERLISTENER_H_ */

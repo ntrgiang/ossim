@@ -2,7 +2,7 @@
 package so.membership.scamp;
 
 //import inet.applications.udpapp.UDPBasicApp;
-import so.membership.scamp;
+import so.membership.scamp.*;
 import so.common.Dispatcher;
 
 

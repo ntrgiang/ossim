@@ -13,26 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "NewscastCacheEntry.h"
+#ifndef GOSSIPUSERDATA_H_
+#define GOSSIPUSERDATA_H_
 
-NewscastCacheEntry::NewscastCacheEntry() {
-    // TODO Auto-generated constructor stub
-    EV << "NewscastCacheEntry::NewscastCacheEntry" << endl;
-}
+#include "cObject.h"
 
-NewscastCacheEntry::~NewscastCacheEntry() {
-    // TODO Auto-generated destructor stub
-    EV << "GETTING DELETED YAY" << endl;
-    if (m_value) delete m_value;
-}
+class GossipUserData : cObject {
+public:
+    GossipUserData();
+    virtual ~GossipUserData();
 
-long NewscastCacheEntry::getEstimatedSizeInBits(){
-    long ret = 0;
+    virtual GossipUserData* dup() const;
 
-    ret = (sizeof(m_address) + m_agent.size() + sizeof(m_timestamp))*8;
+    virtual long getSizeInBits();
+};
 
-    if (m_value != NULL)
-        ret += m_value->getSizeInBits();
-
-    return ret;
-}
+#endif /* GOSSIPUSERDATA_H_ */

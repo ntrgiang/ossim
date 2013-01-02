@@ -13,26 +13,32 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "NewscastCacheEntry.h"
+#include "CoolstreamingSource.h"
 
-NewscastCacheEntry::NewscastCacheEntry() {
+Define_Module(CoolstreamingSource);
+
+CoolstreamingSource::CoolstreamingSource() {
     // TODO Auto-generated constructor stub
-    EV << "NewscastCacheEntry::NewscastCacheEntry" << endl;
+
 }
 
-NewscastCacheEntry::~NewscastCacheEntry() {
+CoolstreamingSource::~CoolstreamingSource() {
     // TODO Auto-generated destructor stub
-    EV << "GETTING DELETED YAY" << endl;
-    if (m_value) delete m_value;
 }
 
-long NewscastCacheEntry::getEstimatedSizeInBits(){
-    long ret = 0;
+void CoolstreamingSource::initialize(int stage){
+    if (stage != 3)
+        return;
 
-    ret = (sizeof(m_address) + m_agent.size() + sizeof(m_timestamp))*8;
+    initBase();
 
-    if (m_value != NULL)
-        ret += m_value->getSizeInBits();
+    timer_sendBufferMap = new cMessage("COOLSTREAMING_SOURCE_TIMER_SEND_BUFFERMAP");
+    scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
+}
 
-    return ret;
+
+void CoolstreamingSource::checkPartners(){
+    removeTimeoutedPartners();
+
+    scheduleAt(simTime() + param_CheckPartnersIntervall, timer_CheckPartners);
 }
