@@ -20,8 +20,8 @@ simple GlobalStatistic
         @statistic[Rebuffering](source=Signal_Rebuffering; record=count);
         @statistic[Stall](source=Signal_Stall; record=count);
         
-        //@statistic[CI](source="count(Signal_ChunkHit)/(count(Signal_ChunkHit)+count(Signal_ChunkMiss))"; record=last);
-        @statistic[CI](source="count(Signal_ChunkHit)/count(Signal_ChunkNeed)"; record=last);
+        //@statistic[CI](source="count(Signal_ChunkHit)/(count(Signal_ChunkHit)+count(Signal_ChunkMiss))"; record=last,vector);
+        @statistic[CI](source="count(Signal_ChunkHit)/count(Signal_ChunkNeed)"; record=last,vector);
         
         // -- Join time
         @statistic[MeshJoin](source=Signal_MeshJoin; record=vector);
