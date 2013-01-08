@@ -1,6 +1,9 @@
+# ----------------- UNSET-------------
+unset log
+
 set xlabel "Time"
 set ylabel "Continuity Index"
-set xrange [0:120]
+set xrange [10:600]
 set yrange [0.5:1.6]
 #set key 3,0.97
 #set key box
@@ -8,7 +11,13 @@ set yrange [0.5:1.6]
 
 set grid
 
+#set log xy
+
+#################### Plot #######################
 plot "../results/CI/Donet_Homo_oneRouter_Network-0-file0.vec" using 1:2 title '30 nodes'
+
+
+
 
 #plot "../Donet_Homo_oneRouter_Network-0-file0.vec" using 1:2 title '30 nodes',\
 #"ci.data" using 1:3 title '5000 nodes'
