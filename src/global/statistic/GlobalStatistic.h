@@ -44,9 +44,11 @@ public:
 //    virtual void receiveSignal(cComponent *src, simsignal_t id, long l) ;
 //    virtual void receiveSignal(cComponent *src, simsignal_t id, cObject* obj)
 
+private:
+    void handleTimerMessage(cMessage *msg);
+
 // -- Real interfaces
 public:
-
     void writeActivePeerTable2File(vector<IPvXAddress>);
     void writePartnerList2File(IPvXAddress node, vector<IPvXAddress> pList);
     void writePartnership2File(IPvXAddress local, IPvXAddress remote);
@@ -97,6 +99,7 @@ public:
     void reportRebuffering(const SEQUENCE_NUMBER_T &seq_num);
     void reportRebuffering();
     void reportStall();
+    void reportCI(void);
 
     void reportRequestedChunk(const SEQUENCE_NUMBER_T &seq_num);
     void reportDuplicatedChunk(const SEQUENCE_NUMBER_T &seq_num);
@@ -110,6 +113,12 @@ public:
 
 private:
     NotificationBoard *nb; // cached pointer
+
+    // -- Parameters
+    double param_interval_reportCI;
+
+    // -- Messages
+    cMessage *timer_reportCI;
 
     cOutVector m_joinTime;
 
@@ -130,6 +139,11 @@ private:
     // -- Calculate the the "reach ratio"
     long m_countReach;
 
+    // -- Temporary variables
+    long m_count_chunkHit;
+    long m_count_chunkMiss;
+    long m_count_allChunk;
+
     // -- Signals
     simsignal_t sig_dummy_chunkHit;
 
@@ -140,6 +154,7 @@ private:
     simsignal_t sig_chunkSeek;
     simsignal_t sig_rebuffering;
     simsignal_t sig_stall;
+    simsignal_t sig_ci;
 
     simsignal_t sig_meshJoin;
 

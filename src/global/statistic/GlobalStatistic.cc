@@ -26,6 +26,11 @@ GlobalStatistic::GlobalStatistic() {
 
 GlobalStatistic::~GlobalStatistic() {
     // TODO Auto-generated destructor stub
+    if (timer_reportCI)
+    {
+       delete cancelEvent(timer_reportCI);
+       timer_reportCI       = NULL;
+    }
 }
 
 //void GlobalStatistic::initialize()
@@ -49,10 +54,19 @@ void GlobalStatistic::initialize(int stage)
         sig_chunkSeek       = registerSignal("Signal_ChunkSeek");
         sig_rebuffering     = registerSignal("Signal_Rebuffering");
         sig_stall           = registerSignal("Signal_Stall");
+        sig_ci              = registerSignal("Signal_CI");
 
         sig_meshJoin    = registerSignal("Signal_MeshJoin");
         sig_nPartner    = registerSignal("Signal_NumberOfPartner");
         sig_nJoin       = registerSignal("Signal_nJoin");
+
+        timer_reportCI = new cMessage("GLOBAL_STATISTIC_REPORT_CI");
+
+        param_interval_reportCI = par("interval_reportCI").doubleValue();
+
+        m_count_allChunk = 0L;
+        m_count_chunkHit = 0L;
+        m_count_chunkMiss = 0L;
 
 //        std::vector<cIListener*> localListener;
 //        localListener = getLocalSignalListeners(sig_dummy_chunkHit);
@@ -77,6 +91,8 @@ void GlobalStatistic::initialize(int stage)
 
     m_outFile.open(par("gstatLog").stringValue(), fstream::out);
     m_outFile << "test" << endl;
+
+    scheduleAt(simTime() + param_interval_reportCI, timer_reportCI);
 
 //    cNumericResultRecorder *listener = new cNumericResultRecorder;
 //    simulation.getSystemModule()->subscribe("chunkHit_Global", listener);
@@ -113,12 +129,22 @@ void GlobalStatistic::initialize(int stage)
 
     m_countReach = 0L;
 
+
+
     WATCH(m_outFile);
 }
 
-void GlobalStatistic::handleMessage(cMessage *)
+void GlobalStatistic::handleMessage(cMessage *msg)
 {
-    EV << "ActivePeerTable doesn't process messages!" << endl;
+    //EV << "ActivePeerTable doesn't process messages!" << endl;
+    if (msg->isSelfMessage())
+    {
+        handleTimerMessage(msg);
+    }
+    else
+    {
+        throw cException("ActivePeerTable doesn't process messages!");
+    }
 }
 
 void GlobalStatistic::receiveChangeNotification(int category, const cPolymorphic *details)
@@ -171,8 +197,16 @@ void GlobalStatistic::finish()
     recordScalar("Reach Ratio", (double)m_countReach / m_countAppMsgNew);
 }
 
-// ----------------- Interface in effect -------------------------
+void GlobalStatistic::handleTimerMessage(cMessage *msg)
+{
+    if (msg == timer_reportCI)
+    {
+        reportCI();
+        scheduleAt(simTime() + param_interval_reportCI, timer_reportCI);
+    }
+}
 
+// ----------------- Interface in effect -------------------------
 void GlobalStatistic::writeActivePeerTable2File(vector<IPvXAddress> activePeerList)
 {
     m_outFile << "List of active peers" << endl;
@@ -342,18 +376,23 @@ void GlobalStatistic::collectAllPVsizes(int size)
 void GlobalStatistic::reportChunkHit(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_chunkHit, seq_num);
+    ++m_count_chunkHit;
+    ++m_count_allChunk;
 }
 
 void GlobalStatistic::reportChunkMiss(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_chunkMiss, seq_num);
-    //emit(sig_chunkNeed, seq_num);
+    emit(sig_chunkNeed, seq_num);
+    ++m_count_chunkMiss;
+    ++m_count_allChunk;
 }
 
 void GlobalStatistic::reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_chunkSeek, seq_num);
     emit(sig_chunkNeed, seq_num);
+//    ++m_count_allChunk;
 }
 
 void GlobalStatistic::reportRequestedChunk(const SEQUENCE_NUMBER_T &seq_num)
@@ -393,6 +432,18 @@ void GlobalStatistic::reportStall()
     emit(sig_stall, 1);
 }
 
+void GlobalStatistic::reportCI(void)
+{
+   if (m_count_allChunk)
+   {
+      emit(sig_ci, (long double)m_count_chunkHit/m_count_allChunk);
+   }
+   else
+   {
+      emit(sig_ci, 0.0);
+   }
+
+}
 
 void GlobalStatistic::reportMeshJoin()
 {

@@ -7,6 +7,7 @@ simple GlobalStatistic
    parameters:
 
       string gstatLog = default("..//results//gstatlog.txt");
+      double interval_reportCI @unit(s) = default(0.5s);
 
       // --- Signals
         @signal[Signal_ChunkHit](type="long");
@@ -21,8 +22,14 @@ simple GlobalStatistic
         @statistic[Stall](source=Signal_Stall; record=count);
         
         //@statistic[CI](source="count(Signal_ChunkHit)/(count(Signal_ChunkHit)+count(Signal_ChunkMiss))"; record=last,vector);
-        @statistic[CI](source="count(Signal_ChunkHit)/count(Signal_ChunkNeed)"; record=last,vector);
-        
+        //@statistic[CI](source="count(Signal_ChunkHit)/count(Signal_ChunkNeed)"; record=last,vector);
+
+        // works
+        //@statistic[CI](source="count(Signal_ChunkHit)/count(Signal_ChunkSeek)"; record=last,vector);
+
+        // new stat - periodically
+        @statistic[CI](source="Signal_CI"; record=last,vector);
+
         // -- Join time
         @statistic[MeshJoin](source=Signal_MeshJoin; record=vector);
         
