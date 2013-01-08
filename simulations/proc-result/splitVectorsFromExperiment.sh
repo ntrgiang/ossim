@@ -52,8 +52,10 @@ echo "############"
 
 for file in $REPLICA_FILES;
 do
-#scavetool vector -p "name(\"$VECTOR_NAME\")" -O output.out -F splitvec -V $file
-		scavetool vector -p "name(\"$VECTOR_NAME\")" -O "$DIR_NAME/$EXPERIMENT-$REPLICA_ID-file" -F splitvec -V $file
+   export REPLICA_ID=`echo $file | cut -d- -f 2 | cut -d. -f 1`
+
+   #scavetool vector -p "name(\"$VECTOR_NAME\")" -O output.out -F splitvec -V $file
+   scavetool vector -p "name(\"$VECTOR_NAME\")" -O "$DIR_NAME/$EXPERIMENT-$REPLICA_ID-file" -F splitvec -V $file
 done
 
 ##################################################################
