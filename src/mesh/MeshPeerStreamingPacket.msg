@@ -17,6 +17,7 @@ enum MeshPeerStreamingPacketType
     MESH_PARTNERSHIP_ACCEPT     = 11;
     MESH_PARTNERSHIP_REJECT     = 12;
     //MESH_PARTNERSHIP_ACCEPT_ACK = 13;
+    MESH_PARTNERSHIP_LEAVE      = 13;
 }
 
 packet MeshPeerStreamingPacket extends PeerStreamingPacket
@@ -47,6 +48,12 @@ packet MeshPartnershipRejectPacket extends MeshPeerStreamingPacket
 //    packetType = MESH_PARTNERSHIP_ACCEPT_ACK;
 //}
 
+packet MeshPartnershipLeavePacket extends MeshPeerStreamingPacket
+{
+    packetType = MESH_PARTNERSHIP_LEAVE;
+}
+
+
 packet MeshBufferMapPacket extends MeshPeerStreamingPacket
 {
     packetType = MESH_BUFFER_MAP;
@@ -70,6 +77,8 @@ packet MeshChunkRequestPacket extends MeshPeerStreamingPacket
     
     bool requestMap[];
 }
+
+
 
 //packet MeshVideoChunkPacket extends MeshPeerStreamingPacket
 //{
