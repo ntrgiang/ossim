@@ -43,6 +43,11 @@ void ActivePeerTable::initialize(int stage)
             cModule *temp = simulation.getModuleByPath("globalStatistic");
             m_gstat = check_and_cast<GlobalStatistic *>(temp);
             EV << "Binding to globalStatistic is completed successfully" << endl;
+
+            // The message used for reporting the size of the APT periodically
+            timer_reportSize = new cMessage("GLOBAL_ACTIVE_PEER_TABLE_SIZE");
+            param_interval_reportSize = par("interval_reportSize").doubleValue();
+            scheduleAt(simTime() + param_interval_reportSize, timer_reportSize);
         }
 
     //WATCH(m_activePeerList.size());
@@ -80,10 +85,32 @@ vector<IPvXAddress> ActivePeerTable::getListActivePeer()
 /**
  * Raises an error.
  */
-void ActivePeerTable::handleMessage(cMessage *)
+void ActivePeerTable::handleMessage(cMessage *msg)
 {
-    throw cException("ActivePeerTable doesn't process messages!");
+   //throw cException("ActivePeerTable doesn't process messages!");
+   if (msg->isSelfMessage())
+   {
+      handleTimerMessage(msg);
+   }
+   else
+   {
+      throw cException("ActivePeerTable doesn't process external messages!");
+   }
+
+
+
 }
+
+void ActivePeerTable::handleTimerMessage(cMessage *msg)
+{
+    if (msg == timer_reportSize)
+    {
+        emit(sig_size, m_activePeerList.size());
+        scheduleAt(simTime() + param_interval_reportSize, timer_reportSize);
+    }
+}
+
+
 
 /**
  * Called by the NotificationBoard whenever a change of a category
@@ -201,7 +228,8 @@ void ActivePeerTable::addPeerAddress(const IPvXAddress &address, int maxNOP)
 
     m_activePeerList.insert(pair<IPvXAddress, Struct_ActivePeerInfo>(address, info));
 //    m_activePeerList[address] = info;
-    emit(sig_size, m_activePeerList.size());
+//    emit(sig_size, m_activePeerList.size());
+//   emit(sig_size, 1);
 }
 
 /*

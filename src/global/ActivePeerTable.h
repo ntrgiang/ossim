@@ -83,6 +83,9 @@ public:
 
     vector<IPvXAddress> getListActivePeer(void);
 //    virtual std::vector<IPAddress> gatherPeerAddresses() const;
+
+   void handleTimerMessage(cMessage *msg);
+
     //@}
 
 protected:
@@ -110,6 +113,12 @@ protected:
 
     // -- Signal
     simsignal_t sig_size;
+
+    // -- Parameters
+    double param_interval_reportSize;
+
+    // Timer
+    cMessage *timer_reportSize;
 
 };
 
