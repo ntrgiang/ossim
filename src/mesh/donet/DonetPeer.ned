@@ -44,20 +44,20 @@ simple DonetPeer extends DonetBase
         
         // -- Possible signals to collect
         @signal[Signal_chunkRequest](type=long);
-        @statistic[chunkRequest](title="Sequence Number of chunk requests"; source=Signal_chunkRequest; record=count, vector);
+        //@statistic[chunkRequest](title="Sequence Number of chunk requests"; source=Signal_chunkRequest; record=count, vector);
 
         @signal[Signal_nNewChunkForRequestPerCycle](type=long);    
-        @statistic[newChunkForRequest](title="Number of new chunk for scheduling per cycle"; source=Signal_nNewChunkForRequestPerCycle; record=vector);
+        //@statistic[newChunkForRequest](title="Number of new chunk for scheduling per cycle"; source=Signal_nNewChunkForRequestPerCycle; record=vector);
         
         @signal[Signal_nPartner](type=integer);    
-        @statistic[nPartner](title="Number of partners"; source=Signal_nPartner; record=last,vector);            
+        //@statistic[nPartner](title="Number of partners"; source=Signal_nPartner; record=last,vector);            
 
         // -- Trying new signals
-        @statistic[joinTime](title="Joining time of a individual peer"; source=Signal_joinTime; record=last,vector?);            
+        //@statistic[joinTime](title="Joining time of a individual peer"; source=Signal_joinTime; record=last,vector?);            
         
-        @statistic[playerStartTime](title="Start time of player"; source=Signal_playerStartTime; record=last,vector?);            
+        //@statistic[playerStartTime](title="Start time of player"; source=Signal_playerStartTime; record=last,vector?);            
         
-        @statistic[pRejectReceived](title="Partnership reject received"; source=Signal_pRejectReceived; record=count,last,vector);
+        //@statistic[pRejectReceived](title="Partnership reject received"; source=Signal_pRejectReceived; record=count,last,vector);
 
       @statistic[NumberOfJoin](title="Number of Joins"; source=Signal_Join; record=count,vector);
 
