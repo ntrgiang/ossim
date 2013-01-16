@@ -2,11 +2,13 @@
 # Current directory should be at .../projectName/simulations/run-scripts/
 # This script uses relative path
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 4 ]; then
    echo "Wrong format! Should be:"
-   echo "so-sim.sh <n_measurement> <n_iteration>"
+   echo "so-sim.sh <n_measurement> <n_iteration> <measurement_index> <iteration_index>"
    echo "\t- n_measurement: Number of different values of the parameter"
    echo "\t- n_iteration:   Number of iterations for each measurement"
+   echo "\t- measurement_index: Current index of the Measurement number (starting from 0)"
+   echo "\t- iteration_index: Current index of the Interation (starting from 0)"
    exit
 fi
 
@@ -38,44 +40,22 @@ CONFIG_FILE=DonetNetworkConfig.ini
 #LAST_INDEX=$((N_RUN-1))
 
 # Deviding the whole simulation into smaller "chunks"
-N_MEASUREMENT=$1
+N_MEASUREMENT=$1 # This parameter is not really neccessary in this script
 N_ITERATION=$2
 
-INDEX_LOW=$((N_ITERATION*(N_MEASUREMENT-1)))
-INDEX_HIGH=$((N_ITERATION*N_MEASUREMENT-1))
+INDEX_I=$3
+INDEX_J=$4
+
+RUN_INDEX=$((N_ITERATION*INDEX_I+INDEX_J))
+
+#INDEX_LOW=$((N_ITERATION*(N_MEASUREMENT-1)))
+#INDEX_HIGH=$((N_ITERATION*N_MEASUREMENT-1))
 
 opp_runall -j1 \
 	  $EXEC_FILE -u Cmdenv \
-     -r $INDEX_LOW..$INDEX_HIGH \
+     -r $RUN_INDEX..$RUN_INDEX \
 	  -c $NETWORK $EXEC_SIM_PATH/$CONFIG_FILE \
 	  -n $EXEC_SIM_PATH:$EXEC_SRC_PATH:$INET_SRC_PATH \
 	  -l $INET_SRC_PATH/inet 
 
-
-
-
-
-
-
-
-
-
-#--------------------- Post-processing ----------------------
-
-#RESULT_PATH=$EXEC_SIM_PATH/results
-#NEW_FOLDER="SCAMP_VALIDATION_PARTIALVIEW"
-#mkdir $RESULT_PATH/$NEW_FOLDER
-#for (( i=0; i<=LAST_INDEX; i++ ))
-#for i in {0..LAST_INDEX}
-#for i in `seq 0 $LAST_INDEX`
-#do
-#  cp $RESULT_PATH/$NETWORK-$i.* $RESULT_PATH/$NEW_FOLDER
-#done
-
-# ----------------
-# Execute R script
-# ----------------
-#R_SCRIPT_FOLDER=$SCAMP_PATH/r-script
-
-#Rscript $R_SCRIPT_FOLDER/draw-histogram.R
 
