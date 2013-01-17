@@ -17,7 +17,7 @@ simple GlobalStatistic
         // --- Statistics
         @statistic[ChunkHit](source=Signal_ChunkHit; record=count);
         @statistic[ChunkMiss](source=Signal_ChunkMiss; record=count);
-        @statistic[ChunkSeek](source=Signal_ChunkSeek; record=count);
+        @statistic[ChunkSeek](title="Chunk Seek"; source=Signal_ChunkSeek; record=count);
         @statistic[Rebuffering](source=Signal_Rebuffering; record=count);
         @statistic[Stall](source=Signal_Stall; record=count);
         
