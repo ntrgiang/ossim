@@ -27,4 +27,5 @@ so.files.backup
 so.includes.backup
 src/Makefile.copy
 src/so
-
+src/mesh/MeshPeerStreamingPacket_m.cc
+src/mesh/MeshPeerStreamingPacket_m.h
