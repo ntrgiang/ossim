@@ -72,6 +72,7 @@ bucketlist = []
 matchedScalars = []
 
 yscalarFound = True;
+#yscalarFound = False;
 
 # open all files
 for infilename in args[2:]:
@@ -126,12 +127,13 @@ for infilename in args[2:]:
 
         elif xvarFound:
             # header parsing finished, search for the appropriate scalar
-            splitline = line.split(" ", 1)
+            splitline = line.split(" ", 1) # Split ONCE using the space -- Giang
             if splitline[0] != "scalar":
                 continue
-            splitline = splitline[1].split("\t")
+            splitline = splitline[1].split("\t") # split the second string again, using TAB -- Giang
             # if y scalar regexp matches the line
-            yParMatch = yParRegex.match(splitline[1])
+            #yParMatch = yParRegex.match(splitline[1].strip())
+            yParMatch = re.match(splitline[1].strip(), args[1].strip())
             if yParMatch:
                 yscalarFound = True
                 if yParMatch.group(0) not in matchedScalars:
@@ -151,7 +153,7 @@ for infilename in args[2:]:
 
 print "Using the following scalars for the plot:"
 for matchedScalar in matchedScalars:
-    print matchedScalar
+    print matchedScalar + "."
 
 # Prepare plot
 fig = plt.figure()
@@ -188,7 +190,8 @@ for run in sorted(valuemap.keys()):
         bucketmean = bucketarray.mean()
         # determine coinfidence interval if desired
         if options.ci > 0:
-            bucketci = stats.stderr(bucketarray) * stats.t._ppf((1+options.ci)/2., len(bucketarray)) * options.scale
+            #bucketci = stats.stderr(bucketarray) * stats.t._ppf((1+options.ci)/2., len(bucketarray)) * options.scale
+            bucketci = stats.sem(bucketarray) * stats.t._ppf((1+options.ci)/2., len(bucketarray)) * options.scale
             ci[bucket] = bucketci
         bucketmean = bucketmean*options.scale + options.offset
         row[bucket] = bucketmean
