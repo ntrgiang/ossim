@@ -214,3 +214,8 @@ src/membership/newscast/NewscastBase.cc
 src/membership/newscast/GossipUserData.cc
 src/membership/newscast/GossipProtocolWithUserData.cc
 src/membership/newscast/GossipProtocol.cc
+simulations/NewscastNetwork.ned
+simulations/NewscastNetwork.ini
+simulations/include/seed.ini
+simulations/include/membership.ini
+simulations/include/churn.ini
