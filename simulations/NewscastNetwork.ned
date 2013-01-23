@@ -239,6 +239,10 @@ network NewscastNetwork extends BasicNetwork
         }
 		
 		NewscastStatistic: NewscastStatistic;
+
+        globalStatistic: GlobalStatistic {
+            @display("p=77,248;i=device/disk");
+        }
     connections:
         for i=0..numPeers-1 {
             NewscastPeerNode[i].pppg++ <--> ethernetline <--> router.pppg++;
