@@ -218,8 +218,11 @@ void Player::handleTimerMessage(cMessage *msg)
                     emit(sig_chunkSeek, m_id_nextChunk);
                     m_stat->reportChunkMiss(m_id_nextChunk);
                     m_stat->reportChunkSeek(m_id_nextChunk);
+
+                    // on-going stuff
+                    m_stat->reportSkipChunk();
                 }
-                else
+                else // Cannot skip any more chunk
                 {
                     // -- Reset the counter for skips
                     m_skip = 0;
@@ -230,6 +233,9 @@ void Player::handleTimerMessage(cMessage *msg)
                     // -- Statistics collection
                     emit(sig_stall, 1);
                     m_stat->reportStall();
+
+                    // -- on-going stuff
+                    m_stat->reportStallDuration();
                 }
                 break;
             }
@@ -239,8 +245,11 @@ void Player::handleTimerMessage(cMessage *msg)
                 {
                     scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
                     // -- State remains
+
+                    // -- on-going stuff
+                    m_stat->reportStallDuration();
                 }
-                else
+                else // Cannot stall the video any more
                 {
 
                     //scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
@@ -250,6 +259,9 @@ void Player::handleTimerMessage(cMessage *msg)
 
                     // -- Statistics collection
                     emit(sig_rebuffering, 1);
+                    m_stat->reportRebuffering();
+
+                    // -- on-going stuff
                     m_stat->reportRebuffering();
                 }
                 break;
