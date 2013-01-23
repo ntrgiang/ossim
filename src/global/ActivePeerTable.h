@@ -28,6 +28,8 @@
 
 using namespace std;
 
+class GlobalStatistic;
+
 class ActivePeerTable: public cSimpleModule, protected INotifiable
 {
 protected:
