@@ -27,9 +27,6 @@ simple GlobalStatistic
         // works
         //@statistic[CI](source="count(Signal_ChunkHit)/count(Signal_ChunkSeek)"; record=last,vector);
 
-        // new stat - periodically
-        @statistic[CI](source="Signal_CI"; record=last,vector);
-
         // -- Join time
         @statistic[MeshJoin](source=Signal_MeshJoin; record=vector);
         
@@ -43,7 +40,19 @@ simple GlobalStatistic
         @statistic[inrangeChunk](source=Signal_InrangeChunk; record=count);
         @statistic[duplicatedChunk](source=Signal_DuplicatedChunk; record=count);
 
-      @statistic[newCI](source="count(Signal_InrangeChunk)/count(Signal_ReceivedChunk)"; record=last);
-//@statistic[newCI](source="count(Signal_InrangeChunk)/(count(Signal_ReceivedChunk)-count(Signal_DuplicatedChunk))"; record=last);
+      //@statistic[newCI](source="count(Signal_InrangeChunk)/count(Signal_ReceivedChunk)"; record=last);
+      //@statistic[newCI](source="count(Signal_InrangeChunk)/(count(Signal_ReceivedChunk)-count(Signal_DuplicatedChunk))"; record=last);
+
+
+        // -------------------------- Starting from here -----------------------
+        // new stat - periodically
+        @statistic[CI](source="Signal_CI"; record=last,vector);
+
+        @statistic[SkipChunk](source="Signal_SkipChunk"; record=last,vector);
+
+        @statistic[StallDuration](source="Signal_StallDuration"; record=last,vector);
+
+        @statistic[Rebuffering](source="Signal_Rebuffering"; record=last,vector);
+
 
 }

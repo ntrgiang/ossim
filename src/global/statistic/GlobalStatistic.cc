@@ -51,10 +51,13 @@ void GlobalStatistic::initialize(int stage)
         sig_inrangeChunk        = registerSignal("Signal_InrangeChunk");
         sig_duplicatedChunk     = registerSignal("Signal_DuplicatedChunk");
 
+        sig_skipChunk         = registerSignal("Signal_SkipChunk");
+        sig_rebuffering       = registerSignal("Signal_Rebuffering");
+        sig_stallDuration     = registerSignal("Signal_StallDuration");
+        sig_ci                = registerSignal("Signal_CI");
+
+        // should be obsolete
         sig_chunkSeek       = registerSignal("Signal_ChunkSeek");
-        sig_rebuffering     = registerSignal("Signal_Rebuffering");
-        sig_stall           = registerSignal("Signal_Stall");
-        sig_ci              = registerSignal("Signal_CI");
 
         sig_meshJoin    = registerSignal("Signal_MeshJoin");
         sig_nPartner    = registerSignal("Signal_NumberOfPartner");
@@ -88,6 +91,12 @@ void GlobalStatistic::initialize(int stage)
     nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
     nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
     nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
+
+    // -- Binding to Active Peer Table
+    cModule *temp = simulation.getModuleByPath("activePeerTable");
+    m_apTable = check_and_cast<ActivePeerTable *>(temp);
+    //if (m_apTable == NULL) throw cException("NULL pointer to module activePeerTable");
+    EV << "Binding to activePeerTable is completed successfully" << endl;
 
     m_outFile.open(par("gstatLog").stringValue(), fstream::out);
     m_outFile << "test" << endl;
@@ -201,7 +210,11 @@ void GlobalStatistic::handleTimerMessage(cMessage *msg)
 {
     if (msg == timer_reportCI)
     {
-        reportCI();
+        collectCI();
+        collectSkipChunk();
+        collectStallDuration();
+        collectRebuffering();
+
         scheduleAt(simTime() + param_interval_reportCI, timer_reportCI);
     }
 }
@@ -422,17 +435,14 @@ void GlobalStatistic::reportRebuffering(const SEQUENCE_NUMBER_T &seq_num)
     emit(sig_rebuffering, seq_num);
 }
 
-void GlobalStatistic::reportRebuffering()
-{
-    emit(sig_rebuffering, 1);
-}
-
+// should be obsolete
 void GlobalStatistic::reportStall()
 {
     emit(sig_stall, 1);
 }
 
-void GlobalStatistic::reportCI(void)
+// --------------------------------------------------- ON-GOING ----------------
+void GlobalStatistic::collectCI(void)
 {
    if (m_count_allChunk)
    {
@@ -444,6 +454,44 @@ void GlobalStatistic::reportCI(void)
    }
 
 }
+
+void GlobalStatistic::collectSkipChunk(void)
+{
+   emit(sig_skipChunk, (long double)m_count_skipChunk / m_apTable->getNumActivePeer());
+}
+
+void GlobalStatistic::collectStallDuration(void)
+{
+   emit(sig_stallDuration, (long double)m_count_stallDuration_chunk / m_apTable->getNumActivePeer());
+}
+
+void GlobalStatistic::collectRebuffering(void)
+{
+   emit(sig_rebuffering, (long double)m_count_rebuffering / m_apTable->getNumActivePeer());
+}
+
+void GlobalStatistic::reportSkipChunk()
+{
+   ++m_count_skipChunk;
+}
+
+void GlobalStatistic::reportStallDuration(double dur)
+{
+    m_count_stallDuration += dur;
+}
+
+void GlobalStatistic::reportStallDuration(void)
+{
+    ++m_count_stallDuration_chunk;
+    // the stall duration will be normalized to the length of a video chunk
+}
+
+void GlobalStatistic::reportRebuffering()
+{
+    //emit(sig_rebuffering, 1);
+    ++m_count_rebuffering;
+}
+// -------------------------------------------- END OF ON-GOING ----------------
 
 void GlobalStatistic::reportMeshJoin()
 {

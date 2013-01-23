@@ -16,12 +16,15 @@
 #include "IChurnGenerator.h"
 #include "NotificationBoard.h"
 #include "AppCommon.h"
+#include "ActivePeerTable.h"
 #include "IPvXAddress.h"
 #include <fstream>
 //#include "ccomponent.h"
 
 #ifndef GLOBAL_STATISTIC_H_
 #define GLOBAL_STATISTIC_H_
+
+class ActivePeerTable;
 
 //class GlobalStatistic : public cSimpleModule, cListener, protected INotifiable
 //class GlobalStatistic : public cSimpleModule, cNumericResultFilter, cNumericResultRecorder, protected INotifiable
@@ -97,9 +100,19 @@ public:
     void reportChunkMiss(const SEQUENCE_NUMBER_T &seq_num);
     void reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num);
     void reportRebuffering(const SEQUENCE_NUMBER_T &seq_num);
-    void reportRebuffering();
-    void reportStall();
-    void reportCI(void);
+
+    void reportStall(); // should be obsolete
+
+    void reportSkipChunk(void);
+    void reportRebuffering(void);
+    void reportStallDuration(double dur);
+    void reportStallDuration(void); // overload the above function
+
+    // -- Function to produce signals to collect stats about CI
+    void collectCI(void);
+    void collectSkipChunk(void);
+    void collectStallDuration(void);
+    void collectRebuffering(void);
 
     void reportRequestedChunk(const SEQUENCE_NUMBER_T &seq_num);
     void reportDuplicatedChunk(const SEQUENCE_NUMBER_T &seq_num);
@@ -113,6 +126,7 @@ public:
 
 private:
     NotificationBoard *nb; // cached pointer
+    ActivePeerTable *m_apTable; // To get the number of active node for averaging recorded results
 
     // -- Parameters
     double param_interval_reportCI;
@@ -144,6 +158,12 @@ private:
     long m_count_chunkMiss;
     long m_count_allChunk;
 
+    // -- Regarding statistics from all Players
+    long m_count_skipChunk;
+    long m_count_rebuffering;
+    long double m_count_stallDuration;
+    long m_count_stallDuration_chunk;
+
     // -- Signals
     simsignal_t sig_dummy_chunkHit;
 
@@ -151,10 +171,15 @@ private:
     simsignal_t sig_chunkMiss;
     simsignal_t sig_chunkNeed;
 
-    simsignal_t sig_chunkSeek;
+    simsignal_t sig_stall; // should be obsolete
+
+    simsignal_t sig_skipChunk;
     simsignal_t sig_rebuffering;
-    simsignal_t sig_stall;
+    simsignal_t sig_stallDuration;
     simsignal_t sig_ci;
+
+    // should be obsolete
+    simsignal_t sig_chunkSeek;
 
     simsignal_t sig_meshJoin;
 
