@@ -31,14 +31,4 @@ void CoolstreamingSource::initialize(int stage){
         return;
 
     initBase();
-
-    timer_sendBufferMap = new cMessage("COOLSTREAMING_SOURCE_TIMER_SEND_BUFFERMAP");
-    scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
-}
-
-
-void CoolstreamingSource::checkPartners(){
-    removeTimeoutedPartners();
-
-    scheduleAt(simTime() + param_CheckPartnersIntervall, timer_CheckPartners);
 }

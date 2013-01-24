@@ -30,10 +30,10 @@ void GossipProtocol::leaveNetwork(){
 }
 
 IPvXAddress GossipProtocol::getRandomPeer(){
-    return NULL;
+    return "0.0.0.0";
 }
 IPvXAddress GossipProtocol::getRandomPeer(IPvXAddress notThisAddress){
-    return NULL;
+    return "0.0.0.0";
 }
 
 std::vector<IPvXAddress> GossipProtocol::getKnownPeers(){

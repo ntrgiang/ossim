@@ -92,8 +92,8 @@ void NewscastCache::merge(NewscastCache* cache){
         it = currentCache.begin();
         it += oldest;
 
-        printCache();
-        EV << "Deleting: " << (*it)->getAgent() << endl;
+//        printCache();
+//        EV << "Deleting: " << (*it)->getAgent() << endl;
 
         // delete it
         delete *it;
@@ -118,7 +118,9 @@ void NewscastCache::printCache(){
 }
 
 NewscastCacheEntry* NewscastCache::getRandomEntry(){
-    int aRandomIndex = (int)intrand(currentCache.size());//rand() % currentCache.size();
+    if (currentCache.size() == 0) return NULL;
+
+    int aRandomIndex = (int)intrand(currentCache.size());
 
     return currentCache.at(aRandomIndex);
 }

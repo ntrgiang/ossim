@@ -44,8 +44,6 @@ NewscastBase::NewscastBase(){
 
     EV << "string=" << st << endl;
     EV << "address=" << addr.str() << endl;
-    EV << "time=" << timy << endl;
-    EV << "data=" << data->getSizeInBits() << endl;
 
     EV << "test1_" << test->getSize() << endl;
     if (test->getSize()>0){
@@ -98,16 +96,16 @@ EV << "NewscastBase::initialize:3" << endl;
 }
 
 void NewscastBase::handleMessage(cMessage *msg){
-    EV << "[NewscastBase] handleMessage" << endl;
+    //EV << "[NewscastBase] handleMessage" << endl;
 
     if (msg == timer_JoinNetwork){
 
-        EV << "[NewscastBase] Join Network Timer!" << endl;
+        //EV << "[NewscastBase] Join Network Timer!" << endl;
         joinNetwork();
 
     }else if (msg == timer_ExchangeCache){  // intervall for cache-exchange reached ...
 
-        EV << "[NewscastBase] Timer!" << endl;
+        //EV << "[NewscastBase] Timer!" << endl;
 
         if (checkBootstrapNeeded()) // do we need a bootstrap?
             doBootstrap();
@@ -124,7 +122,7 @@ void NewscastBase::handleMessage(cMessage *msg){
 }
 
 void NewscastBase::handlePacket(cPacket* pkt){
-EV << "NewscastBase::handlePacket" << endl;
+//EV << "NewscastBase::handlePacket" << endl;
     // -- Extract the IP and port of the responder
     DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
 
@@ -133,7 +131,7 @@ EV << "NewscastBase::handlePacket" << endl;
 
     switch (np->getPacketType()){
         case NEWSCAST_REQUEST:
-            EV << "GOT REQUEST" << endl;
+            //EV << "GOT REQUEST" << endl;
             // have we joined the network?
             if (!m_Active){
                 EV << "BUT WE ARE NOT ACTIVE!" << endl;
@@ -151,7 +149,7 @@ EV << "NewscastBase::handlePacket" << endl;
             }
             break;
         case NEWSCAST_REPLY:
-            EV << "GOT REPLY" << endl;
+            //EV << "GOT REPLY" << endl;
 
             // calculate something?
             receivedCache(controlInfo->getSrcAddr(), &np->getCache());
@@ -162,7 +160,7 @@ EV << "NewscastBase::handlePacket" << endl;
             m_cache->printCache();
             break;
         default:
-            EV << "[NewscastBase] GOT UNKNOWN PACKET!" << endl;
+            //EV << "[NewscastBase] GOT UNKNOWN PACKET!" << endl;
             break;
     }
 
@@ -170,7 +168,7 @@ EV << "NewscastBase::handlePacket" << endl;
 }
 
 void NewscastBase::sendCacheExchangeRequest(IPvXAddress addr) {
-EV << "NewscastBase::sendCacheExchangeRequest" << endl;
+//EV << "NewscastBase::sendCacheExchangeRequest" << endl;
     // create new request packet
     NewscastRequestPacket* pkt = new NewscastRequestPacket();
 
@@ -188,7 +186,7 @@ EV << "NewscastBase::sendCacheExchangeRequest" << endl;
 }
 
 void NewscastBase::sendCacheExchangeReply(IPvXAddress addr) {
-    EV << "NewscastBase::sendCacheExchangeReply" << endl;
+//    EV << "NewscastBase::sendCacheExchangeReply" << endl;
     // create new reply packet
     NewscastReplyPacket*  pkt = new NewscastReplyPacket();
 
@@ -204,7 +202,7 @@ void NewscastBase::sendCacheExchangeReply(IPvXAddress addr) {
 }
 
 void NewscastBase::sendPacketTo(cPacket* pkt, IPvXAddress addr){
-    EV << "NewscastBase::sendPacketTo" << endl;
+//    EV << "NewscastBase::sendPacketTo" << endl;
     // generate a control info and set the sender and receiver
     DpControlInfo *ctrl = new DpControlInfo();
         ctrl->setSrcAddr(m_localAddress);
@@ -220,7 +218,7 @@ void NewscastBase::sendPacketTo(cPacket* pkt, IPvXAddress addr){
 }
 
 bool NewscastBase::checkBootstrapNeeded(){
-    EV << "NewscastBase::checkBootstrapNeeded" << endl;
+//    EV << "NewscastBase::checkBootstrapNeeded" << endl;
     // if there are more than one entry in the cache we are fine
     if (m_cache->getSize() > 1)
         return false;
@@ -234,22 +232,22 @@ bool NewscastBase::checkBootstrapNeeded(){
 }
 
 void NewscastBase::doBootstrap(IPvXAddress hint){
-    EV << "NewscastBase::doBootstrap" << endl;
+//    EV << "NewscastBase::doBootstrap" << endl;
     // check if we can get a peer from the table
     if (m_apTable->getNumActivePeer() == 0) // no active peers in the network?! this shouldnt happen ...
         return;
-    EV << "NewscastBase::doBootstrap" << 1 << endl;
+//    EV << "NewscastBase::doBootstrap" << 1 << endl;
     // get a random address
     IPvXAddress addr = ((hint.isUnspecified()) ? m_apTable->getARandPeer() : hint);
-    EV << "NewscastBase::doBootstrap" << 2 << endl;
+//    EV << "NewscastBase::doBootstrap" << 2 << endl;
     // if this address is ours and there is only one entry we cant do anything :(
     if (addr.equals(m_localAddress) && (m_apTable->getNumActivePeer() == 1))
         return;
-    EV << "NewscastBase::doBootstrap" << 3 << endl;
+//    EV << "NewscastBase::doBootstrap" << 3 << endl;
     // getting random addresses until we find one that isnt ours
     while(addr.equals(m_localAddress))
         addr = m_apTable->getARandPeer();
-    EV << "NewscastBase::doBootstrap" << 4 << endl;
+//    EV << "NewscastBase::doBootstrap" << 4 << endl;
 
     // output address
     if (m_statistics)
@@ -257,11 +255,11 @@ void NewscastBase::doBootstrap(IPvXAddress hint){
 
     // send a cache-exchange-request to the address
     sendCacheExchangeRequest(addr);
-    EV << "NewscastBase::doBootstrap" << 5 << endl;
+//    EV << "NewscastBase::doBootstrap" << 5 << endl;
 }
 
 void NewscastBase::doCacheExchange(){
-    EV << "NewscastBase::doCacheExchange" << endl;
+//    EV << "NewscastBase::doCacheExchange" << endl;
     // we have no entry in the cache :(
     if (m_cache->getSize() == 0)
         return;
@@ -340,7 +338,7 @@ IPvXAddress NewscastBase::getNodeAddress(void)
  * called whenever a cache from a peer has been received
  */
 void NewscastBase::receivedCache(IPvXAddress from, NewscastCache* cache){
-    EV << "NewscastBase::receivedCache" << endl;
+//    EV << "NewscastBase::receivedCache" << endl;
 
     AgentList::iterator it;
     for (it = localAgents.begin(); it != localAgents.end(); it++){
@@ -352,7 +350,7 @@ void NewscastBase::receivedCache(IPvXAddress from, NewscastCache* cache){
  * inserts the entries of all local agents in our cache
  */
 void NewscastBase::updateOwnCache(){
-    EV << "NewscastBase::updateOwnCache" << endl;
+//    EV << "NewscastBase::updateOwnCache" << endl;
 
     if (m_ownName.size() > 0)
         m_cache->setEntry(m_ownName, m_localAddress, simTime(), m_ownValue);
@@ -379,8 +377,10 @@ void NewscastBase::addAgent(NewscastAgentInterface* agent){
 void NewscastBase::removeAgent(NewscastAgentInterface* agent){
     AgentList::iterator it;
     for (it = localAgents.begin(); it != localAgents.end(); it++){
-        if (*it == agent)
+        if (*it == agent){
             localAgents.erase(it);
+            it = localAgents.begin();
+        }
     }
 }
 
@@ -419,19 +419,19 @@ void NewscastBase::leaveNetwork(){
 }
 IPvXAddress NewscastBase::getRandomPeer(){
     NewscastCacheEntry* entry = m_cache->getRandomEntry();
-    return (entry == NULL) ? NULL : entry->getAddress();
+    return (entry == NULL) ? "0.0.0.0" : entry->getAddress();
 }
 IPvXAddress NewscastBase::getRandomPeer(IPvXAddress notThisAddress){
     // no entries in cache :(
     if (m_cache->getSize() == 0)
-        return NULL;
+        return "0.0.0.0";
 
     // find a random address from our cache ...
     IPvXAddress addr = m_cache->getRandomEntry()->getAddress();
 
     // if this address is the one to be ignored and there is only one entry we cant do anything :(
     if (addr.equals(notThisAddress) && (m_cache->getSize() == 1))
-        return NULL;
+        return "0.0.0.0";
 
     // loop until we find one that isnt ours ...
     while(addr.equals(notThisAddress))

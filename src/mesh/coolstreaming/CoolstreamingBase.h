@@ -56,7 +56,7 @@ public:
     CoolstreamingBase();
     virtual ~CoolstreamingBase();
 
-    virtual void handleMessage(cMessage *msg);
+    void handleMessage(cMessage *msg);
 
     bool isPartner(IPvXAddress addr);
     CoolstreamingPartner* findPartner(IPvXAddress addr);
@@ -71,11 +71,12 @@ protected:
     GossipProtocol* m_Gossiper;
 
 
+    // DEBUG ->
+    std::ofstream m_outFileDebug;
+    // <- DEBUG
 
     // partnership managment ->
 protected:
-
-    unsigned int param_minNOP;
     unsigned int param_maxNOP;
     double param_PartnerTimeout;
     double param_CheckPartnersIntervall;
@@ -89,15 +90,13 @@ protected:
     virtual void checkPartners();
     void removeTimeoutedPartners();
 
+    CoolstreamingPartner* getParent(int substream);
+
 private:
     void processPartnershipPacket(CoolstreamingPacket *pkt);
-    void addPartner(IPvXAddress addr);
+    CoolstreamingPartner* addPartner(IPvXAddress addr);
     void removePartner(IPvXAddress addr);
     // <- partnership
-
-
-
-
 
 protected:
 
@@ -115,6 +114,9 @@ protected:
     void readChannelRate(void);
     double getDownloadBw();
     double getUploadBw();
+
+    int getLatestSequenceNumber(int substream);
+    int getLatestSequenceNumberB(int substream);
 
     // -- Overloading functions
     void bindToGlobalModule(void);

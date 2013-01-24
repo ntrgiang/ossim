@@ -27,20 +27,40 @@ public:
 
     void updateFromMessage(CoolstreamingBufferMapPacket* pkt);
 
-    void updateLastSeen(){ lastSeen = simTime();}
+    void updateLastSeen();
 
-    IPvXAddress addr;
-    int*        hasSequence;
-    simtime_t   lastSeen;
+    bool isChild(int substream){
+        if (deleted)
+            MessageBoxA(0,"DELETED","CoolstreamingPartner::isChild",0);
+        return mIsChild[substream];
+    }
+    bool isParent(int substream){
+        if (deleted)
+            MessageBoxA(0,"DELETED","CoolstreamingPartner::isParent",0);
+        return mIsParent[substream];
+    }
 
-    bool isChild(int substream){return mIsChild[substream];}
-    bool isParent(int substream){return mIsParent[substream];}
+    void setParent(int substream, bool val);
 
+    int getLatestSequence(int substream);
+
+    IPvXAddress getAddress(){if (deleted)
+        MessageBoxA(0,"DELETED","CoolstreamingPartner::getAddress",0);return addr;}
+    void setAddress(IPvXAddress address){addr = address;}
+    simtime_t getLastSeen(){if (deleted)
+        MessageBoxA(0,"DELETED","CoolstreamingPartner::getLastSeen",0);return lastSeen;}
+    void setLastSeen(simtime_t seen);
+
+    bool deleted;
 private:
     int         mSubstreams;
 
     bool*       mIsParent;
     bool*       mIsChild;
+
+    IPvXAddress addr;
+    int*        hasSequence;
+    simtime_t   lastSeen;
 };
 
 #endif /* COOLSTREAMINGPARTNER_H_ */

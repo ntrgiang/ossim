@@ -26,8 +26,6 @@ public:
 protected:
     virtual int numInitStages() const { return 4; }
     virtual void initialize(int stage);
-
-    void checkPartners();
 };
 
 #endif /* COOLSTREAMINGSOURCE_H_ */

@@ -18,7 +18,7 @@
 #ifndef COOLSTREAMINGPEER_H_
 #define COOLSTREAMINGPEER_H_
 
-class CoolstreamingPeer : CoolstreamingBase{
+class CoolstreamingPeer : public CoolstreamingBase{
 public:
     CoolstreamingPeer();
     virtual ~CoolstreamingPeer();
@@ -30,6 +30,20 @@ protected:
     virtual void handleTimerMessage(cMessage *msg);
 
     void checkPartners();
+
+    // parent managment ->
+private:
+    unsigned int param_minNOP;
+
+    int param_coolstreaming_Ts;
+    int param_coolstreaming_Tp;
+    double param_coolstreaming_Ta;
+
+    cMessage* timer_CheckParents;
+
+    void checkParents();
+    bool satisfiesInequalitys(CoolstreamingPartner* partner, int substream);
+    // <- parent managment
 };
 
 #endif /* COOLSTREAMINGPEER_H_ */
