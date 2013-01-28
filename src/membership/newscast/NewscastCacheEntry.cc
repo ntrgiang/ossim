@@ -16,13 +16,11 @@
 #include "NewscastCacheEntry.h"
 
 NewscastCacheEntry::NewscastCacheEntry() {
-    // TODO Auto-generated constructor stub
-    EV << "NewscastCacheEntry::NewscastCacheEntry" << endl;
+    m_value = NULL;
+    m_address = IPvXAddress("0.0.0.0");
 }
 
 NewscastCacheEntry::~NewscastCacheEntry() {
-    // TODO Auto-generated destructor stub
-    EV << "GETTING DELETED YAY" << endl;
     if (m_value) delete m_value;
 }
 

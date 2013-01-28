@@ -28,12 +28,13 @@ public:
     void setEntry(std::string agent, IPvXAddress addr, simtime_t timestamp, GossipUserData* value);
     void merge(NewscastCache* cache);
     int getSize(){ return currentCache.size(); }
-    NewscastCacheEntry* getEntry(int index){ return currentCache.at(index);}
-    NewscastCacheEntry* getEntry(IPvXAddress addr);
-    NewscastCacheEntry* getRandomEntry();
+    NewscastCacheEntry getEntry(int index){ return currentCache.at(index);}
+    NewscastCacheEntry getEntry(IPvXAddress addr);
+    NewscastCacheEntry getRandomEntry();
     std::vector<IPvXAddress> getAllAddresses();
 
     virtual cOwnedObject *dup() const;
+    NewscastCache dup2();
 
     void printCache();
 
@@ -42,7 +43,7 @@ public:
      */
     long getEstimatedSizeInBits();
 protected:
-    typedef std::vector<NewscastCacheEntry*> CacheSet;
+    typedef std::vector<NewscastCacheEntry> CacheSet;
     mutable CacheSet currentCache;
 
     NewscastCacheEntry* findEntryForAgent(std::string agent);

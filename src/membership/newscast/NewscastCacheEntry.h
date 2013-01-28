@@ -26,16 +26,18 @@ public:
     virtual ~NewscastCacheEntry();
 
     // Getter
-    IPvXAddress getAddress()  { return m_address;}
-    simtime_t   getTimestamp(){ return m_timestamp;}
-    std::string getAgent()    { return m_agent;}
-    GossipUserData*    getValue()    { return m_value;} // temp
+    IPvXAddress     getAddress()  { return m_address;}
+    simtime_t       getTimestamp(){ return m_timestamp;}
+    std::string     getAgent()    { return m_agent;}
+    GossipUserData* getValue()    { return m_value;}
 
     // Setter
     void setAddress(IPvXAddress addr)       { m_address = addr;}
     void setTimestamp(simtime_t timestamp)  { m_timestamp = timestamp;}
     void setAgent(std::string agent)        { m_agent = agent;}
-    void setValue(GossipUserData* value)           { m_value = value;}
+    void setValue(GossipUserData* value)    {
+        if (m_value) delete m_value;
+        m_value = value;}
 
     // estimate
     /*
@@ -43,10 +45,10 @@ public:
      */
     long getEstimatedSizeInBits();
 protected:
-    IPvXAddress m_address;
-    simtime_t   m_timestamp;
-    std::string m_agent;
-    GossipUserData*    m_value; // temp
+    IPvXAddress         m_address;
+    simtime_t           m_timestamp;
+    std::string         m_agent;
+    GossipUserData*     m_value;
 };
 
 #endif /* NEWSCASTCACHEENTRY_H_ */

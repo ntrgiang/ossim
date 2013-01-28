@@ -83,7 +83,7 @@ protected:
 
 private:
     // local objects
-    NewscastCache* m_cache;
+    NewscastCache m_cache;
     std::string m_ownName;    // name of the local agent
     GossipUserData* m_ownValue;      // value of the local agent
     bool m_Active; // indicates if this peer has joined the network
