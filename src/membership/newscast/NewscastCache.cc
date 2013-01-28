@@ -44,7 +44,7 @@ NewscastCache::~NewscastCache(){
 //       if (*iter) delete *iter;
 //    }
     currentCache.clear(); // TODO: delete objects
-    EV << "~NewscastCache() -> DONE 2" << endl;
+    EV << "~NewscastCacghe() -> DONE 2" << endl;
 }
 
 cOwnedObject* NewscastCache::dup() const{
