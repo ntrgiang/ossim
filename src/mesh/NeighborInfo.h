@@ -20,6 +20,10 @@ public:
 public:
     // --------- New implementation -----------
     // -- Getter & Setter
+    inline SEQUENCE_NUMBER_T getSeqNumRecvBmStart(void) { return m_seqNum_recvBmStart; }
+    inline SEQUENCE_NUMBER_T getSeqNumRecvBmEnd(void) { return m_seqNum_recvBmEnd; }
+    inline SEQUENCE_NUMBER_T getSeqNumRecvBmHead(void) { return m_seqNum_recvBmHead; }
+
     inline void setSeqNumRecvBmStart(SEQUENCE_NUMBER_T seq_num) { m_seqNum_recvBmStart = seq_num; }
     inline void setSeqNumRecvBmEnd(SEQUENCE_NUMBER_T seq_num)   { m_seqNum_recvBmEnd = seq_num; }
     inline void setSeqNumRecvBmHead(SEQUENCE_NUMBER_T seq_num)  { m_seqNum_recvBmHead = seq_num; }
