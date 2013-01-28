@@ -12,4 +12,11 @@ simple CoolstreamingBase extends CommBase
         
 		int substreamCount = default(3); // Count of substreams 
         int maxNOC = default(6); // Max number of children
+
+
+        // -- Added by Giang to resolve error during initialization
+        // Partnership
+        int maxNOP = default(5);
+
+        double CheckPartnersIntervall @unit(seconds) = default(1s);
 }
