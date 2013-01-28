@@ -30,6 +30,19 @@ NewscastCache::~NewscastCache(){
         //if (entry != NULL) delete entry;
     }*/
     EV << "~NewscastCache() -> DONE" << endl;
+    // -- Giang
+//    std::vector<NewscastCacheEntry*>::iterator iter, old_iter;
+//    old_iter = currentCache.begin();
+//    for (iter=old_iter+1; iter != currentCache.end(); ++iter)
+//    {
+//       if (*old_iter) delete (*old_iter);
+//       old_iter = iter;
+//    }
+//    std::vector<NewscastCacheEntry*>::iterator iter;
+//    for (iter = currentCache.begin(); iter != currentCache.end(); ++iter)
+//    {
+//       if (*iter) delete *iter;
+//    }
     currentCache.clear(); // TODO: delete objects
     EV << "~NewscastCache() -> DONE 2" << endl;
 }

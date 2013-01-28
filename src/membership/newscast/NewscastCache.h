@@ -44,6 +44,7 @@ public:
 protected:
     typedef std::vector<NewscastCacheEntry*> CacheSet;
     mutable CacheSet currentCache;
+//CacheSet currentCache;
 
     NewscastCacheEntry* findEntryForAgent(std::string agent);
 
