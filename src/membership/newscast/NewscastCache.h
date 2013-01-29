@@ -33,7 +33,8 @@ public:
     NewscastCacheEntry getRandomEntry();
     std::vector<IPvXAddress> getAllAddresses();
 
-    virtual cOwnedObject *dup() const;
+    void setMaxSize(int size);
+
     NewscastCache dup2();
 
     void printCache();
@@ -47,6 +48,7 @@ protected:
     mutable CacheSet currentCache;
 
     NewscastCacheEntry* findEntryForAgent(std::string agent);
+    void removeOldestEntry();
 
 private:
     unsigned int m_maxEntries;

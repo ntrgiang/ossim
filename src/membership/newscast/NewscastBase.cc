@@ -53,8 +53,8 @@ void NewscastBase::initialize(int stage) {
     bindToGlobalModule(); // connect to global modules
     findNodeAddress(); // find and store own address
 
-    // create a new cache
-    //m_cache = new NewscastCache((int)par("cacheSize"));
+    // set cache size
+    m_cache.setMaxSize((int)par("cacheSize"));
 
     // create the messages used for timer actions
     timer_ExchangeCache = new cMessage("Newscast: ExchangeCacheTimer");
