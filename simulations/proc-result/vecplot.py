@@ -109,6 +109,8 @@ for infilename in args[1:]:
             if line.startswith("vector"):
                 if line.find(args[0]) > -1:
                     vecnum = line.split(" ", 3)[1]
+                    # by Giang
+                    print "%s" % (vecnum)
                     vars=confname + "-" + vars;
                     if vars not in valuemap:
                         valuemap[vars]={}
