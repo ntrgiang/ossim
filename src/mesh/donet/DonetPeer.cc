@@ -27,6 +27,21 @@ void DonetPeer::initialize(int stage)
         //sig_partnerRequest      = registerSignal("Signal_PartnerRequest");
         sig_nJoin               = registerSignal("Signal_Join");
 
+        flag_rangeUpdated = false;
+
+        // -- Reset all range
+        m_minStart = -1L;
+        m_maxStart = -1L;
+        m_minHead = -1L;
+        m_maxHead = -1L;
+
+        // -- signals for ranges & current playback point
+        sig_minStart = registerSignal("Signal_MinStart");
+        sig_maxStart = registerSignal("Signal_MaxStart");
+        sig_minHead  = registerSignal("Signal_MinHead");
+        sig_maxHead  = registerSignal("Signal_MaxHead");
+        sig_currentPlaybackPoint = registerSignal("Signal_CurrentPlaybackPoint");
+
         return;
     }
     if (stage != 3)
@@ -846,8 +861,55 @@ void DonetPeer::handleTimerFindMorePartner(void)
     //scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
 }
 
-void DonetPeer::initializeSchedulingWindow()
+//void DonetPeer::initializeSchedulingWindow()
+//{
+//   // Browse through all partners and find an optimal scheduling window
+//   SEQUENCE_NUMBER_T min_head, max_end;
+//   std::map<IPvXAddress, NeighborInfo*>::iterator iter = m_partnerList->m_map.begin();
+//   min_head = iter->second->getSeqNumRecvBmHead();
+//   max_end  = iter->second->getSeqNumRecvBmEnd();
+
+//   for (++iter; iter != m_partnerList->m_map.end(); ++iter)
+//   {
+//      SEQUENCE_NUMBER_T temp = iter->second->getSeqNumRecvBmHead();
+//      min_head=(min_head > temp)?temp:min_head;
+
+//      temp = iter->second->getSeqNumRecvBmEnd();
+//      max_end=(max_end < temp)?temp:max_end;
+//   }
+
+//   m_sched_window.end = (max_end + min_head) / 2;
+//   m_sched_window.head = m_sched_window.end + m_bufferMapSize_chunk - 1;
+//}
+
+int DonetPeer::initializeSchedulingWindow()
 {
+   // Browse through all partners and find an optimal scheduling window
+   SEQUENCE_NUMBER_T min_head, max_start;
+   std::map<IPvXAddress, NeighborInfo*>::iterator iter = m_partnerList->m_map.begin();
+   min_head = iter->second->getSeqNumRecvBmHead();
+   max_start  = iter->second->getSeqNumRecvBmStart();
+
+   for (++iter; iter != m_partnerList->m_map.end(); ++iter)
+   {
+      SEQUENCE_NUMBER_T temp = iter->second->getSeqNumRecvBmHead();
+      min_head=(min_head > temp)?temp:min_head;
+
+      temp = iter->second->getSeqNumRecvBmStart();
+      max_start=(max_start < temp)?temp:max_start;
+   }
+
+
+   //if (min_head > 0L && max_start != 0L)
+   if (min_head > 0L)
+   {
+      m_sched_window.start = (max_start + min_head) / 2;
+      m_sched_window.end   = m_sched_window.end + m_bufferMapSize_chunk - 1;
+      EV << "Scheduling window [start, end] = " << m_sched_window.start << " - " << m_sched_window.end << endl;
+      return INIT_SCHED_WIN_GOOD;
+   }
+
+   return INIT_SCHED_WIN_BAD;
 }
 
 bool DonetPeer::shouldStartChunkScheduling(void)
@@ -945,18 +1007,59 @@ void DonetPeer::chunkScheduling(void)
         return;
     }
 
-    if (m_seqNum_schedWinHead <= 0)
-    {
-        EV << "Scheduling Window is empty, exiting from chunk scheduling" << endl;
-        return;
-    }
+//    if (m_seqNum_schedWinHead <= 0)
+//    {
+//        EV << "Scheduling Window is empty, exiting from chunk scheduling" << endl;
+//        return;
+//    }
+
+//    if (m_scheduling_started == false)
+//    {
+//       int ret = initializeSchedulingWindow();
+//       if (ret == INIT_SCHED_WIN_BAD)
+//          return;
+//       m_scheduling_started = true;
+//    }
 
     emit(sig_nPartner, m_partnerList->getSize());
+
+    // -- Update the range variables
+    updateRange();
+
+    // -- Report ranges
+    emit(sig_minStart, m_minStart);
+    emit(sig_maxStart, m_maxStart);
+    emit(sig_minHead, m_minHead);
+    emit(sig_maxHead, m_maxHead);
+    emit(sig_currentPlaybackPoint, m_player->getCurrentPlaybackPoint());
+
 
     randomChunkScheduling();
     //    donetChunkScheduling();
 }
 
+void DonetPeer::updateRange(void)
+{
+   // Browse through all partners and find an optimal scheduling window
+   std::map<IPvXAddress, NeighborInfo*>::iterator iter = m_partnerList->m_map.begin();
+   m_minStart = iter->second->getSeqNumRecvBmStart();
+   m_maxStart = iter->second->getSeqNumRecvBmStart();
+
+   m_minHead = iter->second->getSeqNumRecvBmHead();
+   m_maxHead = iter->second->getSeqNumRecvBmHead();
+
+   for (++iter; iter != m_partnerList->m_map.end(); ++iter)
+   {
+      SEQUENCE_NUMBER_T temp = iter->second->getSeqNumRecvBmHead();
+      m_minHead = (m_minHead > temp) ? temp : m_minHead;
+      m_maxHead = (m_maxHead < temp) ? temp : m_maxHead;
+
+      temp = iter->second->getSeqNumRecvBmStart();
+      m_minStart = (m_minStart > temp) ? temp : m_minStart;
+      m_maxStart = (m_maxStart < temp) ? temp : m_maxStart;
+   }
+
+}
 
 /**
  * Used for Donet chunk scheduling

@@ -7,6 +7,19 @@
 #include "IChurnGenerator.h"
 #include "Player.h"
 
+#define INIT_SCHED_WIN_GOOD   1
+#define INIT_SCHED_WIN_BAD    0
+
+/*
+ * Suppose to replace:
+ * - m_seqNum_schedWinHead
+ * - m_seqNum_schedWinEnd
+ */
+struct SchedulingWindow
+{
+   SEQUENCE_NUMBER_T end, head, start;
+};
+
 class DonetPeer : public DonetBase
 {
 public:
@@ -62,11 +75,13 @@ private:
     // Chunk scheduling
     // bool should_be_requested(void);
     bool should_be_requested(SEQUENCE_NUMBER_T seq_num);
-    void initializeSchedulingWindow(void);
+    //void initializeSchedulingWindow(void);
+    int initializeSchedulingWindow(void);
 
     bool shouldStartChunkScheduling();
     void chunkScheduling(void);
     void randomChunkScheduling(void);
+    void updateRange(void);
 
     int numberOfChunkToRequestPerCycle(void);
     double currentRequestGreedyFactor(void);
@@ -133,6 +148,7 @@ private:
     bool m_scheduling_started;
 
     int m_schedulingWindowSize;     /* in [chunks] */
+    SchedulingWindow m_sched_window;
 
     // Variables to store history
     double m_firstJoinTime;
@@ -150,7 +166,18 @@ private:
     // -- Easy version with a vector
     vector<SEQUENCE_NUMBER_T> m_list_requestedChunk;
 
+    // Ranges of received buffer maps
+    SEQUENCE_NUMBER_T m_minStart, m_maxStart, m_minHead, m_maxHead;
+    bool flag_rangeUpdated;
+
     // -------------------------------- Signals --------------------------------
+
+    // -- For ranges of received buffer maps, and current playback point
+    simsignal_t sig_currentPlaybackPoint;
+    simsignal_t sig_minStart;
+    simsignal_t sig_maxStart;
+    simsignal_t sig_minHead;
+    simsignal_t sig_maxHead;
 
     // -- Chunks
        simsignal_t sig_chunkRequestSeqNum;

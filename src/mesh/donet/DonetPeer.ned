@@ -40,8 +40,10 @@ simple DonetPeer extends DonetBase
         int maxNOP = default(2); // Max number of partners
         int offsetNOP = default(1); // The difference between minNOP and maxNOP
 
-         // ------------------------------ Statistics ------------------------------------
-        
+        // ---------------------------------------------------------------------
+        // ------------------------------ Statistics ---------------------------
+        // ---------------------------------------------------------------------
+
         // -- Possible signals to collect
         @signal[Signal_chunkRequest](type=long);
         //@statistic[chunkRequest](title="Sequence Number of chunk requests"; source=Signal_chunkRequest; record=count, vector);
@@ -62,13 +64,22 @@ simple DonetPeer extends DonetBase
       @statistic[NumberOfJoin](title="Number of Joins"; source=Signal_Join; record=count,vector);
 
 // ----------- Partnership request --------------
-@statistic[pRequestSent](title="Partnership request sent"; source=Signal_pRequestSent; record=count,vector);
-@statistic[pRequestRecv](title="Partnership request received"; source=Signal_pRequestRecv; record=count,vector);
-@statistic[pRejectSent](title="Partnership reject sent"; source=Signal_pRejectRecv; record=count,vector);
-@statistic[pRejectRecv](title="Partnership reject received"; source=Signal_pRejectRecv; record=count,vector);
-@statistic[pRequestRecv_whileWaiting](title="Number of timeout events"; source=Signal_pRequestRecv_whileWaiting; record=count,vector);
+    @statistic[pRequestSent](title="Partnership request sent"; source=Signal_pRequestSent; record=count,vector);
+    @statistic[pRequestRecv](title="Partnership request received"; source=Signal_pRequestRecv; record=count,vector);
+    @statistic[pRejectSent](title="Partnership reject sent"; source=Signal_pRejectRecv; record=count,vector);
+    @statistic[pRejectRecv](title="Partnership reject received"; source=Signal_pRejectRecv; record=count,vector);
+    @statistic[pRequestRecv_whileWaiting](title="Number of timeout events"; source=Signal_pRequestRecv_whileWaiting; record=count,vector);
 
 @statistic[timeout](title="Number of timeout events"; source=Signal_timeout; record=count,vector);
+
+
+// ----------- Ranges of the received Buffer maps and current playback point
+    @statistic[minStart](source=Signal_MinStart; record=count,vector);
+    @statistic[maxStart](source=Signal_MaxStart; record=count,vector);
+    @statistic[minHead](source=Signal_MinHead; record=count,vector);
+    @statistic[maxHead](source=Signal_MaxHead; record=count,vector);
+    @statistic[curPbPoint](source=Signal_CurrentPlaybackPoint; record=count,vector);
+
 }
 
 
