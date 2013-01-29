@@ -219,3 +219,7 @@ simulations/NewscastNetwork.ini
 simulations/include/seed.ini
 simulations/include/membership.ini
 simulations/include/churn.ini
+simulations/CoolstreamingNetwork.ned
+simulations/coolstreaming_Homo_oneRouter_Network.ini
+src/mesh/donet/RandomScheduling.cc
+src/mesh/donet/DonetScheduling.cc
