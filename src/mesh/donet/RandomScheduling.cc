@@ -18,6 +18,10 @@ void DonetPeer::randomChunkScheduling(void)
     long upper_bound = m_seqNum_schedWinHead;
     long lower_bound = std::max(0L, m_seqNum_schedWinHead-m_bufferMapSize_chunk+1);
 
+    // -- New scheduling windows
+//    long lower_bound = m_sched_window.start;
+//    long upper_bound = m_sched_window.end;
+
     // -- Update bounds of all sendBM
     //m_partnerList->updateBoundSendBm(m_seqNum_schedWinHead, lower_bound, lower_bound+m_bufferMapSize_chunk-1);
     m_partnerList->updateBoundSendBm(lower_bound, lower_bound+m_bufferMapSize_chunk-1);
@@ -128,6 +132,11 @@ void DonetPeer::randomChunkScheduling(void)
     // -- Now refreshing the m_list_requestedChunk
     refreshListRequestedChunk();
 
+    // -- Move the scheduling window forward
+    m_sched_window.start += m_videoStreamChunkRate;
+    m_sched_window.end  += m_videoStreamChunkRate;
+
     EV << endl;
-} // Random Chunk Scheduling
+}
+// Random Chunk Scheduling
 
