@@ -35,12 +35,14 @@ void DonetPeer::initialize(int stage)
         m_minHead = -1L;
         m_maxHead = -1L;
 
-        // -- signals for ranges & current playback point
-        sig_minStart = registerSignal("Signal_MinStart");
-        sig_maxStart = registerSignal("Signal_MaxStart");
-        sig_minHead  = registerSignal("Signal_MinHead");
-        sig_maxHead  = registerSignal("Signal_MaxHead");
-        sig_currentPlaybackPoint = registerSignal("Signal_CurrentPlaybackPoint");
+//        // -- signals for ranges & current playback point
+//        sig_minStart = registerSignal("Signal_MinStart");
+//        sig_maxStart = registerSignal("Signal_MaxStart");
+//        sig_minHead  = registerSignal("Signal_MinHead");
+//        sig_maxHead  = registerSignal("Signal_MaxHead");
+//        sig_currentPlaybackPoint = registerSignal("Signal_CurrentPlaybackPoint");
+
+//        sig_localCI = registerSignal("Signal_LocalCI");
 
         return;
     }
@@ -134,25 +136,36 @@ void DonetPeer::initialize(int stage)
 
     // -- Unimportant signals:
     //signal_nPartner         = registerSignal("Signal_nPartner");
-    sig_newchunkForRequest  = registerSignal("Signal_nNewChunkForRequestPerCycle");
-    sig_nPartner            = registerSignal("Signal_nPartner");
+//    sig_newchunkForRequest  = registerSignal("Signal_nNewChunkForRequestPerCycle");
+//    sig_nPartner            = registerSignal("Signal_nPartner");
 
-    sig_joinTime            = registerSignal("Signal_joinTime");
-    sig_playerStartTime     = registerSignal("Signal_playerStartTime");
+//    sig_joinTime            = registerSignal("Signal_joinTime");
+//    sig_playerStartTime     = registerSignal("Signal_playerStartTime");
 
-//    sig_pRequestSent        = registerSignal("Signal_pRequestSent");
-//    sig_pRejectRecv     = registerSignal("Signal_pRejectReceived");
+   //    sig_pRequestSent        = registerSignal("Signal_pRequestSent");
+   //    sig_pRejectRecv     = registerSignal("Signal_pRejectReceived");
+
     // Number of requests SENT & RECV
-    sig_pRequestSent = registerSignal("Signal_pRequestSent");
-    sig_pRequestRecv = registerSignal("Signal_pRequestRecv");
+//    sig_pRequestSent = registerSignal("Signal_pRequestSent");
+//    sig_pRequestRecv = registerSignal("Signal_pRequestRecv");
 
     // Number of rejects SENT & RECV
-    sig_pRejectRecv = registerSignal("Signal_pRejectRecv");
-    sig_pRejectSent = registerSignal("Signal_pRejectSent");
+//    sig_pRejectRecv = registerSignal("Signal_pRejectRecv");
+//    sig_pRejectSent = registerSignal("Signal_pRejectSent");
 
-    sig_pRequestRecv_whileWaiting = registerSignal("Signal_pRequestRecv_whileWaiting");
+//    sig_pRequestRecv_whileWaiting = registerSignal("Signal_pRequestRecv_whileWaiting");
 
-    sig_timeout = registerSignal("Signal_timeout");
+//    sig_timeout = registerSignal("Signal_timeout");
+
+            // -- signals for ranges & current playback point
+        sig_minStart = registerSignal("Signal_MinStart");
+        sig_maxStart = registerSignal("Signal_MaxStart");
+        sig_minHead  = registerSignal("Signal_MinHead");
+        sig_maxHead  = registerSignal("Signal_MaxHead");
+        sig_currentPlaybackPoint = registerSignal("Signal_CurrentPlaybackPoint");
+
+        sig_localCI = registerSignal("Signal_LocalCI");
+        sig_myci = registerSignal("Signal_myCI");
 
     // -- Debugging variables
     m_arrivalTime = -1.0;
@@ -1026,6 +1039,14 @@ void DonetPeer::chunkScheduling(void)
     // -- Update the range variables
     updateRange();
 
+    reportLocalStatistic();
+
+    randomChunkScheduling();
+    //    donetChunkScheduling();
+}
+
+void DonetPeer::reportLocalStatistic(void)
+{
     // -- Report ranges
     emit(sig_minStart, m_minStart);
     emit(sig_maxStart, m_maxStart);
@@ -1033,9 +1054,18 @@ void DonetPeer::chunkScheduling(void)
     emit(sig_maxHead, m_maxHead);
     emit(sig_currentPlaybackPoint, m_player->getCurrentPlaybackPoint());
 
+    // -- Statistics from Player
+    long int nHit = m_player->getCountChunkHit();
+    long int nMiss = m_player->getCountChunkMiss();
 
-    randomChunkScheduling();
-    //    donetChunkScheduling();
+    if ((nHit + nMiss) == 0)
+    {
+       emit (sig_localCI, 0);
+    }
+    else
+    {
+       emit(sig_localCI, (long double)nHit / (nHit + nMiss));
+    }
 }
 
 void DonetPeer::updateRange(void)
@@ -1058,7 +1088,6 @@ void DonetPeer::updateRange(void)
       m_minStart = (m_minStart > temp) ? temp : m_minStart;
       m_maxStart = (m_maxStart < temp) ? temp : m_maxStart;
    }
-
 }
 
 /**
@@ -1137,7 +1166,8 @@ void DonetPeer::bindToMeshModule(void)
 
     // -- Player
     cModule *temp = getParentModule()->getModuleByRelativePath("player");
-    m_player = check_and_cast<Player *>(temp);
+    //m_player = check_and_cast<Player *>(temp);
+    m_player = check_and_cast<PlayerBase *>(temp);
     EV << "Binding to churnModerator is completed successfully" << endl;
 
 }

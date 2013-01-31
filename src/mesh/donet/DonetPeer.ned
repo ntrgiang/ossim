@@ -70,16 +70,18 @@ simple DonetPeer extends DonetBase
     @statistic[pRejectRecv](title="Partnership reject received"; source=Signal_pRejectRecv; record=count,vector);
     @statistic[pRequestRecv_whileWaiting](title="Number of timeout events"; source=Signal_pRequestRecv_whileWaiting; record=count,vector);
 
-@statistic[timeout](title="Number of timeout events"; source=Signal_timeout; record=count,vector);
-
+    @signal[Signal_LocalCI](type="double");
+    @statistic[localCI](source="Signal_LocalCI"; record=min,max,mean,last,vector);
+    @statistic[myCI](source="Signal_myCI"; record=min,max,mean,last,vector);
 
 // ----------- Ranges of the received Buffer maps and current playback point
-    @statistic[minStart](source=Signal_MinStart; record=count,vector);
-    @statistic[maxStart](source=Signal_MaxStart; record=count,vector);
-    @statistic[minHead](source=Signal_MinHead; record=count,vector);
-    @statistic[maxHead](source=Signal_MaxHead; record=count,vector);
-    @statistic[curPbPoint](source=Signal_CurrentPlaybackPoint; record=count,vector);
+    @statistic[minStart](source=Signal_MinStart; record=vector);
+    @statistic[maxStart](source=Signal_MaxStart; record=vector);
+    @statistic[minHead](source=Signal_MinHead; record=vector);
+    @statistic[maxHead](source=Signal_MaxHead; record=vector);
+    @statistic[curPbPoint](source=Signal_CurrentPlaybackPoint; record=vector);
 
 }
+
 
 

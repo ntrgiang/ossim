@@ -5,7 +5,8 @@
 
 #include "DonetBase.h"
 #include "IChurnGenerator.h"
-#include "Player.h"
+#include "PlayerBase.h"
+//#include "Player.h"
 
 #define INIT_SCHED_WIN_GOOD   1
 #define INIT_SCHED_WIN_BAD    0
@@ -63,7 +64,6 @@ private:
     // *************************************************************************
     // *************************************************************************
 
-
     void processPeerBufferMap(cPacket *pkt);
 //    void processChunkRequest(cPacket *pkt);
 
@@ -77,11 +77,14 @@ private:
     bool should_be_requested(SEQUENCE_NUMBER_T seq_num);
     //void initializeSchedulingWindow(void);
     int initializeSchedulingWindow(void);
-
     bool shouldStartChunkScheduling();
     void chunkScheduling(void);
     void randomChunkScheduling(void);
+    void donetChunkScheduling(void);
+    int selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candidate1, IPvXAddress candidate2, IPvXAddress &supplier);
+
     void updateRange(void);
+    void reportLocalStatistic(void);
 
     int numberOfChunkToRequestPerCycle(void);
     double currentRequestGreedyFactor(void);
@@ -90,8 +93,6 @@ private:
     void printListOfRequestedChunk(void);
     bool inScarityState(void);
 
-    void donetChunkScheduling(void);
-    int selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candidate1, IPvXAddress candidate2, IPvXAddress &supplier);
 
     bool shouldStartPlayer(void);
     void startPlayer(void);
@@ -142,7 +143,8 @@ private:
     IChurnGenerator *m_churn;
 
     // -- Pointer to external modules
-    Player *m_player;
+    //Player *m_player; // TODO: should be obsolete!!!
+    PlayerBase *m_player;
 
     // State variables
     bool m_scheduling_started;
@@ -178,6 +180,9 @@ private:
     simsignal_t sig_maxStart;
     simsignal_t sig_minHead;
     simsignal_t sig_maxHead;
+
+    simsignal_t sig_localCI;
+    simsignal_t sig_myci;
 
     // -- Chunks
        simsignal_t sig_chunkRequestSeqNum;
