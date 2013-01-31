@@ -34,6 +34,9 @@ public:
     bool playerStarted(void);
     void activate(void);
 
+    inline long int getCountChunkHit(void) { return m_countChunkHit; }
+    inline long int getCountChunkMiss(void) { return m_countChunkMiss; }
+
 private:
     bool shouldResumePlaying(SEQUENCE_NUMBER_T seq_num);
 
@@ -52,11 +55,14 @@ protected:
     double param_interval_recheckVideoBuffer;
     int m_chunkSize; // Bytes
 
-    // -- Some new parameters for the Finite State Machine
+   // -- Some new parameters for the Finite State Machine
     int m_state;
     double param_percent_buffer_low, param_percent_buffer_high;
     int param_max_skipped_chunk;
     double param_interval_probe_playerStart;
+
+    // -- Statistics locally
+    long int m_countChunkHit, m_countChunkMiss;
 
     int m_skip;
 

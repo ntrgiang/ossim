@@ -80,6 +80,10 @@ void Player::initialize(int stage)
     m_playerStarted = false;
     m_id_nextChunk = -1L;
 
+    // -- Continuity Index
+    m_countChunkHit = 0L;
+    m_countChunkMiss = 0L;
+
     // -- Schedule the first event for the first chunk
 //    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);
 
@@ -157,10 +161,12 @@ void Player::handleTimerMessage(cMessage *msg)
         {
             switch (m_state)
             {
-            case PLAYER_STATE_PLAYING:
+            case PLAYER_STATE_PLAYING: // Chunk HIT
             {
                 ++m_id_nextChunk;
                 scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+
+                ++m_countChunkHit;
 
                 // -- State remains
 
@@ -205,11 +211,12 @@ void Player::handleTimerMessage(cMessage *msg)
         {
             switch (m_state)
             {
-            case PLAYER_STATE_PLAYING:
+            case PLAYER_STATE_PLAYING: // Chunk MISS
             {
                 if (m_skip < param_max_skipped_chunk)
                 {
                     ++m_skip;
+                    ++m_id_nextChunk;
                     scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
                     //-- State remains
 
@@ -237,6 +244,8 @@ void Player::handleTimerMessage(cMessage *msg)
                     // -- on-going stuff
                     m_stat->reportStallDuration();
                 }
+
+                ++m_countChunkMiss;
                 break;
             }
             case PLAYER_STATE_STALLED:
