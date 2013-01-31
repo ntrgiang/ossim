@@ -10,6 +10,7 @@ import so.mesh.PartnerList;
 import so.payload.Forwarder;
 import so.payload.VideoBuffer;
 import so.payload.Player;
+import so.payload.PlayerSimpleSkip;
 //import simpleoverlay.global.AppSettingDonet;
 
 module DonetPeerApp
@@ -40,7 +41,9 @@ module DonetPeerApp
         videoBuffer: VideoBuffer {
             @display("p=211,104;i=block/buffer2");
         }
-        player: Player {
+        //player: Player {
+        player: PlayerSimpleSkip {
+        //player: <playerModule> like PlayerBase {
             @display("p=211,44;i=device/terminal");
         }
         partnerList: PartnerList {
