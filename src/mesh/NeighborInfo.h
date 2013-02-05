@@ -38,8 +38,26 @@ public:
     inline void setUpBw(double bw) { m_upBw = bw; }
     inline double getUpBw(void) { return m_upBw; }
 
+    inline void setUploadRate_Chunk(int nChunk) { m_uploadRate_chunk = nChunk; }
+    inline int getUploadRate_Chunk(void) { return m_uploadRate_chunk; }
+
+    inline int getNChunkScheduled(void) { return m_nChunkScheduled; }
+    inline void setNChunkScheduled(int nChunk) { m_nChunkScheduled = nChunk; }
+
     inline void setTimeBudget(double time) { m_timeBudget = time; }
     inline double getTimeBudget(void) { return m_timeBudget; }
+
+    inline void setCountChunkReceived(long int n) { m_count_chunkReceived = n; }
+    inline long int getCountChunkReceived(void) { return m_count_chunkReceived; }
+
+    inline void setCountChunkSent(long int n) { m_count_chunkSent = n; }
+    inline long int getCountChunkSent(void) { return m_count_chunkSent; }
+
+    inline void setAverageChunkSent(double c) { m_average_chunkSent = c; }
+    inline double getAverageChunkSent(void) { return m_average_chunkSent; }
+
+    inline void setAverageChunkReceived(double c) { m_average_chunkReceived = c; }
+    inline double getAverageChunkReceived(void) { return m_average_chunkReceived; }
 
     // ----------------------------------------------------------------------------------------------
 
@@ -70,6 +88,7 @@ private:
 
     // -- Peers information
     double m_upBw;
+    int m_uploadRate_chunk;
 
     // -- Buffer to store received buffer map
     std::vector<bool> m_recvBm;
@@ -90,6 +109,15 @@ private:
 
     // -- For Donet Chunk scheduling
     double m_timeBudget;
+
+    int m_nChunkScheduled;
+
+    // -- For partnership refinement
+    // Number of chunks delivered in both direction between two partners
+    long int m_count_chunkSent;     // sent to that partner
+    long int m_count_chunkReceived; // received from that partner
+    double m_average_chunkSent;     // per unit time
+    double m_average_chunkReceived;  // per unit time
 
     // -- Available time to transmit a specific chunk
     std::vector<double> m_availTime;

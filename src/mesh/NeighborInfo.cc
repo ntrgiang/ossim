@@ -70,9 +70,17 @@ void NeighborInfo::setElementSendBm(SEQUENCE_NUMBER_T seq_num, bool val)
     EV << " -- NeighborInfo::setElementSendBm:: offset: " << offset << endl;
 
     if (offset < 0) throw cException("offset %d is invalid", offset);
-    m_sendBm[offset] = val;
 
-    m_sendBmModified = true;
+    if (m_sendBm[offset] != true)
+    {
+       m_sendBm[offset] = val;
+       ++m_nChunkScheduled;
+    }
+
+    if (m_sendBmModified == false)
+    {
+       m_sendBmModified = true;
+    }
 
     // -- Debug
     // printSendBm();
