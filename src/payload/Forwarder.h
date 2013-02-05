@@ -20,6 +20,14 @@
 #include "VideoBuffer.h"
 #include "Dispatcher.h"
 
+struct RecordCountChunk
+{
+   long int m_chunkReceived;
+   long int m_chunkSent;
+   double m_oriTime; // Time when the record was created for the first time
+};
+
+
 class Forwarder : public CommBase {
 public:
     Forwarder();
@@ -32,6 +40,14 @@ public:
     virtual void finish();
 
     void sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort);
+//    long int getRecordReceivedChunk(IPvXAddress&);
+   void getRecordChunk(IPvXAddress& addr, long int &nChunkReceived, long int &nChunkSent);
+   void getRecordChunk(IPvXAddress &addr, RecordCountChunk&);
+
+   void updateSentChunkRecord(IPvXAddress &destAddress);
+   void updateReceivedChunkRecord(IPvXAddress &senderAddress);
+
+
 //
 //protected:
 //    void sendToDispatcher(cPacket *pkt, int srcPort, const IPvXAddress& destAddr, int destPort);
@@ -45,6 +61,9 @@ protected:
     // -- Pointers to external modules
     VideoBuffer *m_videoBuffer;
     Dispatcher *m_dispatcher;
+
+    //std::map<IPvXAddress, long int> m_record_receivedChunk;
+    std::map<IPvXAddress, RecordCountChunk> m_record_countChunk;
 };
 
 #endif /* FORWARDER_H_ */

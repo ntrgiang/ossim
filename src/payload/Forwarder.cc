@@ -45,6 +45,8 @@ void Forwarder::handleMessage(cMessage* msg)
     VideoChunkPacket *chunkPkt = check_and_cast<VideoChunkPacket *>(appMsg);
 
     m_videoBuffer->insertPacket(chunkPkt);
+
+    updateReceivedChunkRecord(senderAddress);
 }
 
 void Forwarder::initialize(int stage)
@@ -68,4 +70,86 @@ void Forwarder::sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int de
     VideoChunkPacket *chunkPkt = m_videoBuffer->getChunk(seq)->dup();
 
     sendToDispatcher(chunkPkt, getLocalPort(), destAddress, destPort);
+
+    updateSentChunkRecord(destAddress);
+
 }
+
+void Forwarder::updateSentChunkRecord(IPvXAddress& destAddress)
+{
+    // -- Update the record about sent Chunk
+    std::map<IPvXAddress, RecordCountChunk>::iterator iter;
+    iter = m_record_countChunk.find(destAddress);
+
+    if (iter == m_record_countChunk.end()) // New entry
+    {
+       RecordCountChunk record;
+       record.m_chunkReceived = 0L;
+       record.m_chunkSent = 1L;
+       record.m_oriTime = simTime().dbl();
+       m_record_countChunk.insert(std::pair<IPvXAddress, RecordCountChunk>(destAddress, record));
+    }
+    else
+    {
+       iter->second.m_chunkSent += 1;
+    }
+}
+
+void Forwarder::updateReceivedChunkRecord(IPvXAddress& senderAddress)
+{
+    // -- Update the record about received Chunk
+    //std::map<IPvXAddress, long int>::iterator iter;
+    std::map<IPvXAddress, RecordCountChunk>::iterator iter;
+    iter = m_record_countChunk.find(senderAddress);
+
+    if (iter == m_record_countChunk.end()) // New entry
+    {
+       RecordCountChunk record;
+       record.m_chunkReceived = 1L;
+       record.m_chunkSent = 0L;
+       record.m_oriTime = simTime().dbl();
+       m_record_countChunk.insert(std::pair<IPvXAddress, RecordCountChunk>(senderAddress, record));
+    }
+    else
+    {
+       iter->second.m_chunkReceived += 1;
+    }
+}
+
+void Forwarder::getRecordChunk(IPvXAddress& addr, long int &nChunkReceived, long int &nChunkSent)
+{
+   std::map<IPvXAddress, RecordCountChunk>::iterator iter;
+   iter = m_record_countChunk.find(addr);
+
+   if (iter == m_record_countChunk.end())
+   {
+      nChunkReceived = -1L;
+      nChunkSent = -1L;
+   }
+   else
+   {
+      nChunkReceived = iter->second.m_chunkReceived;
+      nChunkSent = iter->second.m_chunkSent;
+   }
+
+}
+
+void Forwarder::getRecordChunk(IPvXAddress &addr, RecordCountChunk& record)
+{
+   std::map<IPvXAddress, RecordCountChunk>::iterator iter;
+   iter = m_record_countChunk.find(addr);
+
+   if (iter == m_record_countChunk.end())
+   {
+      record.m_chunkReceived = -1L;
+      record.m_chunkSent = -1L;
+      record.m_oriTime = -1L;
+   }
+   else
+   {
+      record.m_chunkReceived = iter->second.m_chunkReceived;
+      record.m_chunkSent = iter->second.m_chunkSent;
+      record.m_oriTime = iter->second.m_oriTime;
+   }
+}
+
