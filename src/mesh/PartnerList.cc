@@ -127,6 +127,15 @@ void PartnerList::updateBoundSendBm(SEQUENCE_NUMBER_T start,
     }
 }
 
+void PartnerList::resetNChunkScheduled()
+{
+    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+    for(iter = m_map.begin(); iter != m_map.end(); ++iter)
+    {
+        iter->second->setNChunkScheduled(0);
+    }
+}
+
 /**
  * Could also be obsolete
  */
@@ -198,6 +207,28 @@ void PartnerList::addAddress(const IPvXAddress &addr, double upBw)
 
     NeighborInfo *nbr_info = new NeighborInfo(m_bufferSize);
     nbr_info->setUpBw(upBw);
+    nbr_info->setUploadRate_Chunk(0);
+
+    // -- Insert the pair into the map
+    m_map.insert(std::pair<IPvXAddress, NeighborInfo *>(addr, nbr_info));
+}
+
+void PartnerList::addAddress(const IPvXAddress &addr, double upBw, int nChunk)
+{
+    // first version
+//    Enter_Method_Silent("addNeighborAddress");
+    Enter_Method("addAddress");
+
+    if (isPartner(addr) == true)
+        return;
+
+    NeighborInfo *nbr_info = new NeighborInfo(m_bufferSize);
+    nbr_info->setUpBw(upBw);
+    nbr_info->setUploadRate_Chunk(nChunk);
+
+    // Partnership management
+    nbr_info->setCountChunkReceived(0L);
+    nbr_info->setCountChunkSent(0L);
 
     // -- Insert the pair into the map
     m_map.insert(std::pair<IPvXAddress, NeighborInfo *>(addr, nbr_info));
@@ -296,19 +327,19 @@ void PartnerList::getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddre
             EV << "  -- At peer " << iter->first << ": ";
             if (nbr_info->isInRecvBufferMap(seq_num))
             {
-                holderList.push_back(iter->first);
-                // -- Debug
-                // EV << "\tPartner " << iter->first << " HAS the chunk " << seq_num << endl;
+                if (nbr_info->getNChunkScheduled() < nbr_info->getUploadRate_Chunk())
+                {
+                   holderList.push_back(iter->first);
+                   // EV << "\tPartner " << iter->first << " HAS the chunk " << seq_num << endl;
+                }
             }
             else
             {
-                // -- Debug
                 // EV << "\tPartner " << iter->first << " does NOT have chunk " << seq_num << endl;
             }
         }
         else
         {
-            // -- Debug
             // EV << "\tBufferMap from " << iter->first << " is too old!" << endl;
         }
     }

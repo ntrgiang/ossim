@@ -60,6 +60,8 @@ public:
      */
     virtual void addAddress(const IPvXAddress &address);
 
+    void addAddress(const IPvXAddress &addr, double upBw, int nChunk);
+
     /**
      * Adds a Neighbor's address to the table. Note that once added, addresses
      * cannot be modified; you must delete and re-add them instead.
@@ -95,6 +97,7 @@ public:
     void clearAllSendBm(void);
     void updateBoundSendBm(SEQUENCE_NUMBER_T head, SEQUENCE_NUMBER_T start, SEQUENCE_NUMBER_T end) const;
     void updateBoundSendBm(SEQUENCE_NUMBER_T start, SEQUENCE_NUMBER_T end) const;
+    void resetNChunkScheduled();
 
     void clearAllTimeBudget(void);
 
