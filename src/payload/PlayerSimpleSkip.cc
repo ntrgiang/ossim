@@ -160,6 +160,14 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
     {
         if (m_videoBuffer->inBuffer(m_id_nextChunk))
         {
+           ++m_id_nextChunk;
+           scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+
+           ++m_countChunkHit;
+
+           // -- State remains
+
+           /*
             switch (m_state)
             {
             case PLAYER_STATE_PLAYING: // Chunk HIT
@@ -207,9 +215,15 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
                 throw cException("Unexpected state %d", m_state);
             }
             }
+            */
         }
         else // expected chunk is NOT in buffer
         {
+           ++m_id_nextChunk;
+           scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+
+           ++m_countChunkMiss;
+           /*
             switch (m_state)
             {
             case PLAYER_STATE_PLAYING: // Chunk MISS
@@ -281,8 +295,10 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
                 throw cException("Unexpected state %d", m_state);
             }
             }
-        }
-    }
+            */
+        } // else ~ chunk not in buffer
+
+    } // timer_nextChunk
 
 //    if (msg == timer_nextChunk)
 //    {
