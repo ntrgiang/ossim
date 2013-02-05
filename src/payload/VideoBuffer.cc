@@ -79,6 +79,10 @@ void VideoBuffer::handleMessage(cMessage *)
     throw cException("VideoBuffer doesn't process messages!");
 }
 
+/*
+ * Currently used by the Forwarder
+ *
+ */
 void VideoBuffer::insertPacket(VideoChunkPacket *packet)
 {
     Enter_Method("insertPacket()");

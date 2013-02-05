@@ -69,6 +69,8 @@ public:
     inline SEQUENCE_NUMBER_T getBufferEndSeqNum(void) { return m_bufferEnd_seqNum; }
     inline SEQUENCE_NUMBER_T getHeadReceivedSeqNum(void) { return m_head_received_seqNum; }
 
+    inline long int getNChunkReceived(void) { return m_nChunkReceived; }
+
     double getPercentFill(void);
     int getNumberOfChunkFill(void);
 
@@ -79,10 +81,11 @@ public:
 
 //    void insertPacket(MeshVideoChunkPacket *packet, SIM_TIME_T current_time);
 //    void insertPacket(MeshVideoChunkPacket *packet);
+    //    int getNumberFilledChunk();
+
     void insertPacket(VideoChunkPacket *packet);
     void insertPacketDirect(VideoChunkPacket *packet);
     VideoChunkPacket *getChunk(SEQUENCE_NUMBER_T seq_num);
-//    int getNumberFilledChunk();
 
     bool isInBuffer(SEQUENCE_NUMBER_T seq_num);
     bool inBuffer(SEQUENCE_NUMBER_T seq_num);
