@@ -397,6 +397,8 @@ void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
         //m_partnerList->addAddress(requester.address, requester.upBW);
         addPartner(requester.address, requester.upBW);
 
+        EV << "Accepted pRequest from " << requester.address << endl;
+
         // -- Report to Active Peer Table to update the information
         EV << "Increment number of partner " << endl;
         m_apTable->incrementNPartner(getNodeAddress());
@@ -432,9 +434,10 @@ void DonetBase::handleTimerReport(void)
    m_gstat->writePartnerList2File(getNodeAddress(), m_partnerList->getAddressList());
 }
 
-void DonetBase::addPartner(IPvXAddress remote, double bw)
+void DonetBase::addPartner(IPvXAddress remote, double upbw)
 {
-   m_partnerList->addAddress(remote, bw);
+   m_partnerList->addAddress(remote, upbw);
+//   m_partnerList->addAddress(remote, upbw, 0);
    m_gstat->writePartnership2File(getNodeAddress(), remote);
 }
 
