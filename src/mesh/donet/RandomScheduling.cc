@@ -6,7 +6,6 @@ void DonetPeer::randomChunkScheduling(void)
 {
     EV << endl;
     EV << "---------- Random chunk scheduling ----------------------------------" << endl;
-    //srand(time(NULL));
 
     // -- Clear state variablesm
     m_nChunkRequested_perSchedulingInterval = 0;
@@ -15,16 +14,23 @@ void DonetPeer::randomChunkScheduling(void)
     m_partnerList->clearAllSendBm();
 
     // -- Prepare the scheduling window
-    long upper_bound = m_seqNum_schedWinHead;
-    long lower_bound = std::max(0L, m_seqNum_schedWinHead-m_bufferMapSize_chunk+1);
+//    long upper_bound = m_seqNum_schedWinHead;
+//    long lower_bound = std::max(0L, m_seqNum_schedWinHead-m_bufferMapSize_chunk+1);
 
     // -- New scheduling windows
 //    long lower_bound = m_sched_window.start;
 //    long upper_bound = m_sched_window.end;
 
+    // -- New update scheme which takes into account the initialized scheduling window
+    long lower_bound = std::max(m_seqNum_schedWinStart, m_sched_window.start);
+    long upper_bound = lower_bound + m_bufferMapSize_chunk - 1;
+    //long lower_bound = std::max(0L, m_seqNum_schedWinHead-m_bufferMapSize_chunk+1);
+
+
     // -- Update bounds of all sendBM
     //m_partnerList->updateBoundSendBm(m_seqNum_schedWinHead, lower_bound, lower_bound+m_bufferMapSize_chunk-1);
     m_partnerList->updateBoundSendBm(lower_bound, lower_bound+m_bufferMapSize_chunk-1);
+    m_partnerList->resetNChunkScheduled();
 
     EV << "-- Scheduling window: [" << lower_bound << " - " << upper_bound << "]" << endl;
     EV << "-- This node has " << m_partnerList->getSize() << " partners" << endl;
@@ -34,6 +40,7 @@ void DonetPeer::randomChunkScheduling(void)
     int nNewChunkForRequest_perSchedulingCycle = 0;
 
     EV << "----- Browsing through the chunks within the scheduling windows-----" << endl;
+
     // -- Looking for chunk to request
     for (SEQUENCE_NUMBER_T seq_num = lower_bound; seq_num <= upper_bound; ++seq_num)
     {
@@ -135,6 +142,9 @@ void DonetPeer::randomChunkScheduling(void)
     // -- Move the scheduling window forward
     m_sched_window.start += m_videoStreamChunkRate;
     m_sched_window.end  += m_videoStreamChunkRate;
+
+    // -- Report statistics
+    emit(sig_nChunkRequested, m_nChunkRequested_perSchedulingInterval);
 
     EV << endl;
 }
