@@ -153,15 +153,15 @@ void DonetPeer::initialize(int stage)
     //signal_nPartner         = registerSignal("Signal_nPartner");
 
     sig_nPartner            = registerSignal("Signal_nPartner");
-//    sig_joinTime            = registerSignal("Signal_joinTime");
+    sig_joinTime            = registerSignal("Signal_joinTime");
 //    sig_playerStartTime     = registerSignal("Signal_playerStartTime");
 
-   //    sig_pRequestSent        = registerSignal("Signal_pRequestSent");
+       sig_pRequestSent        = registerSignal("Signal_pRequestSent");
    //    sig_pRejectRecv     = registerSignal("Signal_pRejectReceived");
 
     // Number of requests SENT & RECV
 //    sig_pRequestSent = registerSignal("Signal_pRequestSent");
-//    sig_pRequestRecv = registerSignal("Signal_pRequestRecv");
+    sig_pRequestRecv = registerSignal("Signal_pRequestRecv");
 
     // Number of rejects SENT & RECV
 //    sig_pRejectRecv = registerSignal("Signal_pRejectRecv");
@@ -197,6 +197,13 @@ void DonetPeer::initialize(int stage)
     m_nChunkRequestReceived = 0L;
     m_nChunkSent = 0L;
     m_nBufferMapRecv = 0L;
+
+    // -------------------------------------------------------------------------
+    // ------------------- Initialize local variables --------------------------
+    // -------------------------------------------------------------------------
+    m_seqNum_schedWinStart = 0L;
+    m_seqNum_schedWinEnd = 0L;
+    m_seqNum_schedWinHead = 0L;
 
     // -------------------------------------------------------------------------
     // --------------------------- WATCH ---------------------------------------
@@ -1036,14 +1043,15 @@ void DonetPeer::updateDataExchangeRecord(void)
 int DonetPeer::initializeSchedulingWindow()
 {
    // Browse through all partners and find an optimal scheduling window
-   SEQUENCE_NUMBER_T min_head, max_start;
+   SEQUENCE_NUMBER_T min_head = 0L, max_start = 0L;
    std::map<IPvXAddress, NeighborInfo*>::iterator iter = m_partnerList->m_map.begin();
    min_head = iter->second->getSeqNumRecvBmHead();
    max_start  = iter->second->getSeqNumRecvBmStart();
 
    for (++iter; iter != m_partnerList->m_map.end(); ++iter)
    {
-      SEQUENCE_NUMBER_T temp = iter->second->getSeqNumRecvBmHead();
+      SEQUENCE_NUMBER_T temp = 0L;
+      temp = iter->second->getSeqNumRecvBmHead();
       if (min_head != 0L && temp != 0L)
          min_head=(min_head > temp) ? temp : min_head;
       else
