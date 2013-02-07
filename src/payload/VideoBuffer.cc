@@ -79,6 +79,13 @@ void VideoBuffer::handleMessage(cMessage *)
     throw cException("VideoBuffer doesn't process messages!");
 }
 
+void VideoBuffer::initializeRangeVideoBuffer(SEQUENCE_NUMBER_T seq)
+{
+   m_bufferStart_seqNum = seq;
+   m_head_received_seqNum = seq;
+   m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
+}
+
 /*
  * Currently used by the Forwarder
  *
@@ -171,8 +178,10 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
         EV << "-- Update the range of the Video Buffer:" << endl;
 
         m_head_received_seqNum = seq_num;
-        m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
+        //m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
+        m_bufferStart_seqNum = std::max(m_bufferStart_seqNum, m_head_received_seqNum - m_bufferSize_chunk + 1);
         m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
+
         EV << "  -- start:\t"   << m_bufferStart_seqNum     << endl;
         EV << "  -- end:\t"     << m_bufferEnd_seqNum       << endl;
         EV << "  -- head:\t"    << m_head_received_seqNum   << endl;
@@ -425,21 +434,51 @@ void VideoBuffer::printStatus()
     EV << std::endl;
 */
 
+/*
     // Version 2
-    EV << endl;
-    EV << "%%%" << endl;
-    EV << "-- Start:\t" << m_bufferStart_seqNum     << endl;
-    EV << "-- End:\t"   << m_bufferEnd_seqNum       << endl;
-    EV << "-- Head:\t"  << m_head_received_seqNum   << endl;
-
     std::vector<STREAM_BUFFER_ELEMENT_T>::iterator iter;
+    int k = 1;
     for(iter = m_streamBuffer.begin(); iter != m_streamBuffer.end(); ++ iter)
     {
         STREAM_BUFFER_ELEMENT_T &elem = *iter;
         short bit = -1;
         bit = (elem.m_chunk != NULL)?1:0;
         EV << bit << " ";
-    }
+
+        // -- For better presenting the bit array
+        if (k % 10 == 0) EV << "  ";
+        if (k % 100 == 0) EV << endl;
+        k++;
+    } // end of for
+    EV << endl;
+*/
+
+    // Version 3
+    EV << endl;
+    EV << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+    EV << "Video Buffer:" << endl;
+    EV << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+    EV << "-- Start:\t" << m_bufferStart_seqNum     << endl;
+    EV << "-- End:\t"   << m_bufferEnd_seqNum       << endl;
+    EV << "-- Head:\t"  << m_head_received_seqNum   << endl;
+
+    std::vector<STREAM_BUFFER_ELEMENT_T>::iterator iter;
+    iter = m_streamBuffer.begin();
+    int k = 1;
+    for(int i = 0; i <  m_bufferSize_chunk; i++)
+    {
+       long int chunkSeq = i + m_bufferStart_seqNum;
+       iter = m_streamBuffer.begin() + (chunkSeq % m_bufferSize_chunk);
+        //STREAM_BUFFER_ELEMENT_T &elem = *iter;
+        short bit = -1;
+        bit = (iter->m_chunk != NULL) ? 1 : 0;
+        EV << bit << " ";
+
+        // -- For better presenting the bit array
+        if (k % 10 == 0) EV << "  ";
+        if (k % 100 == 0) EV << endl;
+        k++;
+    } // end of for
     EV << endl;
 
 }
@@ -497,6 +536,7 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
         offset++;
     }
 */
+/*
     // -- New version of the code to optimize the speed
     int offset = -1;
     std::vector<STREAM_BUFFER_ELEMENT_T>::iterator iter;
@@ -523,7 +563,63 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
 
         //EV << "has chunk with seq_num " << iter->m_chunk->getSeqNumber() << " in range --> is set to true!" << endl;
         bmPkt->setBufferMap(offset, true);
+    } // end of for
+*/
+    // Even more optimized codes
+
+    std::vector<STREAM_BUFFER_ELEMENT_T>::iterator iter;
+    iter = m_streamBuffer.begin();
+    int fillRange = m_head_received_seqNum - m_bufferStart_seqNum + 1;
+
+    for (int i = 0; i < fillRange; i++)
+    {
+       long int videoChunk_seq = i + m_bufferStart_seqNum;
+       iter = m_streamBuffer.begin() + (videoChunk_seq % m_bufferSize_chunk);
+
+       if (iter->m_chunk == NULL)
+       {
+           //EV << "No chunk! --> set to false" << endl;
+           bmPkt->setBufferMap(i, false);
+           continue;
+       }
+
+        if (iter->m_chunk->getSeqNumber() < m_bufferStart_seqNum)
+        {
+            //EV << "Chunk is out-dated! --> set to false" << endl;
+            bmPkt->setBufferMap(i, false);
+            continue;
+        }
+
+       if (iter->m_chunk->getSeqNumber() != videoChunk_seq)
+       {
+          throw cException("Expected chunk %ld, but actual chunk %ld",
+                           videoChunk_seq,
+                           iter->m_chunk->getSeqNumber());
+          // EV << "Chunk is out-dated! --> set to false" << endl;
+          // bmPkt->setBufferMap(offset, false);
+       }
+
+       bmPkt->setBufferMap(i, true);
+
+
+    } // for
+
+    for (int i = fillRange; i < m_bufferSize_chunk; i++)
+    {
+       bmPkt->setBufferMap(i, false);
     }
+//    for (int i = m_bufferStart_seqNum; i <= m_head_received_seqNum; i++)
+//    {
+//       //if (m_streamBuffer[i % m_bufferSize_chunk])
+//       iter = m_streamBuffer.begin() + (i % m_bufferSize_chunk);
+//       if (iter->m_chunk == NULL)
+//       {
+//           //EV << "No chunk! --> set to false" << endl;
+//           bmPkt->setBufferMap(offset, false);
+//       }
+
+
+//    }
 }
 
 void VideoBuffer::finish(void)

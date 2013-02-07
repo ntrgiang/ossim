@@ -61,13 +61,16 @@ public:
     inline void setID_bufferEnd(SEQUENCE_NUMBER_T val) { m_id_bufferEnd = val; }
     inline SEQUENCE_NUMBER_T getID_bufferEnd() { return m_id_bufferEnd; }
     */
-    inline void setBufferStartSeqNum(SEQUENCE_NUMBER_T val) { m_bufferStart_seqNum = val; }
-    inline void setBufferEndSeqNum(SEQUENCE_NUMBER_T val) { m_bufferEnd_seqNum = val; }
-    inline void setHeadReceivedSeqNum(SEQUENCE_NUMBER_T val) { m_head_received_seqNum = val; }
 
     inline SEQUENCE_NUMBER_T getBufferStartSeqNum(void) { return m_bufferStart_seqNum; }
+    inline void setBufferStartSeqNum(SEQUENCE_NUMBER_T val) { m_bufferStart_seqNum = val; }
+
+
     inline SEQUENCE_NUMBER_T getBufferEndSeqNum(void) { return m_bufferEnd_seqNum; }
+    inline void setBufferEndSeqNum(SEQUENCE_NUMBER_T val) { m_bufferEnd_seqNum = val; }
+
     inline SEQUENCE_NUMBER_T getHeadReceivedSeqNum(void) { return m_head_received_seqNum; }
+    inline void setHeadReceivedSeqNum(SEQUENCE_NUMBER_T val) { m_head_received_seqNum = val; }
 
     inline long int getNChunkReceived(void) { return m_nChunkReceived; }
 
@@ -98,6 +101,8 @@ public:
     bool shouldResumePlaying(SEQUENCE_NUMBER_T seq_num) const;
     int getNumberOfChunkFillAhead(SEQUENCE_NUMBER_T ref_ori);
     double getPercentFillAhead(SEQUENCE_NUMBER_T ref_ori);
+
+    void initializeRangeVideoBuffer(SEQUENCE_NUMBER_T seq);
 
 //    double getDeadline(SEQUENCE_NUMBER_T seq_num) const;
 
