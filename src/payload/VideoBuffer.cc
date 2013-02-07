@@ -65,7 +65,7 @@ void VideoBuffer::initialize(int stage)
         elem.m_chunk = NULL;
     }
 
-    m_bufferStart_seqNum = m_bufferEnd_seqNum = m_head_received_seqNum = 0;
+    m_bufferStart_seqNum = m_bufferEnd_seqNum = m_head_received_seqNum = 0L;
 
     m_time_firstChunk = -1.0;
     m_nChunkReceived = 0L;
