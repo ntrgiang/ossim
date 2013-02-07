@@ -50,12 +50,19 @@ private:
     // -- Partnership
     void handleTimerJoin(void);
     void handleTimerFindMorePartner(void);
+    void handleTimerTimeoutWaitingAccept();
+    void handleTimerPartnershipRefinement(void);
+    void handleTimerPartnerlistCleanup(void);
+
     bool findPartner(); // New interface for the FSM
+    bool sendPartnershipRequest(void);
     void processPartnershipAccept(cPacket *pkt);
     void processPartnershipReject(cPacket *pkt);
+    void addPartner(IPvXAddress remote, double bw);
 
     void processTimeoutJoinRequestAccept(cMessage *msg);
-    void handleTimerTimeoutWaitingAccept();
+
+    void updateDataExchangeRecord(void);
 
     // !!! obsolete !!!
 //    void join();
@@ -98,7 +105,9 @@ private:
     void startPlayer(void);
 
 private:
-    // ----------------------------------- Timers
+// -----------------------------------------------------------------------------
+//                               Timers
+// -----------------------------------------------------------------------------
     cMessage *timer_getJoinTime;
     cMessage *timer_join;
     cMessage *timer_chunkScheduling;
@@ -110,24 +119,34 @@ private:
     //cMessage *timer_timeout_waiting_ack;
     cMessage *timer_timeout_waiting_response;
 //    cMessage *timer_rejoin;
+    cMessage *timer_partnershipRefinement;
 
-    // ----------------------------------- Parameters
+    cMessage *timer_partnerListCleanup;
+
+// -----------------------------------------------------------------------------
+//                               Parameters
+// -----------------------------------------------------------------------------
     bool    param_moduleDebug;
     double  param_chunkSchedulingInterval;
     double  param_interval_chunkScheduling;     // as a potential replacement for the above
     double  param_waitingTime_SchedulingStart;
     int     param_nNeighbor_SchedulingStart;
+
     double  param_interval_findMorePartner;
     double  param_interval_starPlayer;
     double  param_interval_rejoin;
     double  param_interval_timeout_joinReqAck;
     double  param_interval_waitingPartnershipResponse;
+    double  param_interval_partnershipRefinement;
+    double  param_interval_partnerlistCleanup;
+
     //double  param_baseValue_requestGreedyFactor;
     //double  param_aggressiveValue_requestGreedyFactor
     double  param_requestFactor_moderate;
     double  param_requestFactor_aggresive;
     double  param_factor_requestList;
     double  param_threshold_scarity;
+    double  param_threshold_idleDuration_buffermap;
 
     // -- Partnership size
     int param_minNOP;
@@ -139,6 +158,9 @@ private:
     // -- To store list of random peers got from APT
     vector<IPvXAddress> m_list_randPeer;
 
+// -----------------------------------------------------------------------------
+//               Pointers to external modules
+// -----------------------------------------------------------------------------
     // -- Pointers to "global" modules
     IChurnGenerator *m_churn;
 
@@ -172,6 +194,12 @@ private:
     SEQUENCE_NUMBER_T m_minStart, m_maxStart, m_minHead, m_maxHead;
     bool flag_rangeUpdated;
 
+    bool flag_partnershipRefinement;
+
+    // -- The number of chunks received previously at the Video Buffer
+    long int m_prevNChunkReceived;
+    int m_downloadRate_chunk;
+
     // -------------------------------- Signals --------------------------------
 
     // -- For ranges of received buffer maps, and current playback point
@@ -180,6 +208,8 @@ private:
     simsignal_t sig_maxStart;
     simsignal_t sig_minHead;
     simsignal_t sig_maxHead;
+    simsignal_t sig_bufferStart;
+    simsignal_t sig_bufferHead;
 
     simsignal_t sig_localCI;
     simsignal_t sig_myci;
@@ -187,6 +217,7 @@ private:
     // -- Chunks
        simsignal_t sig_chunkRequestSeqNum;
        simsignal_t sig_newchunkForRequest;
+       simsignal_t sig_nChunkRequested;
 
     //simsignal_t sig_partnerRequest;
 
@@ -204,9 +235,15 @@ private:
 
     simsignal_t sig_joinTime;
     simsignal_t sig_playerStartTime;
+
+    // -- Throughputs
+    simsignal_t sig_inThroughput; // chunks / second
+
+
     // Accounting
     simsignal_t sig_timeout;
 
+    simsignal_t sig_nBufferMapReceived;
 
 };
 
