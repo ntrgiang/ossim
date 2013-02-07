@@ -223,3 +223,8 @@ simulations/CoolstreamingNetwork.ned
 simulations/coolstreaming_Homo_oneRouter_Network.ini
 src/mesh/donet/RandomScheduling.cc
 src/mesh/donet/DonetScheduling.cc
+src/payload/PlayerBase.ned
+src/payload/PlayerBase.h
+src/payload/PlayerSimpleSkip.ned
+src/payload/PlayerSimpleSkip.h
+src/payload/PlayerSimpleSkip.cc
