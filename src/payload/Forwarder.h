@@ -47,7 +47,6 @@ public:
    void updateSentChunkRecord(IPvXAddress &destAddress);
    void updateReceivedChunkRecord(IPvXAddress &senderAddress);
 
-
 //
 //protected:
 //    void sendToDispatcher(cPacket *pkt, int srcPort, const IPvXAddress& destAddr, int destPort);
