@@ -195,6 +195,7 @@ void NeighborInfo::printSendBm(void)
         if (k % 100 == 0) EV << endl;
         k++;
     }
+    EV << endl;
     EV << "Total number of chunks to request: " << countOne << endl;
 }
 
