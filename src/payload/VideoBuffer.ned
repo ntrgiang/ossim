@@ -8,9 +8,9 @@ simple VideoBuffer
         @class(VideoBuffer);
         @display("i=block/table");
         
-        @signal[Signal_RecevedChunk](type=long);
+        @signal[Signal_ReceivedChunk](type=long);
         
-        //@statistic[receivedChunk](title="Sequence Number of received chunks"; source=Signal_RecevedChunk; record=count,vector);
+        //@statistic[receivedChunk](title="Sequence Number of received chunks"; source=Signal_ReceivedChunk; record=count,vector);
 
          @signal[Signal_LateChunk](type=long);
          //@statistic[lateChunk](title="Sequence Number of late chunks"; source=Signal_LateChunk; record=count,vector);
