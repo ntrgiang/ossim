@@ -13,6 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief Implementation of a cache to store the entries of a peer
+
 #include "NewscastCache.h"
 
 NewscastCache::NewscastCache(int size) : cOwnedObject(){
@@ -32,7 +35,7 @@ void NewscastCache::setMaxSize(int size){
 }
 
 
-NewscastCache NewscastCache::dup2(){
+NewscastCache NewscastCache::dup(){
     NewscastCache ret = NewscastCache(m_maxEntries);
     CacheSet::iterator it;
     for (it = currentCache.begin(); it != currentCache.end(); it++){
@@ -70,7 +73,7 @@ void NewscastCache::merge(NewscastCache* cache){
         setEntry( (*it).getAgent(), (*it).getAddress(), (*it).getTimestamp(), (*it).getValue() );
     }
 
-    while (currentCache.size() > m_maxEntries){  // while we have more than m_maxEntries ...
+    while ((currentCache.size() > m_maxEntries) && (currentCache.size() > 0)){  // while we have more than m_maxEntries ...
         removeOldestEntry();
     }
 }
@@ -91,15 +94,6 @@ void NewscastCache::removeOldestEntry(){
 
     currentCache.erase(it);
 }
-
-NewscastCacheEntry* NewscastCache::findEntryForAgent(std::string agent){
-    for (unsigned int i = 0; i < currentCache.size(); i++)
-        if (currentCache.at(i).getAgent().compare(agent) == 0)
-            return &currentCache.at(i);
-
-    return NULL;
-}
-
 
 void NewscastCache::printCache(){
     CacheSet::iterator it;
@@ -132,6 +126,10 @@ NewscastCacheEntry NewscastCache::getEntry(IPvXAddress addr){
 }
 
 std::vector<IPvXAddress> NewscastCache::getAllAddresses(){
+    while ((currentCache.size() > m_maxEntries) && (currentCache.size() > 0)){  // while we have more than m_maxEntries ...
+        removeOldestEntry();
+    }
+
     std::vector<IPvXAddress> ret;
 
     CacheSet::iterator it;

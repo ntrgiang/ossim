@@ -13,6 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+// @author Thorsten Jacobi
+// @brief Interface class for gossip protocols
+
 #include "GossipProtocol.h"
 
 GossipProtocol ::GossipProtocol(){

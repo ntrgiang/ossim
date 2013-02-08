@@ -13,6 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief class for containing information of partners
+// like address, lastSeen, sequence numbers, child- and parentship
+// @ingroup mesh
+// @ingroup coolstreaming
+
 #include "CoolstreamingPartner.h"
 
 CoolstreamingPartner::CoolstreamingPartner(int substreams) {

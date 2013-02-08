@@ -13,6 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief a object to be stored in the cache contains: address, agent identifier, timestamp and value of the agent
+
 #include "NewscastCacheEntry.h"
 
 NewscastCacheEntry::NewscastCacheEntry() {

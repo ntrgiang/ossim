@@ -21,11 +21,5 @@ simple NewscastPeer extends NewscastBase
 {
     parameters:
         @class(NewscastPeer);
-        @display("i=block/app;bgb=250,410");
-                
-        // Debug
-        bool moduleDebug = default(false);
-        
-        int numberOfPartner = default(4);
-        
+        @display("i=block/app;bgb=250,410");    
 }

@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief CoolstreamingSource based on CoolstreamingBase
+// @ingroup mesh
+// @ingroup coolstreaming
+
 #include "CoolstreamingBase.h"
 
 #ifndef COOLSTREAMINGSOURCE_H_

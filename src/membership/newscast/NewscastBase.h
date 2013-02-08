@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief Base class of the newscast implementation
+// @ingroup membership
+// @ingroup newscast
+
 #ifndef NEWSCASTBASE_H_
 #define NEWSCASTBASE_H_
 
@@ -53,8 +58,11 @@ public:
     // Interface: GossipProtocol -->
     bool joinNetwork(IPvXAddress bootstrap = "0.0.0.0");
     void leaveNetwork();
+    // @brief returns a random Peer address from the local cache
     IPvXAddress getRandomPeer();
+    // @brief returns a random Peer address from the local cache exluding a specified address
     IPvXAddress getRandomPeer(IPvXAddress notThisAddress);
+    // @brief returns a list of all peer addresses from the local cache
     std::vector<IPvXAddress> getKnownPeers();
     // <-- Interface: GossipProtocol
 
@@ -63,7 +71,6 @@ protected:
     virtual int numInitStages() const { return 5; }
     virtual void initialize(int stage);
 
-    // global modules -> check later if rly needed/change
     void bindToGlobalModule(void);
     IChurnGenerator *m_churn;
     ActivePeerTable *m_apTable;
@@ -73,6 +80,7 @@ protected:
     // -- For communicating via UDP
     int m_localPort, m_destPort;
     IPvXAddress m_localAddress;
+    // @brief discovers our own Address
     void findNodeAddress(void);
     IPvXAddress getNodeAddress(void);
     // end global modules
@@ -84,34 +92,38 @@ protected:
 private:
     // local objects
     NewscastCache m_cache;
-    std::string m_ownName;    // name of the local agent
-    GossipUserData* m_ownValue;      // value of the local agent
-    bool m_Active; // indicates if this peer has joined the network
+    // @brief name of the local Agent
+    std::string m_ownName;
+    // @brief data of the local Agent
+    GossipUserData* m_ownValue;
+    // @brief indicates if this peer has joined the network
+    bool m_Active;
 
     void sendCacheExchangeRequest(IPvXAddress addr);
     void sendCacheExchangeReply(IPvXAddress addr);
+    // @brief checks if we are connected to peers
     bool checkBootstrapNeeded();
+    // @brief initiates a cache exchange for bootstrapping. If hint is a valid address that peer will be used.
     void doBootstrap(IPvXAddress hint = "0.0.0.0");
     void doCacheExchange();
 
 public:
-    //listeners -> "agents"
+    // @brief adds an agent to this peer
     void addAgent(NewscastAgentInterface* agent);
+    // @brief removes an agent from this peer
     void removeAgent(NewscastAgentInterface* agent);
 private:
     typedef std::list<NewscastAgentInterface*> AgentList;
+    // @brief list of attached agents
     mutable AgentList localAgents;
-
 
     void sendPacketTo(cPacket* pkt, IPvXAddress addr);
     void handlePacket(cPacket* pkt);
 
+    // @brief adds our own data and the data of all attached agents to our cache
     void updateOwnCache();
+    // @brief get called whenever we receive a cache and informs all local agents
     void receivedCache(IPvXAddress from, NewscastCache* cache);
-#define MESSAGE_CODE_REQUEST "NEWSCAST_REQUEST"
-#define MESSAGE_CODE_REPLY   "NEWSCAST_REPLY"
-    //static const char* MESSAGE_CODE_REQUEST = "NEWSCAST_REQUEST";
-    //static const char* MESSAGE_CODE_REPLY   = "NEWSCAST_REPLY";
 };
 
 #endif /* NEWSCASTBASE_H_ */

@@ -13,6 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief interface to add listeners to the videobuffer
+
 #include "VideoBufferListener.h"
 
 VideoBufferListener::VideoBufferListener() {

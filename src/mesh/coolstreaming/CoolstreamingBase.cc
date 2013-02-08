@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief base class for source and peer of newscast
+// @ingroup mesh
+// @ingroup coolstreaming
+
 #include "CoolstreamingBase.h"
 #include "DpControlInfo_m.h"
 
@@ -21,8 +26,8 @@ CoolstreamingBase::CoolstreamingBase() {}
 CoolstreamingBase::~CoolstreamingBase() {
     if (timer_CheckPartners) delete cancelEvent(timer_CheckPartners);
 
-
-    m_outFileDebug.close();
+    if (debugOutput)
+        m_outFileDebug.close();
 }
 
 void CoolstreamingBase::handleMessage(cMessage *msg)
@@ -49,18 +54,19 @@ void CoolstreamingBase::initBase(){
 
     // read parameters
     param_SubstreamCount = par("substreamCount");
-    param_BufferMapIntervall = par("BufferMapIntervall");
-    param_PartnerTimeout = param_BufferMapIntervall * 5;
+    param_BufferMapInterval = par("BufferMapIntervall");
+    param_PartnerTimeout = param_BufferMapInterval * 5;
         // partnership
         param_maxNOP = par("maxNOP");
-        param_maxNOC = par("maxNOC");
-        param_CheckPartnersIntervall = par("CheckPartnersIntervall").doubleValue();
+        if (param_maxNOP < 1) param_maxNOP = 1;
+        param_CheckPartnersInterval = par("CheckPartnersIntervall").doubleValue();
 
 
     // add listener to video buffer
     m_videoBuffer->addListener(this);
 
     // bind to Gossip protocol
+    // this module is required to retrieve random peers for partnership requests
     cModule *temp = getParentModule()->getModuleByRelativePath("gossipProtocol");
     m_Gossiper = check_and_cast<GossipProtocol *>(temp);
     EV << "Binding to GossipProtocol is completed successfully" << endl;
@@ -70,14 +76,17 @@ void CoolstreamingBase::initBase(){
     timer_BufferMap     = new cMessage("COOLSTREAMING_TIMER_SEND_BUFFER_MAP");
 
     // schedule timers
-    scheduleAt(simTime() + param_CheckPartnersIntervall, timer_CheckPartners);
-    scheduleAt(simTime() + param_BufferMapIntervall, timer_BufferMap);
+    scheduleAt(simTime() + param_CheckPartnersInterval, timer_CheckPartners);
+    scheduleAt(simTime() + param_BufferMapInterval, timer_BufferMap);
 
     // DEBUG
-    const char* test = m_localAddress.str().c_str();
-    m_outFileDebug.open(test, std::fstream::out);
-    m_outFileDebug << simTime().str() << " INIT " << endl;
-    delete test;
+    debugOutput = par("debugOutput").boolValue();
+    if (debugOutput){
+        std::string filename = m_localAddress.str();
+        EV << "DEBUG_OPEN_FILE: " << filename << endl;
+        m_outFileDebug.open(filename.c_str(), std::fstream::out);
+        m_outFileDebug << simTime().str() << " INIT " << endl;
+    }
 }
 
 void CoolstreamingBase::processPacket(cPacket *pkt){
@@ -121,7 +130,8 @@ void CoolstreamingBase::processPartnershipPacket(CoolstreamingPacket *pkt){
     }
 
     if (pkt->getPacketType() == COOLSTREAMING_PARTNERSHIP_REVOKE){
-        m_outFileDebug << simTime().str() << " Got Revoke Partnership: " << src.str() << endl;
+        if (debugOutput)
+            m_outFileDebug << simTime().str() << " Got Revoke Partnership: " << src.str() << endl;
         removePartner(src);
     }
 }
@@ -136,7 +146,8 @@ CoolstreamingPartner* CoolstreamingBase::addPartner(IPvXAddress addr){
         p->setLastSeen(simTime());
     partners.push_back(p);
 
-    m_outFileDebug << simTime().str() << " Got new Partner: " << addr.str() << endl;
+    if (debugOutput)
+        m_outFileDebug << simTime().str() << " Got new Partner: " << addr.str() << endl;
 
     return p;
 }
@@ -163,7 +174,8 @@ void CoolstreamingBase::removePartner(IPvXAddress addr){
         if ( (*it)->getAddress().equals(addr) ){
             (*it)->deleted = true;
 
-            m_outFileDebug << simTime().str() << " Remove Partner: " << addr.str() << endl;
+            if (debugOutput)
+                m_outFileDebug << simTime().str() << " Remove Partner: " << addr.str() << endl;
 
             delete *it;
             partners.erase(it);
@@ -177,17 +189,14 @@ void CoolstreamingBase::removeTimeoutedPartners(){
     std::vector<CoolstreamingPartner*>::iterator it;
     for (it = partners.begin(); it != partners.end(); it++){
         if ( (*it)->getLastSeen() + param_PartnerTimeout < simTime()){ // Timed out
-            MessageBoxA(0,"Timed out!","CoolstreamingBase::removeTimeoutedPartners",0);
-            //delete *it;
+            if (debugOutput)
+                m_outFileDebug << simTime().str() << " Partner timed out: " << (*it)->getAddress().str() << endl;
+            EV << " partner timedout: " << (*it)->getAddress().str() << " @ " << m_localAddress.str() << endl;
+
             (*it)->deleted = true;
-
-            m_outFileDebug << simTime().str() << " Partner timed out: " << (*it)->getAddress().str() << endl;
-
             delete *it;
             partners.erase(it);
 
-            //partners.erase(it);
-            MessageBoxA(0,"Timed out! 2","CoolstreamingBase::removeTimeoutedPartners",0);
             return;
         }
     }
@@ -196,7 +205,7 @@ void CoolstreamingBase::removeTimeoutedPartners(){
 void CoolstreamingBase::checkPartners(){
     removeTimeoutedPartners();
 
-    scheduleAt(simTime() + param_CheckPartnersIntervall, timer_CheckPartners);
+    scheduleAt(simTime() + param_CheckPartnersInterval, timer_CheckPartners);
 }
 
 
@@ -204,27 +213,38 @@ void CoolstreamingBase::handleTimerMessage(cMessage *msg){
 
     if (msg == timer_BufferMap){
         EV << "CoolstreamingBase::timer_BufferMap" << m_localAddress.str() << endl;
-        m_outFileDebug << simTime().str() << " CoolstreamingBase::timer_BufferMap" << endl;
+        if (debugOutput)
+            m_outFileDebug << simTime().str() << " CoolstreamingBase::timer_BufferMap" << endl;
         for (int i = 0; i < param_SubstreamCount; i++){
             CoolstreamingPartner* parent = getParent(i);
             if (parent != NULL){
                 EV << "[" << i << "] " << getLatestSequenceNumber(i) << " from " << parent->getAddress().str() << endl;
-                m_outFileDebug << simTime().str() << " [" << i << "] " << getLatestSequenceNumber(i) << " (" << getLatestSequenceNumberB(i) << ") from " << parent->getAddress().str() << endl;
+                if (debugOutput)
+                    m_outFileDebug << simTime().str() << " [" << i << "] " << getLatestSequenceNumber(i) << " (" << getLatestSequenceNumberB(i) << ") from " << parent->getAddress().str() << endl;
             }
             else{
                 EV << "[" << i << "] " << getLatestSequenceNumber(i) << " NO PARENT" << endl;
-                m_outFileDebug << simTime().str() << " [" << i << "] " << getLatestSequenceNumber(i) << " (" << getLatestSequenceNumberB(i) << ") NO PARENT" << endl;
+                if (debugOutput)
+                    m_outFileDebug << simTime().str() << " [" << i << "] " << getLatestSequenceNumber(i) << " (" << getLatestSequenceNumberB(i) << ") NO PARENT" << endl;
             }
         }
 
         m_videoBuffer->printStatus();
 
+        if (debugOutput)
+            m_outFileDebug << simTime().str() << " Partners: ";
+
         std::vector<CoolstreamingPartner*>::iterator it;
         for (it = partners.begin(); it != partners.end(); it++){
+            if (debugOutput)
+                m_outFileDebug << (*it)->getAddress().str() << ", ";
             sendBufferMap( (*it) );
         }
 
-        scheduleAt(simTime() + param_BufferMapIntervall, timer_BufferMap);
+        if (debugOutput)
+            m_outFileDebug << endl;
+
+        scheduleAt(simTime() + param_BufferMapInterval, timer_BufferMap);
     }
 
     if (msg == timer_CheckPartners)
@@ -247,24 +267,16 @@ void CoolstreamingBase::sendBufferMap(CoolstreamingPartner* dest){
 }
 
 int CoolstreamingBase::getLatestSequenceNumber(int substream){
-    /*int lastKnown = m_videoBuffer->getBufferStartSeqNum() + ( substream - (m_videoBuffer->getBufferStartSeqNum() % param_SubstreamCount));
-    for(int i = m_videoBuffer->getBufferStartSeqNum(); i <= m_videoBuffer->getBufferEndSeqNum(); i++){
-        if ((i % param_SubstreamCount) == substream){
-            if ( m_videoBuffer->isInBuffer(i) )
-                lastKnown = i;
-            else
-                break;
-        }
-    }
-    return lastKnown;*/
 
     int ok = 0;
     int last = m_videoBuffer->getBufferEndSeqNum() + ( substream - (m_videoBuffer->getBufferEndSeqNum() % param_SubstreamCount));
 
+    int needed = 10;
+
     for ( int i = last; i > m_videoBuffer->getBufferStartSeqNum(); i -= param_SubstreamCount)
         if (m_videoBuffer->isInBuffer(i)){
             ok++;
-            if (ok == 5 ) return  (i + 4 * param_SubstreamCount);
+            if (ok >= needed ) return  (i + (needed-1) * param_SubstreamCount);
         }else
             ok = 0;
 
@@ -288,6 +300,9 @@ void CoolstreamingBase::processBufferMapPacket(CoolstreamingBufferMapPacket* pkt
     //MessageBoxA(0,"processBufferMapPacket_","processBufferMapPacket_",0);
     IPvXAddress src = check_and_cast<DpControlInfo *>(pkt->getControlInfo())->getSrcAddr();
 
+    if (debugOutput)
+        m_outFileDebug << simTime().str() << " Got BufferMap from " << src.str() << endl;
+
     EV << "CoolstreamingBase::processBufferMapPacket: " << src.str() << endl;
 
     //MessageBoxA(0,"processBufferMapPacket_0","processBufferMapPacket_",0);
@@ -309,13 +324,15 @@ void CoolstreamingBase::processBufferMapPacket(CoolstreamingBufferMapPacket* pkt
             delete test;*/
 
             EV << "CoolstreamingBase::processBufferMapPacket-> GotSubscribe: " << i << " _ " << pkt->getSequenceNumbers(i) << " _ " << getLatestSequenceNumber(i) << endl;
-            m_outFileDebug << simTime().str() << " Got subscribe: " << (i) << " _ " << pkt->getSequenceNumbers(i) << " from " << src.str() << endl;
+            if (debugOutput)
+                m_outFileDebug << simTime().str() << " Got subscribe: " << (i) << " _ " << pkt->getSequenceNumbers(i) << " from " << src.str() << endl;
 
             //for (int k = pkt->getSequenceNumbers(i); k < m_videoBuffer->getBufferEndSeqNum(); k += param_SubstreamCount)    // send him the "missing" packets from the substream(s)
                 //if ( (k % param_SubstreamCount) == i)
                     //sendChunk(partner, k);
         }else if ( (partner->isChild(i)) && (!pkt->getSubscribe(i)) ){
-            m_outFileDebug << simTime().str() << " Got UNsubscribe: " << (i) << " _ " << pkt->getSequenceNumbers(i) << " from " << src.str() << endl;
+            if (debugOutput)
+                m_outFileDebug << simTime().str() << " Got UNsubscribe: " << (i) << " _ " << pkt->getSequenceNumbers(i) << " from " << src.str() << endl;
         }
     //MessageBoxA(0,"processBufferMapPacket_4","processBufferMapPacket_",0);
     EV << "CoolstreamingBase::processBufferMapPacket->2" << endl;
@@ -324,30 +341,19 @@ void CoolstreamingBase::processBufferMapPacket(CoolstreamingBufferMapPacket* pkt
 }
 
 void CoolstreamingBase::sendChunk(CoolstreamingPartner* dest, int number){
-    //EV << "CoolstreamingBase::sendChunk(" << dest->addr.str() << " _ " << number << endl;
-
-    /*char* test = new char[100];
-    sprintf(test, "sendChunk: %i", number);
-    MessageBoxA(0,test,"sendChunk",0);
-    delete test;*/
 
     if (!m_videoBuffer->isInBuffer(number)) // check if we have the chunk
         return;
 
     m_forwarder->sendChunk(number, dest->getAddress(), m_destPort);
-
-    //m_outFileDebug << simTime().str() << " Sending chunk: " << (number % param_SubstreamCount) << " _ " << number << " to " << dest->getAddress().str() << endl;
-
-    /*VideoChunkPacket* pkt = m_videoBuffer->getChunk(number)->dup();
-    pkt->setPacketGroup(PACKET_GROUP_MESH_OVERLAY); // HACK to receive the packet :/
-    sendToDispatcher(pkt, m_localPort, dest->addr, m_destPort);*/
 }
 
 void CoolstreamingBase::onNewChunk(int sequenceNumber){
 
     EV << "CoolstreamingBase::onNewChunk: " << m_localAddress.str() << " " << sequenceNumber << endl;
 
-    //m_outFileDebug << simTime().str() << " Got new chunk: " << (sequenceNumber % param_SubstreamCount) << " _ " << sequenceNumber << endl;
+    if (debugOutput)
+        m_outFileDebug << simTime().str() << " Got new chunk: " << (sequenceNumber % param_SubstreamCount) << " _ " << sequenceNumber << endl;
 
     int substream = sequenceNumber % param_SubstreamCount;
 
@@ -399,16 +405,11 @@ void CoolstreamingBase::getAppSetting(void)
     m_localPort = getLocalPort();
     m_destPort = getDestPort();
 
-    param_interval_bufferMap     = m_appSetting->getBufferMapInterval();
-
     param_videoStreamBitRate    = m_appSetting->getVideoStreamBitRate();
     param_chunkSize             = m_appSetting->getChunkSize();
-    param_bufferMapSize_second  = m_appSetting->getBufferMapSizeSecond();
 
     m_videoStreamChunkRate      = m_appSetting->getVideoStreamChunkRate();
     m_bufferMapSize_chunk       = m_appSetting->getBufferMapSizeChunk();
-    m_BufferMapPacketSize_bit   = m_appSetting->getPacketSizeBufferMap() * 8;
-//    m_BufferMapPacketSize_bit   = m_appSetting->getBufferMapPacketSizeBit();
 }
 
 void CoolstreamingBase::readChannelRate(void)
@@ -456,13 +457,9 @@ double CoolstreamingBase::getDownloadBw()
     return rate;
 }
 
-void CoolstreamingBase::bindToMeshModule(void)
-{
-    cModule *temp = getParentModule()->getModuleByRelativePath("partnerList");
-    m_partnerList = check_and_cast<PartnerList *>(temp);
-    EV << "Binding to PartnerList is completed successfully" << endl;
+void CoolstreamingBase::bindToMeshModule(void){
 
-    temp = getParentModule()->getModuleByRelativePath("videoBuffer");
+    cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
     m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
     EV << "Binding to VideoBuffer is completed successfully" << endl;
 

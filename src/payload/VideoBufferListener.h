@@ -13,6 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief interface to add listeners to the videobuffer
+
 #ifndef VIDEOBUFFERLISTENER_H_
 #define VIDEOBUFFERLISTENER_H_
 
@@ -21,6 +24,7 @@ public:
     VideoBufferListener();
     virtual ~VideoBufferListener();
 
+	// @brief gets called whenever the video Buffer receives a new chunk
     virtual void onNewChunk(int sequenceNumber);
 };
 

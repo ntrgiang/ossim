@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief Wrapper class for user data for the Interface class "GossipProtocolWithUserData"
+// @ingroup membership
+// @ingroup newscast
+
 #ifndef GOSSIPUSERDATA_H_
 #define GOSSIPUSERDATA_H_
 

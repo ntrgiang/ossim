@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief the implementation of the newscast peer, inherits NewscastBase
+// @ingroup membership
+// @ingroup newscast
+
 #ifndef NEWSCASTPEER_H_
 #define NEWSCASTPEER_H_
 
