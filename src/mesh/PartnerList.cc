@@ -45,15 +45,18 @@ void PartnerList::initialize(int stage)
 void PartnerList::finish()
 {
     // Release allocated elements
-    std::map<IPvXAddress, NeighborInfo *>::iterator iter;
-    for (iter = m_map.begin(); iter != m_map.end(); ++iter)
-    {
-        if (iter->second)
-        {
-            delete iter->second;
-            iter->second = NULL;
-        }
-    }
+   m_map.clear();
+
+    //std::map<IPvXAddress, NeighborInfo *>::iterator iter;
+//    std::map<IPvXAddress, NeighborInfo>::iterator iter;
+//    for (iter = m_map.begin(); iter != m_map.end(); ++iter)
+//    {
+//        if (iter->second)
+//        {
+//            //delete iter->second;
+//            iter.second = NULL;
+//        }
+//    }
 }
 
 // Raise error
@@ -69,12 +72,21 @@ void PartnerList::print() const
 
     EV << endl;
     EV << "%%%" << endl;
+    /*
     std::map<IPvXAddress, NeighborInfo*>::iterator iter;
     int i = 1;
     for(iter = m_map.begin(); iter != m_map.end(); ++iter)
     {
         EV << "Partner " << i++ << ": " << iter->first
            << " -- upload bw: " << iter->second->getUpBw() << endl;
+    }
+    */
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
+    int i = 1;
+    for (iter = m_map.begin(); iter != m_map.end(); ++iter)
+    {
+       EV << "Partner " << i++ << ": " << iter->first
+           << " -- upload bw: " << iter->second.getUpBw() << endl;
     }
 }
 
@@ -83,7 +95,8 @@ void PartnerList::printAllSendBm() const
 
     if (ev.isGUI() == false)
         return;
-
+/*
+ *  // obsolete?
     std::map<IPvXAddress, NeighborInfo*>::iterator iter;
     int i = 0;
     for(iter = m_map.begin(); iter != m_map.end(); ++iter)
@@ -94,7 +107,17 @@ void PartnerList::printAllSendBm() const
         // -- For Donet chunk scheduling
         EV << "TimeBudget: " << iter->second->getTimeBudget() << endl;
     }
+*/
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
+    int i = 0;
+    for(iter = m_map.begin(); iter != m_map.end(); ++iter)
+    {
+        EV << "Partner " << ++i << ": " << iter->first;
+        iter->second.printSendBm();
 
+        // -- For Donet chunk scheduling
+        EV << "TimeBudget: " << iter->second.getTimeBudget() << endl;
+    }
 
 }
 
@@ -103,7 +126,8 @@ void PartnerList::updateBoundSendBm(SEQUENCE_NUMBER_T head,
                                     SEQUENCE_NUMBER_T end) const
 {
     Enter_Method("print()");
-
+/*
+  // obsolete
     std::map<IPvXAddress, NeighborInfo*>::iterator iter;
     for(iter = m_map.begin(); iter != m_map.end(); ++iter)
     {
@@ -111,13 +135,22 @@ void PartnerList::updateBoundSendBm(SEQUENCE_NUMBER_T head,
         iter->second->setSeqNumSendBmStart(start);
         iter->second->setSeqNumSendBmEnd(end);
     }
+*/
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
+    for(iter = m_map.begin(); iter != m_map.end(); ++iter)
+    {
+        iter->second.setSeqNumSendBmHead(head);
+        iter->second.setSeqNumSendBmStart(start);
+        iter->second.setSeqNumSendBmEnd(end);
+    }
 }
 
 void PartnerList::updateBoundSendBm(SEQUENCE_NUMBER_T start,
                                     SEQUENCE_NUMBER_T end) const
 {
     Enter_Method("print()");
-
+/*
+ * obsolete?
     std::map<IPvXAddress, NeighborInfo*>::iterator iter;
     for(iter = m_map.begin(); iter != m_map.end(); ++iter)
     {
@@ -125,14 +158,31 @@ void PartnerList::updateBoundSendBm(SEQUENCE_NUMBER_T start,
         iter->second->setSeqNumSendBmStart(start);
         iter->second->setSeqNumSendBmEnd(end);
     }
+*/
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
+    for(iter = m_map.begin(); iter != m_map.end(); ++iter)
+    {
+        iter->second.setSeqNumSendBmHead(-1L);
+        iter->second.setSeqNumSendBmStart(start);
+        iter->second.setSeqNumSendBmEnd(end);
+    }
+
 }
 
 void PartnerList::resetNChunkScheduled()
 {
+   /*
+   //obsolete?
     std::map<IPvXAddress, NeighborInfo*>::iterator iter;
     for(iter = m_map.begin(); iter != m_map.end(); ++iter)
     {
         iter->second->setNChunkScheduled(0);
+    }
+    */
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
+    for(iter = m_map.begin(); iter != m_map.end(); ++iter)
+    {
+        iter->second.setNChunkScheduled(0);
     }
 }
 
@@ -181,8 +231,11 @@ void PartnerList::addAddress(const IPvXAddress &addr)
     if (isPartner(addr) == true)
         return;
 
-    NeighborInfo *nbr_info = new NeighborInfo(m_bufferSize);
-    m_map.insert(std::pair<IPvXAddress, NeighborInfo *>(addr, nbr_info));
+    NeighborInfo nbr_info(m_bufferSize);
+    m_map.insert(std::pair<IPvXAddress, NeighborInfo>(addr, nbr_info));
+
+//    NeighborInfo *nbr_info = new NeighborInfo(m_bufferSize);
+//    m_map.insert(std::pair<IPvXAddress, NeighborInfo *>(addr, nbr_info));
 
     // second version
     /*
@@ -205,12 +258,19 @@ void PartnerList::addAddress(const IPvXAddress &addr, double upBw)
     if (isPartner(addr) == true)
         return;
 
-    NeighborInfo *nbr_info = new NeighborInfo(m_bufferSize);
-    nbr_info->setUpBw(upBw);
-    nbr_info->setUploadRate_Chunk(0);
+// obsolete
+//    NeighborInfo *nbr_info = new NeighborInfo(m_bufferSize);
+//    nbr_info->setUpBw(upBw);
+//    nbr_info->setUploadRate_Chunk(0);
+//    // -- Insert the pair into the map
+//    m_map.insert(std::pair<IPvXAddress, NeighborInfo *>(addr, nbr_info));
+
+    NeighborInfo nbr_info(m_bufferSize);
+    nbr_info.setUpBw(upBw);
+    nbr_info.setUploadRate_Chunk(0);
 
     // -- Insert the pair into the map
-    m_map.insert(std::pair<IPvXAddress, NeighborInfo *>(addr, nbr_info));
+    m_map.insert(std::pair<IPvXAddress, NeighborInfo>(addr, nbr_info));
 }
 
 void PartnerList::addAddress(const IPvXAddress &addr, double upBw, int nChunk)
@@ -222,16 +282,26 @@ void PartnerList::addAddress(const IPvXAddress &addr, double upBw, int nChunk)
     if (isPartner(addr) == true)
         return;
 
-    NeighborInfo *nbr_info = new NeighborInfo(m_bufferSize);
-    nbr_info->setUpBw(upBw);
-    nbr_info->setUploadRate_Chunk(nChunk);
+// obsolete
+//    NeighborInfo *nbr_info = new NeighborInfo(m_bufferSize);
+//    nbr_info->setUpBw(upBw);
+//    nbr_info->setUploadRate_Chunk(nChunk);
+//    // Partnership management
+//    nbr_info->setCountChunkReceived(0L);
+//    nbr_info->setCountChunkSent(0L);
+//    // -- Insert the pair into the map
+//    m_map.insert(std::pair<IPvXAddress, NeighborInfo *>(addr, nbr_info));
+
+    NeighborInfo nbr_info(m_bufferSize);
+    nbr_info.setUpBw(upBw);
+    nbr_info.setUploadRate_Chunk(nChunk);
 
     // Partnership management
-    nbr_info->setCountChunkReceived(0L);
-    nbr_info->setCountChunkSent(0L);
+    nbr_info.setCountChunkReceived(0L);
+    nbr_info.setCountChunkSent(0L);
 
     // -- Insert the pair into the map
-    m_map.insert(std::pair<IPvXAddress, NeighborInfo *>(addr, nbr_info));
+    m_map.insert(std::pair<IPvXAddress, NeighborInfo>(addr, nbr_info));
 }
 
 /*
@@ -247,7 +317,21 @@ void PartnerList::updateNeighborInfo(NeighborInfo *)
 int PartnerList::updateStoredBufferMap(IPvXAddress address, BufferMap *bm)
 {
     Enter_Method("updateStoredBufferMap()");
-    std::map<IPvXAddress, NeighborInfo *>::iterator iter;
+
+    // obsolete
+//    std::map<IPvXAddress, NeighborInfo *>::iterator iter;
+//    iter = m_map.find(address);
+
+//    if (iter == m_map.end())
+//    {
+//        // address is not in the partnerList
+//        return -RVALUE_ERROR;
+//    }
+
+//    iter->second->copyFrom(bm);
+//    iter->second->setLastRecvBmTime(simTime().dbl());
+
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
     iter = m_map.find(address);
 
     if (iter == m_map.end())
@@ -256,8 +340,8 @@ int PartnerList::updateStoredBufferMap(IPvXAddress address, BufferMap *bm)
         return -RVALUE_ERROR;
     }
 
-    iter->second->copyFrom(bm);
-    iter->second->setLastRecvBmTime(simTime().dbl());
+    iter->second.copyFrom(bm);
+    iter->second.setLastRecvBmTime(simTime().dbl());
 
 /*
     if (iter->second) delete iter->second;
@@ -317,17 +401,45 @@ void PartnerList::getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddre
     // EV << "Enter getHolderList!!!!" << endl;
 
     holderList.clear();
-    std::map<IPvXAddress, NeighborInfo *>::iterator iter;
 
+    // obsolete
+//    std::map<IPvXAddress, NeighborInfo *>::iterator iter;
+
+//    for (iter = m_map.begin(); iter != m_map.end(); ++iter)
+//    {
+//        NeighborInfo *nbr_info = iter->second;
+//        if (nbr_info->getLastRecvBmTime() != -1)
+//        {
+//            EV << "  -- At peer " << iter->first << ": ";
+//            if (nbr_info->isInRecvBufferMap(seq_num))
+//            {
+//                if (nbr_info->getNChunkScheduled() < nbr_info->getUploadRate_Chunk())
+//                {
+//                   holderList.push_back(iter->first);
+//                   // EV << "\tPartner " << iter->first << " HAS the chunk " << seq_num << endl;
+//                }
+//            }
+//            else
+//            {
+//                // EV << "\tPartner " << iter->first << " does NOT have chunk " << seq_num << endl;
+//            }
+//        }
+//        else
+//        {
+//            // EV << "\tBufferMap from " << iter->first << " is too old!" << endl;
+//        }
+//    }
+
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
     for (iter = m_map.begin(); iter != m_map.end(); ++iter)
     {
-        NeighborInfo *nbr_info = iter->second;
-        if (nbr_info->getLastRecvBmTime() != -1)
+        NeighborInfo nbr_info = iter->second;
+        if (nbr_info.getLastRecvBmTime() != -1)
         {
             EV << "  -- At peer " << iter->first << ": ";
-            if (nbr_info->isInRecvBufferMap(seq_num))
+            if (nbr_info.isInRecvBufferMap(seq_num))
             {
-                if (nbr_info->getNChunkScheduled() < nbr_info->getUploadRate_Chunk())
+                if (nbr_info.getNChunkScheduled() < nbr_info.getUploadRate_Chunk())
                 {
                    holderList.push_back(iter->first);
                    // EV << "\tPartner " << iter->first << " HAS the chunk " << seq_num << endl;
@@ -342,21 +454,49 @@ void PartnerList::getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddre
         {
             // EV << "\tBufferMap from " << iter->first << " is too old!" << endl;
         }
-    }
+    } // for
+
 }
 
-NeighborInfo* PartnerList::getNeighborInfo(const IPvXAddress &address) const
+bool PartnerList::hasAddress(const IPvXAddress & address) const
 {
-    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
     iter = m_map.find(address);
-    if (iter == m_map.end()) return NULL;
+    if (iter == m_map.end())
+       return false;
 
+    return true;
+}
+
+const NeighborInfo & PartnerList::getNeighborInfo(const IPvXAddress &address) const
+{
+   // obsolete
+//    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+//    iter = m_map.find(address);
+//    if (iter == m_map.end()) return NULL;
+//    return iter->second;
+
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
+    iter = m_map.find(address);
     return iter->second;
 }
 
 void PartnerList::printRecvBm(const IPvXAddress &address)
 {
-    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+// obsolete
+//    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+//    iter = m_map.find(address);
+//    if (iter == m_map.end())
+//    {
+//        EV << "The address " << address << " is not found!" << endl;
+//    }
+//    else
+//    {
+//        EV << "\t\tPartner " << address << " sent: " << endl;
+//        iter->second->printRecvBm();
+//    }
+
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
     iter = m_map.find(address);
     if (iter == m_map.end())
     {
@@ -365,13 +505,26 @@ void PartnerList::printRecvBm(const IPvXAddress &address)
     else
     {
         EV << "\t\tPartner " << address << " sent: " << endl;
-        iter->second->printRecvBm();
+        iter->second.printRecvBm();
     }
 
 }
 void PartnerList::printSendBm(const IPvXAddress &address)
 {
-    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+// obsolete
+//    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+//    iter = m_map.find(address);
+//    if (iter == m_map.end())
+//    {
+//        EV << "The address " << address << " is not found!" << endl;
+//    }
+//    else
+//    {
+//        EV << "Partner " << address << " will receive this: ";
+//        iter->second->printSendBm();
+//    }
+
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
     iter = m_map.find(address);
     if (iter == m_map.end())
     {
@@ -380,34 +533,57 @@ void PartnerList::printSendBm(const IPvXAddress &address)
     else
     {
         EV << "Partner " << address << " will receive this: ";
-        iter->second->printSendBm();
+        iter->second.printSendBm();
     }
 }
 
 void PartnerList::clearAllSendBm(void)
 {
-    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+// obsolete
+//    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+//    for (iter=m_map.begin(); iter != m_map.end(); ++iter)
+//    {
+//        iter->second->clearSendBm();
+//    }
+
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
     for (iter=m_map.begin(); iter != m_map.end(); ++iter)
     {
-        iter->second->clearSendBm();
+        iter->second.clearSendBm();
     }
 }
 
 void PartnerList::clearAllTimeBudget(void)
 {
-    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+// obsolete
+//    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+//    for (iter=m_map.begin(); iter != m_map.end(); ++iter)
+//    {
+//        iter->second->setTimeBudget(0.0);
+//    }
+
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
     for (iter=m_map.begin(); iter != m_map.end(); ++iter)
     {
-        iter->second->setTimeBudget(0.0);
+        iter->second.setTimeBudget(0.0);
     }
+
 }
 
 void PartnerList::resetAllAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUMBER_T win_start, double chunkInterval)
 {
-    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+// obsolete
+//    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+//    for (iter=m_map.begin(); iter != m_map.end(); ++iter)
+//    {
+//        iter->second->resetVectorAvailableTime(vb_start, win_start, chunkInterval);
+//    }
+
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
     for (iter=m_map.begin(); iter != m_map.end(); ++iter)
     {
-        iter->second->resetVectorAvailableTime(vb_start, win_start, chunkInterval);
+        iter->second.resetVectorAvailableTime(vb_start, win_start, chunkInterval);
     }
+
 }
 

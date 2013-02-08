@@ -83,7 +83,8 @@ public:
 
     //virtual void updateNeighborInfo(NeighborInfo *);
 
-    NeighborInfo* getNeighborInfo(const IPvXAddress &address) const;
+   bool hasAddress(const IPvXAddress & address) const;
+    const NeighborInfo & getNeighborInfo(const IPvXAddress &address) const;
 
     /*
      *
@@ -110,7 +111,8 @@ public:
     void printSendBm(const IPvXAddress &address);
 
 private:
-    typedef std::map<IPvXAddress, NeighborInfo *> AddressList;
+    //typedef std::map<IPvXAddress, NeighborInfo *> AddressList;
+    typedef std::map<IPvXAddress, NeighborInfo> AddressList;
     mutable AddressList m_map;
     int m_bufferSize;
 

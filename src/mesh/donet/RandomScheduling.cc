@@ -83,13 +83,13 @@ void DonetPeer::randomChunkScheduling(void)
                 EV << "  -- Holder for chunk " << seq_num << " is " << holderList[index] << endl;
 
                 // -- Preparing to access record of partner to set the sendBM
-                NeighborInfo *nbr_info = m_partnerList->getNeighborInfo(holderList[index]);
+                NeighborInfo nbr_info = m_partnerList->getNeighborInfo(holderList[index]);
 
                 // -- Debug
                 // if (!nbr_info) EV << "Null pointer for neighborInfo" << endl;
 //                m_reqChunkId.record(seq_num);
 
-                nbr_info->setElementSendBm(seq_num, true);
+                nbr_info.setElementSendBm(seq_num, true);
 
                 m_list_requestedChunk.push_back(seq_num);
                 ++m_nChunkRequested_perSchedulingInterval;
@@ -118,18 +118,37 @@ void DonetPeer::randomChunkScheduling(void)
 
     // -- Browse through the list of partners to see which one have been set the sendBm
     // -- For each of those one, prepare a suitable ChunkRequestPacket and send to that one
-    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+
+//    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+//    for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
+//    {
+//        if (iter->second->isSendBmModified() == true)
+//        {
+//            EV << "Destination of the ChunkRequestPacket " << iter->first << " :" << endl;
+//            iter->second->printSendBm();
+
+//            MeshChunkRequestPacket *chunkReqPkt = new MeshChunkRequestPacket("MESH_PEER_CHUNK_REQUEST");
+//                chunkReqPkt->setBitLength(m_appSetting->getPacketSizeChunkRequest());
+//                // -- Map the sendBM into ChunkRequestPacket
+//                iter->second->copyTo(chunkReqPkt);
+
+//            // -- Send the copy
+//            sendToDispatcher(chunkReqPkt, m_localPort, iter->first, m_destPort);
+//        }
+//    } // end of for
+
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
     for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
     {
-        if (iter->second->isSendBmModified() == true)
+        if (iter->second.isSendBmModified() == true)
         {
             EV << "Destination of the ChunkRequestPacket " << iter->first << " :" << endl;
-            iter->second->printSendBm();
+            iter->second.printSendBm();
 
             MeshChunkRequestPacket *chunkReqPkt = new MeshChunkRequestPacket("MESH_PEER_CHUNK_REQUEST");
                 chunkReqPkt->setBitLength(m_appSetting->getPacketSizeChunkRequest());
                 // -- Map the sendBM into ChunkRequestPacket
-                iter->second->copyTo(chunkReqPkt);
+                iter->second.copyTo(chunkReqPkt);
 
             // -- Send the copy
             sendToDispatcher(chunkReqPkt, m_localPort, iter->first, m_destPort);

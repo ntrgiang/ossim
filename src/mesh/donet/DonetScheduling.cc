@@ -65,18 +65,18 @@ void DonetPeer::donetChunkScheduling(void)
         if (nHolder == 1)
         {
             // -- Get pointer to the respective NeighborInfo
-            NeighborInfo *nbr_info = m_partnerList->getNeighborInfo(holderList[0]);
+            NeighborInfo nbr_info = m_partnerList->getNeighborInfo(holderList[0]);
             // -- Set the respective element in the SendBm to say that this chunk should be requested
-            nbr_info->setElementSendBm(expected_set[i], true);
+            nbr_info.setElementSendBm(expected_set[i], true);
 
             // -- Get peer's upload bandwidth
-            double peerUpBw = nbr_info->getUpBw();
+            double peerUpBw = nbr_info.getUpBw();
 
             // -- Browse through the expected_set
             int currentSize = copied_expected_set.size();
             for (int k = 0; k < currentSize; ++k)
             {
-                nbr_info->updateChunkAvailTime(copied_expected_set[k], (param_chunkSize*8)/peerUpBw);
+                nbr_info.updateChunkAvailTime(copied_expected_set[k], (param_chunkSize*8)/peerUpBw);
             }
             // -- Delete the chunk whose supplier had been found
             std::vector<SEQUENCE_NUMBER_T>::iterator iter;
@@ -134,18 +134,18 @@ void DonetPeer::donetChunkScheduling(void)
             }
 
             // -- Get pointer to the respective NeighborInfo
-            NeighborInfo *nbr_info = m_partnerList->getNeighborInfo(supplier);
+            NeighborInfo nbr_info = m_partnerList->getNeighborInfo(supplier);
             // -- Set the respective element in the SendBm to say that this chunk should be requested
-            nbr_info->setElementSendBm(seq_num, true);
+            nbr_info.setElementSendBm(seq_num, true);
 
             // -- Get peer's upload bandwidth
-            double peerUpBw = nbr_info->getUpBw();
+            double peerUpBw = nbr_info.getUpBw();
 
             // -- Browse through the expected_set
             int currentSize = copied_expected_set.size();
             for (int k = 0; k < currentSize; ++k)
             {
-                nbr_info->updateChunkAvailTime(copied_expected_set[k], (param_chunkSize*8)/peerUpBw);
+                nbr_info.updateChunkAvailTime(copied_expected_set[k], (param_chunkSize*8)/peerUpBw);
             }
             // -- Delete the chunk whose supplier had been found
             // copied_expected_set.erase(expected_set[i]);
@@ -172,22 +172,42 @@ void DonetPeer::donetChunkScheduling(void)
 
     // -- Browse through the list of partners to see which one have been set the sendBm
     // -- For each of those one, prepare a suitable ChunkRequestPacket and send to that one
-    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+// obsolete
+//    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
+//    for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
+//    {
+//        if (iter->second->isSendBmModified() == true)
+//        {
+//            EV << "-------Destination of the ChunkRequestPacket " << iter->first << " :" << endl;
+//            iter->second->printSendBm();
+
+//            MeshChunkRequestPacket *chunkReqPkt = new MeshChunkRequestPacket;
+//                chunkReqPkt->setBitLength(m_appSetting->getPacketSizeChunkRequest());
+//                // -- Map the sendBM into ChunkRequestPacket
+//                iter->second->copyTo(chunkReqPkt);
+
+//            // -- Send the copy
+//            sendToDispatcher(chunkReqPkt, m_localPort, iter->first, m_destPort);
+//        }
+//    } // end of for
+
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
     for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
     {
-        if (iter->second->isSendBmModified() == true)
+        if (iter->second.isSendBmModified() == true)
         {
             EV << "-------Destination of the ChunkRequestPacket " << iter->first << " :" << endl;
-            iter->second->printSendBm();
+            iter->second.printSendBm();
 
             MeshChunkRequestPacket *chunkReqPkt = new MeshChunkRequestPacket;
                 chunkReqPkt->setBitLength(m_appSetting->getPacketSizeChunkRequest());
                 // -- Map the sendBM into ChunkRequestPacket
-                iter->second->copyTo(chunkReqPkt);
+                iter->second.copyTo(chunkReqPkt);
 
             // -- Send the copy
             sendToDispatcher(chunkReqPkt, m_localPort, iter->first, m_destPort);
         }
     } // end of for
+
 } // Donet Chunk Scheduling
 

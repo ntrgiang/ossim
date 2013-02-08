@@ -131,7 +131,8 @@ void DonetBase::sendBufferMap(void)
 
     // 3. Browse through the local NeighborList
     //    & Send the BufferMap Packet to all of the neighbors in the list
-    map<IPvXAddress, NeighborInfo *>::iterator iter;
+    //map<IPvXAddress, NeighborInfo *>::iterator iter;
+    map<IPvXAddress, NeighborInfo>::iterator iter;
     for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
     {
         // send the packet to this neighbor
