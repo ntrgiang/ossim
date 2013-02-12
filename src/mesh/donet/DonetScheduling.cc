@@ -216,7 +216,6 @@ void DonetPeer::donetChunkScheduling(void)
  */
 int DonetPeer::selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candidate1, IPvXAddress candidate2, IPvXAddress &supplier)
 {
-
     int ret = 0;
     // -- Get pointer to the respective NeighborInfo
 
