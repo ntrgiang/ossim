@@ -29,3 +29,10 @@ src/Makefile.copy
 src/so
 src/mesh/MeshPeerStreamingPacket_m.cc
 src/mesh/MeshPeerStreamingPacket_m.h
+src/membership/GossipMembershipPacket_m.cc
+src/membership/GossipMembershipPacket_m.h
+src/payload/VideoChunkPacket_m.cc
+src/payload/VideoChunkPacket_m.h
+src/tree/TreePeerStreamingPacket_m.cc
+src/tree/TreePeerStreamingPacket_m.h
+
