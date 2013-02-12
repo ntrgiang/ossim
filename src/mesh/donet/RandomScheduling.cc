@@ -18,12 +18,12 @@ void DonetPeer::randomChunkScheduling(void)
 //    long lower_bound = std::max(0L, m_seqNum_schedWinHead-m_bufferMapSize_chunk+1);
 
     // -- New scheduling windows
-//    long lower_bound = m_sched_window.start;
-//    long upper_bound = m_sched_window.end;
+    long lower_bound = m_sched_window.start;
+    long upper_bound = m_sched_window.end;
 
     // -- New update scheme which takes into account the initialized scheduling window
-    long lower_bound = std::max(m_seqNum_schedWinStart, m_sched_window.start);
-    long upper_bound = lower_bound + m_bufferMapSize_chunk - 1;
+//    long lower_bound = std::max(m_seqNum_schedWinStart, m_sched_window.start);
+//    long upper_bound = lower_bound + m_bufferMapSize_chunk - 1;
     //long lower_bound = std::max(0L, m_seqNum_schedWinHead-m_bufferMapSize_chunk+1);
 
 
@@ -49,7 +49,6 @@ void DonetPeer::randomChunkScheduling(void)
         {
             EV << "-- This chunk is NOT in the Buffer" << endl;
             // -- Debug -- Counting
-            ++nNewChunkForRequest_perSchedulingCycle;
 
             if (should_be_requested(seq_num) == false)
             {
@@ -62,11 +61,11 @@ void DonetPeer::randomChunkScheduling(void)
             m_partnerList->getHolderList(seq_num, holderList);
             int nHolder = holderList.size();
 
-            // EV << "-- There are " << nHolder << " suppliers" << endl;
-
             // if there is at least one neighbor
             if (nHolder > 0)
             {
+                ++nNewChunkForRequest_perSchedulingCycle;
+
                 int index = -1;
                 if (nHolder == 1)
                 {
@@ -75,21 +74,20 @@ void DonetPeer::randomChunkScheduling(void)
                 }
                 else
                 {
-                    //index = (int)(rand() % holderList.size());
                     index = (int)intrand(holderList.size());
-                    EV << "  -- There are " << nHolder << " holders, random index: " << index << " -- ";
+                    //EV << "  -- There are " << nHolder << " holders, random index: " << index << " -- ";
                 } // if
 
                 EV << "  -- Holder for chunk " << seq_num << " is " << holderList[index] << endl;
 
                 // -- Preparing to access record of partner to set the sendBM
-                NeighborInfo nbr_info = m_partnerList->getNeighborInfo(holderList[index]);
+                NeighborInfo *nbr_info = m_partnerList->getNeighborInfo(holderList[index]);
 
                 // -- Debug
                 // if (!nbr_info) EV << "Null pointer for neighborInfo" << endl;
 //                m_reqChunkId.record(seq_num);
 
-                nbr_info.setElementSendBm(seq_num, true);
+                nbr_info->setElementSendBm(seq_num, true);
 
                 m_list_requestedChunk.push_back(seq_num);
                 ++m_nChunkRequested_perSchedulingInterval;
@@ -101,7 +99,7 @@ void DonetPeer::randomChunkScheduling(void)
             } // if (nHolder > 0)
             else
             {
-                EV << "  -- There is no holder" << endl;
+//                EV << "  -- There is no holder" << endl;
             }
 
         } // end of if(inBuffer)
@@ -118,24 +116,6 @@ void DonetPeer::randomChunkScheduling(void)
 
     // -- Browse through the list of partners to see which one have been set the sendBm
     // -- For each of those one, prepare a suitable ChunkRequestPacket and send to that one
-
-//    std::map<IPvXAddress, NeighborInfo*>::iterator iter;
-//    for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
-//    {
-//        if (iter->second->isSendBmModified() == true)
-//        {
-//            EV << "Destination of the ChunkRequestPacket " << iter->first << " :" << endl;
-//            iter->second->printSendBm();
-
-//            MeshChunkRequestPacket *chunkReqPkt = new MeshChunkRequestPacket("MESH_PEER_CHUNK_REQUEST");
-//                chunkReqPkt->setBitLength(m_appSetting->getPacketSizeChunkRequest());
-//                // -- Map the sendBM into ChunkRequestPacket
-//                iter->second->copyTo(chunkReqPkt);
-
-//            // -- Send the copy
-//            sendToDispatcher(chunkReqPkt, m_localPort, iter->first, m_destPort);
-//        }
-//    } // end of for
 
     std::map<IPvXAddress, NeighborInfo>::iterator iter;
     for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
@@ -159,8 +139,11 @@ void DonetPeer::randomChunkScheduling(void)
     refreshListRequestedChunk();
 
     // -- Move the scheduling window forward
-    m_sched_window.start += m_videoStreamChunkRate;
-    m_sched_window.end  += m_videoStreamChunkRate;
+    if (m_player->getPlayerState() == PLAYER_STATE_PLAYING)
+    {
+       m_sched_window.start += m_videoStreamChunkRate;
+       m_sched_window.end  += m_videoStreamChunkRate;
+    }
 
     // -- Report statistics
     emit(sig_nChunkRequested, m_nChunkRequested_perSchedulingInterval);
@@ -168,4 +151,3 @@ void DonetPeer::randomChunkScheduling(void)
     EV << endl;
 }
 // Random Chunk Scheduling
-
