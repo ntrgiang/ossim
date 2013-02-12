@@ -84,7 +84,7 @@ public:
     //virtual void updateNeighborInfo(NeighborInfo *);
 
    bool hasAddress(const IPvXAddress & address) const;
-    const NeighborInfo & getNeighborInfo(const IPvXAddress &address) const;
+   NeighborInfo * getNeighborInfo(const IPvXAddress &address) const;
 
     /*
      *
