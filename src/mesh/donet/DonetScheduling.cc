@@ -65,18 +65,18 @@ void DonetPeer::donetChunkScheduling(void)
         if (nHolder == 1)
         {
             // -- Get pointer to the respective NeighborInfo
-            NeighborInfo nbr_info = m_partnerList->getNeighborInfo(holderList[0]);
+            NeighborInfo *nbr_info = m_partnerList->getNeighborInfo(holderList[0]);
             // -- Set the respective element in the SendBm to say that this chunk should be requested
-            nbr_info.setElementSendBm(expected_set[i], true);
+            nbr_info->setElementSendBm(expected_set[i], true);
 
             // -- Get peer's upload bandwidth
-            double peerUpBw = nbr_info.getUpBw();
+            double peerUpBw = nbr_info->getUpBw();
 
             // -- Browse through the expected_set
             int currentSize = copied_expected_set.size();
             for (int k = 0; k < currentSize; ++k)
             {
-                nbr_info.updateChunkAvailTime(copied_expected_set[k], (param_chunkSize*8)/peerUpBw);
+                nbr_info->updateChunkAvailTime(copied_expected_set[k], (param_chunkSize*8)/peerUpBw);
             }
             // -- Delete the chunk whose supplier had been found
             std::vector<SEQUENCE_NUMBER_T>::iterator iter;
@@ -134,18 +134,18 @@ void DonetPeer::donetChunkScheduling(void)
             }
 
             // -- Get pointer to the respective NeighborInfo
-            NeighborInfo nbr_info = m_partnerList->getNeighborInfo(supplier);
+            NeighborInfo *nbr_info = m_partnerList->getNeighborInfo(supplier);
             // -- Set the respective element in the SendBm to say that this chunk should be requested
-            nbr_info.setElementSendBm(seq_num, true);
+            nbr_info->setElementSendBm(seq_num, true);
 
             // -- Get peer's upload bandwidth
-            double peerUpBw = nbr_info.getUpBw();
+            double peerUpBw = nbr_info->getUpBw();
 
             // -- Browse through the expected_set
             int currentSize = copied_expected_set.size();
             for (int k = 0; k < currentSize; ++k)
             {
-                nbr_info.updateChunkAvailTime(copied_expected_set[k], (param_chunkSize*8)/peerUpBw);
+                nbr_info->updateChunkAvailTime(copied_expected_set[k], (param_chunkSize*8)/peerUpBw);
             }
             // -- Delete the chunk whose supplier had been found
             // copied_expected_set.erase(expected_set[i]);
@@ -211,3 +211,49 @@ void DonetPeer::donetChunkScheduling(void)
 
 } // Donet Chunk Scheduling
 
+/**
+ * Used for Donet chunk scheduling
+ */
+int DonetPeer::selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candidate1, IPvXAddress candidate2, IPvXAddress &supplier)
+{
+
+    int ret = 0;
+    // -- Get pointer to the respective NeighborInfo
+
+    NeighborInfo *info_candidate1 = m_partnerList->getNeighborInfo(candidate1);
+    NeighborInfo *info_candidate2 = m_partnerList->getNeighborInfo(candidate2);
+
+    if (info_candidate1->getChunkAvailTime(seq_num) > (param_chunkSize*8)/info_candidate1->getUpBw())
+    {
+        if (info_candidate2->getChunkAvailTime(seq_num) > (param_chunkSize*8)/info_candidate2->getUpBw())
+        {
+            if (info_candidate1->getUpBw() > info_candidate2->getUpBw())
+            {
+                supplier = candidate1;
+            }
+            else
+            {
+                supplier = candidate2;
+            }
+        }
+        else
+        {
+            supplier = candidate1;
+        }
+    }
+    else
+    {
+        if (info_candidate2->getChunkAvailTime(seq_num) > (param_chunkSize*8)/info_candidate2->getUpBw())
+        {
+            supplier = candidate2;
+        }
+        else
+        {
+            ret = -1;
+            // -- Just a /Padding code/
+            supplier = candidate1;
+        }
+    }
+
+    return ret;
+}
