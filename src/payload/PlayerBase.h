@@ -6,21 +6,22 @@
 #include "AppSettingDonet.h"
 #include "GlobalStatistic.h"
 
-/*
 #define PLAYER_STATE_IDLE       0
 #define PLAYER_STATE_BUFFERING  1
 #define PLAYER_STATE_PLAYING    2
 #define PLAYER_STATE_STALLED    3
 
-#define EVENT_CHUNK_NOT_IN_BUFFER   0
-#define EVENT_CHUNK_IN_BUFFER       1
-*/
+//#define EVENT_CHUNK_NOT_IN_BUFFER   0
+//#define EVENT_CHUNK_IN_BUFFER       1
 
 class PlayerBase : public cSimpleModule {
 //class PlayerBase {
 public:
     PlayerBase() {};
     virtual ~PlayerBase() {};
+
+protected:
+    virtual void handleMessage(cMessage *msg) = 0;
 
 public:
     virtual void activate(void) = 0;
@@ -30,6 +31,8 @@ public:
 
     virtual long int getCountChunkHit(void) = 0;
     virtual long int getCountChunkMiss(void) = 0;
+
+    virtual int getPlayerState(void) = 0;
 
     //inline long int getCountChunkHit(void) { return m_countChunkHit; }
     //inline long int getCountChunkMiss(void) { return m_countChunkMiss; }
