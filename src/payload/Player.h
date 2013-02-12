@@ -55,7 +55,7 @@ protected:
     double param_interval_recheckVideoBuffer;
     int m_chunkSize; // Bytes
 
-   // -- Some new parameters for the Finite State Machine
+    // -- Some new parameters for the Finite State Machine
     int m_state;
     double param_percent_buffer_low, param_percent_buffer_high;
     int param_max_skipped_chunk;
@@ -72,11 +72,13 @@ protected:
     GlobalStatistic *m_stat;
 
     // -- Signal for data collection
+    simsignal_t sig_timePlayerStart;
+
     simsignal_t sig_chunkHit;
     simsignal_t sig_chunkMiss;
     simsignal_t sig_chunkSeek;
-    simsignal_t sig_rebuffering_local;
 
+    simsignal_t sig_rebuffering_local;
     simsignal_t sig_rebuffering;
     simsignal_t sig_stall;
 

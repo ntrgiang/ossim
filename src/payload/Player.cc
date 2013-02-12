@@ -84,6 +84,11 @@ void Player::initialize(int stage)
     m_countChunkHit = 0L;
     m_countChunkMiss = 0L;
 
+    // -------------------------------------------------------------------------
+    // Signals
+    // -------------------------------------------------------------------------
+    sig_timePlayerStart = registerSignal("Signal_timePlayerStart");
+
     // -- Schedule the first event for the first chunk
 //    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);
 
@@ -95,12 +100,14 @@ void Player::initialize(int stage)
 
 void Player::activate(void)
 {
+    Enter_Method("activate()");
+
+    EV << "Player activated" << endl;
     if (m_state != PLAYER_STATE_IDLE)
         throw cException("Wrong Player state %d while expecting %d", m_state, PLAYER_STATE_IDLE);
 
     m_state = PLAYER_STATE_BUFFERING;
     scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
-
 }
 
 void Player::finish()
@@ -110,6 +117,8 @@ void Player::finish()
 
 void Player::handleMessage(cMessage *msg)
 {
+    Enter_Method("handleMessage");
+
     if (!msg->isSelfMessage())
     {
         throw cException("This module does NOT process external messages!");
@@ -121,6 +130,8 @@ void Player::handleMessage(cMessage *msg)
 
 void Player::handleTimerMessage(cMessage *msg)
 {
+    Enter_Method("handleTimerMessage");
+
     if (msg == timer_playerStart)
     {
         switch (m_state)
@@ -129,13 +140,23 @@ void Player::handleTimerMessage(cMessage *msg)
         {
             if (m_videoBuffer->getPercentFill() < param_percent_buffer_high)
             {
+               EV << "*********************************************************" << endl;
+               EV << "Buffer filled not enough! Should not start the player now!" << endl;
+
                 // Probe the status of the buffer again
                 scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
             }
             else
             {
-               // -- Change state to PLAYING
+                // -- Change state to PLAYING
                 m_state = PLAYER_STATE_PLAYING;
+
+                EV << "*********************************************************" << endl;
+                EV << "Player starts now" << endl;
+                EV << "*********************************************************" << endl;
+
+                // Signal
+                emit(sig_timePlayerStart, simTime().dbl());
 
                 if (m_id_nextChunk <= m_videoBuffer->getBufferStartSeqNum())
                     m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
@@ -281,7 +302,7 @@ void Player::handleTimerMessage(cMessage *msg)
             }
             }
         }
-    }
+    } // not in Buffer
 
 //    if (msg == timer_nextChunk)
 //    {
