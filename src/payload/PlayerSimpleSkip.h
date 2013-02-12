@@ -8,10 +8,10 @@
 #include "AppSettingDonet.h"
 #include "GlobalStatistic.h"
 
-#define PLAYER_STATE_IDLE       0
-#define PLAYER_STATE_BUFFERING  1
-#define PLAYER_STATE_PLAYING    2
-#define PLAYER_STATE_STALLED    3
+//#define PLAYER_STATE_IDLE       0
+//#define PLAYER_STATE_BUFFERING  1
+//#define PLAYER_STATE_PLAYING    2
+//#define PLAYER_STATE_STALLED    3
 
 #define EVENT_CHUNK_NOT_IN_BUFFER   0
 #define EVENT_CHUNK_IN_BUFFER       1
@@ -22,11 +22,11 @@ public:
     virtual ~PlayerSimpleSkip();
 
 protected:
-    virtual int numInitStages() const { return 4; }
-    virtual void initialize(int stage);
-    virtual void finish();
+    int numInitStages() const { return 4; }
+    void initialize(int stage);
+    void finish();
 
-    virtual void handleMessage(cMessage *msg);
+    void handleMessage(cMessage *msg);
     void handleTimerMessage(cMessage *msg);
 
 public:
@@ -37,6 +37,8 @@ public:
 
     inline long int getCountChunkHit(void) { return m_countChunkHit; }
     inline long int getCountChunkMiss(void) { return m_countChunkMiss; }
+
+    inline int getPlayerState(void) { return m_state; }
 
 private:
     bool shouldResumePlaying(SEQUENCE_NUMBER_T seq_num);
@@ -75,10 +77,12 @@ protected:
     simsignal_t sig_chunkHit;
     simsignal_t sig_chunkMiss;
     simsignal_t sig_chunkSeek;
-    simsignal_t sig_rebuffering_local;
 
+    simsignal_t sig_rebuffering_local;
     simsignal_t sig_rebuffering;
     simsignal_t sig_stall;
+
+    simsignal_t sig_timePlayerStart;
 };
 
 #endif /* PLAYER_H_ */

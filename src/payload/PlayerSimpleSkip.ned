@@ -27,6 +27,9 @@ simple PlayerSimpleSkip like PlayerBase
       //@statistic[rebuffering](title="Number of Re-buffering events"; source=Signal_Rebuffering; record=sum,vector);
       //@statistic[stall](title="Number of stall events"; source=Signal_Stall; record=sum,vector);
 
+      @statistic[timePlayerStart](source=Signal_timePlayerStart; record=last);
+
+
 }
 
 

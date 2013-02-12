@@ -87,6 +87,11 @@ void PlayerSimpleSkip::initialize(int stage)
     // -- Schedule the first event for the first chunk
 //    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);
 
+    // -------------------------------------------------------------------------
+    // Signals
+    // -------------------------------------------------------------------------
+    sig_timePlayerStart = registerSignal("Signal_timePlayerStart");
+
     WATCH(m_videoBuffer);
     WATCH(m_appSetting);
     WATCH(m_chunkSize);
@@ -96,6 +101,10 @@ void PlayerSimpleSkip::initialize(int stage)
 
 void PlayerSimpleSkip::activate(void)
 {
+   Enter_Method("activate()");
+
+   EV << "Player (Simple skip) activated!" << endl;
+
     if (m_state != PLAYER_STATE_IDLE)
         throw cException("Wrong Player state %d while expecting %d", m_state, PLAYER_STATE_IDLE);
 
@@ -111,6 +120,8 @@ void PlayerSimpleSkip::finish()
 
 void PlayerSimpleSkip::handleMessage(cMessage *msg)
 {
+   Enter_Method("handleTimerMessage()");
+
     if (!msg->isSelfMessage())
     {
         throw cException("This module does NOT process external messages!");
@@ -122,14 +133,22 @@ void PlayerSimpleSkip::handleMessage(cMessage *msg)
 
 void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
 {
+   Enter_Method("handleTimerMessage()");
+
+   EV << "Handle Timer Message" << endl;
+
     if (msg == timer_playerStart)
     {
+       EV << "Timer_playerStart" << endl;
+
         switch (m_state)
         {
         case PLAYER_STATE_BUFFERING:
         {
             if (m_videoBuffer->getPercentFill() < param_percent_buffer_high)
             {
+               EV << "Buffer filled not enough, should wait more!" << endl;
+
                 // Probe the status of the buffer again
                 scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
             }
@@ -138,6 +157,10 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
                // -- Change state to PLAYING
                 m_state = PLAYER_STATE_PLAYING;
 
+                m_videoBuffer->printStatus();
+
+                EV << "Player starts playing" << endl;
+
                 if (m_id_nextChunk <= m_videoBuffer->getBufferStartSeqNum())
                     m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
                 else if (m_id_nextChunk > m_videoBuffer->getBufferEndSeqNum())
@@ -145,6 +168,8 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
                                      m_id_nextChunk,
                                      m_videoBuffer->getBufferStartSeqNum(),
                                      m_videoBuffer->getBufferEndSeqNum());
+
+                emit(sig_timePlayerStart, simTime().dbl());
 
                 scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
             }
@@ -345,6 +370,7 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
 void PlayerSimpleSkip::startPlayer()
 {
     Enter_Method("startPlayer");
+
     scheduleAt(simTime(), timer_nextChunk);
 
     EV << "Player starts with chunk " << m_id_nextChunk << endl;
