@@ -89,10 +89,12 @@ simple DonetPeer extends DonetBase
     @statistic[bufferHead](source=Signal_BufferHead; record=vector);
 
 
-    @statistic[inThroughput](source=Signal_InThroughput; record=vector);
+    @statistic[inThroughput](source=Signal_InThroughput; record=mean,vector);
 
-    @statistic[rateBufferMapReceived](source=Signal_nBufferMapReceived; record=vector);
+    @statistic[rateBufferMapReceived](source=Signal_nBufferMapReceived; record=mean,vector);
 
+
+    // Template::
     //@statistic[n]();
 
 
