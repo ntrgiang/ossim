@@ -21,6 +21,12 @@ struct SchedulingWindow
    SEQUENCE_NUMBER_T end, head, start;
 };
 
+struct DataExchange
+{
+   double m_time;
+   double m_throughput;
+};
+
 class DonetPeer : public DonetBase
 {
 public:
