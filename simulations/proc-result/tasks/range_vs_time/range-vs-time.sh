@@ -4,7 +4,7 @@
    PROTOCOL="DONET"
    SCHEDULING="RANDOM"
    N_NODE=6
-   DURATION=200
+   DURATION=400
 
 # ------------ Metrics -------------
 #   METRIC1="minStart"
@@ -19,7 +19,7 @@
    CONF_INT=0.9 # Confidence Interval
 
 # ------------ Additional parameters
-   PEER_NUMBER=2
+   PEER_NUMBER=0
    MODULE="peerNode[$PEER_NUMBER]"
    echo $MODULE
 
