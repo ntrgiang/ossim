@@ -41,6 +41,8 @@ void DonetPeer::randomChunkScheduling(void)
 
     EV << "----- Browsing through the chunks within the scheduling windows-----" << endl;
 
+    printListOfRequestedChunk();
+
     // -- Looking for chunk to request
     for (SEQUENCE_NUMBER_T seq_num = lower_bound; seq_num <= upper_bound; ++seq_num)
     {
