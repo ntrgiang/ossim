@@ -61,6 +61,9 @@ void AppSettingDonet::initialize()
     constant_packet_size_mesh_partnership_accept_ack = 1;
         // 1 byte: Packet type
 
+    constant_packet_size_mesh_partnership_leave = 1;
+        // 1 byte: Packet type
+
     if (m_bufferMapSize_chunk % 8 == 0)
         constant_packet_size_mesh_buffer_map = 1 + 4 + m_bufferMapSize_chunk / 8;
             // 1 (Byte): Packet Type
@@ -143,6 +146,11 @@ int AppSettingDonet::getPacketSizePartnershipReject(void) const
 int AppSettingDonet::getPacketSizePartnershipAcceptAck(void) const
 {
     return constant_packet_size_mesh_partnership_accept_ack;
+}
+
+int AppSettingDonet::getPacketSizePartnershipLeave(void) const
+{
+    return constant_packet_size_mesh_partnership_leave;
 }
 
 int AppSettingDonet::getPacketSizeBufferMap(void) const

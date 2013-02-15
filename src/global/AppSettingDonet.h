@@ -44,6 +44,7 @@ public:
     int getPacketSizePartnershipAccept(void) const;
     int getPacketSizePartnershipReject(void) const;
     int getPacketSizePartnershipAcceptAck(void) const;
+    int getPacketSizePartnershipLeave(void) const;
     int getPacketSizeBufferMap(void) const;
     int getPacketSizeChunkRequest(void) const;
 
@@ -65,6 +66,7 @@ protected:
     int constant_packet_size_mesh_partnership_accept;
     int constant_packet_size_mesh_partnership_reject;
     int constant_packet_size_mesh_partnership_accept_ack;
+    int constant_packet_size_mesh_partnership_leave;
     int constant_packet_size_mesh_buffer_map;
     int constant_packet_size_mesh_chunk_request;
 
