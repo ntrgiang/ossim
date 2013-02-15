@@ -442,4 +442,19 @@ void DonetBase::addPartner(IPvXAddress remote, double upbw)
    m_gstat->writePartnership2File(getNodeAddress(), remote);
 }
 
+void DonetBase::processPartnershipLeave(cPacket *pkt)
+{
+   Enter_Method("processPartnershipLeave()");
+   EV << endl << "-------- Process partnership Leave --------------------------------" << endl;
 
+   // -- Get the identifier (IP:port) and upBw of the requester
+   IPvXAddress leavingAddress = IPvXAddress("10.0.0.9");;
+   int senderPort = 0;
+   getSender(pkt, leavingAddress, senderPort);
+   //MeshChunkRequestPacket *reqPkt = check_and_cast<MeshChunkRequestPacket *>(pkt);
+
+   EV << "Chunk request received from " << leavingAddress << ": " << endl;
+
+   m_partnerList->deleteAddress(leavingAddress);
+
+}

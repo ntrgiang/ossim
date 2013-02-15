@@ -57,6 +57,7 @@ protected:
     void considerAcceptPartner(PendingPartnershipRequest requester);
     bool canAcceptMorePartner(void);
     void addPartner(IPvXAddress remote, double bw);
+    void processPartnershipLeave(cPacket *pkt);
 
     // Timer
     void handleTimerTimeoutWaitingAccept();
