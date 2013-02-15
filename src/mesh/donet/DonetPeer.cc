@@ -410,6 +410,11 @@ void DonetPeer::processPacket(cPacket *pkt)
         processPartnershipReject(pkt);
         break;
     }
+    case MESH_PARTNERSHIP_LEAVE:
+    {
+        processPartnershipLeave(pkt);
+        break;
+    }
     default:
     {
         throw cException("Unrecognized packet types! %d", meshMsg->getPacketType());
@@ -570,6 +575,8 @@ void DonetPeer::addPartner(IPvXAddress remote, double upbw)
 //   DonetBase::addPartner(remote, upbw);
    int nChunk = (int)(param_interval_chunkScheduling*upbw/param_chunkSize/8); // per scheduling cycle
    m_partnerList->addAddress(remote, upbw, nChunk);
+
+//   m_forwarder->getRecordChunk();
 }
 
 
@@ -844,6 +851,18 @@ void DonetPeer::handleTimerPartnershipRefinement()
 
 void DonetPeer::handleTimerPartnerlistCleanup()
 {
+   Enter_Method("handleTimerPartnerlistCleanup()");
+
+   //return;
+
+   EV << endl << "**************************************************************" << endl;
+   EV << "Cleaning up partnerlist !!!" << endl;
+
+   if (m_partnerList->getSize() <= 2)
+   {
+      EV << "Minimum partnership size, should not cleanup now" << endl;
+      return;
+   }
 
 //   std::map<IPvXAddress, NeighborInfo>::iterator iter;
 //   for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
@@ -857,6 +876,152 @@ void DonetPeer::handleTimerPartnerlistCleanup()
 //         break; // delete only one address at a time
 //      }
 //   }
+
+   // --------------------------------------------------------------------------
+   // --- Update the records
+   // --------------------------------------------------------------------------
+
+    //std::map<IPvXAddress, double> list_exchange;
+    std::map<IPvXAddress, DataExchange> list_exchange;
+
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
+    for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
+    {
+       IPvXAddress address = iter->first;
+       RecordCountChunk record;
+       DataExchange de_total;
+
+//       IPvXAddress bad_ip("0.0.0.2");
+//       if (address == bad_ip)
+//       {
+//          EV << "Strange address " << address << " aloha" << endl;
+//       }
+
+       m_forwarder->getRecordChunk(address, record);
+       de_total.m_time = record.m_oriTime;
+
+       EV << "Partner " << address << endl
+          << "\t from time " << record.m_oriTime << endl;
+       if (record.m_oriTime != -1.0)
+       {
+          long int totalChunkExchanged = record.m_chunkReceived + record.m_chunkSent;
+          double duration = simTime().dbl() - record.m_oriTime;
+
+          if (duration != 0.0)
+          {
+//             EV << "Average data exchanged with peer " << address << " : (chunks/s)" << endl;
+//             EV << "\t Outgoing: " << (long double) record.m_chunkSent / duration << endl;
+//             EV << "\t Incoming: " << (long double) record.m_chunkReceived / duration << endl;
+//             EV << "\t Total: " << (long double)totalChunkExchanged / duration << endl;
+
+             de_total.m_throughput = (double)totalChunkExchanged / duration;
+
+             list_exchange.insert(std::pair<IPvXAddress, DataExchange>(address, de_total));
+          }
+          else
+          {
+             de_total.m_throughput = 0.0;
+          }
+       } // if != -1.0
+       else
+       {
+          // EV << "No data exchanged with peer " << address << " yet!" << endl;
+          de_total.m_throughput = 0.0;
+
+          list_exchange.insert(std::pair<IPvXAddress, DataExchange>(address, de_total));
+       }
+       EV << "\t throughput " << de_total.m_throughput << endl;
+    } // for
+
+    // -- debug
+    EV << "Print list_exchange:" << endl;
+    for (std::map<IPvXAddress, DataExchange>::iterator iter = list_exchange.begin();
+         iter != list_exchange.end(); ++iter)
+    {
+       EV << " --- " << "Address: " << iter->first << endl;
+    }
+
+    // --------------------------------------------------------------------------
+    // --- Update the records
+    // --------------------------------------------------------------------------
+    IPvXAddress address_minThroughput = IPvXAddress("10.0.0.9");
+    double minThroughput = (double)INT_MAX;
+    double time_minThroughput = 0.0;
+
+//    std::map<IPvXAddress, DataExchange>::iterator it = list_exchange.begin();
+//    address_minThroughput = iter->first;
+//    minThroughput = it->second.m_throughput;
+
+//    EV << "********************************************************************" << endl;
+//    EV << address_minThroughput << " -- " << minThroughput << " 0" << endl;
+
+//    for(; it != list_exchange.end(); ++it)
+//    {
+//       if (minThroughput > it->second.m_throughput)
+//       {
+//          minThroughput          = it->second.m_throughput;
+//          address_minThroughput  = it->first;
+//          time_minThroughput      = it->second.m_time;
+
+//          EV << address_minThroughput << " -- " << minThroughput << endl;
+//       }
+//    } // for
+
+    for (std::map<IPvXAddress, DataExchange>::iterator iter = list_exchange.begin();
+         iter != list_exchange.end(); ++iter)
+    {
+       EV << "m_throughput = " << iter->second.m_throughput
+          << " -- address = " << iter->first
+          << " -- time = " << iter->second.m_time << endl;
+
+       if (minThroughput > iter->second.m_throughput)
+       {
+          minThroughput         = iter->second.m_throughput;
+          address_minThroughput = iter->first;
+          time_minThroughput    = iter->second.m_time;
+
+          EV << address_minThroughput << " -- " << minThroughput << endl;
+       }
+    } // for
+
+    EV << "Partner " << address_minThroughput << endl
+       << "\t with min throughput " << minThroughput << endl
+       << "\t from time " << time_minThroughput << endl;
+
+    if (address_minThroughput == IPvXAddress("10.0.0.9"))
+    {
+       EV << "Something wrong, partnershipSize = " << m_partnerList->getSize() << endl;
+    }
+
+    if (time_minThroughput != -1.0)
+    {
+       if ((simTime() - time_minThroughput) > 10.0 /*seconds*/)
+       {
+          EV << "Partner to be removed: " << address_minThroughput << " hehehe" << endl;
+
+          if (m_partnerList->getSize() > 1)
+          {
+             m_partnerList->deleteAddress(address_minThroughput);
+             m_forwarder->removeRecord(address_minThroughput);
+
+             MeshPartnershipLeavePacket *leavePkt = new MeshPartnershipLeavePacket("MESH_PEER_LEAVE_PARTNER");
+             leavePkt->setBitLength(m_appSetting->getPacketSizePartnershipLeave());
+             sendToDispatcher(leavePkt, m_localPort, address_minThroughput, m_destPort);
+          }
+          else
+          {
+             EV << "Only one partner left --> no removal at all" << endl;
+          }
+       }
+       else
+       {
+          EV << "The idle period is not long enough" << endl;
+       }
+    }
+    else
+    {
+       EV << "First time to inquire the record for address " << address_minThroughput << endl;
+    }
 
 }
 
@@ -887,6 +1052,10 @@ void DonetPeer::updateDataExchangeRecord(void)
       {
          iter->second.setAverageChunkReceived(record.m_chunkReceived / interval);
          iter->second.setAverageChunkSent(record.m_chunkSent / interval);
+      }
+      else if (interval == 0)
+      {
+         EV << "First record to be stored" << endl;
       }
       else
       {
@@ -1066,9 +1235,47 @@ void DonetPeer::chunkScheduling()
        m_scheduling_started = true;
     }
 
+    // -------------------------------------------------------------------------
+    // --- Show the statistics on data exchange with partners
+    // -------------------------------------------------------------------------
+    EV << "*********************************************************************" << endl;
+    std::map<IPvXAddress, NeighborInfo>::iterator iter;
+    for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
+    {
+       IPvXAddress address = iter->first;
+       RecordCountChunk record;
+
+       m_forwarder->getRecordChunk(address, record);
+       if (record.m_oriTime != -1.0)
+       {
+          long int totalChunkExchanged = record.m_chunkReceived + record.m_chunkSent;
+          double duration = simTime().dbl() - record.m_oriTime;
+
+          if (duration != 0.0)
+          {
+             EV << "Average data exchanged with peer " << address << " : (chunks/s)" << endl;
+             EV << "\t Outgoing: " << (long double) record.m_chunkSent / duration << endl;
+             EV << "\t Incoming: " << (long double) record.m_chunkReceived / duration << endl;
+             EV << "\t Total: " << (long double)totalChunkExchanged / duration << endl;
+          }
+       } // if != -1.0
+       else
+       {
+          EV << "No data exchanged with peer " << address << " yet!" << endl;
+       }
+    } // for
+    EV << "*********************************************************************" << endl;
 
     // -- Update the range variables (for statistics collection)
     updateRange();
+
+    EV << "Partners of " << getNodeAddress() << ": ";
+    for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+         iter != m_partnerList->m_map.end(); ++iter)
+    {
+       EV << iter->first << " -- ";
+    }
+    EV << endl;
 
     // -------------------------------------------------------------------------
     // --- Debugging
@@ -1301,9 +1508,6 @@ bool DonetPeer::recentlyRequestedChunk(SEQUENCE_NUMBER_T seq_num)
     EV << "%%%" << endl;
     vector<SEQUENCE_NUMBER_T>::iterator it;
     it = find (m_list_requestedChunk.begin(), m_list_requestedChunk.end(), seq_num);
-
-    // -- Debug
-    printListOfRequestedChunk();
 
     if (it == m_list_requestedChunk.end())
     {
