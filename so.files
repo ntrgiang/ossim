@@ -41,11 +41,7 @@ src/common/Dispatcher.cc
 src/common/Dispatcher.h
 src/common/Dispatcher.ned
 src/common/DpControlInfo.msg
-src/common/DpControlInfo_m.cc
-src/common/DpControlInfo_m.h
 src/common/PeerStreamingPacket.msg
-src/common/PeerStreamingPacket_m.cc
-src/common/PeerStreamingPacket_m.h
 src/global/churn/ExponentialChurnModel.cc
 src/global/churn/ExponentialChurnModel.h
 src/global/churn/ExponentialChurnModel.ned
@@ -105,8 +101,6 @@ src/membership/scamp/ScampSourceNode.ned
 src/membership/Contact.cc
 src/membership/Contact.h
 src/membership/GossipMembershipPacket.msg
-src/membership/GossipMembershipPacket_m.cc
-src/membership/GossipMembershipPacket_m.h
 src/membership/IMemMan.ned
 src/membership/MCache.cc
 src/membership/MCache.h
@@ -132,8 +126,6 @@ src/mesh/donet/DonetSourceNode.ned
 src/mesh/BufferMap.cc
 src/mesh/BufferMap.h
 src/mesh/MeshPeerStreamingPacket.msg
-src/mesh/MeshPeerStreamingPacket_m.cc
-src/mesh/MeshPeerStreamingPacket_m.h
 src/mesh/NeighborInfo.cc
 src/mesh/NeighborInfo.h
 src/mesh/PartnerList.cc
@@ -152,11 +144,7 @@ src/payload/VideoBuffer.cc
 src/payload/VideoBuffer.h
 src/payload/VideoBuffer.ned
 src/payload/VideoChunkPacket.msg
-src/payload/VideoChunkPacket_m.cc
-src/payload/VideoChunkPacket_m.h
 src/tree/TreePeerStreamingPacket.msg
-src/tree/TreePeerStreamingPacket_m.cc
-src/tree/TreePeerStreamingPacket_m.h
 src/package.ned
 build.sh
 CHANGES
