@@ -99,7 +99,7 @@ void GlobalStatistic::initialize(int stage)
     EV << "Binding to activePeerTable is completed successfully" << endl;
 
     m_outFile.open(par("gstatLog").stringValue(), fstream::out);
-    m_outFile << "test" << endl;
+    //m_outFile << "test" << endl;
 
     scheduleAt(simTime() + param_interval_reportCI, timer_reportCI);
 
@@ -181,8 +181,8 @@ void GlobalStatistic::finish()
 //                << " -- Min: " << m_finalSizePV.getMin()
 //                << " -- Mean: " << m_finalSizePV.getMean() << endl;
 
-    EV << "Work around with subscriptions: " << endl;
-    EV << "NEW: " << m_count_NEW << " -- IGN: " << m_count_IGN << " -- ACK: " << m_count_ACK << endl;
+//    EV << "Work around with subscriptions: " << endl;
+//    EV << "NEW: " << m_count_NEW << " -- IGN: " << m_count_IGN << " -- ACK: " << m_count_ACK << endl;
 
     // -- Record a scalar value
 //    EV << "Accumulated PVsize: " << m_accumulatedSizePV << endl;
