@@ -143,7 +143,13 @@ void Forwarder::getRecordChunk(IPvXAddress &addr, RecordCountChunk& record)
    {
       record.m_chunkReceived = -1L;
       record.m_chunkSent = -1L;
-      record.m_oriTime = -1L;
+      record.m_oriTime = -1.0;
+
+      RecordCountChunk newRecord;
+      newRecord.m_chunkReceived = 0L;
+      newRecord.m_chunkSent = 0L;
+      newRecord.m_oriTime = simTime().dbl();
+      m_record_countChunk.insert(std::pair<IPvXAddress, RecordCountChunk>(addr, newRecord));
    }
    else
    {
@@ -153,3 +159,16 @@ void Forwarder::getRecordChunk(IPvXAddress &addr, RecordCountChunk& record)
    }
 }
 
+void Forwarder::removeRecord(const IPvXAddress &address)
+{
+   std::map<IPvXAddress, RecordCountChunk>::iterator iter;
+   iter = m_record_countChunk.find(address);
+
+   if (iter == m_record_countChunk.end())
+   {
+      EV << "No element with address " << address << " found!" << endl;
+      return;
+   }
+
+   m_record_countChunk.erase(iter);
+}

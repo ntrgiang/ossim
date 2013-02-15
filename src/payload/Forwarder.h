@@ -24,6 +24,7 @@ struct RecordCountChunk
 {
    long int m_chunkReceived;
    long int m_chunkSent;
+//   long int m_chunkExchanged;
    double m_oriTime; // Time when the record was created for the first time
 };
 
@@ -46,6 +47,8 @@ public:
 
    void updateSentChunkRecord(IPvXAddress &destAddress);
    void updateReceivedChunkRecord(IPvXAddress &senderAddress);
+
+   void removeRecord(const IPvXAddress & address);
 
 //
 //protected:
