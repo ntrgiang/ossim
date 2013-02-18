@@ -13,6 +13,10 @@ simple DonetSource extends DonetBase
         // Partnership
         int maxNOP = default(5);
 
+        // Statistics
+        @statistic[nPartner](source=Signal_nPartner; record=last,vector);
+
+
 }
 
 

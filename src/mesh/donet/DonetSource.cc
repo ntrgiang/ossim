@@ -71,6 +71,8 @@ void DonetSource::initialize(int stage)
     m_nChunkRequestReceived = 0L;
     m_nChunkSent = 0L;
 
+    sig_nPartner = registerSignal("Signal_nPartner");
+
     // -------------------------------------------------------------------------
     // -------------------------------- WATCH ----------------------------------
     // -------------------------------------------------------------------------
@@ -132,6 +134,9 @@ void DonetSource::handleTimerMessage(cMessage *msg)
         sendBufferMap();
         scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
 
+        // -- Doing some statistical reporting stuff
+        emit(sig_nPartner, m_partnerList->getSize());
+
     }
     else if (msg == timer_sendReport)
     {
@@ -175,6 +180,7 @@ void DonetSource::processPacket(cPacket *pkt)
     case MESH_BUFFER_MAP:
     {
         // Does NOTHING! Video Source does not process Buffer Map
+        processPeerBufferMap(pkt);
         break;
     }
     default:
@@ -188,3 +194,44 @@ void DonetSource::processPacket(cPacket *pkt)
     delete pkt;
 }
 
+void DonetSource::processPeerBufferMap(cPacket *pkt)
+{
+   EV << endl;
+   EV << "---------- Process received buffer map ------------------------------" << endl;
+
+   IPvXAddress senderAddress = getSender(pkt);
+   EV << "-- Received a buffer map from " << senderAddress << endl;
+
+   if (m_partnerList->hasAddress(senderAddress) == false)
+   {
+      EV << "-- Buffer Map is received from a non-partner peer!" << endl;
+      return;
+   }
+
+
+   NeighborInfo *nbr_info = m_partnerList->getNeighborInfo(senderAddress);
+
+   // -- Cast to the BufferMap packet
+//   MeshBufferMapPacket *bmPkt = check_and_cast<MeshBufferMapPacket *>(pkt);
+
+//    EV << "-- Buffer Map information: " << endl;
+//    EV << "  -- Start:\t"   << bmPkt->getBmStartSeqNum()    << endl;
+//    EV << "  -- End:\t"     << bmPkt->getBmEndSeqNum()      << endl;
+//    EV << "  -- Head:\t"    << bmPkt->getHeadSeqNum()       << endl;
+
+    // -- Copy the BufferMap content to the current record
+//    nbr_info->copyFrom(bmPkt);
+
+    // -- Update the timestamp of the received BufferMap
+    nbr_info->setLastRecvBmTime(simTime().dbl());
+
+    // -- Update the range of the scheduling window
+//    m_seqNum_schedWinHead = (bmPkt->getHeadSeqNum() > m_seqNum_schedWinHead)?
+//            bmPkt->getHeadSeqNum():m_seqNum_schedWinHead;
+//    EV << "-- Head for the scheduling window: " << m_seqNum_schedWinHead << endl;
+
+    // -- Debug
+//    ++m_nBufferMapRecv;
+//    nbr_info->printRecvBm();
+    // m_partnerList->printRecvBm(senderAddress);
+}

@@ -20,9 +20,12 @@ protected:
     void handleTimerMessage(cMessage *msg);
 
 private:
+   void processPeerBufferMap(cPacket *pkt);
+
 	// -- Partnership Management
 //	void processPartnershipRequest(cPacket *pkt);
 	void acceptJoinRequestFromPeer(IPvXAddress &reqPeerAddress, double bw);
+
 	//bool canHaveMorePartner(void);
 
 private:
@@ -32,6 +35,9 @@ private:
 
     int totalBytesUploaded;
     int totalBytesDownloaded;
+
+    // -- Signals
+    simsignal_t sig_nPartner;
 
 };
 
