@@ -232,6 +232,13 @@ void ActivePeerTable::addPeerAddress(const IPvXAddress &address, int maxNOP)
 //   emit(sig_size, 1);
 }
 
+void ActivePeerTable::removePeerAddress(const IPvXAddress &address)
+{
+   Enter_Method("removePeerAddress");
+
+   m_activePeerList.erase(address);
+}
+
 /*
 void ActivePeerTable::addSourceAddress(const IPvXAddress &address)
 {

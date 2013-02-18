@@ -67,6 +67,7 @@ public:
 
     void addPeerAddress(const IPvXAddress &address, int maxNOP=0);
     void addSourceAddress(const IPvXAddress &address, int maxNOP=0);
+    void removePeerAddress(const IPvXAddress &address);
 
     void incrementNPartner(const IPvXAddress &addr);
     void decrementNPartner(const IPvXAddress &addr);
