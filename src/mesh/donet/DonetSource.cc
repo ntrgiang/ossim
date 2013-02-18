@@ -37,9 +37,13 @@ void DonetSource::initialize(int stage)
     findNodeAddress();
 
     param_maxNOP = par("maxNOP");
+    param_interval_partnerlistCleanup = par("interval_partnerlistCleanup");
 
     timer_sendBufferMap = new cMessage("MESH_SOURCE_TIMER_SEND_BUFFERMAP");
     timer_sendReport    = new cMessage("MESH_SOURCE_TIMER_SEND_REPORT");
+
+    timer_partnerListCleanup = new cMessage("MESH_SOURCE_TIMER_PARTNERLIST_CLEANUP");
+
 
     // -- Register itself to the Active Peer Table
     m_apTable->addSourceAddress(getNodeAddress(), param_maxNOP);
@@ -49,6 +53,7 @@ void DonetSource::initialize(int stage)
     // -------------------------------------------------------------------------
     // -- Schedule events
     scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
+    scheduleAt(simTime() + param_interval_partnerlistCleanup, timer_partnerListCleanup);
 
     // -- Report Logged Statistic to global module
     // scheduleAt(getSimTimeLimit() - uniform(0.05, 0.95), timer_sendReport);
@@ -138,11 +143,58 @@ void DonetSource::handleTimerMessage(cMessage *msg)
         emit(sig_nPartner, m_partnerList->getSize());
 
     }
+    else if (msg == timer_partnerListCleanup)
+    {
+       handleTimerPartnerlistCleanup();
+       scheduleAt(simTime() + param_interval_partnerlistCleanup, timer_partnerListCleanup);
+    }
     else if (msg == timer_sendReport)
     {
        handleTimerReport();
     }
 }
+
+void DonetSource::handleTimerPartnerlistCleanup()
+{
+   Enter_Method("handleTimerPartnerlistCleanup()");
+
+   if (m_partnerList->getSize() == 0)
+   {
+      EV << "Empty partner list" << endl;
+      return;
+   }
+
+   std::vector<IPvXAddress> removeAddressList;
+
+   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+        iter != m_partnerList->m_map.end(); ++iter)
+   {
+      //IPvXAddress address = iter->first;
+
+      double timeDiff = simTime().dbl() - iter->second.getLastRecvBmTime();
+      EV << "Partner to be examined " << iter->first << " with time diff " << timeDiff << endl;
+
+      if (timeDiff > param_threshold_idleDuration_buffermap)
+      {
+         removeAddressList.push_back(iter->first);
+
+         EV << "Partner " << iter->first << " was deleted" << endl;
+      }
+   }
+
+   EV << "Number of partners to be removed " << removeAddressList.size() << endl;
+
+   // Delete the list of addresses
+   for (std::vector<IPvXAddress>::iterator iter = removeAddressList.begin();
+        iter != removeAddressList.end(); ++iter)
+   {
+      m_partnerList->deleteAddress(*iter);
+   }
+
+   EV << "Current size of the partnerlist of the source: " << m_partnerList->getSize() << endl;
+
+}
+
 
 /*
  * This function DELETE the message

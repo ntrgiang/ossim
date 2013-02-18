@@ -18,6 +18,7 @@ protected:
 
     virtual void processPacket(cPacket *pkt);
     void handleTimerMessage(cMessage *msg);
+    void handleTimerPartnerlistCleanup(void);
 
 private:
    void processPeerBufferMap(cPacket *pkt);

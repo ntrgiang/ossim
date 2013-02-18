@@ -125,10 +125,9 @@ private:
     //cMessage *timer_timeout_waiting_accept;
     //cMessage *timer_timeout_waiting_ack;
     cMessage *timer_timeout_waiting_response;
-//    cMessage *timer_rejoin;
     cMessage *timer_partnershipRefinement;
 
-    cMessage *timer_partnerListCleanup;
+    //cMessage *timer_partnerListCleanup;
 
 // -----------------------------------------------------------------------------
 //                               Parameters

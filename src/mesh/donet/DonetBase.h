@@ -93,6 +93,8 @@ protected:
     int param_chunkSize;
 
     double param_interval_bufferMap;
+    double param_interval_partnerlistCleanup;
+    double param_threshold_idleDuration_buffermap;
 
     // -- Variables for settings
     int m_videoStreamChunkRate;     /* in [chunks/second] */
@@ -102,6 +104,7 @@ protected:
     // -- Timer messages
     cMessage *timer_sendBufferMap;
     cMessage *timer_sendReport;
+    cMessage *timer_partnerListCleanup;
 
     // -- Pointers to /global/ modules
     AppSettingDonet         *m_appSetting;

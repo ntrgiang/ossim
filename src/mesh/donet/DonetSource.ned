@@ -12,6 +12,7 @@ simple DonetSource extends DonetBase
         
         // Partnership
         int maxNOP = default(5);
+        double interval_partnerlistCleanup      @unit(s) = default(0.5s);
 
         // Statistics
         @statistic[nPartner](source=Signal_nPartner; record=last,vector);

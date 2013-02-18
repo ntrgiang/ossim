@@ -30,6 +30,7 @@ simple DonetPeer extends DonetBase
         // Thresholds
         // int nNeighbor = default(4);
         // int threshold_nNeighbor = default(1);
+        // double threshold_idleDuration_buffermap @unit(s) = default(0.5s);
         
         // The following two are just for testing
         int nNeighbor_SchedulingStart = default(1);
@@ -39,7 +40,6 @@ simple DonetPeer extends DonetBase
         double requestFactor_moderate = default(1.0);
         double requestFactor_aggressive = default(2.0);
         double threshold_scarity = default(1);
-        double threshold_idleDuration_buffermap @unit(s) = default(0.5s);
         
         int maxNOP = default(2); // Max number of partners
         int offsetNOP = default(1); // The difference between minNOP and maxNOP

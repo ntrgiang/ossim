@@ -118,6 +118,7 @@ private:
 
     friend class DonetPeer;
     friend class DonetBase;
+    friend class DonetSource;
 
 };
 
