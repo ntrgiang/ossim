@@ -66,7 +66,7 @@ simple DonetPeer extends DonetBase
         
         //@statistic[pRejectReceived](title="Partnership reject received"; source=Signal_pRejectReceived; record=count,last,vector);
 
-      @statistic[NumberOfJoin](title="Number of Joins"; source=Signal_Join; record=count,vector);
+      @statistic[NumberOfJoin](title="Number of Joins"; source=Signal_Join; record=count);
 
 // ----------- Partnership request --------------
     @statistic[pRequestSent](title="Partnership request sent"; source=Signal_pRequestSent; record=count,vector);

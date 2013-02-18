@@ -50,6 +50,7 @@ private:
 //    void readChannelRate(void);
 
     void cancelAndDeleteAllTimer();
+    void cancelAllTimer();
 
     // *************************************************************************
     // *************************************************************************
@@ -107,8 +108,8 @@ private:
     bool inScarityState(void);
 
 
-    bool shouldStartPlayer(void);
-    void startPlayer(void);
+//    bool shouldStartPlayer(void);
+//    void startPlayer(void);
 
 private:
 // -----------------------------------------------------------------------------
@@ -209,13 +210,13 @@ private:
     // -------------------------------- Signals --------------------------------
 
     // -- For ranges of received buffer maps, and current playback point
-    simsignal_t sig_currentPlaybackPoint;
-    simsignal_t sig_minStart;
-    simsignal_t sig_maxStart;
-    simsignal_t sig_minHead;
-    simsignal_t sig_maxHead;
-    simsignal_t sig_bufferStart;
-    simsignal_t sig_bufferHead;
+       simsignal_t sig_currentPlaybackPoint;
+       simsignal_t sig_minStart;
+       simsignal_t sig_maxStart;
+       simsignal_t sig_minHead;
+       simsignal_t sig_maxHead;
+       simsignal_t sig_bufferStart;
+       simsignal_t sig_bufferHead;
 
     simsignal_t sig_localCI;
     simsignal_t sig_myci;
