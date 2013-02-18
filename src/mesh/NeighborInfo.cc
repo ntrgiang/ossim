@@ -9,7 +9,7 @@
 using namespace std;
 
 NeighborInfo::NeighborInfo(int bmSize)
-: m_lastRecvBmTime(-1.0)
+: m_lastRecvBmTime(simTime().dbl())
 , m_bufferSize(bmSize) /* m_lastKeepAliveTime(-1.0) */
 , m_upBw(-1.0)
 , m_seqNum_recvBmStart(-1L), m_seqNum_recvBmEnd(-1L), m_seqNum_recvBmHead(-1L)
