@@ -702,17 +702,17 @@ bool DonetPeer::findPartner()
 
 bool DonetPeer::sendPartnershipRequest(void)
 {
-    IPvXAddress addressRandPeer;
-    int count = 0;
+    IPvXAddress addressRandPeer = getNodeAddress();
+    short count = 0;
     do
     {
-         count++;
-//        addressRandPeer = m_apTable->getARandPeer();
-         addressRandPeer = m_apTable->getARandPeer(getNodeAddress());
-        if (count > 10)
-           return false;
+       count++;
+       addressRandPeer = m_apTable->getARandPeer(getNodeAddress());
+       if (count > 10)
+          return false;
     }
-    while (addressRandPeer == getNodeAddress());
+    //while (addressRandPeer == getNodeAddress());
+    while(m_partnerList->have(addressRandPeer));
 
     if (m_partnerList->have(addressRandPeer))
     {
@@ -858,7 +858,7 @@ void DonetPeer::handleTimerPartnerlistCleanup()
    EV << endl << "**************************************************************" << endl;
    EV << "Cleaning up partnerlist !!!" << endl;
 
-   if (m_partnerList->getSize() <= 2)
+   if (m_partnerList->getSize() <= 1)
    {
       EV << "Minimum partnership size, should not cleanup now" << endl;
       return;
@@ -987,6 +987,12 @@ void DonetPeer::handleTimerPartnerlistCleanup()
     EV << "Partner " << address_minThroughput << endl
        << "\t with min throughput " << minThroughput << endl
        << "\t from time " << time_minThroughput << endl;
+
+    if (minThroughput > m_videoStreamChunkRate * 0.1)
+    {
+       EV << "Min throughput = " << minThroughput << " -- but not too bad!" << endl;
+       return;
+    }
 
     if (address_minThroughput == IPvXAddress("10.0.0.9"))
     {
