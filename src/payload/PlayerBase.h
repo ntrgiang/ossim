@@ -26,6 +26,9 @@ protected:
 public:
     virtual void activate(void) = 0;
     virtual void startPlayer(void) = 0;
+    virtual void stopPlayer(void) = 0;
+    virtual void scheduleStopPlayer(void) = 0;
+
     virtual SEQUENCE_NUMBER_T getCurrentPlaybackPoint(void) = 0;
     virtual bool playerStarted(void) = 0;
 

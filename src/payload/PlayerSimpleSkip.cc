@@ -23,8 +23,21 @@ PlayerSimpleSkip::PlayerSimpleSkip() {
 
 PlayerSimpleSkip::~PlayerSimpleSkip()
 {
-    if (timer_nextChunk != NULL) { delete cancelEvent(timer_nextChunk); timer_nextChunk = NULL; }
-    if (timer_playerStart) cancelAndDelete(timer_playerStart);
+    if (timer_nextChunk != NULL)
+    {
+       delete cancelEvent(timer_nextChunk);
+       timer_nextChunk = NULL;
+    }
+
+    if (timer_playerStart)
+    {
+       cancelAndDelete(timer_playerStart);
+    }
+
+    if (timer_playerStop)
+    {
+       cancelAndDelete(timer_playerStop);
+    }
 }
 
 void PlayerSimpleSkip::initialize(int stage)
@@ -61,6 +74,7 @@ void PlayerSimpleSkip::initialize(int stage)
 
     timer_nextChunk     = new cMessage("PLAYER_TIMER_NEXT_CHUNK");
     timer_playerStart   = new cMessage("PLAYER_TIMER_START");
+    timer_playerStop    = new cMessage("PLAYER_TIMER_STOP");
 
     // -- Reading parameters from module itself
     param_interval_recheckVideoBuffer = par("interval_recheckVideoBuffer");
@@ -105,11 +119,15 @@ void PlayerSimpleSkip::activate(void)
 
    EV << "Player (Simple skip) activated!" << endl;
 
-    if (m_state != PLAYER_STATE_IDLE)
-        throw cException("Wrong Player state %d while expecting %d", m_state, PLAYER_STATE_IDLE);
+   if (m_state != PLAYER_STATE_IDLE)
+   {
+      throw cException("Wrong Player state %d (PLAYER_STATE_BUFFERING) while expecting %d (PLAYER_STATE_IDLE)",
+                       m_state, PLAYER_STATE_IDLE);
+   }
 
-    m_state = PLAYER_STATE_BUFFERING;
-    scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
+   m_state = PLAYER_STATE_BUFFERING;
+   cancelEvent(timer_playerStart);
+   scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
 
 }
 
@@ -324,6 +342,11 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
         } // else ~ chunk not in buffer
 
     } // timer_nextChunk
+    else if (msg == timer_playerStop)
+    {
+       stopPlayer();
+
+    } // timer_playerStop
 
 //    if (msg == timer_nextChunk)
 //    {
@@ -379,6 +402,29 @@ void PlayerSimpleSkip::startPlayer()
 
     m_playerStarted = true;
 
+}
+
+void PlayerSimpleSkip::scheduleStopPlayer(void)
+{
+   Enter_Method("scheduleStopPlayer");
+
+   //double random_period = dblrand();
+   //EV << "Player will be stopped after " << random_period << " seconds" << endl;
+   //scheduleAt(simTime() + random_period, timer_playerStop);
+
+   EV << "Player will be stopped NOW" << endl;
+   scheduleAt(simTime() + 0.0, timer_playerStop);
+}
+
+void PlayerSimpleSkip::stopPlayer(void)
+{
+   Enter_Method("stopPlayer");
+
+   cancelEvent(timer_nextChunk);
+   cancelEvent(timer_playerStart);
+
+   m_state = PLAYER_STATE_IDLE;
+   m_playerStarted = false;
 }
 
 SEQUENCE_NUMBER_T PlayerSimpleSkip::getCurrentPlaybackPoint(void)

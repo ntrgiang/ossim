@@ -31,6 +31,9 @@ protected:
 
 public:
     void startPlayer(void);
+    void stopPlayer(void);
+    void scheduleStopPlayer(void);
+
     SEQUENCE_NUMBER_T getCurrentPlaybackPoint(void);
     bool playerStarted(void);
     void activate(void);
@@ -48,8 +51,12 @@ protected:
 
     // -- State variable
     bool m_playerStarted;
+
+    // -- Message
     cMessage *timer_nextChunk;
     cMessage *timer_playerStart;
+    cMessage *timer_playerStop;
+
     SEQUENCE_NUMBER_T m_id_nextChunk;
 
     // -- Module (secondary) parameters
