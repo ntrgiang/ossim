@@ -99,6 +99,7 @@ void DonetPeer::initialize(int stage)
     param_interval_starPlayer           = par("interval_startPlayer");
     param_interval_partnershipRefinement = par("interval_partnershipRefinement");
     param_interval_partnerlistCleanup   = par("interval_partnerlistCleanup");
+    param_threshold_idleDuration_buffermap = par("threshold_idleDuration_buffermap");
 
     param_nNeighbor_SchedulingStart     = par("nNeighbor_SchedulingStart");
     param_waitingTime_SchedulingStart   = par("waitingTime_SchedulingStart");
@@ -108,7 +109,6 @@ void DonetPeer::initialize(int stage)
     param_maxNOP                        = par("maxNOP");
     param_offsetNOP                     = par("offsetNOP");
     param_threshold_scarity             = par("threshold_scarity");
-    param_threshold_idleDuration_buffermap = par("threshold_idleDuration_buffermap");
 
     param_minNOP = param_maxNOP - param_offsetNOP;
     param_factor_requestList            = par("factor_requestList").doubleValue();
@@ -839,6 +839,8 @@ void DonetPeer::handleTimerFindMorePartner(void)
 
 void DonetPeer::handleTimerPartnershipRefinement()
 {
+   Enter_Method("handleTimerPartnershipRefinement");
+
 //   bool ret = sendPartnershipRequest();
 
 //   if (ret == false)
@@ -847,11 +849,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
 //   }
 
 //   flag_partnershipRefinement = true;
-}
 
-void DonetPeer::handleTimerPartnerlistCleanup()
-{
-   Enter_Method("handleTimerPartnerlistCleanup()");
 
    //return;
 
@@ -1028,6 +1026,47 @@ void DonetPeer::handleTimerPartnerlistCleanup()
     {
        EV << "First time to inquire the record for address " << address_minThroughput << endl;
     }
+
+
+}
+
+void DonetPeer::handleTimerPartnerlistCleanup()
+{
+   Enter_Method("handleTimerPartnerlistCleanup()");
+
+   if (m_partnerList->getSize() == 0)
+   {
+      EV << "Empty partner list" << endl;
+      return;
+   }
+
+   std::vector<IPvXAddress> removeAddressList;
+
+   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+        iter != m_partnerList->m_map.end(); ++iter)
+   {
+      //IPvXAddress address = iter->first;
+      EV << "Partner to be examined " << iter->first << endl;
+
+      double timeDiff = simTime().dbl() - iter->second.getLastRecvBmTime();
+
+      if (timeDiff > param_threshold_idleDuration_buffermap)
+      {
+         EV << "The last buffer map was received more than " << timeDiff << " seconds ago" << endl;
+         removeAddressList.push_back(iter->first);
+
+         //m_partnerList->deleteAddress(iter->first);
+
+         //EV << "Partner " << iter->first << " was deleted" << endl;
+      }
+   }
+
+   // Delete the list of addresses
+   for (std::vector<IPvXAddress>::iterator iter = removeAddressList.begin();
+        iter != removeAddressList.end(); ++iter)
+   {
+      m_partnerList->deleteAddress(*iter);
+   }
 
 }
 
