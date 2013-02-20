@@ -391,8 +391,8 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
 {
     if (msg == timer_sendBufferMap)
     {
-//        sendBufferMap();
-//        scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
+        sendBufferMap();
+        scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
     }
     else if (msg == timer_chunkScheduling)
     {
@@ -407,7 +407,7 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
     }
     else if (msg == timer_partnershipRefinement)
     {
-       //handleTimerPartnershipRefinement();
+       handleTimerPartnershipRefinement();
        scheduleAt(simTime() + param_interval_partnershipRefinement, timer_partnershipRefinement);
     }
     else if (msg == timer_partnerListCleanup)
@@ -419,11 +419,6 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
     {
         handleTimerTimeoutWaitingAccept();
     }
-//    else if (msg == timer_startPlayer)
-//    {
-//        startPlayer();
-
-//    }
     else if (msg == timer_getJoinTime)
     {
         m_arrivalTime = m_churn->getArrivalTime();
@@ -565,26 +560,13 @@ void DonetPeer::handleTimerPartnershipRefinement()
    //return;
 
    EV << endl << "**************************************************************" << endl;
-   EV << "Cleaning up partnerlist !!!" << endl;
+   EV << "Partnership refinement !!!" << endl;
 
    if (m_partnerList->getSize() <= 1)
    {
       EV << "Minimum partnership size, should not cleanup now" << endl;
       return;
    }
-
-//   std::map<IPvXAddress, NeighborInfo>::iterator iter;
-//   for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
-//   {
-//      //NeighborInfo *nbr_info = iter->second
-//      double timeStamp = iter->second.getLastRecvBmTime();
-//      if (simTime().dbl() - timeStamp > param_threshold_idleDuration_buffermap)
-//      {
-//         //delete iter->second;
-//         m_partnerList->m_map.erase(iter);
-//         break; // delete only one address at a time
-//      }
-//   }
 
    // --------------------------------------------------------------------------
    // --- Update the records
@@ -593,8 +575,8 @@ void DonetPeer::handleTimerPartnershipRefinement()
     //std::map<IPvXAddress, double> list_exchange;
     std::map<IPvXAddress, DataExchange> list_exchange;
 
-    std::map<IPvXAddress, NeighborInfo>::iterator iter;
-    for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
+    for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+         iter != m_partnerList->m_map.end(); ++iter)
     {
        IPvXAddress address = iter->first;
        RecordCountChunk record;
@@ -609,6 +591,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
        m_forwarder->getRecordChunk(address, record);
        de_total.m_time = record.m_oriTime;
 
+       // -- Calculate and extract the information into another list of structures
        EV << "Partner " << address << endl
           << "\t from time " << record.m_oriTime << endl;
        if (record.m_oriTime != -1.0)
@@ -616,6 +599,15 @@ void DonetPeer::handleTimerPartnershipRefinement()
           long int totalChunkExchanged = record.m_chunkReceived + record.m_chunkSent;
           double duration = simTime().dbl() - record.m_oriTime;
 
+          long int count_chunkSent_interval = record.m_chunkSent - record.m_prev_chunkSent;
+          record.m_prev_chunkSent = record.m_chunkSent;
+
+          long int count_chunkReceived_interval = record.m_chunkReceived - record.m_prev_chunkReceived;
+          record.m_prev_chunkReceived = record.m_chunkReceived;
+
+          long int total_chunkExchanged_interval = count_chunkReceived_interval + count_chunkSent_interval;
+
+          //long int interval_chunkSent =
           if (duration != 0.0)
           {
 //             EV << "Average data exchanged with peer " << address << " : (chunks/s)" << endl;
@@ -624,6 +616,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
 //             EV << "\t Total: " << (long double)totalChunkExchanged / duration << endl;
 
              de_total.m_throughput = (double)totalChunkExchanged / duration;
+             de_total.m_throughput_interval = (double)total_chunkExchanged_interval / duration;
 
              list_exchange.insert(std::pair<IPvXAddress, DataExchange>(address, de_total));
           }
@@ -634,20 +627,25 @@ void DonetPeer::handleTimerPartnershipRefinement()
        } // if != -1.0
        else
        {
-          // EV << "No data exchanged with peer " << address << " yet!" << endl;
+          EV << "No data exchanged with peer " << address << " yet!" << endl;
           de_total.m_throughput = 0.0;
+          de_total.m_throughput_interval = 0.0;
 
           list_exchange.insert(std::pair<IPvXAddress, DataExchange>(address, de_total));
        }
        EV << "\t throughput " << de_total.m_throughput << endl;
-    } // for
+    } // for std::map<IPvXAddress, NeighborInfo>
 
     // -- debug
+    // -- Print the extracted list
     EV << "Print list_exchange:" << endl;
     for (std::map<IPvXAddress, DataExchange>::iterator iter = list_exchange.begin();
          iter != list_exchange.end(); ++iter)
     {
-       EV << " --- " << "Address: " << iter->first << endl;
+       EV << " --- " << "Address: " << iter->first
+          << " - Time: " << iter->second.m_time
+          << " - Throughput: " << iter->second.m_throughput
+          << " - Throughput per interval: " << iter->second.m_throughput_interval << endl;
     }
 
     // --------------------------------------------------------------------------
@@ -676,6 +674,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
 //       }
 //    } // for
 
+    // -- Find the mininum value of throughputs
     for (std::map<IPvXAddress, DataExchange>::iterator iter = list_exchange.begin();
          iter != list_exchange.end(); ++iter)
     {
@@ -708,35 +707,35 @@ void DonetPeer::handleTimerPartnershipRefinement()
        EV << "Something wrong, partnershipSize = " << m_partnerList->getSize() << endl;
     }
 
-    if (time_minThroughput != -1.0)
-    {
-       if ((simTime() - time_minThroughput) > 10.0 /*seconds*/)
-       {
-          EV << "Partner to be removed: " << address_minThroughput << " hehehe" << endl;
+//    if (time_minThroughput != -1.0)
+//    {
+//       if ((simTime() - time_minThroughput) > 10.0 /*seconds*/)
+//       {
+//          EV << "Partner to be removed: " << address_minThroughput << " hehehe" << endl;
 
-          if (m_partnerList->getSize() > 1)
-          {
-             m_partnerList->deleteAddress(address_minThroughput);
-             m_forwarder->removeRecord(address_minThroughput);
+//          if (m_partnerList->getSize() > 1)
+//          {
+//             m_partnerList->deleteAddress(address_minThroughput);
+//             m_forwarder->removeRecord(address_minThroughput);
 
-             MeshPartnershipLeavePacket *leavePkt = new MeshPartnershipLeavePacket("MESH_PEER_LEAVE_PARTNER");
-             leavePkt->setBitLength(m_appSetting->getPacketSizePartnershipLeave());
-             sendToDispatcher(leavePkt, m_localPort, address_minThroughput, m_destPort);
-          }
-          else
-          {
-             EV << "Only one partner left --> no removal at all" << endl;
-          }
-       }
-       else
-       {
-          EV << "The idle period is not long enough" << endl;
-       }
-    }
-    else
-    {
-       EV << "First time to inquire the record for address " << address_minThroughput << endl;
-    }
+//             MeshPartnershipLeavePacket *leavePkt = new MeshPartnershipLeavePacket("MESH_PEER_LEAVE_PARTNER");
+//             leavePkt->setBitLength(m_appSetting->getPacketSizePartnershipLeave());
+//             sendToDispatcher(leavePkt, m_localPort, address_minThroughput, m_destPort);
+//          }
+//          else
+//          {
+//             EV << "Only one partner left --> no removal at all" << endl;
+//          }
+//       }
+//       else
+//       {
+//          EV << "The idle period is not long enough" << endl;
+//       }
+//    }
+//    else
+//    {
+//       EV << "First time to inquire the record for address " << address_minThroughput << endl;
+//    }
 }
 
 void DonetPeer::handleTimerPartnerlistCleanup()
@@ -1199,6 +1198,8 @@ void DonetPeer::addPartner(IPvXAddress remote, double upbw)
 //   DonetBase::addPartner(remote, upbw);
    int nChunk = (int)(param_interval_chunkScheduling*upbw/param_chunkSize/8); // per scheduling cycle
    m_partnerList->addAddress(remote, upbw, nChunk);
+
+   m_forwarder->addRecord(remote);
 
 //   m_forwarder->getRecordChunk();
 }
