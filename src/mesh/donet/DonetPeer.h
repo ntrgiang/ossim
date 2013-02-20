@@ -24,7 +24,8 @@ struct SchedulingWindow
 struct DataExchange
 {
    double m_time;
-   double m_throughput;
+   double m_throughput; // overall throughput since partnership establishment
+   double m_throughput_interval; // throughput between the two most recent sampling
 };
 
 class DonetPeer : public DonetBase
