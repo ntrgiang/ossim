@@ -38,6 +38,7 @@ void DonetSource::initialize(int stage)
 
     param_maxNOP = par("maxNOP");
     param_interval_partnerlistCleanup = par("interval_partnerlistCleanup");
+    param_threshold_idleDuration_buffermap = par("threshold_idleDuration_buffermap");
 
     timer_sendBufferMap = new cMessage("MESH_SOURCE_TIMER_SEND_BUFFERMAP");
     timer_sendReport    = new cMessage("MESH_SOURCE_TIMER_SEND_REPORT");
@@ -86,6 +87,7 @@ void DonetSource::initialize(int stage)
     WATCH(m_destPort);
 
     WATCH(param_interval_bufferMap);
+    WATCH(param_threshold_idleDuration_buffermap);
     WATCH(param_upBw);
     WATCH(param_downBw);
     WATCH(param_bufferMapSize_second);
@@ -178,7 +180,7 @@ void DonetSource::handleTimerPartnerlistCleanup()
       {
          removeAddressList.push_back(iter->first);
 
-         EV << "Partner " << iter->first << " was deleted" << endl;
+         EV << "Partner " << iter->first << " was moved to remove_list" << endl;
       }
    }
 
@@ -248,8 +250,7 @@ void DonetSource::processPacket(cPacket *pkt)
 
 void DonetSource::processPeerBufferMap(cPacket *pkt)
 {
-   EV << endl;
-   EV << "---------- Process received buffer map ------------------------------" << endl;
+   Enter_Method("processRecvBufferMap()");
 
    IPvXAddress senderAddress = getSender(pkt);
    EV << "-- Received a buffer map from " << senderAddress << endl;
@@ -276,6 +277,7 @@ void DonetSource::processPeerBufferMap(cPacket *pkt)
 
     // -- Update the timestamp of the received BufferMap
     nbr_info->setLastRecvBmTime(simTime().dbl());
+    EV << "Time stammpt of the received buffer map " << nbr_info->getLastRecvBmTime() << endl;
 
     // -- Update the range of the scheduling window
 //    m_seqNum_schedWinHead = (bmPkt->getHeadSeqNum() > m_seqNum_schedWinHead)?
