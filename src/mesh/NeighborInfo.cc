@@ -15,6 +15,9 @@ NeighborInfo::NeighborInfo(int bmSize)
 , m_seqNum_recvBmStart(-1L), m_seqNum_recvBmEnd(-1L), m_seqNum_recvBmHead(-1L)
 , m_seqNum_sendBmStart(-1L), m_seqNum_sendBmEnd(-1L), m_seqNum_sendBmHead(-1L)
 , m_sendBmModified(false)
+, m_count_chunkSent(0L), m_count_chunkReceived(0L)
+, m_count_prev_chunkSent(0L), m_count_prev_chunkReceived(0L)
+, m_average_chunkSent(0.0), m_average_chunkReceived(0.0)
 //, m_timeBudget(0.0)
 {
     if (bmSize < 0) throw cException("bmSize = %d is invalid", bmSize);

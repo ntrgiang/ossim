@@ -53,6 +53,12 @@ public:
     inline void setCountChunkSent(long int n) { m_count_chunkSent = n; }
     inline long int getCountChunkSent(void) { return m_count_chunkSent; }
 
+    inline void setCountPrevChunkSent(long int n) { m_count_prev_chunkSent = n; }
+    inline long int getcountPrevChunkSent(void) { return m_count_prev_chunkSent; }
+
+    inline void setCountPrevChunkReceived(long int n) { m_count_chunkReceived = n; }
+    inline long int getcountPrevChunkReceived(void) { return m_count_prev_chunkReceived; }
+
     inline void setAverageChunkSent(double c) { m_average_chunkSent = c; }
     inline double getAverageChunkSent(void) { return m_average_chunkSent; }
 
@@ -114,8 +120,10 @@ private:
 
     // -- For partnership refinement
     // Number of chunks delivered in both direction between two partners
-    long int m_count_chunkSent;     // sent to that partner
-    long int m_count_chunkReceived; // received from that partner
+    long int m_count_chunkSent;     // (current) number of chunks sent to that partner
+    long int m_count_chunkReceived; // (current) number of chunks received from that partner
+    long int m_count_prev_chunkSent; // number of chunks sent to partner in previous sampling
+    long int m_count_prev_chunkReceived; // number of chunks received from partner in previous sampling
     double m_average_chunkSent;     // per unit time
     double m_average_chunkReceived;  // per unit time
 
