@@ -572,9 +572,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
    // --- Update the records
    // --------------------------------------------------------------------------
 
-    //std::map<IPvXAddress, double> list_exchange;
     std::map<IPvXAddress, DataExchange> list_exchange;
-
     for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
          iter != m_partnerList->m_map.end(); ++iter)
     {
@@ -589,6 +587,8 @@ void DonetPeer::handleTimerPartnershipRefinement()
 //       }
 
        m_forwarder->getRecordChunk(address, record);
+       record.print();
+
        de_total.m_time = record.m_oriTime;
 
        // -- Calculate and extract the information into another list of structures
@@ -1476,33 +1476,33 @@ void DonetPeer::chunkScheduling()
     // -------------------------------------------------------------------------
     // --- Show the statistics on data exchange with partners
     // -------------------------------------------------------------------------
-    EV << "*********************************************************************" << endl;
-    std::map<IPvXAddress, NeighborInfo>::iterator iter;
-    for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
-    {
-       IPvXAddress address = iter->first;
-       RecordCountChunk record;
+//    EV << "*********************************************************************" << endl;
+//    std::map<IPvXAddress, NeighborInfo>::iterator iter;
+//    for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
+//    {
+//       IPvXAddress address = iter->first;
+//       RecordCountChunk record;
 
-       m_forwarder->getRecordChunk(address, record);
-       if (record.m_oriTime != -1.0)
-       {
-          long int totalChunkExchanged = record.m_chunkReceived + record.m_chunkSent;
-          double duration = simTime().dbl() - record.m_oriTime;
+//       m_forwarder->getRecordChunk(address, record);
+//       if (record.m_oriTime != -1.0)
+//       {
+//          long int totalChunkExchanged = record.m_chunkReceived + record.m_chunkSent;
+//          double duration = simTime().dbl() - record.m_oriTime;
 
-          if (duration != 0.0)
-          {
-             EV << "Average data exchanged with peer " << address << " : (chunks/s)" << endl;
-             EV << "\t Outgoing: " << (long double) record.m_chunkSent / duration << endl;
-             EV << "\t Incoming: " << (long double) record.m_chunkReceived / duration << endl;
-             EV << "\t Total: " << (long double)totalChunkExchanged / duration << endl;
-          }
-       } // if != -1.0
-       else
-       {
-          EV << "No data exchanged with peer " << address << " yet!" << endl;
-       }
-    } // for
-    EV << "*********************************************************************" << endl;
+//          if (duration != 0.0)
+//          {
+//             EV << "Average data exchanged with peer " << address << " : (chunks/s)" << endl;
+//             EV << "\t Outgoing: " << (long double) record.m_chunkSent / duration << endl;
+//             EV << "\t Incoming: " << (long double) record.m_chunkReceived / duration << endl;
+//             EV << "\t Total: " << (long double)totalChunkExchanged / duration << endl;
+//          }
+//       } // if != -1.0
+//       else
+//       {
+//          EV << "No data exchanged with peer " << address << " yet!" << endl;
+//       }
+//    } // for
+//    EV << "*********************************************************************" << endl;
 
     // -- Update the range variables (for statistics collection)
     updateRange();
