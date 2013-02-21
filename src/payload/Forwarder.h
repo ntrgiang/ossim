@@ -20,8 +20,23 @@
 #include "VideoBuffer.h"
 #include "Dispatcher.h"
 
-struct RecordCountChunk
+//struct RecordCountChunk
+//{
+//   long int m_chunkSent;
+//   long int m_chunkReceived;
+
+//   long int m_prev_chunkSent;
+//   long int m_prev_chunkReceived;
+////   long int m_chunkExchanged;
+//   double m_oriTime; // Time when the record was created for the first time
+//};
+
+class RecordCountChunk
 {
+public:
+   void print(void);
+
+private:
    long int m_chunkSent;
    long int m_chunkReceived;
 
@@ -29,25 +44,24 @@ struct RecordCountChunk
    long int m_prev_chunkReceived;
 //   long int m_chunkExchanged;
    double m_oriTime; // Time when the record was created for the first time
-};
 
+   friend class Forwarder;
+   friend class DonetPeer;
+};
 
 class Forwarder : public CommBase {
 public:
-    Forwarder();
-    virtual ~Forwarder();
+   Forwarder();
+   virtual ~Forwarder();
 
-    virtual void handleMessage(cMessage* msg);
-    virtual int numInitStages() const { return 4; }
-    virtual void initialize(int stage);
-    //virtual void initialize();
-    virtual void finish();
+   virtual void handleMessage(cMessage* msg);
+   virtual int numInitStages() const { return 4; }
+   virtual void initialize(int stage);
+   virtual void finish();
 
-    inline long int getCountTotalChunkIncoming(void) { return m_count_totalChunk_incoming; }
+   inline long int getCountTotalChunkIncoming(void) { return m_count_totalChunk_incoming; }
 
-    void sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort);
-//    long int getRecordReceivedChunk(IPvXAddress&);
-   void getRecordChunk(IPvXAddress& addr, long int &nChunkReceived, long int &nChunkSent);
+   void sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort);
    void getRecordChunk(IPvXAddress &addr, RecordCountChunk&);
 
    void updateSentChunkRecord(IPvXAddress &destAddress);
@@ -56,10 +70,7 @@ public:
    void addRecord(const IPvXAddress & address);
    void removeRecord(const IPvXAddress & address);
 
-//
-//protected:
-//    void sendToDispatcher(cPacket *pkt, int srcPort, const IPvXAddress& destAddr, int destPort);
-//    void printPacket(cPacket *pkt);
+   void printRecord(void);
 
 private:
     // -- Utility functions
@@ -70,10 +81,8 @@ protected:
     VideoBuffer *m_videoBuffer;
     Dispatcher *m_dispatcher;
 
-    //std::map<IPvXAddress, long int> m_record_receivedChunk;
     std::map<IPvXAddress, RecordCountChunk> m_record_countChunk;
-
-    long int m_count_totalChunk_incoming;
+    long int m_count_totalChunk_incoming; // from all partners
 };
 
 #endif /* FORWARDER_H_ */

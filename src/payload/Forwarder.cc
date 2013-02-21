@@ -18,6 +18,16 @@
 
 Define_Module(Forwarder);
 
+void RecordCountChunk::print()
+{
+   EV << "Record of count chunk: " << endl;
+   EV << "\t m_chunkSent = " << m_chunkSent << endl;
+   EV << "\t m_chunkReceived = " << m_chunkReceived << endl;
+   EV << "\t m_prev_chunkSent = " << m_prev_chunkSent << endl;
+   EV << "\t m_prev_chunkReceived = " << m_prev_chunkReceived << endl;
+   EV << "\t m_oriTime = " << m_oriTime << endl;
+}
+
 Forwarder::Forwarder() {}
 
 Forwarder::~Forwarder() {}
@@ -31,6 +41,10 @@ void Forwarder::handleMessage(cMessage* msg)
         throw cException("No timer is used in this module");
         return;
     }
+
+    // -------------------------------------------------------------------------
+    // -- For incoming chunks
+    // -------------------------------------------------------------------------
 
     IPvXAddress senderAddress;
     DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(msg->getControlInfo());
@@ -87,11 +101,7 @@ void Forwarder::updateSentChunkRecord(IPvXAddress& destAddress)
 
     if (iter == m_record_countChunk.end()) // New entry
     {
-       RecordCountChunk record;
-       record.m_chunkReceived = 0L;
-       record.m_chunkSent = 1L;
-       record.m_oriTime = simTime().dbl();
-       m_record_countChunk.insert(std::pair<IPvXAddress, RecordCountChunk>(destAddress, record));
+       addRecord(destAddress);
     }
     else
     {
@@ -102,40 +112,17 @@ void Forwarder::updateSentChunkRecord(IPvXAddress& destAddress)
 void Forwarder::updateReceivedChunkRecord(IPvXAddress& senderAddress)
 {
     // -- Update the record about received Chunk
-    //std::map<IPvXAddress, long int>::iterator iter;
     std::map<IPvXAddress, RecordCountChunk>::iterator iter;
     iter = m_record_countChunk.find(senderAddress);
 
     if (iter == m_record_countChunk.end()) // New entry
     {
-       RecordCountChunk record;
-       record.m_chunkReceived = 1L;
-       record.m_chunkSent = 0L;
-       record.m_oriTime = simTime().dbl();
-       m_record_countChunk.insert(std::pair<IPvXAddress, RecordCountChunk>(senderAddress, record));
+       addRecord(senderAddress);
     }
     else
     {
        iter->second.m_chunkReceived += 1;
     }
-}
-
-void Forwarder::getRecordChunk(IPvXAddress& addr, long int &nChunkReceived, long int &nChunkSent)
-{
-   std::map<IPvXAddress, RecordCountChunk>::iterator iter;
-   iter = m_record_countChunk.find(addr);
-
-   if (iter == m_record_countChunk.end())
-   {
-      nChunkReceived = -1L;
-      nChunkSent = -1L;
-   }
-   else
-   {
-      nChunkReceived = iter->second.m_chunkReceived;
-      nChunkSent = iter->second.m_chunkSent;
-   }
-
 }
 
 void Forwarder::getRecordChunk(IPvXAddress &addr, RecordCountChunk& record)
@@ -145,22 +132,11 @@ void Forwarder::getRecordChunk(IPvXAddress &addr, RecordCountChunk& record)
 
    if (iter == m_record_countChunk.end())
    {
-      record.m_chunkReceived = -1L;
-      record.m_chunkSent = -1L;
-      record.m_oriTime = -1.0;
-
-      RecordCountChunk newRecord;
-      newRecord.m_chunkReceived = 0L;
-      newRecord.m_chunkSent = 0L;
-      newRecord.m_oriTime = simTime().dbl();
-      m_record_countChunk.insert(std::pair<IPvXAddress, RecordCountChunk>(addr, newRecord));
+      addRecord(addr);
+      record = m_record_countChunk[addr];
    }
    else
    {
-//      record.m_chunkReceived = iter->second.m_chunkReceived;
-//      record.m_chunkSent = iter->second.m_chunkSent;
-//      record.m_oriTime = iter->second.m_oriTime;
-
       record = iter->second;
    }
 }
@@ -190,3 +166,4 @@ void Forwarder::addRecord(const IPvXAddress & address)
 
    m_record_countChunk.insert(std::pair<IPvXAddress, RecordCountChunk>(address, newRecord));
 }
+
