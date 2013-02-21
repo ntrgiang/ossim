@@ -38,10 +38,9 @@ public:
     bool playerStarted(void);
     void activate(void);
 
-    inline long int getCountChunkHit(void) { return m_countChunkHit; }
-    inline long int getCountChunkMiss(void) { return m_countChunkMiss; }
-
     inline int getPlayerState(void) { return m_state; }
+
+    double getLocalContinuityIndex(void);
 
 private:
     bool shouldResumePlaying(SEQUENCE_NUMBER_T seq_num);
@@ -70,8 +69,9 @@ protected:
     int param_max_skipped_chunk;
     double param_interval_probe_playerStart;
 
+    // Obsolete -- since moved up the PlayerBase class
     // -- Statistics locally
-    long int m_countChunkHit, m_countChunkMiss;
+    //long int m_countChunkHit, m_countChunkMiss;
 
     int m_skip;
 

@@ -95,8 +95,8 @@ void PlayerSimpleSkip::initialize(int stage)
     m_id_nextChunk = -1L;
 
     // -- Continuity Index
-    m_countChunkHit = 0L;
-    m_countChunkMiss = 0L;
+    m_count_chunkHit = 0L;
+    m_count_chunkMiss = 0L;
 
     // -- Schedule the first event for the first chunk
 //    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);
@@ -206,7 +206,7 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
            ++m_id_nextChunk;
            scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
 
-           ++m_countChunkHit;
+           ++m_count_chunkHit;
 
            // -- State remains
 
@@ -265,7 +265,7 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
            ++m_id_nextChunk;
            scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
 
-           ++m_countChunkMiss;
+           ++m_count_chunkMiss;
            /*
             switch (m_state)
             {
@@ -430,6 +430,15 @@ void PlayerSimpleSkip::stopPlayer(void)
 SEQUENCE_NUMBER_T PlayerSimpleSkip::getCurrentPlaybackPoint(void)
 {
     return m_id_nextChunk;
+}
+
+double PlayerSimpleSkip::getLocalContinuityIndex(void)
+{
+   long int total_chunkSeek = m_count_chunkHit + m_count_chunkMiss;
+   if (total_chunkSeek != 0)
+      return m_count_chunkHit / total_chunkSeek;
+
+   return 0.0;
 }
 
 bool PlayerSimpleSkip::playerStarted(void)

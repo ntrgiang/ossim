@@ -32,10 +32,13 @@ public:
     virtual SEQUENCE_NUMBER_T getCurrentPlaybackPoint(void) = 0;
     virtual bool playerStarted(void) = 0;
 
-    virtual long int getCountChunkHit(void) = 0;
-    virtual long int getCountChunkMiss(void) = 0;
+//    virtual long int getCountChunkHit(void) = 0;
+//    virtual long int getCountChunkMiss(void) = 0;
 
     virtual int getPlayerState(void) = 0;
+
+    inline long int getCountChunkHit(void) { return m_count_chunkHit; }
+    inline long int getCountChunkMiss(void) { return m_count_chunkMiss; }
 
     //inline long int getCountChunkHit(void) { return m_countChunkHit; }
     //inline long int getCountChunkMiss(void) { return m_countChunkMiss; }
@@ -92,6 +95,8 @@ protected:
     simsignal_t sig_rebuffering;
     simsignal_t sig_stall;
 */
+protected:
+    long int m_count_chunkHit, m_count_chunkMiss;
 };
 
 #endif /* PLAYER_H_ */
