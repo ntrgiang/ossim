@@ -43,6 +43,8 @@ public:
     //virtual void initialize();
     virtual void finish();
 
+    inline long int getCountTotalChunkIncoming(void) { return m_count_totalChunk_incoming; }
+
     void sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort);
 //    long int getRecordReceivedChunk(IPvXAddress&);
    void getRecordChunk(IPvXAddress& addr, long int &nChunkReceived, long int &nChunkSent);
@@ -70,6 +72,8 @@ protected:
 
     //std::map<IPvXAddress, long int> m_record_receivedChunk;
     std::map<IPvXAddress, RecordCountChunk> m_record_countChunk;
+
+    long int m_count_totalChunk_incoming;
 };
 
 #endif /* FORWARDER_H_ */

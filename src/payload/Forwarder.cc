@@ -46,7 +46,9 @@ void Forwarder::handleMessage(cMessage* msg)
 
     m_videoBuffer->insertPacket(chunkPkt);
 
+    // -- Local record of incoming chunks
     updateReceivedChunkRecord(senderAddress);
+    ++m_count_totalChunk_incoming;
 }
 
 void Forwarder::initialize(int stage)
@@ -56,6 +58,8 @@ void Forwarder::initialize(int stage)
 
     cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
     m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
+
+    m_count_totalChunk_incoming = 0L;
 }
 
 void Forwarder::finish()
