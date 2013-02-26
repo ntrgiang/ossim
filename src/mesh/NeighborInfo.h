@@ -80,12 +80,14 @@ public:
     bool isSendBmModified(void);
 
     void resetVectorAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUMBER_T win_start, double chunkInterval);
-    void updateChunkAvailTime(SEQUENCE_NUMBER_T seq_num, double time);
+    //void updateChunkAvailTime(SEQUENCE_NUMBER_T seq_num, double time);
+    bool updateChunkAvailTime(SEQUENCE_NUMBER_T seq_num, double time);
     double getChunkAvailTime(SEQUENCE_NUMBER_T seq_num);
 
     // -- For debugging --
     void printRecvBm(void);
     void printSendBm(void);
+    void printVectorAvailableTime(void);
 
 // Data member
 private:
@@ -129,6 +131,7 @@ private:
 
     // -- Available time to transmit a specific chunk
     std::vector<double> m_availTime;
+
     // -- The sequence number of the first element of the list
     SEQUENCE_NUMBER_T m_winStart;
 };
