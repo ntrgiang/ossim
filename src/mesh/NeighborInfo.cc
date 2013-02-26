@@ -73,8 +73,9 @@ void NeighborInfo::setElementSendBm(SEQUENCE_NUMBER_T seq_num, bool val)
 
 //    EV << "Set an element of the SendBufferMap" << endl;
 
-    //long int offset = seq_num - m_seqNum_sendBmStart;
-    long int offset = 0L;
+    long int offset = seq_num - m_seqNum_sendBmStart;
+
+//    long int offset = 0L;
     if (offset > m_bufferSize)
     {
        throw cException("Out of range! seq_num = %ld -- m_seqNum_sendBmStart = ",
@@ -96,7 +97,7 @@ void NeighborInfo::setElementSendBm(SEQUENCE_NUMBER_T seq_num, bool val)
     }
 
     // -- Debug
-    // printSendBm();
+     printSendBm();
 }
 
 void NeighborInfo::copyFrom(BufferMap *bm)
