@@ -141,6 +141,8 @@ void PartnerList::setElementSendBm(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, 
 //    {
 //        iter->second.setNChunkScheduled(0);
 //    }
+   EV << addr << " -- " << seq_num << " -- " << val << endl;
+
    std::map<IPvXAddress, NeighborInfo>::iterator iter;
    iter = m_map.find(addr);
 
