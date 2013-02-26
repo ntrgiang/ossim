@@ -10,7 +10,6 @@ using namespace std;
 void DonetPeer::donetChunkScheduling(void)
 {
     Enter_Method("donetChunkScheduling()");
-
     EV << "Donet chunk scheduling triggered! " << endl;
 
     int count_0 = 0;
@@ -22,10 +21,9 @@ void DonetPeer::donetChunkScheduling(void)
     EV << "\t has " << nPartner << " partners" << endl;
     std::vector<SEQUENCE_NUMBER_T> dup_set[nPartner-1]; // TODO: Why nPartner-1 ???
 
-
     // -- Clear all request windows for all neighbors
-    m_partnerList->clearAllSendBm();
     m_nChunkRequested_perSchedulingInterval = 0;
+    int nNewChunkForRequest_perSchedulingCycle = 0;
 
     // -- For Donet scheduling
     // m_partnerList->clearAllTimeBudget();
@@ -45,8 +43,8 @@ void DonetPeer::donetChunkScheduling(void)
     m_partnerList->resetAllAvailableTime(m_player->getCurrentPlaybackPoint(), lower_bound, m_videoBuffer->getChunkInterval());
 
     // -- Update bounds of all sendBM
-    // m_partnerList->updateBoundSendBm(m_seqNum_schedWinHead, lower_bound, lower_bound+m_bufferMapSize_chunk-1);
     // m_partnerList->updateBoundSendBm(lower_bound, lower_bound+m_bufferMapSize_chunk-1);
+    m_partnerList->clearAllSendBm();
     m_partnerList->updateBoundSendBm(lower_bound, lower_bound+m_bufferMapSize_chunk-1);
     m_partnerList->resetNChunkScheduled();
 
@@ -54,10 +52,15 @@ void DonetPeer::donetChunkScheduling(void)
     std::vector<SEQUENCE_NUMBER_T> expected_set;
     for (SEQUENCE_NUMBER_T seq_num = lower_bound; seq_num <= upper_bound; ++seq_num)
     {
-        if (m_videoBuffer->isInBuffer(seq_num) == false)
-        {
-            expected_set.push_back(seq_num);
-        }
+       if (should_be_requested(seq_num) == false)
+       {
+          continue;
+       }
+
+       if (m_videoBuffer->isInBuffer(seq_num) == false)
+       {
+          expected_set.push_back(seq_num);
+       }
     } // end of for
 
     int sizeExpectedSet = expected_set.size();
@@ -94,12 +97,14 @@ void DonetPeer::donetChunkScheduling(void)
            continue;
         }
 
+        ++nNewChunkForRequest_perSchedulingCycle;
+
         if (nHolder == 1)
         {
            ++count_1;
 
-            if (should_be_requested(seq_num) == true)
-            {
+//            if (should_be_requested(seq_num) == true)
+//            {
                 //EV << "----> This chunk should be requested this time" << endl;
 
                 // -- Get pointer to the respective NeighborInfo
@@ -129,13 +134,17 @@ void DonetPeer::donetChunkScheduling(void)
                                                              copied_expected_set[k],
                                                              (param_chunkSize*8)/peerUpBw);
                    if (ret == false)
+                   {
+                      EV << "updateChunkAvailTime == false" << endl;
                       break;
-                }
+                   }
+                } // for
 
                 // EV << "Browse done!" << endl;
 
                 if (ret == true)
                 {
+                   EV << "ret == true --> erase ... " << endl;
                    // -- Delete the chunk whose supplier had been found
                    std::vector<SEQUENCE_NUMBER_T>::iterator iter;
                    // iter = std::find(copied_expected_set.begin(), copied_expected_set.end(), expected_set[i]);
@@ -146,7 +155,7 @@ void DonetPeer::donetChunkScheduling(void)
                 // -- Recording results
                 // m_reqChunkId.record(seq_num);
 
-            } // if (should_be_requested)
+//            } // if (should_be_requested)
         }
         else
         {
@@ -226,8 +235,8 @@ void DonetPeer::donetChunkScheduling(void)
                 continue;
             }
 
-            if (should_be_requested(seq_num) == true)
-            {
+//            if (should_be_requested(seq_num) == true)
+//            {
                // -- Get pointer to the respective NeighborInfo
 //               NeighborInfo *nbr_info = m_partnerList->getNeighborInfo(supplier); // get obsolete?
                // -- Set the respective element in the SendBm to say that this chunk should be requested
@@ -262,11 +271,12 @@ void DonetPeer::donetChunkScheduling(void)
                // -- Recording results
                // m_reqChunkId.record(seq_num);
 
-            } // if (should_be_requested)
+//            } // if (should_be_requested)
 
         } // for (k) -- Browse through all dup_set
     } // for (n) -- Browse through all partners
 
+   emit(sig_newchunkForRequest, nNewChunkForRequest_perSchedulingCycle);
 
     // -- Debug
     // EV << "Scheduling window: [" << lower_bound << " - " << upper_bound << "]" << endl;
@@ -296,7 +306,7 @@ void DonetPeer::donetChunkScheduling(void)
 //        }
 //    } // end of for
 
-  // -- Chunk request
+    // -- Chunk request
     std::map<IPvXAddress, NeighborInfo>::iterator iter;
     for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
     {
@@ -314,6 +324,7 @@ void DonetPeer::donetChunkScheduling(void)
             sendToDispatcher(chunkReqPkt, m_localPort, iter->first, m_destPort);
         }
     } // end of for
+
     // -- Now refreshing the m_list_requestedChunk
     refreshListRequestedChunk();
 
@@ -324,8 +335,13 @@ void DonetPeer::donetChunkScheduling(void)
        m_sched_window.end  += m_videoStreamChunkRate;
     }
 
+    EV << "m_sched_window.start = " << m_sched_window.start << endl;
+    EV << "m_sched_window.end = " << m_sched_window.end << endl;
+
     // -- Report statistics
     emit(sig_nChunkRequested, m_nChunkRequested_perSchedulingInterval);
+    emit(sig_schedWin_start, m_sched_window.start);
+    emit(sig_schedWin_end, m_sched_window.end);
 
 
 } // Donet Chunk Scheduling

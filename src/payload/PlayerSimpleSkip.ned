@@ -29,7 +29,6 @@ simple PlayerSimpleSkip like PlayerBase
 
       @statistic[timePlayerStart](source=Signal_timePlayerStart; record=last);
 
-
 }
 
 
