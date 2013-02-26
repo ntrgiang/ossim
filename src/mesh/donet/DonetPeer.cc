@@ -1531,8 +1531,8 @@ void DonetPeer::chunkScheduling()
 
     m_videoBuffer->printStatus();
 
-    randomChunkScheduling();
-//        donetChunkScheduling();
+//    randomChunkScheduling();
+        donetChunkScheduling();
 }
 
 void DonetPeer::reportLocalStatistic(void)
@@ -1691,19 +1691,19 @@ int DonetPeer::numberOfChunkToRequestPerCycle(void)
 
 bool DonetPeer::recentlyRequestedChunk(SEQUENCE_NUMBER_T seq_num)
 {
-    EV << endl;
-    EV << "%%%" << endl;
+//    EV << endl;
+//    EV << "%%%" << endl;
     vector<SEQUENCE_NUMBER_T>::iterator it;
     it = find (m_list_requestedChunk.begin(), m_list_requestedChunk.end(), seq_num);
 
     if (it == m_list_requestedChunk.end())
     {
-        EV << "Chunk " << seq_num << " has NOT been requested recently" << endl;
+//        EV << "Chunk " << seq_num << " has NOT been requested recently" << endl;
         return false;
     }
     else
     {
-        EV << "Chunk " << seq_num << " has been requested recently" << endl;
+//        EV << "Chunk " << seq_num << " has been requested recently" << endl;
     }
 
     return true;
