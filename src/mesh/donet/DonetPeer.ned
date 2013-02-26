@@ -88,6 +88,8 @@ simple DonetPeer extends DonetBase
     @statistic[bufferStart](source=Signal_BufferStart; record=vector);
     @statistic[bufferHead](source=Signal_BufferHead; record=vector);
 
+    @statistic[schedWinStart](source=Signal_SchedWin_start; record=vector);
+    @statistic[schedWinEnd](source=Signal_SchedWin_end; record=vector);
 
     @statistic[inThroughput](source=Signal_InThroughput; record=mean,vector);
 
