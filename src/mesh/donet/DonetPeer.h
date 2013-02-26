@@ -218,6 +218,9 @@ private:
        simsignal_t sig_bufferStart;
        simsignal_t sig_bufferHead;
 
+       simsignal_t sig_schedWin_start;
+       simsignal_t sig_schedWin_end;
+
     simsignal_t sig_localCI;
     simsignal_t sig_myci;
 

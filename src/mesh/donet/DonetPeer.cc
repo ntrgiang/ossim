@@ -184,6 +184,9 @@ void DonetPeer::initialize(int stage)
     sig_bufferStart = registerSignal("Signal_BufferStart");
     sig_bufferHead = registerSignal("Signal_BufferHead");
 
+    sig_schedWin_start  = registerSignal("Signal_SchedWin_start");
+    sig_schedWin_end    = registerSignal("Signal_SchedWin_end");
+
     sig_localCI = registerSignal("Signal_LocalCI");
     sig_myci = registerSignal("Signal_myCI");
 
