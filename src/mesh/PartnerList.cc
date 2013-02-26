@@ -134,6 +134,71 @@ void PartnerList::resetNChunkScheduled()
     }
 }
 
+void PartnerList::setElementSendBm(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, bool val)
+{
+//    for(std::map<IPvXAddress, NeighborInfo>::iterator iter = m_map.begin();
+//        iter != m_map.end(); ++iter)
+//    {
+//        iter->second.setNChunkScheduled(0);
+//    }
+   std::map<IPvXAddress, NeighborInfo>::iterator iter;
+   iter = m_map.find(addr);
+
+   if (iter != m_map.end())
+   {
+      iter->second.setElementSendBm(seq_num, val);
+   }
+   else
+   {
+      throw cException("Address not found from the partnerList");
+   }
+}
+
+double PartnerList::getUpBw(IPvXAddress addr)
+{
+   std::map<IPvXAddress, NeighborInfo>::iterator iter;
+   iter = m_map.find(addr);
+
+   if (iter != m_map.end())
+   {
+      return iter->second.getUpBw();
+   }
+   else
+   {
+      throw cException("Address not found from the partnerList");
+   }
+}
+
+bool PartnerList::updateChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, double time)
+{
+   std::map<IPvXAddress, NeighborInfo>::iterator iter;
+   iter = m_map.find(addr);
+
+   if (iter != m_map.end())
+   {
+      return iter->second.updateChunkAvailTime(seq_num, time);
+   }
+   else
+   {
+      throw cException("Address not found from the partnerList");
+   }
+}
+
+double PartnerList::getChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num)
+{
+   std::map<IPvXAddress, NeighborInfo>::iterator iter;
+   iter = m_map.find(addr);
+
+   if (iter != m_map.end())
+   {
+      return iter->second.getChunkAvailTime(seq_num);
+   }
+   else
+   {
+      throw cException("Address not found from the partnerList");
+   }
+}
+
 /**
  * Could also be obsolete
  */
@@ -297,7 +362,7 @@ void PartnerList::getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddre
         NeighborInfo nbr_info = iter->second;
         if (nbr_info.getLastRecvBmTime() != -1)
         {
-            EV << "  -- At peer " << iter->first << ": ";
+            //EV << "  -- At peer " << iter->first << ": ";
             if (nbr_info.isInRecvBufferMap(seq_num))
             {
                 if (nbr_info.getNChunkScheduled() < nbr_info.getUploadRate_Chunk())
