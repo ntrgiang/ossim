@@ -204,9 +204,9 @@ void DonetPeer::donetChunkScheduling(void)
                candidate1 = supplier;
 
                // -- Update the second candidate with another partner
-               //candidate2 = holderList[j];
+               candidate2 = holderList[j];
 
-               //ret = selectOneCandidate(seq_num, supplier, candidate2, supplier);
+               ret = selectOneCandidate(seq_num, supplier, candidate2, supplier);
             }
 
             // -- Loops through all holders should be completed at this point
