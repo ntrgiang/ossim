@@ -432,7 +432,7 @@ SEQUENCE_NUMBER_T PlayerSimpleSkip::getCurrentPlaybackPoint(void)
     return m_id_nextChunk;
 }
 
-double PlayerSimpleSkip::getLocalContinuityIndex(void)
+double PlayerSimpleSkip::getContinuityIndex(void)
 {
    long int total_chunkSeek = m_count_chunkHit + m_count_chunkMiss;
    if (total_chunkSeek != 0)

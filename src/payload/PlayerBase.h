@@ -32,6 +32,7 @@ public:
     virtual bool playerStarted(void) = 0;
 
     virtual int getPlayerState(void) = 0;
+    virtual double getContinuityIndex(void) = 0;
 
     inline long int getCountChunkHit(void) { return m_count_chunkHit; }
     inline long int getCountChunkMiss(void) { return m_count_chunkMiss; }
