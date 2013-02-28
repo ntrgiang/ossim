@@ -550,31 +550,34 @@ void DonetPeer::handleTimerPartnershipRefinement()
 {
    Enter_Method("handleTimerPartnershipRefinement");
 
-//   bool ret = sendPartnershipRequest();
-
-//   if (ret == false)
-//   {
-//      flag_partnershipRefinement = false;
-//   }
-
-//   flag_partnershipRefinement = true;
-
-
-   //return;
-
    EV << endl << "**************************************************************" << endl;
    EV << "Partnership refinement !!!" << endl;
 
-   if (m_partnerList->getSize() <= 1)
-   {
-      EV << "Minimum partnership size, should not cleanup now" << endl;
-      return;
-   }
+//   if (m_partnerList->getSize() <= 1)
+//   {
+//      EV << "Minimum partnership size, should not cleanup now" << endl;
+//      return;
+//   }
 
    // --------------------------------------------------------------------------
    // --- Update the records
    // --------------------------------------------------------------------------
+   updateDataExchangeRecord(param_interval_partnershipRefinement);
 
+   if (m_player->playerStarted() == false)
+   {
+      EV << "Player has not started yet --> no refinement!" << endl;
+      return;
+   }
+
+   if (m_player->getContinuityIndex() > 0.9)
+   {
+      EV << "CI is good enough, no need for partnership refinement" << endl;
+      return;
+   }
+
+//   m_videoBuffer->getr
+/*
     std::map<IPvXAddress, DataExchange> list_exchange;
     for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
          iter != m_partnerList->m_map.end(); ++iter)
@@ -650,13 +653,10 @@ void DonetPeer::handleTimerPartnershipRefinement()
           << " - Throughput: " << iter->second.m_throughput
           << " - Throughput per interval: " << iter->second.m_throughput_interval << endl;
     }
-
+*/
     // --------------------------------------------------------------------------
-    // --- Update the records
+    // --- Find the min throughput
     // --------------------------------------------------------------------------
-    IPvXAddress address_minThroughput = IPvXAddress("10.0.0.9");
-    double minThroughput = (double)INT_MAX;
-    double time_minThroughput = 0.0;
 
 //    std::map<IPvXAddress, DataExchange>::iterator it = list_exchange.begin();
 //    address_minThroughput = iter->first;
@@ -677,6 +677,10 @@ void DonetPeer::handleTimerPartnershipRefinement()
 //       }
 //    } // for
 
+/*
+   IPvXAddress address_minThroughput = IPvXAddress("10.0.0.9");
+   double minThroughput = (double)INT_MAX;
+   double time_minThroughput = 0.0;
     // -- Find the mininum value of throughputs
     for (std::map<IPvXAddress, DataExchange>::iterator iter = list_exchange.begin();
          iter != list_exchange.end(); ++iter)
@@ -709,6 +713,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
     {
        EV << "Something wrong, partnershipSize = " << m_partnerList->getSize() << endl;
     }
+*/
 
 //    if (time_minThroughput != -1.0)
 //    {
@@ -1266,12 +1271,17 @@ bool DonetPeer::sendPartnershipRequest(void)
 }
 
 
-void DonetPeer::updateDataExchangeRecord(void)
+//void DonetPeer::updateDataExchangeRecord(void)
+void DonetPeer::updateDataExchangeRecord(double samplingInterval)
 {
+   Enter_Method("updateDataExchangeRecord()");
+
+   EV << "--updateDataExchangeRecord--" << endl;
+
    RecordCountChunk record;
-   //std::map<IPvXAddress, NeighborInfo *>::iterator iter;
-   std::map<IPvXAddress, NeighborInfo>::iterator iter;
-   for(iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
+
+   for(std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+       iter != m_partnerList->m_map.end(); ++iter)
    {
 //      IPvXAddress addr = iter->first;
 //      long int currentCountReceived, currentCountSent;
@@ -1286,15 +1296,45 @@ void DonetPeer::updateDataExchangeRecord(void)
 //      iter->second->setCountChunkSent(currentCountSent-prevCount);
 
       IPvXAddress addr = iter->first;
-      m_forwarder->getRecordChunk(addr, record);
-      double interval = simTime().dbl() - record.m_oriTime;
+      //m_forwarder->getRecordChunk(addr, record);
+      record = m_forwarder->getRecordChunk(addr);
+      double duration = simTime().dbl() - record.m_oriTime;
 
-      if (interval > 0)
+      if (duration > 0)
       {
-         iter->second.setAverageChunkReceived(record.m_chunkReceived / interval);
-         iter->second.setAverageChunkSent(record.m_chunkSent / interval);
+         // -- update the data exchange since joining
+         iter->second.setAverageChunkReceived(record.m_chunkReceived / duration);
+         iter->second.setAverageChunkSent(record.m_chunkSent / duration);
+         iter->second.setAverageChunkExchanged((record.m_chunkSent + record.m_chunkReceived) / duration);
+
+         // -- update the data exchange per interval
+         long int chunkSent_diff = record.m_chunkSent - iter->second.getCountPrevChunkSent();
+         long int chunkReceived_diff = record.m_chunkReceived - iter->second.getCountPrevChunkReceived();
+
+         iter->second.setAverageChunkSentPerInterval(chunkSent_diff / samplingInterval);
+         iter->second.setAverageChunkReceivedPerInterval(chunkReceived_diff / samplingInterval);
+         iter->second.setAverageChunkExchangedPerInterval((chunkSent_diff + chunkReceived_diff) / samplingInterval);
+
+         // -- Move value the to store it
+         iter->second.setCountPrevChunkSent(iter->second.getCountChunkSent());
+         iter->second.setCountPrevChunkReceived(iter->second.getCountChunkReceived());
+
+         iter->second.setCountChunkSent(record.m_chunkSent);
+         iter->second.setCountChunkReceived(record.m_chunkReceived);
+
+         // -- Debug
+         EV << "Previous -- chunk sent: " << iter->second.getCountPrevChunkSent()
+               << " -- chunk received: " << iter->second.getCountPrevChunkReceived() << endl;
+         EV << "Current -- chunk sent: " << iter->second.getCountChunkSent()
+               << " -- chunk received: " << iter->second.getCountChunkReceived() << endl;
+         EV << "Average since joining -- chunk sent: " << iter->second.getAverageChunkSent()
+               << " -- chunk received: " << iter->second.getAverageChunkReceived()
+               << " -- chunk exchanged: " << iter->second.getAverageChunkExchanged() << endl;
+         EV << "Average per interval: -- chunk sent: " << iter->second.getAverageChunkSentPerInterval()
+               << " -- chunk received: " << iter->second.getAverageChunkReceivedPerInterval()
+               << " -- chunk exchanged: " << iter->second.getAverageChunkExchangedPerInterval() << endl;
       }
-      else if (interval == 0)
+      else if (duration == 0)
       {
          EV << "First record to be stored" << endl;
       }
@@ -1302,7 +1342,9 @@ void DonetPeer::updateDataExchangeRecord(void)
       {
          throw cException("Interval has to be positive");
       }
-   }
+
+
+   } // for
 }
 
 int DonetPeer::initializeSchedulingWindow()
@@ -1530,7 +1572,7 @@ void DonetPeer::chunkScheduling()
 
     emit(sig_nBufferMapReceived, double(m_nBufferMapRecv)/(simTime().dbl() - m_firstJoinTime));
 
-    updateDataExchangeRecord();
+    //updateDataExchangeRecord(param_interval_chunkScheduling);
 
     m_videoBuffer->printStatus();
 
