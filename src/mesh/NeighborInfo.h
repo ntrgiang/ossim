@@ -47,23 +47,39 @@ public:
     inline void setTimeBudget(double time) { m_timeBudget = time; }
     inline double getTimeBudget(void) { return m_timeBudget; }
 
+    // -- "current" chunk record
     inline void setCountChunkReceived(long int n) { m_count_chunkReceived = n; }
     inline long int getCountChunkReceived(void) { return m_count_chunkReceived; }
 
     inline void setCountChunkSent(long int n) { m_count_chunkSent = n; }
     inline long int getCountChunkSent(void) { return m_count_chunkSent; }
 
+    // -- "previous" chunk record
     inline void setCountPrevChunkSent(long int n) { m_count_prev_chunkSent = n; }
-    inline long int getcountPrevChunkSent(void) { return m_count_prev_chunkSent; }
+    inline long int getCountPrevChunkSent(void) { return m_count_prev_chunkSent; }
 
-    inline void setCountPrevChunkReceived(long int n) { m_count_chunkReceived = n; }
-    inline long int getcountPrevChunkReceived(void) { return m_count_prev_chunkReceived; }
+    inline void setCountPrevChunkReceived(long int n) { m_count_prev_chunkReceived = n; }
+    inline long int getCountPrevChunkReceived(void) { return m_count_prev_chunkReceived; }
 
+    // -- average chunk record since joining
     inline void setAverageChunkSent(double c) { m_average_chunkSent = c; }
     inline double getAverageChunkSent(void) { return m_average_chunkSent; }
 
     inline void setAverageChunkReceived(double c) { m_average_chunkReceived = c; }
     inline double getAverageChunkReceived(void) { return m_average_chunkReceived; }
+
+    inline void setAverageChunkExchanged(double c) { m_average_chunkExchanged = c; }
+    inline double getAverageChunkExchanged(void) { return m_average_chunkExchanged; }
+
+    // -- average chunk record per interval
+    inline void setAverageChunkSentPerInterval(double c) { m_average_chunkSent_interval = c; }
+    inline double getAverageChunkSentPerInterval() { return m_average_chunkSent_interval; }
+
+    inline void setAverageChunkReceivedPerInterval(double c) { m_average_chunkReceived_interval = c; }
+    inline double getAverageChunkReceivedPerInterval() { return m_average_chunkReceived_interval; }
+
+    inline void setAverageChunkExchangedPerInterval(double c) { m_average_chunkExchanged_interval = c; }
+    inline double getAverageChunkExchangedPerInterval() { return m_average_chunkExchanged_interval; }
 
     // ----------------------------------------------------------------------------------------------
 
@@ -124,10 +140,17 @@ private:
     // Number of chunks delivered in both direction between two partners
     long int m_count_chunkSent;     // (current) number of chunks sent to that partner
     long int m_count_chunkReceived; // (current) number of chunks received from that partner
+
     long int m_count_prev_chunkSent; // number of chunks sent to partner in previous sampling
     long int m_count_prev_chunkReceived; // number of chunks received from partner in previous sampling
-    double m_average_chunkSent;     // per unit time
-    double m_average_chunkReceived;  // per unit time
+
+    double m_average_chunkSent;        // per unit time since joining
+    double m_average_chunkReceived;    // per unit time since joining
+    double m_average_chunkExchanged;   // per unit time since joining
+
+    double m_average_chunkSent_interval;        // during the previous interval
+    double m_average_chunkReceived_interval;    // during the previous interval
+    double m_average_chunkExchanged_interval;   // during the previous interval
 
     // -- Available time to transmit a specific chunk
     std::vector<double> m_availTime;
