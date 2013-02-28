@@ -70,7 +70,7 @@ private:
 
     void processTimeoutJoinRequestAccept(cMessage *msg);
 
-    void updateDataExchangeRecord(void);
+    void updateDataExchangeRecord(double samplingInterval);
 
     // !!! obsolete !!!
 //    void join();
