@@ -63,6 +63,7 @@ public:
 
    void sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort);
    void getRecordChunk(IPvXAddress &addr, RecordCountChunk&);
+   const RecordCountChunk & getRecordChunk(IPvXAddress &addr);
 
    void updateSentChunkRecord(IPvXAddress &destAddress);
    void updateReceivedChunkRecord(IPvXAddress &senderAddress);

@@ -141,6 +141,23 @@ void Forwarder::getRecordChunk(IPvXAddress &addr, RecordCountChunk& record)
    }
 }
 
+const RecordCountChunk & Forwarder::getRecordChunk(IPvXAddress &addr)
+{
+   std::map<IPvXAddress, RecordCountChunk>::iterator iter = m_record_countChunk.find(addr);
+
+   if (iter == m_record_countChunk.end())
+   {
+      // -- Record for such address does not exist
+      addRecord(addr);
+      return m_record_countChunk[addr];
+   }
+   else
+   {
+      return iter->second;
+   }
+}
+
+
 void Forwarder::removeRecord(const IPvXAddress &address)
 {
    std::map<IPvXAddress, RecordCountChunk>::iterator iter;
