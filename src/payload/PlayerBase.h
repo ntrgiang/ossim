@@ -31,14 +31,20 @@ public:
     virtual SEQUENCE_NUMBER_T getCurrentPlaybackPoint(void) = 0;
     virtual bool playerStarted(void) = 0;
 
-    virtual int getPlayerState(void) = 0;
+    // virtual int getPlayerState(void) = 0;
     virtual double getContinuityIndex(void) = 0;
 
     inline long int getCountChunkHit(void) { return m_count_chunkHit; }
     inline long int getCountChunkMiss(void) { return m_count_chunkMiss; }
 
+    inline int getState(void) { return m_state; }
+
 protected:
     long int m_count_chunkHit, m_count_chunkMiss;
+
+    // -- State variable
+    bool m_playerStarted;
+    int m_state;
 };
 
 #endif /* PLAYERBASE_H_ */

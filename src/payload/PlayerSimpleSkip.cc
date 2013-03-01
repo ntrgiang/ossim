@@ -172,7 +172,7 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
             }
             else
             {
-               // -- Change state to PLAYING
+                // -- Change state to PLAYING
                 m_state = PLAYER_STATE_PLAYING;
 
                 m_videoBuffer->printStatus();

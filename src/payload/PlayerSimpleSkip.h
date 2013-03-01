@@ -38,8 +38,6 @@ public:
     bool playerStarted(void);
     void activate(void);
 
-    inline int getPlayerState(void) { return m_state; }
-
     double getContinuityIndex(void);
 
 private:
@@ -47,9 +45,6 @@ private:
 
 protected:
     // Pointer to other modules
-
-    // -- State variable
-    bool m_playerStarted;
 
     // -- Message
     cMessage *timer_nextChunk;
@@ -64,7 +59,6 @@ protected:
     int     m_chunkSize; // Bytes
 
    // -- Some new parameters for the Finite State Machine
-    int m_state;
     double  param_percent_buffer_low, param_percent_buffer_high;
     int     param_max_skipped_chunk;
     double  param_interval_probe_playerStart;
