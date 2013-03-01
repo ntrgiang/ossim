@@ -152,7 +152,7 @@ void PartnerList::setElementSendBm(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, 
    }
    else
    {
-      throw cException("Address not found from the partnerList");
+      throw cException("Address not found from the partnerList to setElementSendBm");
    }
 }
 
@@ -167,7 +167,7 @@ double PartnerList::getUpBw(IPvXAddress addr)
    }
    else
    {
-      throw cException("Address not found from the partnerList");
+      throw cException("Address not found from the partnerList to getUpBw");
    }
 }
 
@@ -182,7 +182,7 @@ bool PartnerList::updateChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_n
    }
    else
    {
-      throw cException("Address not found from the partnerList");
+      throw cException("Address not found from the partnerList to updateChunkAvailTime");
    }
 }
 
@@ -197,7 +197,7 @@ double PartnerList::getChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_nu
    }
    else
    {
-      throw cException("Address not found from the partnerList");
+      throw cException("Address not found from the partnerList to getChunkAvailTime");
    }
 }
 
