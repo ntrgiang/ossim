@@ -141,12 +141,13 @@ private:
     long int m_count_chunkSent;     // (current) number of chunks sent to that partner
     long int m_count_chunkReceived; // (current) number of chunks received from that partner
 
-    long int m_count_prev_chunkSent; // number of chunks sent to partner in previous sampling
-    long int m_count_prev_chunkReceived; // number of chunks received from partner in previous sampling
+    long int m_count_prev_chunkSent;      // number of chunks sent to partner in previous sampling
+    long int m_count_prev_chunkReceived;  // number of chunks received from partner in previous sampling
 
-    double m_average_chunkSent;        // per unit time since joining
-    double m_average_chunkReceived;    // per unit time since joining
-    double m_average_chunkExchanged;   // per unit time since joining
+    // -- per unit time since joining
+    double m_average_chunkSent;
+    double m_average_chunkReceived;
+    double m_average_chunkExchanged;
 
     double m_average_chunkSent_interval;        // during the previous interval
     double m_average_chunkReceived_interval;    // during the previous interval
