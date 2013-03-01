@@ -141,7 +141,7 @@ void DonetPeer::randomChunkScheduling(void)
     refreshListRequestedChunk();
 
     // -- Move the scheduling window forward
-    if (m_player->getPlayerState() == PLAYER_STATE_PLAYING)
+    if (m_player->getState() == PLAYER_STATE_PLAYING)
     {
        m_sched_window.start += m_videoStreamChunkRate;
        m_sched_window.end  += m_videoStreamChunkRate;
