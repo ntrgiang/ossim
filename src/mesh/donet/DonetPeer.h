@@ -207,6 +207,9 @@ private:
     long int m_prevNChunkReceived;
     int m_downloadRate_chunk;
 
+    // --------------------------- Optimization --------------------------------
+    std::vector<IPvXAddress> m_blacklist;
+
     // -------------------------------- Signals --------------------------------
 
     // -- For ranges of received buffer maps, and current playback point
