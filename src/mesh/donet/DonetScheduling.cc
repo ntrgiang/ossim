@@ -247,6 +247,7 @@ void DonetPeer::donetChunkScheduling(void)
 
             // TODO: optimize this piece of code with map<seq_num, vector<ipvxaddress>> inside the first for loop
             std::vector<IPvXAddress> holderList;
+            IPvXAddress candidate1, candidate2, supplier;
             int nHolder_check = 0;
             //m_partnerList->getHolderList(seq_num, holderList);
 
@@ -275,61 +276,69 @@ void DonetPeer::donetChunkScheduling(void)
                {
                   // EV << "\tBufferMap from " << iter->first << " is too old!" << endl;
                }
-            } // for
+            } // for -- browse through partnerList
 
             int nHolder = holderList.size();
+            int ret = 0;
 
             //if (nHolder < 2)
-            if (nHolder_check < 2)
+            if (nHolder_check == 0)
             {
                // -- Inconsistence with the result found before,
                // since some partners has already been assigned enough chunk that it could send
-               break;
+               continue;
                // throw cException("chunk %ld has less than 2 holders --> wrong!!!", seq_num);
             }
-
-            IPvXAddress candidate1, candidate2, supplier;
-            candidate1 = holderList[0];
-            candidate2 = holderList[1];
-
-            if (candidate1.isUnspecified() == true)
+            else if (nHolder == 1)
             {
-               throw cException("invalid address %s for candidate1, nPartner = %d, count_2 = %d",
-                                candidate1.str().c_str(), nPartner, count_2);
+               supplier = holderList[0];
+               ret = 0;
             }
-
-            if (candidate2.isUnspecified() == true)
+            else // nHolder >= 2
             {
-               throw cException("invalid address %s for candidate2, nPartner = %d, count_2 = %d",
-                                candidate2.str().c_str(), nPartner, count_2);
-            }
+               candidate1 = holderList[0];
+               candidate2 = holderList[1];
 
-            int ret = selectOneCandidate(seq_num, candidate1, candidate2, supplier);
+               if (candidate1.isUnspecified() == true)
+               {
+                  throw cException("invalid address %s for candidate1, nPartner = %d, count_2 = %d",
+                                   candidate1.str().c_str(), nPartner, count_2);
+               }
 
-            if (ret == -1)
-            {
-                // -- Meaning that no suitable supplier has been found
-                // Consider the next chunk for finding supplier
-                continue;
-            }
-
-            for (int j = 2; j < nHolder; ++j)
-            {
-               // -- User result from the previous calculation
-               candidate1 = supplier;
-
-               // -- Update the second candidate with another partner
-               candidate2 = holderList[j];
+               if (candidate2.isUnspecified() == true)
+               {
+                  throw cException("invalid address %s for candidate2, nPartner = %d, count_2 = %d",
+                                   candidate2.str().c_str(), nPartner, count_2);
+               }
 
                ret = selectOneCandidate(seq_num, candidate1, candidate2, supplier);
-            }
+
+
+               for (int j = 2; j < nHolder; ++j)
+               {
+                  // -- User result from the previous calculation
+                  candidate1 = supplier;
+
+                  // -- Update the second candidate with another partner
+                  candidate2 = holderList[j];
+
+                  ret = selectOneCandidate(seq_num, candidate1, candidate2, supplier);
+               }
+
+//               if (ret == -1)
+//               {
+//                  // -- Meaning that no suitable supplier has been found
+//                  // Consider the next chunk for finding supplier
+//                  continue;
+//               }
+            } // if (nHolder)
 
             // -- Loops through all holders should be completed at this point
             if (ret == -1)
             {
-                // -- Meaning that no suitable supplier has been found
-                // Consider the next chunk for finding supplier
-                continue;
+               // -- Meaning that no suitable supplier has been found
+               // Consider the next chunk for finding supplier
+               continue;
             }
 
             // -- Set the respective element in the SendBm to say that this chunk should be requested
