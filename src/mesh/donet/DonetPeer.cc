@@ -553,30 +553,83 @@ void DonetPeer::handleTimerPartnershipRefinement()
    EV << endl << "**************************************************************" << endl;
    EV << "Partnership refinement !!!" << endl;
 
+   // --------------------------------------------------------------------------
+   // --- Update the records
+   // --------------------------------------------------------------------------
+   updateDataExchangeRecord(param_interval_partnershipRefinement);
+
+   // temporarily commented
 //   if (m_partnerList->getSize() <= 1)
 //   {
 //      EV << "Minimum partnership size, should not cleanup now" << endl;
 //      return;
 //   }
 
-   // --------------------------------------------------------------------------
-   // --- Update the records
-   // --------------------------------------------------------------------------
-   updateDataExchangeRecord(param_interval_partnershipRefinement);
-
-   if (m_player->playerStarted() == false)
+   //if (m_player->playerStarted() == false)
+   if (m_player->getState() != PLAYER_STATE_PLAYING)
    {
       EV << "Player has not started yet --> no refinement!" << endl;
       return;
    }
 
-   if (m_player->getContinuityIndex() > 0.9)
+   // Temporarily commented
+//   if (m_player->getContinuityIndex() > 0.9)
+//   {
+//      EV << "CI is good enough, no need for partnership refinement" << endl;
+//      return;
+//   }
+
+   // --------------------------------------------------------------------------
+   // --- Find the min throughput
+   // --------------------------------------------------------------------------
+   IPvXAddress address_minThroughput = IPvXAddress("10.0.0.9");
+   IPvXAddress address_min_inThroughput = IPvXAddress("10.0.0.9");
+   double minThroughput = (double)INT_MAX;
+   double min_inThroughput = (double)INT_MAX;
+   //double time_minThroughput = 0.0;
+   // -- Find the mininum value of throughputs
+   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+        iter != m_partnerList->m_map.end(); ++iter)
    {
-      EV << "CI is good enough, no need for partnership refinement" << endl;
-      return;
+      EV << "Address " << iter->first
+         << " -- average chunk sent: " << iter->second.getAverageChunkSent()
+         << " -- average chunk received: " << iter->second.getAverageChunkReceived()
+         << " -- average chunk exchanged: " << iter->second.getAverageChunkExchanged()
+         << endl;
+      if (minThroughput > iter->second.getAverageChunkExchanged())
+      {
+         minThroughput = iter->second.getAverageChunkExchanged();
+         address_minThroughput = iter->first;
+      }
+
+      if (min_inThroughput > iter->second.getAverageChunkReceived())
+      {
+         min_inThroughput = iter->second.getAverageChunkReceived();
+         address_min_inThroughput = iter->first;
+      }
    }
 
-//   m_videoBuffer->getr
+   EV << "Partner " << address_minThroughput << endl
+      << "\t with min throughput " << minThroughput << endl;
+//      << "\t from time " << time_minThroughput << endl;
+
+   EV << "Partner " << address_min_inThroughput
+      << " -- with min_inThroughput " << min_inThroughput << endl;
+
+//   if (minThroughput > m_videoStreamChunkRate * 0.1)
+//   {
+//      EV << "Min throughput = " << minThroughput << " -- but not too bad!" << endl;
+//      return;
+//   }
+
+   if (address_minThroughput == IPvXAddress("10.0.0.9"))
+   {
+      EV << "Something wrong, partnershipSize = " << m_partnerList->getSize() << endl;
+   }
+
+   // -------------------------- Testing ---------------------------------------
+
+
 /*
     std::map<IPvXAddress, DataExchange> list_exchange;
     for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
@@ -654,28 +707,6 @@ void DonetPeer::handleTimerPartnershipRefinement()
           << " - Throughput per interval: " << iter->second.m_throughput_interval << endl;
     }
 */
-    // --------------------------------------------------------------------------
-    // --- Find the min throughput
-    // --------------------------------------------------------------------------
-
-//    std::map<IPvXAddress, DataExchange>::iterator it = list_exchange.begin();
-//    address_minThroughput = iter->first;
-//    minThroughput = it->second.m_throughput;
-
-//    EV << "********************************************************************" << endl;
-//    EV << address_minThroughput << " -- " << minThroughput << " 0" << endl;
-
-//    for(; it != list_exchange.end(); ++it)
-//    {
-//       if (minThroughput > it->second.m_throughput)
-//       {
-//          minThroughput          = it->second.m_throughput;
-//          address_minThroughput  = it->first;
-//          time_minThroughput      = it->second.m_time;
-
-//          EV << address_minThroughput << " -- " << minThroughput << endl;
-//       }
-//    } // for
 
 /*
    IPvXAddress address_minThroughput = IPvXAddress("10.0.0.9");
@@ -1196,7 +1227,7 @@ void DonetPeer::processPeerBufferMap(cPacket *pkt)
 
     // -- Debug
     ++m_nBufferMapRecv;
-    nbr_info->printRecvBm();
+    // nbr_info->printRecvBm();
     // m_partnerList->printRecvBm(senderAddress);
 
 }
