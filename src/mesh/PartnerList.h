@@ -94,6 +94,7 @@ public:
 //    virtual void updateKeepAliveTimestamp(IPvXAddress addr, long timestamp);
 
     void getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddress> &holderList);
+    int getNumberOfHolder(SEQUENCE_NUMBER_T seq_num);
 
     void clearAllSendBm(void);
     void updateBoundSendBm(SEQUENCE_NUMBER_T head, SEQUENCE_NUMBER_T start, SEQUENCE_NUMBER_T end) const;

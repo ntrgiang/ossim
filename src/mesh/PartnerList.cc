@@ -387,6 +387,37 @@ void PartnerList::getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddre
 
 }
 
+int PartnerList::getNumberOfHolder(SEQUENCE_NUMBER_T seq_num)
+{
+   int nHolder = 0;
+   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_map.begin();
+      iter != m_map.end(); ++iter)
+   {
+      if (iter->second.getLastRecvBmTime() != -1)
+      {
+         //EV << "  -- At peer " << iter->first << ": ";
+         if (iter->second.isInRecvBufferMap(seq_num))
+         {
+            if (iter->second.getNChunkScheduled() < iter->second.getUploadRate_Chunk())
+            {
+               //holderList.push_back(iter->first);
+               ++nHolder;
+               EV << "\tPartner " << iter->first << " HAS the chunk " << seq_num << endl;
+            }
+         }
+         else
+         {
+            // EV << "\tPartner " << iter->first << " does NOT have chunk " << seq_num << endl;
+         }
+      }
+      else
+      {
+         // EV << "\tBufferMap from " << iter->first << " is too old!" << endl;
+      }
+   } // for
+   return nHolder;
+}
+
 bool PartnerList::hasAddress(const IPvXAddress & address) const
 {
     std::map<IPvXAddress, NeighborInfo>::iterator iter;
