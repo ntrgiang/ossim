@@ -141,7 +141,8 @@ void PartnerList::setElementSendBm(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, 
 //    {
 //        iter->second.setNChunkScheduled(0);
 //    }
-   EV << addr << " -- " << seq_num << " -- " << val << endl;
+
+//   EV << "Address: " << addr << " -- seq_num: " << seq_num << " -- value: " << val << endl;
 
    std::map<IPvXAddress, NeighborInfo>::iterator iter;
    iter = m_map.find(addr);
@@ -197,7 +198,7 @@ double PartnerList::getChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_nu
    }
    else
    {
-      throw cException("Address not found from the partnerList to getChunkAvailTime");
+      throw cException("Address %s not found from the partnerList to getChunkAvailTime", addr.str().c_str());
    }
 }
 
