@@ -41,7 +41,8 @@ void DonetPeer::donetChunkScheduling(void)
     // -- Get current time, for faster query time when it is used repeatedly
     // double current_time = simTime().dbl();
 
-    // -- Calculate the available for _all_ chunk (expect redundancy, but for simplicity of implementation), for _all_ partners
+    // -- Calculate the available time for _all_ chunk, for _all_ partners
+    // -- (expect redundancy, but for simplicity of implementation),
     m_partnerList->resetAllAvailableTime(m_player->getCurrentPlaybackPoint(),
                                          lower_bound,
                                          m_videoBuffer->getChunkInterval());
@@ -51,7 +52,9 @@ void DonetPeer::donetChunkScheduling(void)
     m_partnerList->updateBoundSendBm(lower_bound, lower_bound+m_bufferMapSize_chunk-1);
     m_partnerList->resetNChunkScheduled();
 
+    // -------------------------------------------------------------------------
     // -- Finding the expected set (set of chunks which should be requested)
+    // -------------------------------------------------------------------------
     std::vector<SEQUENCE_NUMBER_T> expected_set;
     for (SEQUENCE_NUMBER_T seq_num = lower_bound; seq_num <= upper_bound; ++seq_num)
     {
@@ -86,14 +89,17 @@ void DonetPeer::donetChunkScheduling(void)
     // -- Have a copy of the expected_set, so that chunks which has been found a supplier will be deleted from this copy
 
     std::map<SEQUENCE_NUMBER_T, std::vector<IPvXAddress> > holder;
-
+    // -------------------------------------------------------------------------
     // -- Browse through the expected_set
+    // -------------------------------------------------------------------------
     for (int i = 0; i < sizeExpectedSet; ++i)
     {
         SEQUENCE_NUMBER_T seq_num = expected_set[i];
         std::vector<IPvXAddress> holderList;
         m_partnerList->getHolderList(seq_num, holderList);
-        int nHolder = holderList.size();
+        //int nHolder = holderList.size();
+
+        int nHolder = m_partnerList->getNumberOfHolder(seq_num);
 
         //EV << "Chunk " << seq_num << " with " << nHolder << " holders" << endl;
 
@@ -201,18 +207,21 @@ void DonetPeer::donetChunkScheduling(void)
     } // else
 */
 
-    // -- Browse through the new map
-    for (std::map<int, std::vector<SEQUENCE_NUMBER_T> >::iterator iter = dupSet.begin();
-         iter != dupSet.end(); ++iter)
-    {
-       EV << "List of chunks whose have " << iter->first << " partners: " << endl;
-       for (std::vector<SEQUENCE_NUMBER_T>::iterator it = iter->second.begin();
-            it != iter->second.end(); ++it)
-       {
-          EV << *it << " ";
-       }
-       EV << endl;
-    }
+   // --------------------------------------------------------------------------
+   // -- Browse through the new map for debug purpose
+   // --------------------------------------------------------------------------
+   EV << " -- List of chunk which are available on more than one partners: " << endl;
+   for (std::map<int, std::vector<SEQUENCE_NUMBER_T> >::iterator iter = dupSet.begin();
+        iter != dupSet.end(); ++iter)
+   {
+      EV << "List of chunks whose have " << iter->first << " partners: " << endl;
+      for (std::vector<SEQUENCE_NUMBER_T>::iterator it = iter->second.begin();
+           it != iter->second.end(); ++it)
+      {
+         EV << *it << " ";
+      }
+      EV << endl;
+   }
 
     // -- Selecting partner for chunks of different groups
 //    for (int n = 2; n <= nPartner; ++n)
@@ -224,7 +233,8 @@ void DonetPeer::donetChunkScheduling(void)
     {
        int size_dup_set = iter->second.size();
 
-        EV << "Number of chunks available on " << iter->first << " partners: " << size_dup_set << endl;
+        EV << "Number of chunks available on " << iter->first
+           << " partners: " << size_dup_set << endl;
 
 //        for (int k=0; k < size_dup_set; ++k)
 //        {
@@ -233,22 +243,26 @@ void DonetPeer::donetChunkScheduling(void)
        {
             //SEQUENCE_NUMBER_T seq_num = dup_set[n-2][k];
             SEQUENCE_NUMBER_T seq_num = *it;
+            EV << "Finding all holders for chunk " << seq_num << endl;
 
             // TODO: optimize this piece of code with map<seq_num, vector<ipvxaddress>> inside the first for loop
             std::vector<IPvXAddress> holderList;
+            int nHolder_check = 0;
             //m_partnerList->getHolderList(seq_num, holderList);
 
-            for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
-                 iter != m_partnerList->m_map.end(); ++iter)
+            for (std::map<IPvXAddress, NeighborInfo>::iterator i = m_partnerList->m_map.begin();
+                 i != m_partnerList->m_map.end(); ++i)
             {
-               if (iter->second.getLastRecvBmTime() != -1)
+               if (i->second.getLastRecvBmTime() != -1)
                {
                   //EV << "  -- At peer " << iter->first << ": ";
-                  if (iter->second.isInRecvBufferMap(seq_num))
+                  if (i->second.isInRecvBufferMap(seq_num))
                   {
-                     if (iter->second.getNChunkScheduled() < iter->second.getUploadRate_Chunk())
+                     if (i->second.getNChunkScheduled() < i->second.getUploadRate_Chunk())
                      {
-                        holderList.push_back(iter->first);
+                        EV << "\tPartner " << i->first << " holds this chunk" << endl;
+                        holderList.push_back(i->first);
+                        ++nHolder_check;
                         // EV << "\tPartner " << iter->first << " HAS the chunk " << seq_num << endl;
                      }
                   }
@@ -265,9 +279,13 @@ void DonetPeer::donetChunkScheduling(void)
 
             int nHolder = holderList.size();
 
-            if (nHolder < 2)
+            //if (nHolder < 2)
+            if (nHolder_check < 2)
             {
-               throw cException("less than 2 holders --> wrong!!!");
+               // -- Inconsistence with the result found before,
+               // since some partners has already been assigned enough chunk that it could send
+               break;
+               // throw cException("chunk %ld has less than 2 holders --> wrong!!!", seq_num);
             }
 
             IPvXAddress candidate1, candidate2, supplier;
