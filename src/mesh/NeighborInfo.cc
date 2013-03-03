@@ -97,7 +97,7 @@ void NeighborInfo::setElementSendBm(SEQUENCE_NUMBER_T seq_num, bool val)
     }
 
     // -- Debug
-     printSendBm();
+//     printSendBm();
 }
 
 void NeighborInfo::copyFrom(BufferMap *bm)
@@ -201,7 +201,7 @@ void NeighborInfo::printSendBm(void)
     int k = 1;
     for (int i = 0; i < m_bufferSize; ++i)
     {
-        EV << m_sendBm[i];
+        //EV << m_sendBm[i];
         if (m_sendBm[i] == 1) ++countOne;
 
         // -- For better presenting the bit array
@@ -276,7 +276,7 @@ void NeighborInfo::resetVectorAvailableTime(SEQUENCE_NUMBER_T pb_point, SEQUENCE
        }
     }
 
-    printVectorAvailableTime();
+    //printVectorAvailableTime();
 }
 
 //void NeighborInfo::updateChunkAvailTime(SEQUENCE_NUMBER_T seq_num, double txTime)
