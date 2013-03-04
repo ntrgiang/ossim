@@ -36,6 +36,7 @@
 #include "MessageLogger.h"
 #include "Dispatcher.h"
 #include "GossipMembershipPacket_m.h"
+#include "ScampStatistic.h"
 
 //class ScampBase : public CommBase
 class ScampBase : public MembershipBase
@@ -69,6 +70,7 @@ protected:
     void readParameter(void);
     void bindToGlobalModule(void);
     void bindToParentModule(void);
+    void bindToStatisticModule(void);
 
     // -- Helper functions
 //    int getNodeAddress(IPvXAddress &address);
@@ -119,8 +121,10 @@ protected:
     cMessage *timer_sendAppMessage;
 
     //cMessage *timer_reportPvSize;
-
     Dispatcher *m_dispatcher;
+
+    // -- Global module
+    ScampStatistic *m_gstat;
 
     // -- Internal modules
     MessageLogger m_msgLogger;

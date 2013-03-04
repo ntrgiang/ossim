@@ -85,6 +85,15 @@ void ScampBase::bindToParentModule(void)
     if (m_dispatcher == NULL) throw cException("m_dispatcher == NULL is invalid");
 }
 
+void ScampBase::bindToStatisticModule()
+{
+   Enter_Method("bindToStatisticModule");
+
+   cModule *temp = simulation.getModuleByPath("globalStatistic");
+   m_gstat = check_and_cast<ScampStatistic *>(temp);
+   EV << "Binding to globalStatistic is completed successfully" << endl;
+}
+
 void ScampBase::processGossipPacket(cPacket *pkt)
 {
     GossipMembershipPacket *gossipPkt = dynamic_cast<GossipMembershipPacket *>(pkt);
