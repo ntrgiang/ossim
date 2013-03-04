@@ -1607,8 +1607,8 @@ void DonetPeer::chunkScheduling()
 
     m_videoBuffer->printStatus();
 
-//    randomChunkScheduling();
-        donetChunkScheduling();
+    randomChunkScheduling();
+//        donetChunkScheduling();
 }
 
 void DonetPeer::reportLocalStatistic(void)
