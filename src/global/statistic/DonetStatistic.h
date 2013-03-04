@@ -19,20 +19,20 @@
 #include "ActivePeerTable.h"
 #include "IPvXAddress.h"
 #include <fstream>
+#include "StatisticBase.h"
 //#include "ccomponent.h"
 
-#ifndef GLOBAL_STATISTIC_H_
-#define GLOBAL_STATISTIC_H_
+#ifndef DONET_STATISTIC_H_
+#define DONET_STATISTIC_H_
 
 class ActivePeerTable;
 
-//class GlobalStatistic : public cSimpleModule, cListener, protected INotifiable
-//class GlobalStatistic : public cSimpleModule, cNumericResultFilter, cNumericResultRecorder, protected INotifiable
-class GlobalStatistic : public cSimpleModule, protected INotifiable
+//class GlobalStatistic : public cSimpleModule, protected INotifiable
+class DonetStatistic : public StatisticBase
 {
 public:
-    GlobalStatistic();
-    virtual ~GlobalStatistic();
+    DonetStatistic();
+    virtual ~DonetStatistic();
 
 //    virtual void initialize();
     virtual int numInitStages() const  {return 4;}
@@ -189,4 +189,4 @@ private:
     simsignal_t sig_requestedChunk, sig_receivedChunk, sig_duplicatedChunk, sig_lateChunk, sig_inrangeChunk;
 };
 
-#endif /* GLOBAL_STATISTIC_H_ */
+#endif /* DONET_STATISTIC_H_ */

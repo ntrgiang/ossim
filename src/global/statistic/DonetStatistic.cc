@@ -13,18 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "GlobalStatistic.h"
+#include "DonetStatistic.h"
 
-Define_Module(GlobalStatistic);
-//Define_Module(ActivePeerTable);
+Define_Module(DonetStatistic);
 
-
-GlobalStatistic::GlobalStatistic() {
+DonetStatistic::DonetStatistic() {
     // TODO Auto-generated constructor stub
 
 }
 
-GlobalStatistic::~GlobalStatistic() {
+DonetStatistic::~DonetStatistic() {
     // TODO Auto-generated destructor stub
     if (timer_reportCI)
     {
@@ -33,8 +31,8 @@ GlobalStatistic::~GlobalStatistic() {
     }
 }
 
-//void GlobalStatistic::initialize()
-void GlobalStatistic::initialize(int stage)
+//void DonetStatistic::initialize()
+void DonetStatistic::initialize(int stage)
 {
     if (stage == 0)
     {
@@ -143,7 +141,7 @@ void GlobalStatistic::initialize(int stage)
     WATCH(m_outFile);
 }
 
-void GlobalStatistic::handleMessage(cMessage *msg)
+void DonetStatistic::handleMessage(cMessage *msg)
 {
     //EV << "ActivePeerTable doesn't process messages!" << endl;
     if (msg->isSelfMessage())
@@ -156,12 +154,12 @@ void GlobalStatistic::handleMessage(cMessage *msg)
     }
 }
 
-void GlobalStatistic::receiveChangeNotification(int category, const cPolymorphic *details)
+void DonetStatistic::receiveChangeNotification(int category, const cPolymorphic *details)
 {
     return;
 }
 
-void GlobalStatistic::finish()
+void DonetStatistic::finish()
 {
     // -- Close the log file
     m_outFile.close();
@@ -206,7 +204,7 @@ void GlobalStatistic::finish()
     recordScalar("Reach Ratio", (double)m_countReach / m_countAppMsgNew);
 }
 
-void GlobalStatistic::handleTimerMessage(cMessage *msg)
+void DonetStatistic::handleTimerMessage(cMessage *msg)
 {
     if (msg == timer_reportCI)
     {
@@ -220,7 +218,7 @@ void GlobalStatistic::handleTimerMessage(cMessage *msg)
 }
 
 // ----------------- Interface in effect -------------------------
-void GlobalStatistic::writeActivePeerTable2File(vector<IPvXAddress> activePeerList)
+void DonetStatistic::writeActivePeerTable2File(vector<IPvXAddress> activePeerList)
 {
     m_outFile << "List of active peers" << endl;
 
@@ -231,7 +229,7 @@ void GlobalStatistic::writeActivePeerTable2File(vector<IPvXAddress> activePeerLi
     }
 }
 
-void GlobalStatistic::writePartnerList2File(IPvXAddress node, vector<IPvXAddress> pList)
+void DonetStatistic::writePartnerList2File(IPvXAddress node, vector<IPvXAddress> pList)
 {
    //m_outFile << "---------------------------------------------------------------" << endl;
    //m_outFile << "At " << simTime().dbl() << "(s) " << endl;
@@ -246,7 +244,7 @@ void GlobalStatistic::writePartnerList2File(IPvXAddress node, vector<IPvXAddress
     m_outFile << endl;
 }
 
-void GlobalStatistic::writePartnership2File(IPvXAddress local, IPvXAddress remote)
+void DonetStatistic::writePartnership2File(IPvXAddress local, IPvXAddress remote)
 {
    m_outFile << simTime().dbl() << " " << local.str() << " " << remote.str() << endl;
 }
@@ -257,31 +255,31 @@ void GlobalStatistic::writePartnership2File(IPvXAddress local, IPvXAddress remot
  * ****************************************************************************
  */
 
-//void GlobalStatistic::recordSizeInView(int size)
+//void DonetStatistic::recordSizeInView(int size)
 //{
 //    m_sizeInView += size;
 //    ++m_countIV;
 //}
 
-//void GlobalStatistic::recordSizePartialView(int size)
+//void DonetStatistic::recordSizePartialView(int size)
 //{
 //    m_sizePartialView += size;
 //    ++m_countPV;
 //}
 
-//double GlobalStatistic::getAverageSizeInView(void)
+//double DonetStatistic::getAverageSizeInView(void)
 //{
 //    return (double)m_sizeInView / m_countIV;
 //}
 
-//double GlobalStatistic::getAverageSizePartialView(void)
+//double DonetStatistic::getAverageSizePartialView(void)
 //{
 //    return (double)m_sizePartialView / m_countPV;
 //}
 
 
 
-void GlobalStatistic::recordJoinTime(double time)
+void DonetStatistic::recordJoinTime(double time)
 {
     m_joinTime.record(time);
 }
@@ -292,12 +290,12 @@ void GlobalStatistic::recordJoinTime(double time)
  * ****************************************************************************
  */
 
-void GlobalStatistic::collectSizeIV(int size)
+void DonetStatistic::collectSizeIV(int size)
 {
 //    m_finalSizeIV.collect(size);
 }
 
-void GlobalStatistic::collectSizePV(int size)
+void DonetStatistic::collectSizePV(int size)
 {
 //    m_finalSizePV.collect(size);
 }
@@ -308,64 +306,64 @@ void GlobalStatistic::collectSizePV(int size)
  * ****************************************************************************
  */
 
-void GlobalStatistic::increaseNEW(void)
+void DonetStatistic::increaseNEW(void)
 {
     ++m_count_NEW;
 }
 
-void GlobalStatistic::decreaseNEW(void)
+void DonetStatistic::decreaseNEW(void)
 {
     --m_count_NEW;
 }
 
-void GlobalStatistic::increaseIGN(void)
+void DonetStatistic::increaseIGN(void)
 {
     ++m_count_IGN;
 }
 
-void GlobalStatistic::increaseACK(void)
+void DonetStatistic::increaseACK(void)
 {
     ++m_count_ACK;
 }
 
-long GlobalStatistic::getNEW(void)
+long DonetStatistic::getNEW(void)
 {
     return m_count_NEW;
 }
 
-long GlobalStatistic::getIGN(void)
+long DonetStatistic::getIGN(void)
 {
     return m_count_IGN;
 }
 
-long GlobalStatistic::getACK(void)
+long DonetStatistic::getACK(void)
 {
     return m_count_ACK;
 }
 
-//void GlobalStatistic::recordPartialViewSize(int size)
+//void DonetStatistic::recordPartialViewSize(int size)
 //{
 //    m_accumulatedSizePV += (long)size;
 //    ++m_totalNode;
 //}
 
-//void GlobalStatistic::collectPartialViewSize(int size)
+//void DonetStatistic::collectPartialViewSize(int size)
 //{
 //    m_sizePV.collect(size);
 //}
 
-//void GlobalStatistic::collectInViewSize(int size)
+//void DonetStatistic::collectInViewSize(int size)
 //{
 //    m_sizeIV.collect(size);
 //}
 
-void GlobalStatistic::collectAllPVsizes(int size)
+void DonetStatistic::collectAllPVsizes(int size)
 {
     m_allFinalPVsizes.record(size);
 }
 
 // ---------------------- Signal --------------------------
-//void GlobalStatistic::receiveSignal(cComponent *src, simsignal_t id, long l){
+//void DonetStatistic::receiveSignal(cComponent *src, simsignal_t id, long l){
 //        if(registerSignal("BeaconTx") == id){
 //                int idx = (int) l ;
 //                txBeacons[idx]++ ;
@@ -376,7 +374,7 @@ void GlobalStatistic::collectAllPVsizes(int size)
 //        else opp_error("Unknown signal received. 2") ;
 //}
 //
-//void GlobalStatistic::receiveSignal(cComponent *src, simsignal_t id, cObject* obj){
+//void DonetStatistic::receiveSignal(cComponent *src, simsignal_t id, cObject* obj){
 //
 //        if(registerSignal("BeaconRx") == id){
 //                beaconRx* brx = check_and_cast<beaconRx*>(obj) ;
@@ -385,15 +383,15 @@ void GlobalStatistic::collectAllPVsizes(int size)
 //        else opp_error("Unknown signal.") ;
 //}
 
-//void GlobalStatistic::reportChunkHit(SEQUENCE_NUMBER_T seq_num)
-void GlobalStatistic::reportChunkHit(const SEQUENCE_NUMBER_T &seq_num)
+//void DonetStatistic::reportChunkHit(SEQUENCE_NUMBER_T seq_num)
+void DonetStatistic::reportChunkHit(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_chunkHit, seq_num);
     ++m_count_chunkHit;
     ++m_count_allChunk;
 }
 
-void GlobalStatistic::reportChunkMiss(const SEQUENCE_NUMBER_T &seq_num)
+void DonetStatistic::reportChunkMiss(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_chunkMiss, seq_num);
     emit(sig_chunkNeed, seq_num);
@@ -401,48 +399,48 @@ void GlobalStatistic::reportChunkMiss(const SEQUENCE_NUMBER_T &seq_num)
     ++m_count_allChunk;
 }
 
-void GlobalStatistic::reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num)
+void DonetStatistic::reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_chunkSeek, seq_num);
     emit(sig_chunkNeed, seq_num);
 //    ++m_count_allChunk;
 }
 
-void GlobalStatistic::reportRequestedChunk(const SEQUENCE_NUMBER_T &seq_num)
+void DonetStatistic::reportRequestedChunk(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_requestedChunk, seq_num);
 }
 
-void GlobalStatistic::reportDuplicatedChunk(const SEQUENCE_NUMBER_T &seq_num)
+void DonetStatistic::reportDuplicatedChunk(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_duplicatedChunk, seq_num);
 }
 
-void GlobalStatistic::reportLateChunk(const SEQUENCE_NUMBER_T &seq_num)
+void DonetStatistic::reportLateChunk(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_lateChunk, seq_num);
     emit(sig_receivedChunk, seq_num);
 }
 
-void GlobalStatistic::reportInrangeChunk(const SEQUENCE_NUMBER_T &seq_num)
+void DonetStatistic::reportInrangeChunk(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_inrangeChunk, seq_num);
     emit(sig_receivedChunk, seq_num);
 }
 
-void GlobalStatistic::reportRebuffering(const SEQUENCE_NUMBER_T &seq_num)
+void DonetStatistic::reportRebuffering(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_rebuffering, seq_num);
 }
 
 // should be obsolete
-void GlobalStatistic::reportStall()
+void DonetStatistic::reportStall()
 {
     emit(sig_stall, 1);
 }
 
 // --------------------------------------------------- ON-GOING ----------------
-void GlobalStatistic::collectCI(void)
+void DonetStatistic::collectCI(void)
 {
    if (m_count_allChunk)
    {
@@ -455,55 +453,55 @@ void GlobalStatistic::collectCI(void)
 
 }
 
-void GlobalStatistic::collectSkipChunk(void)
+void DonetStatistic::collectSkipChunk(void)
 {
    emit(sig_skipChunk, (long double)m_count_skipChunk / m_apTable->getNumActivePeer());
 }
 
-void GlobalStatistic::collectStallDuration(void)
+void DonetStatistic::collectStallDuration(void)
 {
    emit(sig_stallDuration, (long double)m_count_stallDuration_chunk / m_apTable->getNumActivePeer());
 }
 
-void GlobalStatistic::collectRebuffering(void)
+void DonetStatistic::collectRebuffering(void)
 {
    emit(sig_rebuffering, (long double)m_count_rebuffering / m_apTable->getNumActivePeer());
 }
 
-void GlobalStatistic::reportSkipChunk()
+void DonetStatistic::reportSkipChunk()
 {
    ++m_count_skipChunk;
 }
 
-void GlobalStatistic::reportStallDuration(double dur)
+void DonetStatistic::reportStallDuration(double dur)
 {
     m_count_stallDuration += dur;
 }
 
-void GlobalStatistic::reportStallDuration(void)
+void DonetStatistic::reportStallDuration(void)
 {
     ++m_count_stallDuration_chunk;
     // the stall duration will be normalized to the length of a video chunk
 }
 
-void GlobalStatistic::reportRebuffering()
+void DonetStatistic::reportRebuffering()
 {
     //emit(sig_rebuffering, 1);
     ++m_count_rebuffering;
 }
 // -------------------------------------------- END OF ON-GOING ----------------
 
-void GlobalStatistic::reportMeshJoin()
+void DonetStatistic::reportMeshJoin()
 {
     emit(sig_meshJoin, 1);
 }
 
-void GlobalStatistic::reportNumberOfPartner(int nPartner)
+void DonetStatistic::reportNumberOfPartner(int nPartner)
 {
     emit(sig_nPartner, nPartner);
 }
 
-void GlobalStatistic::reportNumberOfJoin(int val)
+void DonetStatistic::reportNumberOfJoin(int val)
 {
     emit(sig_nJoin, val);
 }
