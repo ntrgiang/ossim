@@ -52,12 +52,17 @@ simple DonetPeer extends DonetBase
         @signal[Signal_chunkRequest](type=long);
         @statistic[chunkRequest](title="Sequence Number of chunk requests"; source=Signal_chunkRequest; record=count, vector);
 
-        @signal[Signal_nNewChunkForRequestPerCycle](type=long);    
-        @statistic[newChunkForRequest](title="Number of new chunk for scheduling per cycle"; source=Signal_nNewChunkForRequestPerCycle; record=vector);
-        @statistic[nChunkRequested](title="Number of requested chunks per cycle"; source=Signal_nChunkRequested; record=vector);
+
+        // title="Number of new chunk for scheduling per cycle";
+        @signal[Signal_nNewChunkForRequestPerCycle](type=long);
+        @statistic[newChunkForRequest](source=Signal_nNewChunkForRequestPerCycle; record=vector);
+
+        // title="Number of requested chunks per cycle";
+        @statistic[nChunkRequested](source=Signal_nChunkRequested; record=mean,vector);
         
-        @signal[Signal_nPartner](type=integer);    
-        @statistic[nPartner](title="Number of partners"; source=Signal_nPartner; record=last,vector);
+        // title="Number of partners";
+        @signal[Signal_nPartner](type=integer);
+        @statistic[nPartner](source=Signal_nPartner; record=last,vector);
 
         // -- Trying new signals
         //@statistic[joinTime](title="Joining time of a individual peer"; source=Signal_joinTime; record=last,vector?);            
