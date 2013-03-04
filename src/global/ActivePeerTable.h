@@ -18,7 +18,8 @@
 #include "IInterfaceTable.h"
 #include "NotificationBoard.h"
 
-#include "GlobalStatistic.h"
+//#include "GlobalStatistic.h"
+#include "StatisticBase.h"
 #include "ActivePeerInfo.h"
 
 #define PARTNER_ASSIGNMENT_IMMEDIATE 0
@@ -98,7 +99,8 @@ protected:
     typedef std::vector<IPvXAddress> AddressSet;
     //mutable AddressSet activePeerList;
 
-    GlobalStatistic *m_gstat;
+    //GlobalStatistic *m_gstat;
+    StatisticBase *m_gstat;
 
     std::string m_name;
 

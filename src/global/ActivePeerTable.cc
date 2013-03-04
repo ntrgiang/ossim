@@ -41,7 +41,8 @@ void ActivePeerTable::initialize(int stage)
         else if (stage==3)
         {
             cModule *temp = simulation.getModuleByPath("globalStatistic");
-            m_gstat = check_and_cast<GlobalStatistic *>(temp);
+            //m_gstat = check_and_cast<GlobalStatistic *>(temp);
+            m_gstat = check_and_cast<StatisticBase *>(temp);
             EV << "Binding to globalStatistic is completed successfully" << endl;
 
             // The message used for reporting the size of the APT periodically
