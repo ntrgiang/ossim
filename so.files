@@ -217,3 +217,8 @@ src/payload/PlayerSimpleSkip.ned
 src/payload/PlayerSimpleSkip.h
 src/payload/PlayerSimpleSkip.cc
 src/payload/PlayerBase.cc
+src/global/statistic/StatisticBase.ned
+src/global/statistic/StatisticBase.h
+src/global/statistic/ScampStatistic.ned
+src/global/statistic/ScampStatistic.h
+src/global/statistic/ScampStatistic.cc
