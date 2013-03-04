@@ -455,3 +455,12 @@ bool PlayerSimpleSkip::shouldResumePlaying(SEQUENCE_NUMBER_T seq_num)
 
     return false;
 }
+
+//double PlayerSimpleSkip::getLocalContinuityIndex(void)
+//{
+//   long int total_chunkSeek = m_count_chunkHit + m_count_chunkMiss;
+//   if (total_chunkSeek != 0)
+//      return m_count_chunkHit / total_chunkSeek;
+
+//   return 0.0;
+//}
