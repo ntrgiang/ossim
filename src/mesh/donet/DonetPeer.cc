@@ -48,8 +48,9 @@ void DonetPeer::initialize(int stage)
     if (stage != 3)
         return;
 
-    bindToGlobalModule();
     bindToMeshModule();
+    bindToGlobalModule();
+    bindtoStatisticModule();
 
     getAppSetting();
     readChannelRate();
