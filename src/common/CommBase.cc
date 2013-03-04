@@ -135,10 +135,11 @@ void CommBase::bindToGlobalModule(void)
     EV << "Binding to activePeerTable is completed successfully" << endl;
 
     // -- Global Statistic
-    temp = simulation.getModuleByPath("globalStatistic");
-    m_gstat = check_and_cast<GlobalStatistic *>(temp);
-    //if (m_gstat == NULL) throw cException("NULL pointer to module globalStatistic");
-    EV << "Binding to globalStatistic is completed successfully" << endl;
+//    temp = simulation.getModuleByPath("globalStatistic");
+//    //m_gstat = check_and_cast<GlobalStatistic *>(temp);
+//    m_gstat = check_and_cast<StatisticBase *>(temp);
+//    //if (m_gstat == NULL) throw cException("NULL pointer to module globalStatistic");
+//    EV << "Binding to globalStatistic is completed successfully" << endl;
 }
 
 double CommBase::getSimTimeLimit(void)
