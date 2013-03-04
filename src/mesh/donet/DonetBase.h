@@ -11,6 +11,7 @@
 #include "IChurnGenerator.h"
 #include "MeshOverlayObserver.h"
 #include "Logger.h"
+#include "DonetStatistic.h"
 
 #include "IPvXAddress.h"
 #include <fstream>
@@ -49,6 +50,7 @@ protected:
     // -- Overloading functions
     void bindToGlobalModule(void);
     void bindToMeshModule(void);
+    void bindtoStatisticModule(void);
 
     // *************************************************************************
     // *************************************************************************
@@ -111,6 +113,7 @@ protected:
     IChurnGenerator         *m_churn;
     MeshOverlayObserver     *m_meshOverlayObserver;
     Logger                  *m_logger;
+    DonetStatistic          *m_gstat;
 
     // -- Pointers to /local/ modules
     PartnerList *m_partnerList;
