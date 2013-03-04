@@ -2,7 +2,7 @@
 
 package so.global.statistic;
 
-simple GlobalStatistic
+simple DonetStatistic like IStatisticBase
 {
    parameters:
 
