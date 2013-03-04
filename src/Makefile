@@ -85,6 +85,7 @@ OBJS = \
     $O/global/churn/VelosoChurnModel.o \
     $O/global/logger/Logger.o \
     $O/global/observer/MeshOverlayObserver.o \
+    $O/global/statistic/DonetStatistic.o \
     $O/global/statistic/GlobalStatistic.o \
     $O/global/statistic/ScampStatistic.o \
     $O/global/statistic/Statistic.o \
@@ -256,6 +257,7 @@ $O/common/CommBase.o: common/CommBase.cc \
   /usr/include/c++/4.6/list \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/profile/multiset.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
@@ -270,7 +272,6 @@ $O/common/CommBase.o: common/CommBase.cc \
   /usr/include/c++/4.6/debug/safe_iterator.tcc \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
-  global/statistic/GlobalStatistic.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
   /usr/include/c++/4.6/profile/map.h \
   /usr/include/c++/4.6/debug/set \
@@ -485,7 +486,6 @@ $O/common/CommBase.o: common/CommBase.cc \
   /usr/include//wchar.h \
   /usr/include/c++/4.6/profile/list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
-  common/AppCommon.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
@@ -1689,6 +1689,7 @@ $O/global/ActivePeerTable.o: global/ActivePeerTable.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//simkerneldefs.h \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/profile/multiset.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/parallel/sort.h \
@@ -1710,7 +1711,6 @@ $O/global/ActivePeerTable.o: global/ActivePeerTable.cc \
   /usr/include/c++/4.6/debug/safe_iterator.tcc \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
-  global/statistic/GlobalStatistic.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
   /usr/include/c++/4.6/profile/map.h \
   /usr/include/c++/4.6/debug/set \
@@ -1964,12 +1964,10 @@ $O/global/ActivePeerTable.o: global/ActivePeerTable.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
   /usr/include/c++/4.6/parallel/multiway_merge.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
-  common/AppCommon.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   /usr/include/c++/4.6/parallel/balanced_quicksort.h \
   /usr/include/c++/4.6/bits/concept_check.h \
-  global/churn/IChurnGenerator.h \
   /usr/include/c++/4.6/tr1/cmath \
   /usr/include/c++/4.6/parallel/partial_sum.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//distrib.h \
@@ -4586,6 +4584,302 @@ $O/global/observer/MeshOverlayObserver.o: global/observer/MeshOverlayObserver.cc
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cxmlelement.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//simtime_t.h \
   /usr/include/c++/4.6/bits/move.h
+$O/global/statistic/DonetStatistic.o: global/statistic/DonetStatistic.cc \
+  /usr/include/c++/4.6/ostream \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnamedobject.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//simutil.h \
+  ../../inet/src/base/ModuleAccess.h \
+  /usr/include/c++/4.6/profile/impl/profiler_hashtable_size.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnedmathfunction.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//coutvector.h \
+  /usr/include/c++/4.6/profile/impl/profiler_trace.h \
+  /usr/include/c++/4.6/debug/multiset.h \
+  /usr/include/c++/4.6/set \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//simkerneldefs.h \
+  /usr/include/c++/4.6/list \
+  /usr/include/c++/4.6/parallel/settings.h \
+  /usr/include/c++/4.6/profile/multiset.h \
+  global/statistic/StatisticBase.h \
+  /usr/include/c++/4.6/bits/stl_function.h \
+  /usr/include/c++/4.6/parallel/equally_split.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdensityestbase.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cclassdescriptor.h \
+  /usr/include/c++/4.6/profile/impl/profiler_vector_size.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//omnetpp.h \
+  /usr/include/c++/4.6/profile/multimap.h \
+  /usr/include//endian.h \
+  /usr/include/c++/4.6/bits/stl_list.h \
+  /usr/include/c++/4.6/debug/safe_iterator.tcc \
+  /usr/include/c++/4.6/debug/safe_base.h \
+  /usr/include/c++/4.6/profile/set.h \
+  /usr/include/c++/4.6/bits/stl_construct.h \
+  ../../inet/src/base/INETDefs.h \
+  /usr/include/c++/4.6/profile/map.h \
+  /usr/include/c++/4.6/debug/set \
+  /usr/include/c++/4.6/debug/unordered_map \
+  /usr/include/c++/4.6/new \
+  /usr/include/c++/4.6/utility \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cpacketqueue.h \
+  /usr/include/c++/4.6/iosfwd \
+  /usr/include/c++/4.6/ext/atomicity.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//index.h \
+  /usr/include/c++/4.6/initializer_list \
+  /usr/include//features.h \
+  /usr/include/c++/4.6/type_traits \
+  /usr/include//dlfcn.h \
+  /usr/include/c++/4.6/bits/allocator.h \
+  /usr/include/c++/4.6/cstdint \
+  /usr/include/c++/4.6/debug/map.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//mersennetwister.h \
+  /usr/include/c++/4.6/exception \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//onstartup.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cexpression.h \
+  /usr/include/c++/4.6/parallel/compatibility.h \
+  /usr/include/c++/4.6/tr1/hashtable.h \
+  /usr/include/c++/4.6/bits/stringfwd.h \
+  global/ActivePeerTable.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cparimpl.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cqueue.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//clongparimpl.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//compat.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnedfunction.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmodule.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdynamicexpression.h \
+  /usr/include/c++/4.6/bits/stl_map.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cstatistic.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cregistrationlist.h \
+  /usr/include//alloca.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cparsimcomm.h \
+  /usr/include/c++/4.6/parallel/parallel.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platdefs.h \
+  /usr/include//ucontext.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//regmacros.h \
+  /usr/include/c++/4.6/bits/locale_classes.tcc \
+  /usr/include//limits.h \
+  /usr/include/c++/4.6/bits/functional_hash.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//globals.h \
+  /usr/include/c++/4.6/profile/impl/profiler_list_to_slist.h \
+  /usr/include/c++/4.6/profile/impl/profiler_algos.h \
+  /usr/include//xlocale.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cscheduler.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//clinkedlist.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccomponenttype.h \
+  /usr/include/c++/4.6/parallel/find.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//nedsupport.h \
+  /usr/include/c++/4.6/bits/basic_ios.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//errmsg.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//clistener.h \
+  /usr/include/c++/4.6/ios \
+  global/statistic/DonetStatistic.h \
+  /usr/include/c++/4.6/parallel/base.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cstddev.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//envirext.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/timeutil.h \
+  /usr/include/c++/4.6/profile/impl/profiler_container_size.h \
+  /usr/include//ctype.h \
+  /usr/include/c++/4.6/bits/exception_defines.h \
+  /usr/include/c++/4.6/bits/ostream.tcc \
+  /usr/include/c++/4.6/tr1/type_traits \
+  /usr/include/c++/4.6/tr1/functional_hash.h \
+  /usr/include//unistd.h \
+  /usr/include/c++/4.6/profile/impl/profiler.h \
+  /usr/include/c++/4.6/debug/map \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cresultlistener.h \
+  /usr/include/c++/4.6/profile/impl/profiler_node.h \
+  /usr/include/c++/4.6/tr1/unordered_map \
+  /usr/include/c++/4.6/parallel/find_selectors.h \
+  /usr/include/c++/4.6/profile/impl/profiler_list_to_vector.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cobject.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//carray.h \
+  /usr/include/c++/4.6/cctype \
+  /usr/include/c++/4.6/parallel/features.h \
+  /usr/include/c++/4.6/debug/vector \
+  /usr/include/c++/4.6/bits/istream.tcc \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cgate.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//opp_string.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperty.h \
+  /usr/include//libio.h \
+  ../../inet/src/base/INotifiable.h \
+  /usr/include/c++/4.6/bits/streambuf.tcc \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//csimplemodule.h \
+  /usr/include/c++/4.6/bits/cpp_type_traits.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cstlwatch.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdelaychannel.h \
+  /usr/include/c++/4.6/bits/exception_ptr.h \
+  /usr/include//stdint.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cstringpool.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdoubleparimpl.h \
+  /usr/include/c++/4.6/debug/debug.h \
+  ../../inet/src/networklayer/contract/IPvXAddress.h \
+  /usr/include/c++/4.6/debug/functions.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//random.h \
+  ../../inet/src/linklayer/contract/MACAddress.h \
+  /usr/include/c++/4.6/bits/hashtable.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//packing.h \
+  /usr/include/c++/4.6/bits/cxxabi_forced.h \
+  /usr/include/c++/4.6/bits/streambuf_iterator.h \
+  /usr/include//execinfo.h \
+  /usr/include/c++/4.6/limits \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cchannel.h \
+  /usr/include/c++/4.6/profile/impl/profiler_vector_to_list.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cstringtokenizer.h \
+  /usr/include/c++/4.6/cstdlib \
+  /usr/include/c++/4.6/bits/localefwd.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmessage.h \
+  /usr/include/c++/4.6/bits/functexcept.h \
+  /usr/include/c++/4.6/ext/numeric_traits.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ctimestampedvalue.h \
+  /usr/include//time.h \
+  /usr/include/c++/4.6/bits/nested_exception.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cboolparimpl.h \
+  /usr/include/c++/4.6/bits/stl_algobase.h \
+  /usr/include/c++/4.6/bits/codecvt.h \
+  /usr/include//gconv.h \
+  /usr/include/c++/4.6/profile/map \
+  /usr/include//getopt.h \
+  /usr/include/c++/4.6/bits/stl_vector.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cenvir.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cresultfilter.h \
+  /usr/include/c++/4.6/profile/impl/profiler_map_to_unordered_map.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cconfigoption.h \
+  /usr/include/c++/4.6/bits/locale_facets.tcc \
+  /usr/include/c++/4.6/bits/postypes.h \
+  /usr/include/c++/4.6/tr1/cstdint \
+  /usr/include/c++/4.6/iostream \
+  /usr/include/c++/4.6/backward/binders.h \
+  ../../inet/src/networklayer/common/InterfaceToken.h \
+  /usr/include/c++/4.6/bits/stl_multimap.h \
+  ../../inet/src/networklayer/contract/IPAddress.h \
+  /usr/include/c++/4.6/profile/iterator_tracker.h \
+  /usr/include/c++/4.6/debug/list \
+  /usr/include/c++/4.6/bits/stl_uninitialized.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmessageheap.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cksplit.h \
+  /usr/include/c++/4.6/bits/stl_set.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccoroutine.h \
+  /usr/include/c++/4.6/streambuf \
+  /usr/include/c++/4.6/bits/char_traits.h \
+  /usr/include/c++/4.6/debug/macros.h \
+  /usr/include/c++/4.6/stdexcept \
+  /usr/include/c++/4.6/bits/stl_iterator.h \
+  /usr/include//stdio.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cresultrecorder.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cvisitor.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/intxtypes.h \
+  /usr/include/c++/4.6/bits/unordered_map.h \
+  /usr/include/c++/4.6/bits/stl_pair.h \
+  /usr/include/c++/4.6/bits/basic_string.tcc \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmodelchange.h \
+  /usr/include/c++/4.6/parallel/algobase.h \
+  /usr/include/c++/4.6/ext/concurrence.h \
+  /usr/include/c++/4.6/profile/vector \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnedvalue.h \
+  /usr/include/c++/4.6/bits/basic_string.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//csimulation.h \
+  /usr/include/c++/4.6/bits/fstream.tcc \
+  /usr/include/c++/4.6/string \
+  /usr/include/c++/4.6/parallel/tags.h \
+  /usr/include/c++/4.6/bits/ios_base.h \
+  /usr/include/c++/4.6/bits/c++0x_warning.h \
+  /usr/include/c++/4.6/profile/impl/profiler_state.h \
+  /usr/include/c++/4.6/bits/stl_multiset.h \
+  /usr/include/c++/4.6/profile/unordered_map \
+  /usr/include/c++/4.6/ext/type_traits.h \
+  ../../inet/src/networklayer/common/InterfaceEntry.h \
+  ../../inet/src/base/NotificationBoard.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdisplaystring.h \
+  /usr/include/c++/4.6/typeinfo \
+  /usr/include/c++/4.6/cwchar \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//simtime.h \
+  /usr/include/c++/4.6/bits/list.tcc \
+  /usr/include/c++/4.6/cerrno \
+  /usr/include//errno.h \
+  /usr/include/c++/4.6/cstdio \
+  /usr/include/c++/4.6/bits/basic_ios.tcc \
+  /usr/include/c++/4.6/unordered_map \
+  /usr/include/c++/4.6/cwctype \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdefaultlist.h \
+  /usr/include/c++/4.6/map \
+  /usr/include/c++/4.6/bits/stl_relops.h \
+  /usr/include//sched.h \
+  /usr/include/c++/4.6/debug/safe_iterator.h \
+  /usr/include//string.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cfsm.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cobjectfactory.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cpar.h \
+  /usr/include/c++/4.6/debug/set.h \
+  /usr/include//stdlib.h \
+  /usr/include/c++/4.6/tuple \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmersennetwister.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cvarhist.h \
+  /usr/include/c++/4.6/bits/range_access.h \
+  /usr/include/c++/4.6/profile/set \
+  /usr/include/c++/4.6/parallel/compiletime_settings.h \
+  /usr/include/c++/4.6/debug/multimap.h \
+  /usr/include/c++/4.6/debug/formatter.h \
+  /usr/include/c++/4.6/debug/safe_sequence.tcc \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chistogram.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cstringparimpl.h \
+  /usr/include//wchar.h \
+  /usr/include/c++/4.6/profile/list \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
+  common/AppCommon.h \
+  /usr/include/c++/4.6/bits/locale_facets.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
+  /usr/include/c++/4.6/bits/hash_bytes.h \
+  global/churn/IChurnGenerator.h \
+  /usr/include/c++/4.6/bits/concept_check.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//distrib.h \
+  /usr/include/c++/4.6/tr1/hashtable_policy.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cpsquare.h \
+  /usr/include/c++/4.6/profile/impl/profiler_hash_func.h \
+  /usr/include/c++/4.6/bits/sstream.tcc \
+  /usr/include/c++/4.6/parallel/basic_iterator.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmsgpar.h \
+  global/ActivePeerInfo.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ctopology.h \
+  /usr/include//math.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccomponent.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cxmlparimpl.h \
+  ../../inet/src/base/NotifierConsts.h \
+  /usr/include//wctype.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cexception.h \
+  /usr/include/c++/4.6/bits/boost_concept_check.h \
+  /usr/include/c++/4.6/bits/vector.tcc \
+  /usr/include/c++/4.6/functional \
+  /usr/include/c++/4.6/istream \
+  ../../inet/src/networklayer/contract/IPv6Address.h \
+  /usr/include/c++/4.6/debug/safe_sequence.h \
+  /usr/include/c++/4.6/vector \
+  /usr/include/c++/4.6/bits/stl_bvector.h \
+  /usr/include/c++/4.6/bits/hashtable_policy.h \
+  /usr/include//_G_config.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccompoundmodule.h \
+  ../../inet/src/networklayer/common/IInterfaceTable.h \
+  /usr/include/c++/4.6/parallel/types.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cownedobject.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnullenvir.h \
+  /usr/include/c++/4.6/fstream \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//clcg32.h \
+  /usr/include/c++/4.6/bits/locale_classes.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdetect.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cenum.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdataratechannel.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//crng.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cconfiguration.h \
+  /usr/include/c++/4.6/bits/ostream_insert.h \
+  /usr/include/c++/4.6/tr1/unordered_map.h \
+  /usr/include/c++/4.6/profile/base.h \
+  /usr/include/c++/4.6/sstream \
+  /usr/include/c++/4.6/bits/stl_iterator_base_funcs.h \
+  /usr/include/c++/4.6/bits/stl_tree.h \
+  /usr/include/c++/4.6/bits/stl_iterator_base_types.h \
+  /usr/include/c++/4.6/bits/move.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//simtime_t.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cxmlelement.h
 $O/global/statistic/GlobalStatistic.o: global/statistic/GlobalStatistic.cc \
   /usr/include/c++/4.6/ostream \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnamedobject.h \
@@ -4604,6 +4898,7 @@ $O/global/statistic/GlobalStatistic.o: global/statistic/GlobalStatistic.cc \
   /usr/include/c++/4.6/profile/multiset.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
+  global/statistic/StatisticBase.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdensityestbase.h \
@@ -4717,6 +5012,7 @@ $O/global/statistic/GlobalStatistic.o: global/statistic/GlobalStatistic.cc \
   ../../inet/src/networklayer/contract/IPvXAddress.h \
   /usr/include/c++/4.6/debug/functions.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//random.h \
+  ../../inet/src/linklayer/contract/MACAddress.h \
   /usr/include/c++/4.6/bits/hashtable.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//packing.h \
   /usr/include/c++/4.6/bits/cxxabi_forced.h \
@@ -4750,6 +5046,7 @@ $O/global/statistic/GlobalStatistic.o: global/statistic/GlobalStatistic.cc \
   /usr/include/c++/4.6/tr1/cstdint \
   /usr/include/c++/4.6/iostream \
   /usr/include/c++/4.6/backward/binders.h \
+  ../../inet/src/networklayer/common/InterfaceToken.h \
   /usr/include/c++/4.6/bits/stl_multimap.h \
   ../../inet/src/networklayer/contract/IPAddress.h \
   /usr/include/c++/4.6/profile/iterator_tracker.h \
@@ -4787,6 +5084,7 @@ $O/global/statistic/GlobalStatistic.o: global/statistic/GlobalStatistic.cc \
   /usr/include/c++/4.6/bits/stl_multiset.h \
   /usr/include/c++/4.6/profile/unordered_map \
   /usr/include/c++/4.6/ext/type_traits.h \
+  ../../inet/src/networklayer/common/InterfaceEntry.h \
   ../../inet/src/base/NotificationBoard.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdisplaystring.h \
   /usr/include/c++/4.6/typeinfo \
@@ -4837,6 +5135,7 @@ $O/global/statistic/GlobalStatistic.o: global/statistic/GlobalStatistic.cc \
   /usr/include/c++/4.6/bits/sstream.tcc \
   /usr/include/c++/4.6/parallel/basic_iterator.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmsgpar.h \
+  global/ActivePeerInfo.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ctopology.h \
   /usr/include//math.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccomponent.h \
@@ -4855,6 +5154,7 @@ $O/global/statistic/GlobalStatistic.o: global/statistic/GlobalStatistic.cc \
   /usr/include/c++/4.6/bits/hashtable_policy.h \
   /usr/include//_G_config.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccompoundmodule.h \
+  ../../inet/src/networklayer/common/IInterfaceTable.h \
   /usr/include/c++/4.6/parallel/types.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cownedobject.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnullenvir.h \
@@ -4887,8 +5187,8 @@ $O/global/statistic/ScampStatistic.o: global/statistic/ScampStatistic.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//coutvector.h \
   /usr/include/c++/4.6/debug/multiset.h \
   /usr/include/c++/4.6/set \
-  /usr/include/c++/4.6/list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//simkerneldefs.h \
+  /usr/include/c++/4.6/list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/profile/multiset.h \
   /usr/include/c++/4.6/parallel/settings.h \
@@ -4901,40 +5201,41 @@ $O/global/statistic/ScampStatistic.o: global/statistic/ScampStatistic.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdensityestbase.h \
   /usr/include/c++/4.6/profile/impl/profiler_vector_size.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//omnetpp.h \
-  /usr/include//endian.h \
   /usr/include/c++/4.6/profile/multimap.h \
+  /usr/include//endian.h \
   /usr/include/c++/4.6/bits/stl_list.h \
   /usr/include/c++/4.6/debug/safe_iterator.tcc \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
+  ../../inet/src/base/INETDefs.h \
   /usr/include/c++/4.6/debug/set \
   /usr/include/c++/4.6/profile/map.h \
-  ../../inet/src/base/INETDefs.h \
   /usr/include/c++/4.6/debug/unordered_map \
   /usr/include/c++/4.6/new \
   /usr/include/c++/4.6/utility \
   /usr/include/c++/4.6/iosfwd \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cpacketqueue.h \
   /usr/include/c++/4.6/ext/atomicity.h \
-  /usr/include/c++/4.6/type_traits \
-  /usr/include//features.h \
-  /usr/include/c++/4.6/initializer_list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//index.h \
-  /usr/include/c++/4.6/bits/allocator.h \
+  /usr/include/c++/4.6/initializer_list \
+  /usr/include//features.h \
+  /usr/include/c++/4.6/type_traits \
   /usr/include//dlfcn.h \
+  /usr/include/c++/4.6/bits/allocator.h \
   /usr/include/c++/4.6/cstdint \
   /usr/include/c++/4.6/debug/map.h \
-  /usr/include/c++/4.6/exception \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//mersennetwister.h \
+  /usr/include/c++/4.6/exception \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//onstartup.h \
-  /usr/include/c++/4.6/parallel/compatibility.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cexpression.h \
-  /usr/include/c++/4.6/bits/stringfwd.h \
+  /usr/include/c++/4.6/parallel/compatibility.h \
   /usr/include/c++/4.6/tr1/hashtable.h \
+  /usr/include/c++/4.6/bits/stringfwd.h \
+  global/ActivePeerTable.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cparimpl.h \
-  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//clongparimpl.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cqueue.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//clongparimpl.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//compat.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnedfunction.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmodule.h \
@@ -4956,8 +5257,8 @@ $O/global/statistic/ScampStatistic.o: global/statistic/ScampStatistic.cc \
   /usr/include/c++/4.6/profile/impl/profiler_algos.h \
   /usr/include//xlocale.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cscheduler.h \
-  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccomponenttype.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//clinkedlist.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccomponenttype.h \
   /usr/include/c++/4.6/parallel/find.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//nedsupport.h \
   /usr/include/c++/4.6/bits/basic_ios.h \
@@ -4968,15 +5269,15 @@ $O/global/statistic/ScampStatistic.o: global/statistic/ScampStatistic.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cstddev.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//envirext.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/timeutil.h \
-  /usr/include//ctype.h \
   /usr/include/c++/4.6/profile/impl/profiler_container_size.h \
+  /usr/include//ctype.h \
   /usr/include/c++/4.6/bits/exception_defines.h \
   /usr/include/c++/4.6/bits/ostream.tcc \
-  /usr/include//unistd.h \
-  /usr/include/c++/4.6/tr1/functional_hash.h \
   /usr/include/c++/4.6/tr1/type_traits \
-  /usr/include/c++/4.6/debug/map \
+  /usr/include/c++/4.6/tr1/functional_hash.h \
+  /usr/include//unistd.h \
   /usr/include/c++/4.6/profile/impl/profiler.h \
+  /usr/include/c++/4.6/debug/map \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cresultlistener.h \
   /usr/include/c++/4.6/profile/impl/profiler_node.h \
   /usr/include/c++/4.6/tr1/unordered_map \
@@ -4990,21 +5291,23 @@ $O/global/statistic/ScampStatistic.o: global/statistic/ScampStatistic.cc \
   /usr/include/c++/4.6/bits/istream.tcc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cgate.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//opp_string.h \
-  /usr/include//libio.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperty.h \
+  /usr/include//libio.h \
   ../../inet/src/base/INotifiable.h \
   /usr/include/c++/4.6/bits/streambuf.tcc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//csimplemodule.h \
   /usr/include/c++/4.6/bits/cpp_type_traits.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cstlwatch.h \
-  /usr/include/c++/4.6/bits/exception_ptr.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdelaychannel.h \
+  /usr/include/c++/4.6/bits/exception_ptr.h \
   /usr/include//stdint.h \
-  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdoubleparimpl.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cstringpool.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdoubleparimpl.h \
   /usr/include/c++/4.6/debug/debug.h \
+  ../../inet/src/networklayer/contract/IPvXAddress.h \
   /usr/include/c++/4.6/debug/functions.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//random.h \
+  ../../inet/src/linklayer/contract/MACAddress.h \
   /usr/include/c++/4.6/bits/hashtable.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//packing.h \
   /usr/include/c++/4.6/bits/cxxabi_forced.h \
@@ -5033,61 +5336,64 @@ $O/global/statistic/ScampStatistic.o: global/statistic/ScampStatistic.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cresultfilter.h \
   /usr/include/c++/4.6/profile/impl/profiler_map_to_unordered_map.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cconfigoption.h \
-  /usr/include/c++/4.6/bits/postypes.h \
   /usr/include/c++/4.6/bits/locale_facets.tcc \
+  /usr/include/c++/4.6/bits/postypes.h \
   /usr/include/c++/4.6/tr1/cstdint \
   /usr/include/c++/4.6/iostream \
   /usr/include/c++/4.6/backward/binders.h \
+  ../../inet/src/networklayer/common/InterfaceToken.h \
   /usr/include/c++/4.6/bits/stl_multimap.h \
-  /usr/include/c++/4.6/debug/list \
+  ../../inet/src/networklayer/contract/IPAddress.h \
   /usr/include/c++/4.6/profile/iterator_tracker.h \
+  /usr/include/c++/4.6/debug/list \
   /usr/include/c++/4.6/bits/stl_uninitialized.h \
-  /usr/include/c++/4.6/bits/stl_set.h \
-  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cksplit.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmessageheap.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cksplit.h \
+  /usr/include/c++/4.6/bits/stl_set.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccoroutine.h \
   /usr/include/c++/4.6/streambuf \
   /usr/include/c++/4.6/bits/char_traits.h \
-  /usr/include/c++/4.6/stdexcept \
   /usr/include/c++/4.6/debug/macros.h \
-  /usr/include//stdio.h \
+  /usr/include/c++/4.6/stdexcept \
   /usr/include/c++/4.6/bits/stl_iterator.h \
+  /usr/include//stdio.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cresultrecorder.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cvisitor.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/intxtypes.h \
   /usr/include/c++/4.6/bits/unordered_map.h \
   /usr/include/c++/4.6/bits/stl_pair.h \
-  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmodelchange.h \
   /usr/include/c++/4.6/bits/basic_string.tcc \
-  /usr/include/c++/4.6/ext/concurrence.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmodelchange.h \
   /usr/include/c++/4.6/parallel/algobase.h \
-  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnedvalue.h \
+  /usr/include/c++/4.6/ext/concurrence.h \
   /usr/include/c++/4.6/profile/vector \
-  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//csimulation.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnedvalue.h \
   /usr/include/c++/4.6/bits/basic_string.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//csimulation.h \
   /usr/include/c++/4.6/bits/fstream.tcc \
   /usr/include/c++/4.6/string \
   /usr/include/c++/4.6/parallel/tags.h \
   /usr/include/c++/4.6/bits/ios_base.h \
   /usr/include/c++/4.6/bits/c++0x_warning.h \
-  /usr/include/c++/4.6/bits/stl_multiset.h \
   /usr/include/c++/4.6/profile/impl/profiler_state.h \
+  /usr/include/c++/4.6/bits/stl_multiset.h \
   /usr/include/c++/4.6/profile/unordered_map \
+  ../../inet/src/networklayer/common/InterfaceEntry.h \
   /usr/include/c++/4.6/ext/type_traits.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdisplaystring.h \
   ../../inet/src/base/NotificationBoard.h \
-  /usr/include/c++/4.6/cwchar \
   /usr/include/c++/4.6/typeinfo \
-  /usr/include/c++/4.6/bits/list.tcc \
+  /usr/include/c++/4.6/cwchar \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//simtime.h \
+  /usr/include/c++/4.6/bits/list.tcc \
   /usr/include/c++/4.6/cerrno \
   /usr/include//errno.h \
-  /usr/include/c++/4.6/bits/basic_ios.tcc \
   /usr/include/c++/4.6/cstdio \
+  /usr/include/c++/4.6/bits/basic_ios.tcc \
   /usr/include/c++/4.6/map \
-  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdefaultlist.h \
-  /usr/include/c++/4.6/cwctype \
   /usr/include/c++/4.6/unordered_map \
+  /usr/include/c++/4.6/cwctype \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdefaultlist.h \
   /usr/include/c++/4.6/bits/stl_relops.h \
   /usr/include//sched.h \
   /usr/include/c++/4.6/debug/safe_iterator.h \
@@ -5096,8 +5402,8 @@ $O/global/statistic/ScampStatistic.o: global/statistic/ScampStatistic.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cobjectfactory.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cpar.h \
   /usr/include/c++/4.6/debug/set.h \
-  /usr/include/c++/4.6/tuple \
   /usr/include//stdlib.h \
+  /usr/include/c++/4.6/tuple \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmersennetwister.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cvarhist.h \
   /usr/include/c++/4.6/bits/range_access.h \
@@ -5105,24 +5411,25 @@ $O/global/statistic/ScampStatistic.o: global/statistic/ScampStatistic.cc \
   /usr/include/c++/4.6/parallel/compiletime_settings.h \
   /usr/include/c++/4.6/debug/multimap.h \
   /usr/include/c++/4.6/debug/formatter.h \
-  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chistogram.h \
   /usr/include/c++/4.6/debug/safe_sequence.tcc \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chistogram.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cstringparimpl.h \
   /usr/include//wchar.h \
   /usr/include/c++/4.6/profile/list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
   global/statistic/ScampStatistic.h \
-  /usr/include/c++/4.6/bits/hash_bytes.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
+  /usr/include/c++/4.6/bits/hash_bytes.h \
   /usr/include/c++/4.6/bits/concept_check.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//distrib.h \
-  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cpsquare.h \
   /usr/include/c++/4.6/tr1/hashtable_policy.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cpsquare.h \
   /usr/include/c++/4.6/profile/impl/profiler_hash_func.h \
   /usr/include/c++/4.6/bits/sstream.tcc \
-  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmsgpar.h \
   /usr/include/c++/4.6/parallel/basic_iterator.h \
+  /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmsgpar.h \
+  global/ActivePeerInfo.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ctopology.h \
   /usr/include//math.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccomponent.h \
@@ -5131,15 +5438,17 @@ $O/global/statistic/ScampStatistic.o: global/statistic/ScampStatistic.cc \
   /usr/include//wctype.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cexception.h \
   /usr/include/c++/4.6/bits/boost_concept_check.h \
-  /usr/include/c++/4.6/functional \
   /usr/include/c++/4.6/bits/vector.tcc \
+  /usr/include/c++/4.6/functional \
   /usr/include/c++/4.6/istream \
+  ../../inet/src/networklayer/contract/IPv6Address.h \
   /usr/include/c++/4.6/debug/safe_sequence.h \
   /usr/include/c++/4.6/vector \
   /usr/include/c++/4.6/bits/stl_bvector.h \
   /usr/include/c++/4.6/bits/hashtable_policy.h \
   /usr/include//_G_config.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccompoundmodule.h \
+  ../../inet/src/networklayer/common/IInterfaceTable.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cownedobject.h \
   /usr/include/c++/4.6/parallel/types.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnullenvir.h \
@@ -6312,6 +6621,7 @@ $O/membership/MembershipBase.o: membership/MembershipBase.cc \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/bits/stl_function.h \
+  global/statistic/StatisticBase.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cclassdescriptor.h \
@@ -6324,7 +6634,6 @@ $O/membership/MembershipBase.o: membership/MembershipBase.cc \
   /usr/include/c++/4.6/debug/safe_iterator.tcc \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
-  global/statistic/GlobalStatistic.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
   ../../inet/src/base/INETDefs.h \
   /usr/include/c++/4.6/debug/set \
@@ -6537,7 +6846,6 @@ $O/membership/MembershipBase.o: membership/MembershipBase.cc \
   /usr/include//wchar.h \
   /usr/include/c++/4.6/profile/list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
-  common/AppCommon.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
@@ -6893,6 +7201,7 @@ $O/membership/dummy/DummyMembership.o: membership/dummy/DummyMembership.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/profile/multiset.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
@@ -6907,7 +7216,6 @@ $O/membership/dummy/DummyMembership.o: membership/dummy/DummyMembership.cc \
   /usr/include/c++/4.6/debug/safe_iterator.tcc \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
-  global/statistic/GlobalStatistic.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
   /usr/include/c++/4.6/profile/map.h \
   /usr/include/c++/4.6/debug/set \
@@ -7122,7 +7430,6 @@ $O/membership/dummy/DummyMembership.o: membership/dummy/DummyMembership.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
   membership/dummy/DummyMembership.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
-  common/AppCommon.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /usr/include/c++/4.6/bits/concept_check.h \
@@ -7854,6 +8161,7 @@ $O/membership/newscast/NewscastBase.o: membership/newscast/NewscastBase.cc \
   /usr/include/c++/4.6/profile/multiset.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/bits/stl_function.h \
+  global/statistic/StatisticBase.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdensityestbase.h \
@@ -7866,7 +8174,6 @@ $O/membership/newscast/NewscastBase.o: membership/newscast/NewscastBase.cc \
   /usr/include/c++/4.6/debug/safe_iterator.tcc \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
-  global/statistic/GlobalStatistic.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
   ../../inet/src/base/INETDefs.h \
   /usr/include/c++/4.6/profile/map.h \
@@ -8090,7 +8397,6 @@ $O/membership/newscast/NewscastBase.o: membership/newscast/NewscastBase.cc \
   /usr/include/c++/4.6/profile/list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
-  common/AppCommon.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   global/churn/IChurnGenerator.h \
@@ -9018,6 +9324,7 @@ $O/membership/newscast/NewscastPeer.o: membership/newscast/NewscastPeer.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//simkerneldefs.h \
   /usr/include/c++/4.6/profile/multiset.h \
   /usr/include/c++/4.6/parallel/settings.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
@@ -9032,7 +9339,6 @@ $O/membership/newscast/NewscastPeer.o: membership/newscast/NewscastPeer.cc \
   /usr/include/c++/4.6/debug/safe_iterator.tcc \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
-  global/statistic/GlobalStatistic.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
   /usr/include/c++/4.6/debug/set \
   /usr/include/c++/4.6/profile/map.h \
@@ -9252,7 +9558,6 @@ $O/membership/newscast/NewscastPeer.o: membership/newscast/NewscastPeer.cc \
   /usr/include//wchar.h \
   /usr/include/c++/4.6/profile/list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
-  common/AppCommon.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
@@ -9324,6 +9629,7 @@ $O/membership/newscast/NewscastSource.o: membership/newscast/NewscastSource.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//simkerneldefs.h \
   /usr/include/c++/4.6/profile/multiset.h \
   /usr/include/c++/4.6/parallel/settings.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
@@ -9338,7 +9644,6 @@ $O/membership/newscast/NewscastSource.o: membership/newscast/NewscastSource.cc \
   /usr/include/c++/4.6/debug/safe_iterator.tcc \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
-  global/statistic/GlobalStatistic.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
   /usr/include/c++/4.6/debug/set \
   /usr/include/c++/4.6/profile/map.h \
@@ -9558,7 +9863,6 @@ $O/membership/newscast/NewscastSource.o: membership/newscast/NewscastSource.cc \
   /usr/include/c++/4.6/profile/list \
   membership/newscast/NewscastSource.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
-  common/AppCommon.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
@@ -9913,6 +10217,7 @@ $O/membership/oracle/OracleMembership.o: membership/oracle/OracleMembership.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/profile/multiset.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
@@ -9927,7 +10232,6 @@ $O/membership/oracle/OracleMembership.o: membership/oracle/OracleMembership.cc \
   /usr/include/c++/4.6/debug/safe_iterator.tcc \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
-  global/statistic/GlobalStatistic.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
   /usr/include/c++/4.6/profile/map.h \
   /usr/include/c++/4.6/debug/set \
@@ -10142,7 +10446,6 @@ $O/membership/oracle/OracleMembership.o: membership/oracle/OracleMembership.cc \
   /usr/include/c++/4.6/profile/list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
-  common/AppCommon.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /usr/include/c++/4.6/bits/concept_check.h \
@@ -10214,6 +10517,7 @@ $O/membership/scamp/ScampBase.o: membership/scamp/ScampBase.cc \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/bits/stl_function.h \
+  global/statistic/StatisticBase.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cclassdescriptor.h \
@@ -10226,7 +10530,6 @@ $O/membership/scamp/ScampBase.o: membership/scamp/ScampBase.cc \
   /usr/include/c++/4.6/debug/safe_iterator.tcc \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
-  global/statistic/GlobalStatistic.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
   ../../inet/src/base/INETDefs.h \
   /usr/include/c++/4.6/debug/set \
@@ -10521,6 +10824,7 @@ $O/membership/scamp/ScampPeer.o: membership/scamp/ScampPeer.cc \
   /usr/include/c++/4.6/list \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/profile/multiset.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/parallel/sort.h \
@@ -10542,7 +10846,6 @@ $O/membership/scamp/ScampPeer.o: membership/scamp/ScampPeer.cc \
   /usr/include/c++/4.6/debug/safe_iterator.tcc \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
-  global/statistic/GlobalStatistic.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
   ../../inet/src/base/INETDefs.h \
   /usr/include/c++/4.6/profile/map.h \
@@ -10897,6 +11200,7 @@ $O/membership/scamp/ScampSource.o: membership/scamp/ScampSource.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/profile/multiset.h \
   /usr/include/c++/4.6/parallel/settings.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
@@ -10918,7 +11222,6 @@ $O/membership/scamp/ScampSource.o: membership/scamp/ScampSource.cc \
   /usr/include/c++/4.6/profile/deque \
   /usr/include/c++/4.6/debug/safe_base.h \
   /usr/include/c++/4.6/profile/set.h \
-  global/statistic/GlobalStatistic.h \
   /usr/include/c++/4.6/bits/stl_construct.h \
   /usr/include/c++/4.6/debug/set \
   /usr/include/c++/4.6/profile/map.h \
@@ -12413,6 +12716,7 @@ $O/mesh/coolstreaming/CoolstreamingBase.o: mesh/coolstreaming/CoolstreamingBase.
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/bits/stl_function.h \
+  global/statistic/StatisticBase.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cclassdescriptor.h \
@@ -12660,8 +12964,8 @@ $O/mesh/coolstreaming/CoolstreamingBase.o: mesh/coolstreaming/CoolstreamingBase.
   mesh/PartnerList.h \
   /usr/include/c++/4.6/profile/list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
-  common/AppCommon.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
+  common/AppCommon.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   global/churn/IChurnGenerator.h \
@@ -13303,6 +13607,7 @@ $O/mesh/coolstreaming/CoolstreamingPeer.o: mesh/coolstreaming/CoolstreamingPeer.
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/profile/multiset.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
@@ -13552,8 +13857,8 @@ $O/mesh/coolstreaming/CoolstreamingPeer.o: mesh/coolstreaming/CoolstreamingPeer.
   /usr/include/c++/4.6/profile/list \
   mesh/PartnerList.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
-  /usr/include/c++/4.6/bits/locale_facets.h \
   common/AppCommon.h \
+  /usr/include/c++/4.6/bits/locale_facets.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /usr/include/c++/4.6/bits/concept_check.h \
@@ -13627,6 +13932,7 @@ $O/mesh/coolstreaming/CoolstreamingSource.o: mesh/coolstreaming/CoolstreamingSou
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/profile/multiset.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
@@ -13875,8 +14181,8 @@ $O/mesh/coolstreaming/CoolstreamingSource.o: mesh/coolstreaming/CoolstreamingSou
   /usr/include/c++/4.6/profile/list \
   mesh/PartnerList.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
-  /usr/include/c++/4.6/bits/locale_facets.h \
   common/AppCommon.h \
+  /usr/include/c++/4.6/bits/locale_facets.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /usr/include/c++/4.6/bits/concept_check.h \
@@ -13953,6 +14259,7 @@ $O/mesh/donet/DonetBase.o: mesh/donet/DonetBase.cc \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/bits/stl_function.h \
+  global/statistic/StatisticBase.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cclassdescriptor.h \
@@ -14197,8 +14504,8 @@ $O/mesh/donet/DonetBase.o: mesh/donet/DonetBase.cc \
   mesh/PartnerList.h \
   /usr/include/c++/4.6/profile/list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
-  common/AppCommon.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
+  common/AppCommon.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   global/churn/IChurnGenerator.h \
@@ -14273,6 +14580,7 @@ $O/mesh/donet/DonetPeer.o: mesh/donet/DonetPeer.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/profile/multiset.h \
   /usr/include/c++/4.6/parallel/settings.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/sort.h \
@@ -14653,6 +14961,7 @@ $O/mesh/donet/DonetScheduling.o: mesh/donet/DonetScheduling.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/profile/multiset.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/parallel/sort.h \
@@ -14943,8 +15252,8 @@ $O/mesh/donet/DonetScheduling.o: mesh/donet/DonetScheduling.cc \
   mesh/PartnerList.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
   /usr/include/c++/4.6/parallel/multiway_merge.h \
-  /usr/include/c++/4.6/bits/locale_facets.h \
   common/AppCommon.h \
+  /usr/include/c++/4.6/bits/locale_facets.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /usr/include/c++/4.6/parallel/balanced_quicksort.h \
@@ -15029,6 +15338,7 @@ $O/mesh/donet/DonetSource.o: mesh/donet/DonetSource.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/profile/multiset.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
@@ -15353,6 +15663,7 @@ $O/mesh/donet/RandomScheduling.o: mesh/donet/RandomScheduling.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/profile/multiset.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
@@ -15600,8 +15911,8 @@ $O/mesh/donet/RandomScheduling.o: mesh/donet/RandomScheduling.cc \
   /usr/include/c++/4.6/profile/list \
   mesh/PartnerList.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
-  /usr/include/c++/4.6/bits/locale_facets.h \
   common/AppCommon.h \
+  /usr/include/c++/4.6/bits/locale_facets.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   global/churn/IChurnGenerator.h \
@@ -15675,6 +15986,7 @@ $O/payload/ChunkGenerator.o: payload/ChunkGenerator.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/profile/multiset.h \
   /usr/include/c++/4.6/parallel/settings.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
@@ -15797,6 +16109,7 @@ $O/payload/ChunkGenerator.o: payload/ChunkGenerator.cc \
   ../../inet/src/networklayer/contract/IPvXAddress.h \
   /usr/include/c++/4.6/debug/functions.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//random.h \
+  ../../inet/src/linklayer/contract/MACAddress.h \
   /usr/include/c++/4.6/bits/hashtable.h \
   /usr/include/c++/4.6/bits/deque.tcc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//packing.h \
@@ -15833,6 +16146,7 @@ $O/payload/ChunkGenerator.o: payload/ChunkGenerator.cc \
   /usr/include/c++/4.6/iostream \
   /usr/include/c++/4.6/backward/binders.h \
   common/PeerStreamingPacket_m.h \
+  ../../inet/src/networklayer/common/InterfaceToken.h \
   ../../inet/src/networklayer/contract/IPAddress.h \
   /usr/include/c++/4.6/bits/stl_multimap.h \
   /usr/include/c++/4.6/debug/list \
@@ -15870,6 +16184,7 @@ $O/payload/ChunkGenerator.o: payload/ChunkGenerator.cc \
   /usr/include/c++/4.6/bits/stl_multiset.h \
   /usr/include/c++/4.6/profile/impl/profiler_state.h \
   /usr/include/c++/4.6/profile/unordered_map \
+  ../../inet/src/networklayer/common/InterfaceEntry.h \
   /usr/include/c++/4.6/ext/type_traits.h \
   ../../inet/src/base/NotificationBoard.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdisplaystring.h \
@@ -15922,6 +16237,7 @@ $O/payload/ChunkGenerator.o: payload/ChunkGenerator.cc \
   /usr/include/c++/4.6/tr1/hashtable_policy.h \
   /usr/include/c++/4.6/profile/impl/profiler_hash_func.h \
   /usr/include/c++/4.6/bits/sstream.tcc \
+  global/ActivePeerInfo.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmsgpar.h \
   /usr/include/c++/4.6/parallel/basic_iterator.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ctopology.h \
@@ -15942,6 +16258,7 @@ $O/payload/ChunkGenerator.o: payload/ChunkGenerator.cc \
   /usr/include/c++/4.6/bits/stl_bvector.h \
   /usr/include/c++/4.6/bits/hashtable_policy.h \
   /usr/include//_G_config.h \
+  ../../inet/src/networklayer/common/IInterfaceTable.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccompoundmodule.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cownedobject.h \
   /usr/include/c++/4.6/parallel/types.h \
@@ -15984,6 +16301,7 @@ $O/payload/Forwarder.o: payload/Forwarder.cc \
   /usr/include/c++/4.6/parallel/settings.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/bits/stl_function.h \
+  global/statistic/StatisticBase.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cclassdescriptor.h \
@@ -16224,8 +16542,8 @@ $O/payload/Forwarder.o: payload/Forwarder.cc \
   /usr/include//wchar.h \
   /usr/include/c++/4.6/profile/list \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//chasher.h \
-  common/AppCommon.h \
   /usr/include/c++/4.6/bits/locale_facets.h \
+  common/AppCommon.h \
   /usr/include/c++/4.6/bits/hash_bytes.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//platdep/platmisc.h \
   global/churn/IChurnGenerator.h \
@@ -16296,6 +16614,7 @@ $O/payload/Player.o: payload/Player.cc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cwatch.h \
   /usr/include/c++/4.6/profile/multiset.h \
   /usr/include/c++/4.6/parallel/settings.h \
+  global/statistic/StatisticBase.h \
   /usr/include/c++/4.6/bits/stl_function.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
@@ -16419,6 +16738,7 @@ $O/payload/Player.o: payload/Player.cc \
   ../../inet/src/networklayer/contract/IPvXAddress.h \
   /usr/include/c++/4.6/debug/functions.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//random.h \
+  ../../inet/src/linklayer/contract/MACAddress.h \
   /usr/include/c++/4.6/bits/hashtable.h \
   /usr/include/c++/4.6/bits/deque.tcc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//packing.h \
@@ -16455,6 +16775,7 @@ $O/payload/Player.o: payload/Player.cc \
   /usr/include/c++/4.6/iostream \
   /usr/include/c++/4.6/backward/binders.h \
   common/PeerStreamingPacket_m.h \
+  ../../inet/src/networklayer/common/InterfaceToken.h \
   ../../inet/src/networklayer/contract/IPAddress.h \
   /usr/include/c++/4.6/bits/stl_multimap.h \
   /usr/include/c++/4.6/debug/list \
@@ -16492,6 +16813,7 @@ $O/payload/Player.o: payload/Player.cc \
   /usr/include/c++/4.6/bits/stl_multiset.h \
   /usr/include/c++/4.6/profile/impl/profiler_state.h \
   /usr/include/c++/4.6/profile/unordered_map \
+  ../../inet/src/networklayer/common/InterfaceEntry.h \
   /usr/include/c++/4.6/ext/type_traits.h \
   ../../inet/src/base/NotificationBoard.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdisplaystring.h \
@@ -16543,6 +16865,7 @@ $O/payload/Player.o: payload/Player.cc \
   /usr/include/c++/4.6/tr1/hashtable_policy.h \
   /usr/include/c++/4.6/profile/impl/profiler_hash_func.h \
   /usr/include/c++/4.6/bits/sstream.tcc \
+  global/ActivePeerInfo.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmsgpar.h \
   /usr/include/c++/4.6/parallel/basic_iterator.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ctopology.h \
@@ -16563,6 +16886,7 @@ $O/payload/Player.o: payload/Player.cc \
   /usr/include/c++/4.6/bits/stl_bvector.h \
   /usr/include/c++/4.6/bits/hashtable_policy.h \
   /usr/include//_G_config.h \
+  ../../inet/src/networklayer/common/IInterfaceTable.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccompoundmodule.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cownedobject.h \
   /usr/include/c++/4.6/parallel/types.h \
@@ -16606,6 +16930,7 @@ $O/payload/PlayerSimpleSkip.o: payload/PlayerSimpleSkip.cc \
   /usr/include/c++/4.6/profile/multiset.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/bits/stl_function.h \
+  global/statistic/StatisticBase.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdensityestbase.h \
@@ -16726,6 +17051,7 @@ $O/payload/PlayerSimpleSkip.o: payload/PlayerSimpleSkip.cc \
   ../../inet/src/networklayer/contract/IPvXAddress.h \
   /usr/include/c++/4.6/debug/functions.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//random.h \
+  ../../inet/src/linklayer/contract/MACAddress.h \
   /usr/include/c++/4.6/bits/hashtable.h \
   /usr/include/c++/4.6/bits/deque.tcc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//packing.h \
@@ -16763,6 +17089,7 @@ $O/payload/PlayerSimpleSkip.o: payload/PlayerSimpleSkip.cc \
   payload/PlayerSimpleSkip.h \
   /usr/include/c++/4.6/backward/binders.h \
   common/PeerStreamingPacket_m.h \
+  ../../inet/src/networklayer/common/InterfaceToken.h \
   /usr/include/c++/4.6/bits/stl_multimap.h \
   ../../inet/src/networklayer/contract/IPAddress.h \
   /usr/include/c++/4.6/profile/iterator_tracker.h \
@@ -16802,6 +17129,7 @@ $O/payload/PlayerSimpleSkip.o: payload/PlayerSimpleSkip.cc \
   /usr/include/c++/4.6/bits/stl_multiset.h \
   /usr/include/c++/4.6/profile/unordered_map \
   /usr/include/c++/4.6/ext/type_traits.h \
+  ../../inet/src/networklayer/common/InterfaceEntry.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdisplaystring.h \
   ../../inet/src/base/NotificationBoard.h \
   /usr/include/c++/4.6/cwchar \
@@ -16854,6 +17182,7 @@ $O/payload/PlayerSimpleSkip.o: payload/PlayerSimpleSkip.cc \
   /usr/include/c++/4.6/bits/sstream.tcc \
   /usr/include/c++/4.6/parallel/basic_iterator.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmsgpar.h \
+  global/ActivePeerInfo.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ctopology.h \
   /usr/include//math.h \
   /usr/include/c++/4.6/bits/stl_queue.h \
@@ -16873,6 +17202,7 @@ $O/payload/PlayerSimpleSkip.o: payload/PlayerSimpleSkip.cc \
   /usr/include/c++/4.6/bits/hashtable_policy.h \
   /usr/include//_G_config.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccompoundmodule.h \
+  ../../inet/src/networklayer/common/IInterfaceTable.h \
   /usr/include/c++/4.6/parallel/types.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cownedobject.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnullenvir.h \
@@ -16914,6 +17244,7 @@ $O/payload/VideoBuffer.o: payload/VideoBuffer.cc \
   /usr/include/c++/4.6/profile/multiset.h \
   /usr/include/c++/4.6/parallel/equally_split.h \
   /usr/include/c++/4.6/bits/stl_function.h \
+  global/statistic/StatisticBase.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccommbuffer.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cproperties.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdensityestbase.h \
@@ -17034,6 +17365,7 @@ $O/payload/VideoBuffer.o: payload/VideoBuffer.cc \
   ../../inet/src/networklayer/contract/IPvXAddress.h \
   /usr/include/c++/4.6/debug/functions.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//random.h \
+  ../../inet/src/linklayer/contract/MACAddress.h \
   /usr/include/c++/4.6/bits/hashtable.h \
   /usr/include/c++/4.6/bits/deque.tcc \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//packing.h \
@@ -17070,6 +17402,7 @@ $O/payload/VideoBuffer.o: payload/VideoBuffer.cc \
   /usr/include/c++/4.6/iostream \
   /usr/include/c++/4.6/backward/binders.h \
   common/PeerStreamingPacket_m.h \
+  ../../inet/src/networklayer/common/InterfaceToken.h \
   /usr/include/c++/4.6/bits/stl_multimap.h \
   ../../inet/src/networklayer/contract/IPAddress.h \
   /usr/include/c++/4.6/profile/iterator_tracker.h \
@@ -17108,6 +17441,7 @@ $O/payload/VideoBuffer.o: payload/VideoBuffer.cc \
   /usr/include/c++/4.6/bits/stl_multiset.h \
   /usr/include/c++/4.6/profile/unordered_map \
   /usr/include/c++/4.6/ext/type_traits.h \
+  ../../inet/src/networklayer/common/InterfaceEntry.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cdisplaystring.h \
   ../../inet/src/base/NotificationBoard.h \
   /usr/include/c++/4.6/cwchar \
@@ -17160,6 +17494,7 @@ $O/payload/VideoBuffer.o: payload/VideoBuffer.cc \
   /usr/include/c++/4.6/bits/sstream.tcc \
   /usr/include/c++/4.6/parallel/basic_iterator.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cmsgpar.h \
+  global/ActivePeerInfo.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ctopology.h \
   /usr/include//math.h \
   /usr/include/c++/4.6/bits/stl_queue.h \
@@ -17179,6 +17514,7 @@ $O/payload/VideoBuffer.o: payload/VideoBuffer.cc \
   /usr/include/c++/4.6/bits/hashtable_policy.h \
   /usr/include//_G_config.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//ccompoundmodule.h \
+  ../../inet/src/networklayer/common/IInterfaceTable.h \
   /usr/include/c++/4.6/parallel/types.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cownedobject.h \
   /nix/workspace/omnet422-inet118/omnetpp-4.2.2/include//cnullenvir.h \
