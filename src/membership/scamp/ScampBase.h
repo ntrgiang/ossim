@@ -115,10 +115,13 @@ protected:
     double param_heartbeatInterval;
     double param_appMessageInterval;
 
+    double param_time_reportPvSize;
+
     // -- Timers
     cMessage *timer_isolationCheck;
     cMessage *timer_heartbeatSending;
     cMessage *timer_sendAppMessage;
+    cMessage *timer_reportPvSize;
 
     //cMessage *timer_reportPvSize;
     Dispatcher *m_dispatcher;

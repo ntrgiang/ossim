@@ -18,6 +18,9 @@ simple ScampBase extends MembershipBase
 
         // SCAMP protocol parameter
         int c = default(0); 
+
+        // Statistic reporting
+        double time_reportPvSize @unit(s) = default(0.5s);
 //
 //    gates:
 //        // -- Gates to the Dispatcher module

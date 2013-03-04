@@ -25,6 +25,7 @@ ScampSource::~ScampSource()
     // -- Cancel and delete timer messages
     if (timer_isolationCheck)   delete cancelEvent(timer_isolationCheck);
     if (timer_sendAppMessage)   delete cancelEvent(timer_sendAppMessage);
+    if (timer_reportPvSize) cancelAndDelete(timer_reportPvSize);
 }
 
 void ScampSource::initialize(int stage)
@@ -38,6 +39,7 @@ void ScampSource::initialize(int stage)
         // -- Timers
         timer_isolationCheck    = new cMessage("GOSSIP_ISOLATION_CHECK");
         timer_sendAppMessage    = new cMessage("GOSSIP_SEND_APP_MESSAGE");
+        timer_reportPvSize      = new cMessage("TIMER_REPORT_PVSIZE");
 
         //timer_reportPvSize      = new cMessage("GOSSIP_REPORT_PV_SIZE");
 
@@ -52,6 +54,9 @@ void ScampSource::initialize(int stage)
         // -- Reading values for parameters
         readParameter();
         findNodeAddress();
+
+        param_time_reportPvSize = par("time_reportPvSize");
+        scheduleAt(simTime() + param_time_reportPvSize, timer_reportPvSize);
 
         m_simDuration = getSimDuration();
 
@@ -107,6 +112,10 @@ void ScampSource::handleTimerMessage(cMessage *msg)
     {
         sendGossipAppMessage();
         scheduleAt(simTime() + param_appMessageInterval, timer_sendAppMessage);
+    }
+    else if (msg == timer_reportPvSize)
+    {
+       m_gstat->reportPvSize(m_partialView.getViewSize());
     }
 //    else if (msg == timer_reportPvSize)
 //    {

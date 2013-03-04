@@ -46,6 +46,7 @@ ScampPeer::~ScampPeer() {
     if (timer_isolationCheck)   delete cancelEvent(timer_isolationCheck);
     if (timer_heartbeatSending) delete cancelEvent(timer_heartbeatSending);
     if (timer_sendAppMessage)   delete cancelEvent(timer_sendAppMessage);
+    if (timer_reportPvSize) cancelAndDelete(timer_reportPvSize);
 
     // -- Delete regular messages:
     delete m_heartbeatMsg;
@@ -68,6 +69,7 @@ void ScampPeer::initialize(int stage)
         timer_isolationCheck    = new cMessage("GOSSIP_ISOLATION_CHECK");
         timer_heartbeatSending  = new cMessage("GOSSIP_HEARTBEAT_SENDING");
         timer_sendAppMessage    = new cMessage("GOSSIP_SEND_APP_MESSAGE");
+        timer_reportPvSize      = new cMessage("TIMER_REPORT_PVSIZE");
 
         // Regular messages
         m_heartbeatMsg = new GossipHeartbeatPacket("GOSSIP_HEARTBEAT");
@@ -83,12 +85,16 @@ void ScampPeer::initialize(int stage)
         readParameter();
         findNodeAddress();
 
+        param_time_reportPvSize = par("time_reportPvSize");
+
         m_active = false;
 
         // -- State
         m_state = SCAMP_STATE_IDLE;
 
         scheduleAt(simTime() + par("startTime").doubleValue(), timer_getJoinTime);
+
+        scheduleAt(simTime() + param_time_reportPvSize, timer_reportPvSize);
 
         // -- Gossiped Application messages
         m_messageId = 0L;
@@ -147,6 +153,10 @@ void ScampPeer::handleTimerMessage(cMessage *msg)
 
         // -- Start sending the gossiped application messages
 //        scheduleAt(simTime() + param_appMessageInterval, timer_sendAppMessage);
+    }
+    else if (msg == timer_reportPvSize)
+    {
+       m_gstat->reportPvSize(m_partialView.getViewSize());
     }
 }
 
