@@ -5,7 +5,8 @@ import ned.DatarateChannel;
 import so.global.ActivePeerTable;
 import so.global.churn.IChurnModel;
 import so.global.churn.StaticChurn;
-import so.global.statistic.GlobalStatistic;
+//import so.global.statistic.GlobalStatistic;
+import so.global.statistic.IStatisticBase;
 
 import so.global.statistic.Statistic;
 import so.global.observer.MeshOverlayObserver;
@@ -68,7 +69,8 @@ network Donet_Homo_oneRouter_Network extends BasicNetwork
             @display("p=77,171");
         }
 
-        globalStatistic: GlobalStatistic {
+        //globalStatistic: GlobalStatistic {
+        globalStatistic: <statisticModule> like IStatisticBase {
             @display("p=77,248;i=device/disk");
         }
         //        globalStatisic: Statistic {
