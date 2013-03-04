@@ -13,32 +13,32 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "IChurnGenerator.h"
+//#include "IChurnGenerator.h"
 #include "NotificationBoard.h"
-#include "AppCommon.h"
-#include "ActivePeerTable.h"
-#include "IPvXAddress.h"
-#include <fstream>
+//#include "AppCommon.h"
+//#include "ActivePeerTable.h"
+//#include "IPvXAddress.h"
+//#include <fstream>
 
 #ifndef STATISTIC_BASE_H_
 #define STATISTIC_BASE_H_
 
-class ActivePeerTable;
+//class ActivePeerTable;
 
 class StatisticBase : public cSimpleModule, protected INotifiable
 {
 public:
 //    StatisticBase();
-    virtual ~StatisticBase();
+    virtual ~StatisticBase() {};
 
 protected:
 //    virtual int numInitStages() const  {return 4;}
 //    virtual void initialize(int stage);
 
-    virtual void handleMessage(cMessage *msg) = 0;
-    virtual void receiveChangeNotification(int category, const cPolymorphic *details);
+//    virtual void handleMessage(cMessage *msg) = 0;
+//    virtual void receiveChangeNotification(int category, const cPolymorphic *details);
 
-    virtual void finish() = 0;
+//    virtual void finish() = 0;
 
 };
 
