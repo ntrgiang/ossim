@@ -45,8 +45,9 @@ void ScampSource::initialize(int stage)
 //        m_heartbeatMsg = new GossipHeartbeatPacket("GOSSIP_HEARTBEAT");
 
         // -- Binding to external modules
-        bindToGlobalModule();
         bindToParentModule();
+        bindToGlobalModule();
+        bindToStatisticModule();
 
         // -- Reading values for parameters
         readParameter();

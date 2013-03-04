@@ -76,6 +76,9 @@ void ScampPeer::initialize(int stage)
         bindToGlobalModule();
         bindToParentModule();
 
+        // -- Global Statistic
+        bindToStatisticModule();
+
         // -- Read parameters
         readParameter();
         findNodeAddress();
@@ -104,7 +107,7 @@ void ScampPeer::initialize(int stage)
 void ScampPeer::finish()
 {
     // -- To report the final size of InView and PartialView
-//     m_gstat->reportPvSize(m_partialView.getViewSize());
+     m_gstat->reportPvSize(m_partialView.getViewSize());
 }
 
 void ScampPeer::handleTimerMessage(cMessage *msg)
