@@ -222,3 +222,6 @@ src/global/statistic/StatisticBase.h
 src/global/statistic/ScampStatistic.ned
 src/global/statistic/ScampStatistic.h
 src/global/statistic/ScampStatistic.cc
+src/global/statistic/DonetStatistic.ned
+src/global/statistic/DonetStatistic.h
+src/global/statistic/DonetStatistic.cc
