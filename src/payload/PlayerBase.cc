@@ -13,12 +13,5 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-double PlayerSimpleSkip::getLocalContinuityIndex(void)
-{
-   long int total_chunkSeek = m_count_chunkHit + m_count_chunkMiss;
-   if (total_chunkSeek != 0)
-      return m_count_chunkHit / total_chunkSeek;
 
-   return 0.0;
-}
 
