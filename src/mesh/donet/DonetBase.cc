@@ -181,6 +181,15 @@ void DonetBase::bindToGlobalModule(void)
 
 }
 
+void DonetBase::bindtoStatisticModule()
+{
+   Enter_Method("bindToStatisticModule()");
+
+   cModule *temp = simulation.getModuleByPath("globalStatistic");
+   m_gstat = check_and_cast<DonetStatistic *>(temp);
+   EV << "Binding to globalStatistic is completed successfully" << endl;
+}
+
 void DonetBase::getSender(cPacket *pkt, IPvXAddress &senderAddress, int &senderPort)
 {
     DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
