@@ -13,6 +13,8 @@ simple ScampSource extends ScampBase
     parameters:
         @class(ScampSource); 
 
+    @statistic[pvSize](source=Signal_pvSize; record=last,vector);
+
 }
 
 

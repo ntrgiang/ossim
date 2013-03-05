@@ -144,6 +144,9 @@ protected:
 
     int m_state;
 
+    // -- Signals
+    simsignal_t sig_pvSize;
+
 };
 
 #endif /* SCAMP_BASE_H_ */

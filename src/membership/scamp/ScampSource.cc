@@ -75,9 +75,14 @@ void ScampSource::initialize(int stage)
 //        scheduleAt(m_simDuration - 0.01, timer_reportPvSize);
         //scheduleAt(SimTime() + param_appMessageInterval, timer_sendAppMessage);
 
+        // -- Signals
+        sig_pvSize = registerSignal("Signal_pvSize");
 
         // m_apTable->printActivePeerTable();
 
+        // ---------------------------------------------------------------------
+        // --- WATCH
+        // ---------------------------------------------------------------------
         WATCH(m_localPort);
         WATCH(m_apTable);
         WATCH(m_simDuration);
@@ -103,19 +108,20 @@ void ScampSource::handleTimerMessage(cMessage *msg)
     {
         // -- re-subscribe to the gossip overlay
         // subscribe();
-        checkIsolation();
+        //checkIsolation();
 
         // -- Schedule for the next isolation check
-        scheduleAt(simTime() + param_isoCheckInterval, timer_isolationCheck);
+        //scheduleAt(simTime() + param_isoCheckInterval, timer_isolationCheck);
     }
     else if (msg == timer_sendAppMessage)
     {
-        sendGossipAppMessage();
-        scheduleAt(simTime() + param_appMessageInterval, timer_sendAppMessage);
+//        sendGossipAppMessage();
+//        scheduleAt(simTime() + param_appMessageInterval, timer_sendAppMessage);
     }
     else if (msg == timer_reportPvSize)
     {
        m_gstat->reportPvSize(m_partialView.getViewSize());
+       emit(sig_pvSize, m_partialView.getViewSize());
     }
 //    else if (msg == timer_reportPvSize)
 //    {

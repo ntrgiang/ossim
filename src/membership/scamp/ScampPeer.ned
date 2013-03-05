@@ -15,4 +15,6 @@ simple ScampPeer extends ScampBase
         
         int numberOfPartner = default(4);
         
+    // -- Statistics
+        @statistic[pvSize](source=Signal_pvSize; record=last,vector);
 }
