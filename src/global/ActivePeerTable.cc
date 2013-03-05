@@ -205,17 +205,15 @@ int ActivePeerTable::getNumActivePeer() const
  * cannot be modified; you must delete and re-add them instead.
  */
 //void ActivePeerTable::addPeerAddress(const IPvXAddress *address)
-/*
-void ActivePeerTable::addPeerAddress(const IPvXAddress &address)
-{
-    Enter_Method("addPeerAddress()");
+//void ActivePeerTable::addPeerAddress(const IPvXAddress &address)
+//{
+//    Enter_Method("addPeerAddress()");
 
-   Struct_ActivePeerInfo info;
-    m_activePeerList[address] = info;
-    //m_activePeerList[address] = 1;
-    emit(sig_size, m_activePeerList.size());
-}
-*/
+//   Struct_ActivePeerInfo info;
+//    m_activePeerList[address] = info;
+//    //m_activePeerList[address] = 1;
+//    emit(sig_size, m_activePeerList.size());
+//}
 
 void ActivePeerTable::addPeerAddress(const IPvXAddress &address, int maxNOP)
 {
