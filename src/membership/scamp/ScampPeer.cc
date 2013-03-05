@@ -108,6 +108,7 @@ void ScampPeer::initialize(int stage)
         WATCH(m_apTable);
         WATCH(m_churn);
         WATCH(m_dispatcher);
+        WATCH(m_c);
     }
 }
 

@@ -86,6 +86,7 @@ void ScampSource::initialize(int stage)
         WATCH(m_localPort);
         WATCH(m_apTable);
         WATCH(m_simDuration);
+        WATCH(m_c);
     }
 }
 
