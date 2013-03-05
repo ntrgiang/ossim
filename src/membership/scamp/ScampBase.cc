@@ -215,6 +215,8 @@ void ScampBase::handleNewSubscription(cPacket *pkt)
         // -- Forward other c copies of the Packet
         for (int i = 0; i < m_c; ++i)
         {
+           EV << "hi there ************************************************" << endl;
+
             Contact aRandomContact = m_partialView.getOneRandomContact();
             IPvXAddress destAddress = IPvXAddress(aRandomContact.getAddress());
             int destPort = aRandomContact.getPort();
@@ -314,7 +316,7 @@ void ScampBase::subscribe(void)
         } while (addressRandPeer == myAddress);
     }
 
-    // -- Add this 'contact' to node's own PartialView
+    // -- Add this 'contact' to node's own PartialView as the first entry
     m_partialView.addContact(addressRandPeer, m_destPort);
 
     GossipSubscriptionPacket *gossip_sub_pkt = new GossipSubscriptionPacket("GOSSIP_SUBSCRIPTION_NEW");
@@ -480,10 +482,10 @@ double ScampBase::getSimDuration(void)
 
 void ScampBase::handleAckPacket(cPacket *pkt)
 {
-    switch(m_state)
-    {
-    case SCAMP_STATE_JOINING:
-    {
+//    switch(m_state)
+//    {
+//    case SCAMP_STATE_JOINING:
+//    {
         // -- Extract the IP and port of the responder
         DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(pkt->getControlInfo());
 
@@ -505,15 +507,15 @@ void ScampBase::handleAckPacket(cPacket *pkt)
         }
 
         // -- Update state
-        m_state = SCAMP_STATE_JOINED;
+//        m_state = SCAMP_STATE_JOINED;
 
-        break;
-    }
-    default:
-    {
-        throw cException("Invalid message or unsuitable state machine");
-    }
-    } // switch
+//        break;
+//    }
+//    default:
+//    {
+//        throw cException("Invalid message or unsuitable state machine");
+//    }
+//    } // switch
 
     delete pkt;
 }
