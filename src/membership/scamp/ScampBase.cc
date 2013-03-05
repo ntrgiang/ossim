@@ -250,7 +250,7 @@ void ScampBase::handleForwardedSubscription(cPacket *pkt)
     float probability = 1.0 + m_partialView.getViewSize();
     probability = 1.0 / probability;
 
-    float random = (float)rand() / (float)RAND_MAX;
+    double random = dblrand();
     if (m_partialView.isEmpty()) probability = 1.0;
     //probability = probability * 100.0;
     //int random = (rand() % 100);

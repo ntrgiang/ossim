@@ -56,9 +56,6 @@ void ScampPeer::initialize(int stage)
 {
     if (stage == 4)
     {
-        // Randomize()
-        srand(time(NULL));
-
         //    timer_getJoinTime = timer_join = timer_keepAlive = timer_chunkScheduling = NULL;
         m_inView.setName("InView");
         m_partialView.setName("PartialView");
