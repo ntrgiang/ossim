@@ -111,7 +111,7 @@ void ContactView::addContact(IPvXAddress addr, int port)
     // EV << "The Contact will be added the the list!" << endl;
     m_contactList.push_back(Contact(addr, port));
 
-    // print();
+     //print();
 }
 
 /*Contact ContactView::LocateContact(unsigned int addr, int port)
