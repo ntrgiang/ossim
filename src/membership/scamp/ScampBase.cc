@@ -136,7 +136,8 @@ void ScampBase::processGossipPacket(cPacket *pkt)
     {
         EV << "I received an ACK for the subscription packet!" << endl;
 
-        delete pkt; pkt = NULL;
+        handleAckPacket(pkt);
+        //delete pkt; pkt = NULL;
 
         break;
     }
@@ -512,7 +513,7 @@ void ScampBase::handleAckPacket(cPacket *pkt)
     {
         throw cException("Invalid message or unsuitable state machine");
     }
-    }
+    } // switch
 
     delete pkt;
 }
