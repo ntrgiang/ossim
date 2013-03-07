@@ -27,6 +27,8 @@ network Donet_Homo_oneRouter_Network extends BasicNetwork
         int nNodePerRouter = default(1);
         @display("bgb=488,389");
         string churnModel = default("StaticChurn");
+        string statisticModule = default("DonetStatistic");
+
 
     types:
         channel Channel_9M_up extends ned.DatarateChannel
