@@ -72,7 +72,8 @@ protected:
     // -- Pointers to external modules
     VideoBuffer *m_videoBuffer;
     AppSettingDonet *m_appSetting;
-    GlobalStatistic *m_stat;
+    //GlobalStatistic *m_stat;
+    StatisticBase *m_stat;
 
     // -- Signal for data collection
     simsignal_t sig_chunkHit;

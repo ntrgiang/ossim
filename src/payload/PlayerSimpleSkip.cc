@@ -68,7 +68,8 @@ void PlayerSimpleSkip::initialize(int stage)
 //    if (!m_videoBuffer) throw cException("Null pointer for the AppSetting module");
 
     temp = simulation.getModuleByPath("globalStatistic");
-    m_stat = check_and_cast<GlobalStatistic *>(temp);
+    //m_stat = check_and_cast<GlobalStatistic *>(temp);
+    m_stat = check_and_cast<StatisticBase *>(temp);
     //    m_stat = dynamic_cast<GlobalStatistic *>(temp);
 //    if (!m_stat) throw cException("Null pointer for the GlobalStatistic module");
 
