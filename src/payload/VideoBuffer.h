@@ -25,7 +25,8 @@
 #include "VideoChunkPacket_m.h"
 #include "AppCommon.h"
 #include "BufferMap.h"
-#include "GlobalStatistic.h"
+#include "StatisticBase.h"
+//#include "GlobalStatistic.h"
 
 // listening support ->
 #include "VideoBufferListener.h"
@@ -133,7 +134,8 @@ private:
 //    int param_videoStreamBitRate;
 //    int param_chunkSize;
 
-    GlobalStatistic *m_gstat;
+    //GlobalStatistic *m_gstat;
+    StatisticBase *m_gstat;
 
     int m_bufferSize_chunk;
 

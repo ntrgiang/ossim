@@ -16,6 +16,7 @@
 #include "VideoBuffer.h"
 //#include "simutil.h"
 #include "AppSettingDonet.h"
+#include "DonetStatistic.h"
 
 #define _VERSION_1 1
 #define _VERSION_2 2
@@ -49,7 +50,8 @@ void VideoBuffer::initialize(int stage)
     AppSettingDonet *m_appSetting = check_and_cast<AppSettingDonet *>(temp);
 
     temp = simulation.getModuleByPath("globalStatistic");
-    m_gstat = check_and_cast<GlobalStatistic *>(temp);
+    //m_gstat = check_and_cast<GlobalStatistic *>(temp);
+    m_gstat = check_and_cast<DonetStatistic *>(temp);
 
     m_bufferSize_chunk  = m_appSetting->getBufferMapSizeChunk();
     m_chunkInterval     = m_appSetting->getIntervalNewChunk();
@@ -106,20 +108,20 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
     {
         EV << "The chunk arrived too late, should be discarded." << endl;
         emit(signal_lateChunk, seq_num);
-        m_gstat->reportLateChunk(seq_num);
+//        m_gstat->reportLateChunk(seq_num);
 
         delete packet; packet = NULL;
         return;
     }
     emit(signal_inrangeChunk, seq_num);
-    m_gstat->reportInrangeChunk(seq_num);
+//    m_gstat->reportInrangeChunk(seq_num);
 
     // ------------- Duplication ------------------
     if (isInBuffer(seq_num) == true)
     {
         EV << "The chunk already existed in the buffer, should be discarded." << endl;
         emit(signal_duplicatedChunk, seq_num);
-        m_gstat->reportDuplicatedChunk(seq_num);
+//        m_gstat->reportDuplicatedChunk(seq_num);
         delete packet; packet = NULL;
         return;
     }
