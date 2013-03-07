@@ -109,3 +109,19 @@ Tcl error: modinsp.cc#237: syntax error in expression "-": premature end of expr
 "create_graphicalmodwindow .ptr0x32a43b0-2 "791x410+2027+487:normal""
 
 
+----------------------------------------------------------------------
+
+
+Tcl error: modinsp.cc#237: missing operand at _@_
+in expression "-_@_"
+    (parsing expression "-")
+    invoked from within
+"expr [lindex $bb 2]-[lindex $bb 0]"
+    (procedure "graphmodwin_adjust_windowsize_and_zoom" line 13)
+    invoked from within
+"graphmodwin_adjust_windowsize_and_zoom $w"
+    (procedure "create_graphicalmodwindow" line 104)
+    invoked from within
+"create_graphicalmodwindow .ptr0x2186850-2 "691x407+705+24:normal""
+
+
