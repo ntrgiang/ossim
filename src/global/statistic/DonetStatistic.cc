@@ -406,6 +406,19 @@ void DonetStatistic::reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num)
 //    ++m_count_allChunk;
 }
 
+void DonetStatistic::increaseChunkHit(const int &delta)
+{
+   m_count_chunkHit += delta;
+   m_count_allChunk += delta;
+}
+
+void DonetStatistic::increaseChunkMiss(const int &delta)
+{
+   m_count_chunkMiss += delta;
+   m_count_allChunk += delta;
+}
+
+
 void DonetStatistic::reportRequestedChunk(const SEQUENCE_NUMBER_T &seq_num)
 {
     emit(sig_requestedChunk, seq_num);

@@ -38,6 +38,8 @@ PlayerSimpleSkip::~PlayerSimpleSkip()
     {
        cancelAndDelete(timer_playerStop);
     }
+
+    if (timer_reportStatistic) cancelAndDelete(timer_reportStatistic);
 }
 
 void PlayerSimpleSkip::initialize(int stage)
@@ -59,26 +61,22 @@ void PlayerSimpleSkip::initialize(int stage)
     // -- pointing to the Video Buffer
     cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
     m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
-    //    m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
-//    if (!m_videoBuffer) throw cException("Null pointer for the VideoBuffer module");
 
     temp = simulation.getModuleByPath("appSetting");
     m_appSetting = check_and_cast<AppSettingDonet *>(temp);
-    //    m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
-//    if (!m_videoBuffer) throw cException("Null pointer for the AppSetting module");
 
     temp = simulation.getModuleByPath("globalStatistic");
-    //m_stat = check_and_cast<GlobalStatistic *>(temp);
-    m_stat = check_and_cast<StatisticBase *>(temp);
-    //    m_stat = dynamic_cast<GlobalStatistic *>(temp);
-//    if (!m_stat) throw cException("Null pointer for the GlobalStatistic module");
+    //m_stat = check_and_cast<StatisticBase *>(temp);
+    m_stat = check_and_cast<DonetStatistic *>(temp);
 
     timer_nextChunk     = new cMessage("PLAYER_TIMER_NEXT_CHUNK");
     timer_playerStart   = new cMessage("PLAYER_TIMER_START");
     timer_playerStop    = new cMessage("PLAYER_TIMER_STOP");
+    timer_reportStatistic = new cMessage("PLAYER_TIMER_REPORT_STATISTIC");
 
     // -- Reading parameters from module itself
     param_interval_recheckVideoBuffer = par("interval_recheckVideoBuffer");
+    param_interval_reportStatistic = par("interval_reportStatistic");
 
     // -- for the FSM
     param_percent_buffer_low = par("percent_buffer_low").doubleValue();
@@ -98,6 +96,9 @@ void PlayerSimpleSkip::initialize(int stage)
     // -- Continuity Index
     m_count_chunkHit = 0L;
     m_count_chunkMiss = 0L;
+
+    m_count_prev_chunkHit = 0L;
+    m_count_prev_chunkMiss = 0L;
 
     // -- Schedule the first event for the first chunk
 //    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);
@@ -191,6 +192,9 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
                 emit(sig_timePlayerStart, simTime().dbl());
 
                 scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+
+                // -- Schedule to report chunkHit, chunkMiss
+                scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
             }
             break;
         }
@@ -343,6 +347,18 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
         } // else ~ chunk not in buffer
 
     } // timer_nextChunk
+    else if (msg == timer_reportStatistic)
+    {
+       long int delta = m_count_chunkHit - m_count_prev_chunkHit;
+       m_count_prev_chunkHit = m_count_chunkHit;
+       m_stat->increaseChunkHit((int)delta);
+
+       delta = m_count_chunkMiss - m_count_prev_chunkMiss;
+       m_count_prev_chunkMiss = m_count_chunkMiss;
+       m_stat->increaseChunkMiss((int)delta);
+
+       scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
+    }
     else if (msg == timer_playerStop)
     {
        stopPlayer();

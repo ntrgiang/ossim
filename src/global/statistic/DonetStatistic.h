@@ -101,6 +101,9 @@ public:
     void reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num);
     void reportRebuffering(const SEQUENCE_NUMBER_T &seq_num);
 
+    void increaseChunkHit(const int &delta);
+    void increaseChunkMiss(const int &delta);
+
     void reportStall(); // should be obsolete
 
     void reportSkipChunk(void);

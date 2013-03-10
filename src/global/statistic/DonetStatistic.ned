@@ -46,7 +46,8 @@ simple DonetStatistic like IStatisticBase
 
         // -------------------------- Starting from here -----------------------
         // new stat - periodically
-        @statistic[CI](source="Signal_CI"; record=last,vector);
+        // @statistic[CI](source="Signal_CI"; record=last,vector);
+        @statistic[globalCI](source="Signal_CI"; record=last,mean,vector);
 
         @statistic[SkipChunk](source="Signal_SkipChunk"; record=last,vector);
 

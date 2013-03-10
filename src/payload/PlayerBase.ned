@@ -5,6 +5,8 @@ moduleinterface PlayerBase
    parameters:
       @class(PlayerBase);
 
+      //double interval_reportStatistic @unit(s) = default(0.1s);
+
       //double interval_recheckVideoBuffer @unit(s) = default(0.1s);
       //double percent_buffer_low = default(0.0);
       //double percent_buffer_high = default(1.0);

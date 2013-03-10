@@ -5,6 +5,7 @@ simple PlayerSimpleSkip like PlayerBase
    parameters:
       @class(PlayerSimpleSkip);
 
+      double interval_reportStatistic @unit(s) = default(0.1s);
 
       double interval_recheckVideoBuffer @unit(s) = default(0.1s);
       double percent_buffer_low = default(0.0);

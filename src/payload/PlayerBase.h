@@ -41,6 +41,11 @@ public:
 
 protected:
     long int m_count_chunkHit, m_count_chunkMiss;
+    long int m_count_prev_chunkHit, m_count_prev_chunkMiss;
+
+    double param_interval_reportStatistic;
+
+    cMessage *timer_reportStatistic;
 
     // -- State variable
     bool m_playerStarted;

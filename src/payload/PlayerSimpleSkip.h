@@ -7,6 +7,7 @@
 #include "VideoChunkPacket_m.h"
 #include "AppSettingDonet.h"
 #include "GlobalStatistic.h"
+#include "DonetStatistic.h"
 
 //#define PLAYER_STATE_IDLE       0
 //#define PLAYER_STATE_BUFFERING  1
@@ -73,7 +74,8 @@ protected:
     VideoBuffer *m_videoBuffer;
     AppSettingDonet *m_appSetting;
     //GlobalStatistic *m_stat;
-    StatisticBase *m_stat;
+    //StatisticBase *m_stat;
+    DonetStatistic *m_stat;
 
     // -- Signal for data collection
     simsignal_t sig_chunkHit;
