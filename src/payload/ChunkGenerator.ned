@@ -13,7 +13,7 @@ simple ChunkGenerator
 		// Statistics
 		//@statistic[dropCount](source="count(sig_chunkSeqNum)"; record=last,vector?);
 		//@statistic[chunkSeqNum](source=chunkSeqNumSignal; record=count);
-		@statistic[chunkSeqNum](record=min, max, vector);
+        //@statistic[chunkSeqNum](record=min, max, vector);
 
 }
 

@@ -15,7 +15,7 @@ simple DonetSource extends DonetBase
         double interval_partnerlistCleanup      @unit(s) = default(0.5s);
 
         // Statistics
-        @statistic[nPartner](source=Signal_nPartner; record=last,vector);
+        //@statistic[nPartner](source=Signal_nPartner; record=last,vector);
 
 
 }
