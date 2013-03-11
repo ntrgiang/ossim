@@ -42,14 +42,16 @@ public:
     // @brief returns if this partner is a child for the given substream
     bool isChild(int substream){
         if (deleted)
-            MessageBoxA(0,"DELETED","CoolstreamingPartner::isChild",0);
+            //MessageBoxA(0,"DELETED","CoolstreamingPartner::isChild",0);
+            throw cException("DELETED CoolstreamingPartner::isChild");
         return mIsChild[substream];
     }
 
     // @brief returns if this partner is the parent of any substream
     bool isParent(){
         if (deleted)
-            MessageBoxA(0,"DELETED","CoolstreamingPartner::isParent",0);
+            //MessageBoxA(0,"DELETED","CoolstreamingPartner::isParent",0);
+            throw cException("DELETED CoolstreamingPartner::isParent");
         for (int i = 0; i < mSubstreams; i++)
             if (mIsParent[i])
                 return true;
@@ -59,7 +61,8 @@ public:
     // @brief returns if this partner is the parent of the given substream
     bool isParent(int substream){
         if (deleted)
-            MessageBoxA(0,"DELETED","CoolstreamingPartner::isParent",0);
+            //MessageBoxA(0,"DELETED","CoolstreamingPartner::isParent",0);
+            throw cException("DELETED CoolstreamingPartner::isParent");
         return mIsParent[substream];
     }
 
@@ -70,10 +73,14 @@ public:
     int getLatestSequence(int substream);
 
     IPvXAddress getAddress(){if (deleted)
-        MessageBoxA(0,"DELETED","CoolstreamingPartner::getAddress",0);return addr;}
+        //MessageBoxA(0,"DELETED","CoolstreamingPartner::getAddress",0);
+        throw cException("DELETED CoolstreamingPartner::getAddress");
+        return addr;}
     void setAddress(IPvXAddress address){addr = address;}
     simtime_t getLastSeen(){if (deleted)
-        MessageBoxA(0,"DELETED","CoolstreamingPartner::getLastSeen",0);return lastSeen;}
+        //MessageBoxA(0,"DELETED","CoolstreamingPartner::getLastSeen",0);
+        throw cException("DELETED CoolstreamingPartner::getLastSeen");
+        return lastSeen;}
 
     bool deleted;
 private:

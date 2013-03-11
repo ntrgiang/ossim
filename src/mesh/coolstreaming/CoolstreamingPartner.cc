@@ -48,19 +48,22 @@ void CoolstreamingPartner::updateFromMessage(CoolstreamingBufferMapPacket* pkt){
     updateLastSeen();
 
     if (deleted)
-        MessageBoxA(0,"DELETED","CoolstreamingPartner::updateFromMessag",0);
+        //MessageBoxA(0,"DELETED","CoolstreamingPartner::updateFromMessag",0);
+        throw cException("DELETED CoolstreamingPartner::updateFromMessag");
 }
 
 int CoolstreamingPartner::getLatestSequence(int substream){
     if (deleted)
-            MessageBoxA(0,"DELETED","CoolstreamingPartner::getLatestSequence",0);
+            //MessageBoxA(0,"DELETED","CoolstreamingPartner::getLatestSequence",0);
+            throw cException("DELETED CoolstreamingPartner::getLatestSequence");
 
     return hasSequence[substream];
 }
 
 void CoolstreamingPartner::setParent(int substream, bool val){
     if (deleted)
-        MessageBoxA(0,"DELETED","CoolstreamingPartner::setParent",0);
+        //MessageBoxA(0,"DELETED","CoolstreamingPartner::setParent",0);
+        throw cException("DELETED CoolstreamingPartner::setParent");
     mIsParent[substream] = val;
 }
 
