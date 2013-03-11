@@ -196,12 +196,12 @@ void GlobalStatistic::finish()
 //    m_sizeIV.recordAs("histogram of ivSize");
 
     // -- For checking the number of new App messages created and deleted
-    EV << "The number of App message left: " << m_countAppMsgNew << endl;
-    EV << "The number of ignored messaged (because of returning to sender: " << m_countSelfAppMsg << endl;
+    //EV << "The number of App message left: " << m_countAppMsgNew << endl;
+    //EV << "The number of ignored messaged (because of returning to sender: " << m_countSelfAppMsg << endl;
 
     // -- For calculating and recording reach ratio
-    EV << "The reach ratio (it should approximate the total number of nodes): "
-            << 1 + (double)m_countReach / m_countAppMsgNew << endl;
+//    EV << "The reach ratio (it should approximate the total number of nodes): "
+//            << 1 + (double)m_countReach / m_countAppMsgNew << endl;
 
     recordScalar("Reach Ratio", (double)m_countReach / m_countAppMsgNew);
 }
