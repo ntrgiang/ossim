@@ -13,16 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief a object to be stored in the cache contains: address, agent identifier, timestamp and value of the agent
+
 #include "NewscastCacheEntry.h"
 
 NewscastCacheEntry::NewscastCacheEntry() {
-    // TODO Auto-generated constructor stub
-    EV << "NewscastCacheEntry::NewscastCacheEntry" << endl;
+    m_value = NULL;
+    m_address = IPvXAddress("0.0.0.0");
 }
 
 NewscastCacheEntry::~NewscastCacheEntry() {
-    // TODO Auto-generated destructor stub
-    EV << "GETTING DELETED YAY" << endl;
     if (m_value) delete m_value;
 }
 

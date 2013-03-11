@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief CoolstreamingSource based on CoolstreamingBase
+// @ingroup mesh
+// @ingroup coolstreaming
+
 #include "CoolstreamingSource.h"
 
 Define_Module(CoolstreamingSource);
@@ -31,14 +36,4 @@ void CoolstreamingSource::initialize(int stage){
         return;
 
     initBase();
-
-    timer_sendBufferMap = new cMessage("COOLSTREAMING_SOURCE_TIMER_SEND_BUFFERMAP");
-    scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
-}
-
-
-void CoolstreamingSource::checkPartners(){
-    removeTimeoutedPartners();
-
-    scheduleAt(simTime() + param_CheckPartnersIntervall, timer_CheckPartners);
 }

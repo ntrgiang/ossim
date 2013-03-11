@@ -10,13 +10,13 @@ simple CoolstreamingBase extends CommBase
         @class(CoolstreamingBase);
         @display("i=block/app;bgb=250,410");
         
-		int substreamCount = default(3); // Count of substreams 
-        int maxNOC = default(6); // Max number of children
-
-
-        // -- Added by Giang to resolve error during initialization
-        // Partnership
-        int maxNOP = default(5);
-
-        double CheckPartnersIntervall @unit(seconds) = default(1s);
+		int substreamCount = default(3); // Number of substreams 
+       
+        int maxNOP = default(4); // Max number of Partners
+        int minNOP = default(3); // Min number of Partners
+        
+        double CheckPartnersIntervall @unit(s) = default(3.0s);
+        double BufferMapIntervall     @unit(s) = default(1.0s);
+        
+        bool debugOutput = default(true);
 }

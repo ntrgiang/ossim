@@ -13,6 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief class to output some statistics of newscast
+// @ingroup membership
+// @ingroup newscast
+
+
 #include <fstream>
 #include <iosfwd>
 
@@ -27,8 +33,10 @@ public:
     NewscastStatistic();
     virtual ~NewscastStatistic();
 
+    // @brief writes the address to the file
     void writeGotRandomIP(IPvXAddress addr);
 
+    // @brief writes the connections of a peer to the file
     void writeCacheConnections(IPvXAddress src, std::vector<IPvXAddress> knownPeers);
 protected:
     virtual int numInitStages() const { return 5; }

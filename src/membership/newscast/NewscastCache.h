@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief Implementation of a cache to store the entries of a peer
+// @ingroup membership
+// @ingroup newscast
+
 #ifndef NEWSCASTCACHE_H_
 #define NEWSCASTCACHE_H_
 
@@ -21,32 +26,44 @@
 
 class NewscastCache : public ::cOwnedObject{
 public:
+    // @brief intiates a cache with a fixed size
     NewscastCache(int size);
     NewscastCache(){m_maxEntries = 5;};
     virtual ~NewscastCache();
 
+    // @brief adds or updates a entry for the agent
     void setEntry(std::string agent, IPvXAddress addr, simtime_t timestamp, GossipUserData* value);
+    // @brief merges an other cache into this one. Only the newest entries will be stored
     void merge(NewscastCache* cache);
+    // @brief returns the number of entries in the cache
     int getSize(){ return currentCache.size(); }
-    NewscastCacheEntry* getEntry(int index){ return currentCache.at(index);}
-    NewscastCacheEntry* getEntry(IPvXAddress addr);
-    NewscastCacheEntry* getRandomEntry();
+    // @brief returns a entry at a specified position
+    NewscastCacheEntry getEntry(int index){ return currentCache.at(index);}
+    // @brief returns a entry for a specified address
+    NewscastCacheEntry getEntry(IPvXAddress addr);
+    // @brief returns a random entry
+    NewscastCacheEntry getRandomEntry();
+    // @brief returns a list of IPvXAddress containing all entries
     std::vector<IPvXAddress> getAllAddresses();
 
-    virtual cOwnedObject *dup() const;
+    // @brief sets a new maximum size of the cache. If there are to many entries the oldest entries are getting dropped
+    void setMaxSize(int size);
 
+    // @brief generates a duplicate of this cache
+    NewscastCache dup();
+
+    // @brief displays the content of this cache via EV
     void printCache();
 
-    /*
-     * returns an estimation of the size of this cache in bytes
-     */
+    // @brief returns an estimation of the size of this cache in bits
     long getEstimatedSizeInBits();
 protected:
-    typedef std::vector<NewscastCacheEntry*> CacheSet;
+    typedef std::vector<NewscastCacheEntry> CacheSet;
     mutable CacheSet currentCache;
 //CacheSet currentCache;
 
-    NewscastCacheEntry* findEntryForAgent(std::string agent);
+    // @brief removes the oldest entry
+    void removeOldestEntry();
 
 private:
     unsigned int m_maxEntries;

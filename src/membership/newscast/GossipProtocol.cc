@@ -13,6 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+// @author Thorsten Jacobi
+// @brief Interface class for gossip protocols
+
 #include "GossipProtocol.h"
 
 GossipProtocol ::GossipProtocol(){
@@ -30,10 +33,10 @@ void GossipProtocol::leaveNetwork(){
 }
 
 IPvXAddress GossipProtocol::getRandomPeer(){
-    return NULL;
+    return "0.0.0.0";
 }
 IPvXAddress GossipProtocol::getRandomPeer(IPvXAddress notThisAddress){
-    return NULL;
+    return "0.0.0.0";
 }
 
 std::vector<IPvXAddress> GossipProtocol::getKnownPeers(){

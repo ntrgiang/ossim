@@ -13,11 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// @author Thorsten Jacobi
+// @brief Implementation of a cache to store the entries of a peer
+
 #include "NewscastCache.h"
 
 NewscastCache::NewscastCache(int size) : cOwnedObject(){
     m_maxEntries = size;
-    EV << "NewscastCache-> " << size << endl;
 }
 
 NewscastCache::~NewscastCache(){
@@ -43,113 +45,120 @@ NewscastCache::~NewscastCache(){
 //    {
 //       if (*iter) delete *iter;
 //    }
-    currentCache.clear(); // TODO: delete objects
     EV << "~NewscastCacghe() -> DONE 2" << endl;
+    currentCache.clear();
 }
 
-cOwnedObject* NewscastCache::dup() const{
-    NewscastCache* ret = new NewscastCache(m_maxEntries);
+void NewscastCache::setMaxSize(int size){
+    m_maxEntries = size;
+
+    while ((currentCache.size() > m_maxEntries) && (currentCache.size() > 0)){  // while we have more than m_maxEntries ...
+        removeOldestEntry();
+    }
+}
+
+
+NewscastCache NewscastCache::dup(){
+    NewscastCache ret = NewscastCache(m_maxEntries);
     CacheSet::iterator it;
     for (it = currentCache.begin(); it != currentCache.end(); it++){
-        ret->setEntry( (*it)->getAgent(), (*it)->getAddress(), (*it)->getTimestamp(), (*it)->getValue() );
+        EV << "dup2: " << (*it).getAddress() << endl;
+        ret.setEntry( (*it).getAgent(), (*it).getAddress(), (*it).getTimestamp(), (*it).getValue() );
     }
 
     return ret;
 }
 
 void NewscastCache::setEntry(std::string agent, IPvXAddress addr, simtime_t timestamp, GossipUserData* value){
-    //EV << "[set-entry]my name: " << agent << " value: " << value <<  endl;
-    NewscastCacheEntry* entry = findEntryForAgent(agent);
-    if (entry == NULL){ // generate new entry
-        entry = new NewscastCacheEntry();
-        entry->setAgent(agent);
-        entry->setTimestamp(0);
-        currentCache.push_back(entry);
-    }
 
-    // check timestamp ... new one < old? -> return
-    if (timestamp < entry->getTimestamp()) return;
+    for (unsigned int i = 0; i < currentCache.size(); i++)
+        if (currentCache.at(i).getAgent().compare(agent) == 0){
+            currentCache.at(i).setAddress(addr);
+            currentCache.at(i).setTimestamp(timestamp);
+            currentCache.at(i).setValue(value);
+            return;
+        }
 
-    // set entry
-    entry->setAddress(addr); // should i update this everytime? hmm
-    entry->setTimestamp(timestamp);
-    if (value == NULL)
-        entry->setValue(NULL);
-    else
-        entry->setValue(value->dup());
+    NewscastCacheEntry entry;
+        entry.setAgent(agent);
+        entry.setAddress(addr);
+        entry.setTimestamp(timestamp);
+        entry.setValue(value);
+    currentCache.push_back(entry);
 
-    //EV << "[set-entry-end]my name: " << entry->getAgent() << " value: " << entry->getValue() <<  endl;
-    //entry = findEntryForAgent(agent);
-    //EV << "[set-entry-end2]my name: " << entry->getAgent() << " value: " << entry->getValue() <<  endl;
 }
 
 void NewscastCache::merge(NewscastCache* cache){
-
+    EV << "merge: " << cache->getSize() << endl;
     // insert the entries from the new cache into the current
     CacheSet::iterator it;
     for (it = cache->currentCache.begin(); it != cache->currentCache.end(); it++){
-        setEntry( (*it)->getAgent(), (*it)->getAddress(), (*it)->getTimestamp(), (*it)->getValue() );
+        setEntry( (*it).getAgent(), (*it).getAddress(), (*it).getTimestamp(), (*it).getValue() );
     }
 
-    while (currentCache.size() > m_maxEntries){  // while we have more than m_maxEntries ...
-        int oldest = 0; simtime_t time = currentCache.at(0)->getTimestamp();
-
-        // find the oldest one
-        for (unsigned int i = 1; i < currentCache.size(); i++)
-            if (currentCache.at(i)->getTimestamp() < time){
-                time = currentCache.at(i)->getTimestamp();
-                oldest = i;
-            }
-
-        // set the pointer to the oldest one
-        it = currentCache.begin();
-        it += oldest;
-
-        printCache();
-        EV << "Deleting: " << (*it)->getAgent() << endl;
-
-        // delete it
-        delete *it;
-        currentCache.erase(it);
+    while ((currentCache.size() > m_maxEntries) && (currentCache.size() > 0)){  // while we have more than m_maxEntries ...
+        removeOldestEntry();
     }
 }
 
-NewscastCacheEntry* NewscastCache::findEntryForAgent(std::string agent){
-    for (unsigned int i = 0; i < currentCache.size(); i++)
-        if (currentCache.at(i)->getAgent().compare(agent) == 0)
-            return currentCache.at(i);
+void NewscastCache::removeOldestEntry(){
+    int oldest = 0; simtime_t time = currentCache.at(0).getTimestamp();
 
-    return NULL;
+    // find the oldest one
+    for (unsigned int i = 1; i < currentCache.size(); i++)
+        if (currentCache.at(i).getTimestamp() < time){
+            time = currentCache.at(i).getTimestamp();
+            oldest = i;
+        }
+
+    // set the pointer to the oldest one
+    CacheSet::iterator it = currentCache.begin();
+    it += oldest;
+
+    currentCache.erase(it);
 }
-
 
 void NewscastCache::printCache(){
     CacheSet::iterator it;
     for (it = currentCache.begin(); it != currentCache.end(); it++){
-        EV << (*it)->getAgent() <<","<< (*it)->getAddress() <<","<< (*it)->getTimestamp() <<","<< (*it)->getValue() << endl;
+        EV << (*it).getAgent() <<","<< (*it).getAddress() <<","<< (*it).getTimestamp() <<","<< (*it).getValue() << endl;
     }
 }
 
-NewscastCacheEntry* NewscastCache::getRandomEntry(){
-    int aRandomIndex = (int)intrand(currentCache.size());//rand() % currentCache.size();
+NewscastCacheEntry NewscastCache::getRandomEntry(){
+    NewscastCacheEntry ret;
 
-    return currentCache.at(aRandomIndex);
+    if (currentCache.size() > 0){
+        int aRandomIndex = (int)intrand(currentCache.size());
+        ret = currentCache.at(aRandomIndex);
+    }
+
+    return ret;
 }
 
-NewscastCacheEntry* NewscastCache::getEntry(IPvXAddress addr){
-    for (unsigned int i = 0; i < currentCache.size(); i++)
-        if (currentCache.at(i)->getAddress().equals(addr))
-            return currentCache.at(i);
+NewscastCacheEntry NewscastCache::getEntry(IPvXAddress addr){
+    NewscastCacheEntry ret;
 
-    return NULL;
+    for (unsigned int i = 0; i < currentCache.size(); i++)
+        if (currentCache.at(i).getAddress().equals(addr)){
+            ret = currentCache.at(i);
+            break;
+        }
+
+    return ret;
 }
 
 std::vector<IPvXAddress> NewscastCache::getAllAddresses(){
+    while ((currentCache.size() > m_maxEntries) && (currentCache.size() > 0)){  // while we have more than m_maxEntries ...
+        removeOldestEntry();
+    }
+
     std::vector<IPvXAddress> ret;
 
     CacheSet::iterator it;
     for (it = currentCache.begin(); it != currentCache.end(); it++)
-        ret.push_back( (*it)->getAddress());
+        if (!(*it).getAddress().isUnspecified())
+            ret.push_back( (*it).getAddress());
 
     return ret;
 }
@@ -161,7 +170,7 @@ long NewscastCache::getEstimatedSizeInBits(){
 
     CacheSet::iterator it;
     for (it = currentCache.begin(); it != currentCache.end(); it++){
-        ret += (*it)->getEstimatedSizeInBits();
+        ret += (*it).getEstimatedSizeInBits();
     }
 
     return ret;
