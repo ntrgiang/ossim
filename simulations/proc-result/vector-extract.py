@@ -22,6 +22,11 @@
 //
 """
 
+"""
+modified form vecplot.py in OverSim
+- to avoid unavailable plot libraries in remote machines
+"""
+
 #import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as sp
