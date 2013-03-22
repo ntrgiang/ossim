@@ -22,4 +22,13 @@ simple VideoBuffer
          //@statistic[inrangeChunk](title="Sequence Number of in-range chunks"; source=Signal_InrangeChunk; record=count,vector);
 
          //@statistic[duplicatedChunk](title="Sequence Number of duplicated chunks"; source=Signal_DuplicatedChunk; record=count,vector);
+         
+     //gates:
+        // From Forwarder
+     //   input forwarderIn   @label(VideoChunk/up);
+     //   output forwarderOut @label(VideoChunk/down);
+        
+        // To Player
+     //   output playerOut @label(VideoChunk/up);
+        
 }

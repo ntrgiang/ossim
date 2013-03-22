@@ -89,7 +89,7 @@ void Forwarder::sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int de
 
     sendToDispatcher(chunkPkt, getLocalPort(), destAddress, destPort);
 
-    updateSentChunkRecord(destAddress);
+    //updateSentChunkRecord(destAddress);
 
 }
 

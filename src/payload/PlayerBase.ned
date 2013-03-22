@@ -4,7 +4,7 @@ moduleinterface PlayerBase
 {
    parameters:
       @class(PlayerBase);
-
+      
       //double interval_reportStatistic @unit(s) = default(0.1s);
 
       //double interval_recheckVideoBuffer @unit(s) = default(0.1s);
