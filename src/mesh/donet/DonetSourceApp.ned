@@ -65,4 +65,11 @@ module DonetSourceApp
         dispatcher.udpIn <-- udpIn;
         dispatcher.udpOut --> udpOut;
 
+        // Connect Forwarder to Video Buffer
+        //forwarder.bufferOut --> videoBuffer.forwarderIn;
+        //forwarder.bufferIn <-- videoBuffer.forwarderOut;
+
+        // Connect Video Buffer to Player
+        // videoBuffer.playerOut --> player.bufferIn;
+
 }
