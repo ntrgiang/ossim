@@ -1,25 +1,25 @@
 package so.mesh.coolstreaming;
 
 import so.common.Dispatcher;
-import so.membership.oracle.OracleMembership;
+import so.membership.dummy.DummyMembership;
 import so.membership.MCache;
 
 import so.mesh.coolstreaming.CoolstreamingPeer;
 import so.mesh.PartnerList;
 import so.payload.Forwarder;
 import so.payload.VideoBuffer;
-//import so.payload.Player;
 import so.payload.PlayerSimpleSkip;
 
-//import simpleoverlay.global.AppSettingDonet;
 
-import so.membership.newscast.NewscastPeer;
+//import so.membership.oracle.OracleMembership;
+//import so.payload.Player;
+//import simpleoverlay.global.AppSettingDonet;
+//import so.membership.newscast.NewscastPeer;
 
 module CoolstreamingPeerApp
 {
     parameters:
         @display("bgb=270,294");
-//        @statistic[hitCount_global](source=chunkHit_Global; record=count);
 
     gates:
         input udpIn;
@@ -47,7 +47,8 @@ module CoolstreamingPeerApp
             @display("p=132,104");
         }
         
-        gossipProtocol : NewscastPeer;
+        //gossipProtocol : NewscastPeer;
+        gossipProtocol: DummyMembership;
         
         dispatcher: Dispatcher {
             @display("p=132,247;i=block/dispatch");
@@ -56,19 +57,19 @@ module CoolstreamingPeerApp
     //            @display("p=34,178;i=block/cogwheel");
     //        }
     connections:
-        // Connect Forwarder module to the NewscastPeer
+        // - Connect Forwarder module to the NewscastPeer
         dispatcher.overlayIn++ <-- gossipProtocol.dpOut;
         dispatcher.overlayOut++ --> gossipProtocol.dpIn;
         
-        // Connect Mesh module to the Dispatcher
+        // - Connect Mesh module to the Dispatcher
         dispatcher.overlayIn++ <-- mesh.dpOut;
         dispatcher.overlayOut++ --> mesh.dpIn;
 
-        // Connect Forwarder module to the Dispatcher
+        // - Connect Forwarder module to the Dispatcher
         dispatcher.overlayIn++ <-- forwarder.dpOut;
         dispatcher.overlayOut++ --> forwarder.dpIn;
 
-        // Connect Dispatcher to module's ports
+        // - Connect Dispatcher to module's ports
         dispatcher.udpIn <-- udpIn;
         dispatcher.udpOut --> udpOut;
 }
