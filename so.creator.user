@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by Qt Creator 2.5.2, 2013-03-26T07:39:57. -->
+<!-- Written by Qt Creator 2.5.2, 2013-03-26T11:45:31. -->
 <qtcreator>
  <data>
   <variable>GenericProjectManager.GenericProject.Toolchain</variable>
@@ -54,7 +54,7 @@
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">GenericProjectManager.GenericTarget</value>
    <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
    <value type="int" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
-   <value type="int" key="ProjectExplorer.Target.ActiveRunConfiguration">4</value>
+   <value type="int" key="ProjectExplorer.Target.ActiveRunConfiguration">3</value>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.0">
     <value type="QString" key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory">/nix/workspace/omnet422-inet118/so</value>
     <value type="QString" key="ProjectExplorer.BuildCOnfiguration.ToolChain">ProjectExplorer.ToolChain.Gcc:{7742667c-5d18-4287-9766-e36d05c2f409}</value>
@@ -116,7 +116,7 @@
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.DeployConfigurationCount">1</value>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.0">
-    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-u Cmdenv -c Donet_Homo_oneRouter_Network /nix/workspace/omnet422-inet118/so/simulations/DonetNetworkConfig.ini -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src</value>
+    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-u Cmdenv -c Donet_Homo_oneRouter_Network /nix/workspace/omnet422-inet118/so/simulations/Donet.ini -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src</value>
     <value type="int" key="ProjectExplorer.CustomExecutableRunConfiguration.BaseEnvironmentBase">2</value>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Executable">%{buildDir}/src/so</value>
     <value type="bool" key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal">false</value>
@@ -131,7 +131,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.1">
-    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-c Donet_Homo_oneRouter_Network /nix/workspace/omnet422-inet118/so/simulations/DonetNetworkConfig.ini -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src</value>
+    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-c Donet_Homo_oneRouter_Network /nix/workspace/omnet422-inet118/so/simulations/Donet.ini -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src</value>
     <value type="int" key="ProjectExplorer.CustomExecutableRunConfiguration.BaseEnvironmentBase">2</value>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Executable">%{buildDir}/src/so</value>
     <value type="bool" key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal">false</value>
@@ -146,7 +146,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.2">
-    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-u Cmdenv -c Scamp_Homo_oneRouter_Network /nix/workspace/omnet422-inet118/so/simulations/ScampNetwork.ini -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src</value>
+    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-u Cmdenv -c Scamp_Homo_oneRouter_Network /nix/workspace/omnet422-inet118/so/simulations/Scamp.ini -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src</value>
     <value type="int" key="ProjectExplorer.CustomExecutableRunConfiguration.BaseEnvironmentBase">2</value>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Executable">%{buildDir}/src/so</value>
     <value type="bool" key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal">false</value>
@@ -161,7 +161,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.3">
-    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-c Scamp_Homo_oneRouter_Network /nix/workspace/omnet422-inet118/so/simulations/ScampNetwork.ini -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src</value>
+    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-c Scamp_Homo_oneRouter_Network /nix/workspace/omnet422-inet118/so/simulations/Scamp.ini -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src</value>
     <value type="int" key="ProjectExplorer.CustomExecutableRunConfiguration.BaseEnvironmentBase">2</value>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Executable">%{buildDir}/src/so</value>
     <value type="bool" key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal">false</value>

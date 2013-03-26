@@ -25,7 +25,6 @@ simulations/run-scripts/valgrind-memcheck.sh
 simulations/run-scripts/valgrind.sh
 simulations/BasicNetwork.ned
 simulations/Channel.ned
-simulations/config.ini
 simulations/Donet.ned
 simulations/Donet.ini
 simulations/omnetpp.ini
