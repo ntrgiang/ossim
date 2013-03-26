@@ -48,7 +48,6 @@ module DonetPeerApp
 {
     parameters:
         @display("bgb=270,294");
-//        @statistic[hitCount_global](source=chunkHit_Global; record=count);
 
     gates:
         input udpIn;
@@ -85,18 +84,22 @@ module DonetPeerApp
     //        }
     connections:
         // Connect Gossip module to the Dispatcher
+        //
         dispatcher.overlayIn++ <-- membership.dpOut;
         dispatcher.overlayOut++ --> membership.dpIn;
 
         // Connect Mesh module to the Dispatcher
+        //
         dispatcher.overlayIn++ <-- mesh.dpOut;
         dispatcher.overlayOut++ --> mesh.dpIn;
 
         // Connect Forwarder module to the Dispatcher
+        //
         dispatcher.overlayIn++ <-- forwarder.dpOut;
         dispatcher.overlayOut++ --> forwarder.dpIn;
 
         // Connect Dispatcher to module's ports
+        //
         dispatcher.udpIn <-- udpIn;
         dispatcher.udpOut --> udpOut;
         
