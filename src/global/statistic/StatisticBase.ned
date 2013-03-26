@@ -37,5 +37,4 @@ moduleinterface IStatisticBase
 {
     parameters:
         @display("i=block/user");
-
 }
