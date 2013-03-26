@@ -30,7 +30,7 @@ EXEC_FILE=$EXEC_SRC_PATH/$PROJECT_NAME
 
 # Specify the Network and the configuration file
 NETWORK=Donet_Homo_oneRouter_Network
-CONFIG_FILE=DonetNetworkConfig.ini
+CONFIG_FILE=Donet.ini
 
 # Delete all files in the results/ folder
 # rm $RESULT_PATH/*.*

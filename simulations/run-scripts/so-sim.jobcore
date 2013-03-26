@@ -1,4 +1,9 @@
 #!/bin/bash
+
+#
+# To submit jobs to CSC fuchs cluster - Frankfurt
+#
+
 # write standard output to file
 ##PBS -o job.out
 # Provision resources (Time, memory)

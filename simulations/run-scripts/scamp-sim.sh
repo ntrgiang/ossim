@@ -18,7 +18,7 @@
 
 # Specify the Network and the configuration file
    NETWORK=Scamp_Homo_oneRouter_Network
-   CONFIG_FILE=ScampNetwork.ini
+   CONFIG_FILE=Scamp.ini
 
 # Delete all files in the results/ folder
 # rm $RESULT_PATH/*.*
