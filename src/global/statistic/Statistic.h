@@ -26,10 +26,10 @@
 //
 // Contributors: Giang;
 // Code Reviewers: -;
-// ------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //
 
-
+/*
 #include "IChurnGenerator.h"
 #include "NotificationBoard.h"
 
@@ -50,4 +50,5 @@ public:
 private:
 };
 
-#endif /* STATISTIC_H_ */
+#endif // STATISTIC_H_
+*/

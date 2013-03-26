@@ -26,7 +26,7 @@
 //
 // Contributors: Giang;
 // Code Reviewers: -;
-// ------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //
 
 //TODO: it might be nicer to implement this table as a vector instead of a set (for easier accessing elements using indices)
