@@ -29,7 +29,7 @@
 // ------------------------------------------------------------------------------
 //
 
-
+/*
 #include "IChurnGenerator.h"
 #include "NotificationBoard.h"
 #include "AppCommon.h"
@@ -206,4 +206,5 @@ private:
     simsignal_t sig_requestedChunk, sig_receivedChunk, sig_duplicatedChunk, sig_lateChunk, sig_inrangeChunk;
 };
 
-#endif /* GLOBAL_STATISTIC_H_ */
+#endif //< GLOBAL_STATISTIC_H_
+*/

@@ -29,7 +29,7 @@
 // ------------------------------------------------------------------------------
 //
 
-
+/*
 #include "GlobalStatistic.h"
 
 Define_Module(GlobalStatistic);
@@ -268,11 +268,9 @@ void GlobalStatistic::writePartnership2File(IPvXAddress local, IPvXAddress remot
    m_outFile << simTime().dbl() << " " << local.str() << " " << remote.str() << endl;
 }
 
-/**
- * ****************************************************************************
- * Recording the sizes of InView & PartialView
- * ****************************************************************************
- */
+// * ****************************************************************************
+// * Recording the sizes of InView & PartialView
+// * ****************************************************************************
 
 //void GlobalStatistic::recordSizeInView(int size)
 //{
@@ -303,11 +301,9 @@ void GlobalStatistic::recordJoinTime(double time)
     m_joinTime.record(time);
 }
 
-/**
- * ****************************************************************************
- * Collect sizes of InView & PartialView
- * ****************************************************************************
- */
+// * ****************************************************************************
+// * Collect sizes of InView & PartialView
+// * ****************************************************************************
 
 void GlobalStatistic::collectSizeIV(int size)
 {
@@ -319,11 +315,9 @@ void GlobalStatistic::collectSizePV(int size)
 //    m_finalSizePV.collect(size);
 }
 
-/**
- * ****************************************************************************
- * Work-around with counting the subscriptions
- * ****************************************************************************
- */
+// * ****************************************************************************
+// * Work-around with counting the subscriptions
+// * ****************************************************************************
 
 void GlobalStatistic::increaseNEW(void)
 {
@@ -524,3 +518,4 @@ void GlobalStatistic::reportNumberOfJoin(int val)
 {
     emit(sig_nJoin, val);
 }
+*/
