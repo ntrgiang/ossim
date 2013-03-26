@@ -26,10 +26,10 @@
 //
 // Contributors: Giang;
 // Code Reviewers: -;
-// ------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //
 
-
+/*
 #include "Player.h"
 
 Define_Module(Player);
@@ -395,3 +395,4 @@ bool Player::shouldResumePlaying(SEQUENCE_NUMBER_T seq_num)
 
     return false;
 }
+*/

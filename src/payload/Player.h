@@ -26,9 +26,10 @@
 //
 // Contributors: Giang;
 // Code Reviewers: -;
-// ------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //
 
+/*
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
@@ -100,7 +101,7 @@ protected:
     // -- Pointers to external modules
     VideoBuffer *m_videoBuffer;
     AppSettingDonet *m_appSetting;
-    GlobalStatistic *m_stat;
+    StatisticBase *m_stat;
 
     // -- Signal for data collection
     simsignal_t sig_timePlayerStart;
@@ -115,4 +116,5 @@ protected:
 
 };
 
-#endif /* PLAYER_H_ */
+#endif // PLAYER_H_
+*/
