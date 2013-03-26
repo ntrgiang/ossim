@@ -26,12 +26,12 @@ simulations/run-scripts/valgrind.sh
 simulations/BasicNetwork.ned
 simulations/Channel.ned
 simulations/config.ini
-simulations/DonetNetwork.ned
-simulations/DonetNetworkConfig.ini
+simulations/Donet.ned
+simulations/Donet.ini
 simulations/omnetpp.ini
 simulations/package.ned
-simulations/ScampNetwork.ini
-simulations/ScampNetwork.ned
+simulations/Scamp.ini
+simulations/Scamp.ned
 simulations/test.ned
 src/common/AppCommon.h
 src/common/CommBase.cc
