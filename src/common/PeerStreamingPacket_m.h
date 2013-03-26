@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.2 from applications/common/messages/PeerStreamingPacket.msg.
+// Generated file, do not edit! Created by opp_msgc 4.2 from common/PeerStreamingPacket.msg.
 //
 
 #ifndef _PEERSTREAMINGPACKET_M_H_
@@ -16,7 +16,7 @@
 
 
 /**
- * Enum generated from <tt>applications/common/messages/PeerStreamingPacket.msg</tt> by opp_msgc.
+ * Enum generated from <tt>common/PeerStreamingPacket.msg</tt> by opp_msgc.
  * <pre>
  * enum StreamingPacketGroup
  * {
@@ -35,7 +35,7 @@ enum StreamingPacketGroup {
 };
 
 /**
- * Class generated from <tt>applications/common/messages/PeerStreamingPacket.msg</tt> by opp_msgc.
+ * Class generated from <tt>common/PeerStreamingPacket.msg</tt> by opp_msgc.
  * <pre>
  * packet PeerStreamingPacket
  * {
