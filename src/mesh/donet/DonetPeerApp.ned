@@ -44,7 +44,7 @@ import so.payload.Player;
 import so.payload.PlayerSimpleSkip;
 //import simpleoverlay.global.AppSettingDonet;
 
-module GenericPeerApp
+module DonetPeerApp
 {
     parameters:
         @display("bgb=270,294");
@@ -56,11 +56,14 @@ module GenericPeerApp
 
     submodules:
         //membership: ScampPeer {
-        memMan: DummyMembership {
+        membership: DummyMembership {
             //membership: OracleMembership {
             @display("p=51,173;i=block/users");
         }
-        partnerMan: DonetPeer {
+        mesh: DonetPeer {
+            @display("p=132,173;i=block/network2");
+        }
+        partnerList: PartnerList {
             @display("p=132,173;i=block/network2");
         }
         forwarder: Forwarder {
@@ -82,12 +85,12 @@ module GenericPeerApp
     //        }
     connections:
         // Connect Gossip module to the Dispatcher
-        dispatcher.overlayIn++ <-- memMan.dpOut;
-        dispatcher.overlayOut++ --> memMan.dpIn;
+        dispatcher.overlayIn++ <-- membership.dpOut;
+        dispatcher.overlayOut++ --> membership.dpIn;
 
         // Connect Mesh module to the Dispatcher
-        dispatcher.overlayIn++ <-- partnerMan.dpOut;
-        dispatcher.overlayOut++ --> partnerMan.dpIn;
+        dispatcher.overlayIn++ <-- mesh.dpOut;
+        dispatcher.overlayOut++ --> mesh.dpIn;
 
         // Connect Forwarder module to the Dispatcher
         dispatcher.overlayIn++ <-- forwarder.dpOut;
