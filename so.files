@@ -63,9 +63,6 @@ src/global/observer/MeshOverlayObserver.ned
 src/global/statistic/GlobalStatistic.cc
 src/global/statistic/GlobalStatistic.h
 src/global/statistic/GlobalStatistic.ned
-src/global/statistic/Statistic.cc
-src/global/statistic/Statistic.h
-src/global/statistic/Statistic.ned
 src/global/ActivePeerInfo.cc
 src/global/ActivePeerInfo.h
 src/global/ActivePeerTable.cc
