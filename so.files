@@ -152,9 +152,6 @@ so.includes
 TODO
 Makefile
 src/Makefile
-src/membership/oracle/OracleMembership.ned
-src/membership/oracle/OracleMembership.h
-src/membership/oracle/OracleMembership.cc
 src/mesh/coolstreaming/CoolstreamingSourceNode.ned
 src/mesh/coolstreaming/CoolstreamingSourceApp.ned
 src/mesh/coolstreaming/CoolstreamingSource.ned
