@@ -140,13 +140,11 @@ src/tree/TreePeerStreamingPacket.msg
 src/package.ned
 build.sh
 CHANGES
-parameter-study.txt
 README
 so.creator
 so.creator.user
 so.files
 so.includes
-TODO
 Makefile
 src/Makefile
 src/mesh/coolstreaming/CoolstreamingSourceNode.ned
