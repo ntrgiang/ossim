@@ -53,7 +53,6 @@ enum GossipMembershipPacketType
 // Base class for all messages handled by protocol's modules
 //
 // @author Giang Nguyen
-// @see 
 //
 
 packet GossipMembershipPacket extends PeerStreamingPacket

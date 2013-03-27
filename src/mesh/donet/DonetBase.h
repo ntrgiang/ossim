@@ -37,6 +37,7 @@
 #include "PartnerList.h"
 #include "VideoBuffer.h"
 #include "Forwarder.h"
+#include "MembershipBase.h"
 #include "ActivePeerTable.h"
 #include "AppSettingDonet.h"
 #include "IChurnGenerator.h"
@@ -150,6 +151,8 @@ protected:
     PartnerList *m_partnerList;
     VideoBuffer *m_videoBuffer;
     Forwarder   *m_forwarder;
+    MembershipBase *m_memManager;
+
 
     // --- Additional variables for debugging purposes
     double m_arrivalTime;

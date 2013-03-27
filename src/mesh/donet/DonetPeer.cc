@@ -1308,10 +1308,10 @@ bool DonetPeer::sendPartnershipRequest(void)
     {
        count++;
        addressRandPeer = m_apTable->getARandPeer(getNodeAddress());
+       //addressRandPeer = m_memManager->getARandPeer(getNodeAddress());
        if (count > 10)
           return false;
     }
-    //while (addressRandPeer == getNodeAddress());
     while(m_partnerList->have(addressRandPeer));
 
     if (m_partnerList->have(addressRandPeer))

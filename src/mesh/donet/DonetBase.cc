@@ -190,6 +190,9 @@ void DonetBase::bindToMeshModule(void)
     m_forwarder = check_and_cast<Forwarder *>(temp);
     EV << "Binding to Forwarder is completed successfully" << endl;
 
+    temp = getParentModule()->getModuleByRelativePath("membership");
+    m_memManager = check_and_cast<MembershipBase *>(temp);
+    EV << "Binding to MembershipManager is completed successfully" << endl;
 }
 
 void DonetBase::bindToGlobalModule(void)

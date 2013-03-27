@@ -56,7 +56,10 @@ void DummyMembership::initialize(int stage)
 
 IPvXAddress DummyMembership::getARandPeer(IPvXAddress address)
 {
+   Enter_Method("getARandPeer()");
+
    return m_apTable->getARandPeer(address);
+   //return IPvXAddress("0.0.0.0");
 }
 
 void DummyMembership::addPeerAddress(const IPvXAddress &address, int maxNOP)
