@@ -383,7 +383,8 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
 
            // -- Report to Active Peer Table to update the information
            EV << "Increment number of partner " << endl;
-           m_apTable->incrementNPartner(getNodeAddress());
+           //m_apTable->incrementNPartner(getNodeAddress());
+           m_memManager->incrementNPartner(getNodeAddress());
 
            MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
            sendToDispatcher(acceptPkt, m_localPort, requester.address, requester.port);
@@ -445,7 +446,8 @@ void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
 
         // -- Report to Active Peer Table to update the information
         EV << "Increment number of partner " << endl;
-        m_apTable->incrementNPartner(getNodeAddress());
+        //m_apTable->incrementNPartner(getNodeAddress());
+        m_memManager->incrementNPartner(getNodeAddress());
 
         // -- Store the peer as a candidate
         // m_candidate = requester;

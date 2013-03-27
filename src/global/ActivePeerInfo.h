@@ -38,12 +38,12 @@ using namespace std;
 
 struct Struct_ActivePeerInfo
 {
-   int m_maxNOP;
-   int m_current_nPartner;
+//   int m_maxNOP;
+//   int m_current_nPartner;
    double m_joinTime;
-   bool m_joined_membershipOverlay;
-   bool m_joined_meshOverlay;
-   bool m_joined_treeOverlay;
+//   bool m_joined_membershipOverlay;
+//   bool m_joined_meshOverlay;
+//   bool m_joined_treeOverlay;
 
    //std::vector<IPvXAddress> m_partner_waiting_list;
 };

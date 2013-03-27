@@ -93,7 +93,7 @@ void ScampSource::initialize(int stage)
 
         // -- Add the IP address of the video source to the Active Peer Table
         // -- (so that other peers could have at least one address in the list to contact to)
-        m_apTable->addPeerAddress(getNodeAddress());
+        m_apTable->addAddress(getNodeAddress());
 
         // -- Declare itself that it is active now
         m_active = true;

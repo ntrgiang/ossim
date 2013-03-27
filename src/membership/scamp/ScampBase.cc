@@ -515,7 +515,7 @@ void ScampBase::handleAckPacket(cPacket *pkt)
         if (m_active == false)
         {
             m_active = true;
-            m_apTable->addPeerAddress(this->getNodeAddress());
+            m_apTable->addAddress(this->getNodeAddress());
 
             // -- Start the timer for isolation check
             scheduleAt(simTime() + param_isoCheckInterval, timer_isolationCheck);
@@ -554,14 +554,16 @@ void ScampBase::addPeerAddress(const IPvXAddress &address, int maxNOP)
 {
    // Dummy implementation
    // TODO: implementation should be placed here
-   m_apTable->addPeerAddress(address, maxNOP);
+   //m_apTable->addAddress(address, maxNOP);
+   m_apTable->addAddress(address);
 }
 
 void ScampBase::addSourceAddress(const IPvXAddress &address, int maxNOP)
 {
    // Dummy implementation
    // TODO: implementation should be placed here
-   m_apTable->addSourceAddress(address, maxNOP);
+   //m_apTable->addSourceAddress(address, maxNOP);
+   m_apTable->addAddress(address);
 }
 
 bool ScampBase::deletePeerAddress(const IPvXAddress &address)

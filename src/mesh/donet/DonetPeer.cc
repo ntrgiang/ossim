@@ -849,7 +849,7 @@ void DonetPeer::handleTimerPartnerlistCleanup()
    if (m_partnerList->getSize() == 0)
    {
       EV << "This node has no partner (isolated) --> should rejoin the overlay" << endl;
-      m_apTable->removePeerAddress(getNodeAddress());
+      m_apTable->removeAddress(getNodeAddress());
       m_state = MESH_JOIN_STATE_IDLE;
       cancelAllTimer();
       m_player->scheduleStopPlayer();
@@ -1008,9 +1008,12 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
         EV << "First accept response from " << acceptor.address << endl;
 
         // -- Register itself to the APT
-        m_apTable->addPeerAddress(getNodeAddress(), param_maxNOP);
-        m_apTable->printActivePeerInfo(getNodeAddress());
-        m_apTable->printActivePeerTable();
+        //m_apTable->addPeerAddress(getNodeAddress(), param_maxNOP);
+        m_apTable->addAddress(getNodeAddress());
+//        m_apTable->printActivePeerInfo(getNodeAddress());
+//        m_apTable->printActivePeerTable();
+
+        m_memManager->addPeerAddress(getNodeAddress(), param_maxNOP);
 
         m_firstJoinTime = simTime().dbl();
 
@@ -1079,7 +1082,8 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
 
         addPartner(acceptor.address, acceptor.upBW);
 
-        m_apTable->incrementNPartner(getNodeAddress());
+        //m_apTable->incrementNPartner(getNodeAddress());
+        m_memManager->incrementNPartner(getNodeAddress());
 
         // -- Cancel timer
 //        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
@@ -1307,8 +1311,7 @@ bool DonetPeer::sendPartnershipRequest(void)
     do
     {
        count++;
-       addressRandPeer = m_apTable->getARandPeer(getNodeAddress());
-       //addressRandPeer = m_memManager->getARandPeer(getNodeAddress());
+       addressRandPeer = m_memManager->getARandPeer(getNodeAddress());
        if (count > 10)
           return false;
     }

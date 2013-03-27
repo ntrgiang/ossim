@@ -70,7 +70,6 @@ module DonetSourceApp
             @display("p=212,37;i=block/source");
         }
         partnerList: PartnerList {
-
             @display("p=133,110");
         }
         dispatcher: Dispatcher {

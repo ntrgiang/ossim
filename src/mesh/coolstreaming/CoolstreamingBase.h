@@ -190,6 +190,7 @@ protected:
     // -- Pointers to /local/ modules
     VideoBuffer *m_videoBuffer;
     Forwarder   *m_forwarder;
+    //MembershipBase *m_memManager;
 };
 
 #endif /* CoolstreamingBase_H_ */

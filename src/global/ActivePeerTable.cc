@@ -239,6 +239,7 @@ int ActivePeerTable::getNumActivePeer() const
 //    emit(sig_size, m_activePeerList.size());
 //}
 
+/*
 void ActivePeerTable::addPeerAddress(const IPvXAddress &address, int maxNOP)
 {
     Enter_Method("addPeerAddress()");
@@ -254,13 +255,34 @@ void ActivePeerTable::addPeerAddress(const IPvXAddress &address, int maxNOP)
 //    emit(sig_size, m_activePeerList.size());
 //   emit(sig_size, 1);
 }
+*/
 
+void ActivePeerTable::addAddress(const IPvXAddress &address)
+{
+    Enter_Method("addAddress()");
+
+    Struct_ActivePeerInfo info;
+//      info.m_maxNOP = maxNOP;
+//      info.m_current_nPartner = 1;
+      info.m_joinTime = simTime().dbl();
+
+    m_activePeerList.insert(pair<IPvXAddress, Struct_ActivePeerInfo>(address, info));
+}
+
+void ActivePeerTable::removeAddress(const IPvXAddress &address)
+{
+   Enter_Method("removePeerAddress");
+
+   m_activePeerList.erase(address);
+}
+/*
 void ActivePeerTable::removePeerAddress(const IPvXAddress &address)
 {
    Enter_Method("removePeerAddress");
 
    m_activePeerList.erase(address);
 }
+*/
 
 /*
 void ActivePeerTable::addSourceAddress(const IPvXAddress &address)
@@ -275,6 +297,7 @@ void ActivePeerTable::addSourceAddress(const IPvXAddress &address)
 }
 */
 
+/*
 void ActivePeerTable::addSourceAddress(const IPvXAddress &address, int maxNOP)
 {
    Enter_Method("addSourceAddress()");
@@ -291,7 +314,9 @@ void ActivePeerTable::addSourceAddress(const IPvXAddress &address, int maxNOP)
    //m_activePeerList[address] = info;
     emit(sig_size, m_activePeerList.size());
 }
+*/
 
+/*
 void ActivePeerTable::incrementNPartner(const IPvXAddress &addr)
 {
    Enter_Method("incrementNPartner()");
@@ -310,12 +335,15 @@ void ActivePeerTable::incrementNPartner(const IPvXAddress &addr)
    EV << "***********************************************************************************" << endl;
    EV << "***********************************************************************************" << endl;
 }
+*/
 
+/*
 void ActivePeerTable::decrementNPartner(const IPvXAddress &addr)
 {
   //m_activePeerList[addr] -= 1;
    m_activePeerList[addr].m_current_nPartner -= 1;
 }
+*/
 
 /**
  * Deletes the given peer address from the table.
@@ -327,21 +355,6 @@ bool ActivePeerTable::deletePeerAddress(const IPvXAddress &address)
 {
     Enter_Method("deletePeerAddress()");
 
-    // -- With list
-//    if (!isActivePeer(address))
-//        return false;
-//    AddressSet::iterator it;
-//    for (it = activePeerList.begin(); it != activePeerList.end(); it++)
-//    {
-//        if (*it == address)
-//        {
-//            activePeerList.erase(it);
-//            break;
-//        }
-//    }
-//    return true;
-
-    // -- With map
     //map<IPvXAddress, ActivePeerInfo*>::iterator iter;
     Type_ActiveList::iterator iter;
     iter = m_activePeerList.find(address);
@@ -352,8 +365,8 @@ bool ActivePeerTable::deletePeerAddress(const IPvXAddress &address)
     //delete iter->second;
     m_activePeerList.erase(iter);
     return true;
-
 }
+
 
 /**
  * Utility function: Returns a vector of /N/ addresses of the active nodes.
@@ -520,11 +533,12 @@ IPvXAddress ActivePeerTable::getARandPeer(IPvXAddress address)
       if (iter->first == address)
          continue;
 
-      for (int i = iter->second.m_current_nPartner; i < iter->second.m_maxNOP; ++i)
-      {
-         m_tempList.push_back(iter->first);
-         EV << "Address: " << iter->first << endl;
-      }
+      m_tempList.push_back(iter->first);
+//      for (int i = iter->second.m_current_nPartner; i < iter->second.m_maxNOP; ++i)
+//      {
+//         m_tempList.push_back(iter->first);
+//         EV << "Address: " << iter->first << endl;
+//      }
    }
    EV << "**********************************************************************" << endl;
    EV << "**********************************************************************" << endl;
@@ -560,7 +574,7 @@ void ActivePeerTable::printActivePeerInfo(const IPvXAddress &address)
       return;
    }
 
-   EV << "Peer " << iter->first << "has " << iter->second.m_current_nPartner << " partners" << endl;
+   //EV << "Peer " << iter->first << "has " << iter->second.m_current_nPartner << " partners" << endl;
 }
 
 /**

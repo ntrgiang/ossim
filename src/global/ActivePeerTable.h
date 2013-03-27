@@ -90,14 +90,21 @@ public:
 //    void addPeerAddress(const IPvXAddress &address);
 //    void addSourceAddress(const IPvXAddress &address);
 
-    void addPeerAddress(const IPvXAddress &address, int maxNOP=0);
-    void addSourceAddress(const IPvXAddress &address, int maxNOP=0);
-    void removePeerAddress(const IPvXAddress &address);
+    void addAddress(const IPvXAddress &address);
+    void removeAddress(const IPvXAddress &address);
 
-    void incrementNPartner(const IPvXAddress &addr);
-    void decrementNPartner(const IPvXAddress &addr);
+// -- will be removed
+//    void addPeerAddress(const IPvXAddress &address, int maxNOP=0);
+//    void addSourceAddress(const IPvXAddress &address, int maxNOP=0);
+//    void removePeerAddress(const IPvXAddress &address);
+
+// -- will be moved to Dummy module
+//    void incrementNPartner(const IPvXAddress &addr);
+//    void decrementNPartner(const IPvXAddress &addr);
 
 //    virtual bool deletePeerAddress(const IPvXAddress *address);
+
+// -- keep or not?
     bool deletePeerAddress(const IPvXAddress &address);
 
     void printActivePeerInfo(const IPvXAddress &address);
@@ -129,14 +136,11 @@ protected:
     std::string m_name;
 
     // New stuff from this point
-    //map<IPvXAddress, ActivePeerInfo*> m_activePeerList;
-    //typedef map<IPvXAddress, int> Type_ActiveList;
-    //typedef map<IPvXAddress, ActivePeerInfo*> Type_ActiveList;
     typedef map<IPvXAddress, Struct_ActivePeerInfo> Type_ActiveList;
     Type_ActiveList m_activePeerList;
     vector<IPvXAddress> m_tempList;
-//    int m_max_reported_nPartner;
-    //map<IPvXAddress, ActivePeerInfo*> m_activePeerList;
+    // int m_max_reported_nPartner;
+    // map<IPvXAddress, ActivePeerInfo*> m_activePeerList;
 
     IPvXAddress m_sourceAddress;
 

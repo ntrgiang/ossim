@@ -35,12 +35,12 @@
 
 #include "MembershipBase.h"
 
-//struct ActivePeerItem
-//{
-//   int m_maxNOP;
-//   int m_current_nPartner;
-//   double m_joinTime;
-//};
+struct ActivePeerItem
+{
+   int m_maxNOP;
+   int m_current_nPartner;
+   double m_joinTime;
+};
 
 class DummyMembership : public MembershipBase {
 public:
@@ -62,8 +62,9 @@ public:
     void incrementNPartner(const IPvXAddress &addr);
     void decrementNPartner(const IPvXAddress &addr);
 
-//private:
-//    static map<IPvXAddress, ActivePeerItem> m_activePeerList;
+private:
+    static map<IPvXAddress, ActivePeerItem> m_activePeerList;
+    static vector<IPvXAddress> m_tempList;
 
 };
 

@@ -34,6 +34,9 @@
 
 Define_Module(DummyMembership);
 
+map<IPvXAddress, ActivePeerItem> DummyMembership::m_activePeerList;
+vector<IPvXAddress> DummyMembership::m_tempList;
+
 DummyMembership::DummyMembership() {
     // TODO Auto-generated constructor stub
 
@@ -58,31 +61,76 @@ IPvXAddress DummyMembership::getARandPeer(IPvXAddress address)
 {
    Enter_Method("getARandPeer()");
 
-   return m_apTable->getARandPeer(address);
-   //return IPvXAddress("0.0.0.0");
+   IPvXAddress ret_address;
+
+   if (m_activePeerList.size() == 1)
+   {
+      ret_address = m_activePeerList.begin()->first;
+      return ret_address;
+   }
+
+   // -- Clear ALL content of the the tempList
+   m_tempList.clear();
+
+   for (map<IPvXAddress, ActivePeerItem>::iterator iter = m_activePeerList.begin();
+        iter != m_activePeerList.end(); ++iter)
+   {
+      if (iter->first == address)
+         continue;
+
+      for (int i = iter->second.m_current_nPartner; i < iter->second.m_maxNOP; ++i)
+      {
+         m_tempList.push_back(iter->first);
+         EV << "Address: " << iter->first << endl;
+      }
+   }
+
+   int size = m_tempList.size();
+
+   if (size <= 0)
+   {
+      //throw cException("Wrong size of the tempList %d", size);
+
+      // Hacking !!! (return the address of the source
+      return m_activePeerList.begin()->first;
+   }
+
+   int aRandomIndex = (int)intrand(size);
+
+   return m_tempList[aRandomIndex];
 }
 
 void DummyMembership::addPeerAddress(const IPvXAddress &address, int maxNOP)
 {
-   m_apTable->addPeerAddress(address, maxNOP);
+   ActivePeerItem item;
+      item.m_maxNOP = maxNOP;
+      item.m_current_nPartner = 1; // peer can only be "in" if it has one partner
+      item.m_joinTime = simTime().dbl();
+
+   m_activePeerList.insert(pair<IPvXAddress, ActivePeerItem>(address, item));
 }
 
 void DummyMembership::addSourceAddress(const IPvXAddress &address, int maxNOP)
 {
-   m_apTable->addSourceAddress(address, maxNOP);
+   ActivePeerItem item;
+      item.m_maxNOP = maxNOP;
+      item.m_current_nPartner = 0;
+      item.m_joinTime = simTime().dbl();
+
+   m_activePeerList.insert(pair<IPvXAddress, ActivePeerItem>(address, item));
 }
 
 bool DummyMembership::deletePeerAddress(const IPvXAddress &address)
 {
-   return m_apTable->deletePeerAddress(address);
+   //return m_apTable->deletePeerAddress(address);
 }
 
 void DummyMembership::incrementNPartner(const IPvXAddress &address)
 {
-   m_apTable->incrementNPartner(address);
+   //m_apTable->incrementNPartner(address);
 }
 
 void DummyMembership::decrementNPartner(const IPvXAddress &address)
 {
-   m_apTable->decrementNPartner(address);
+   //m_apTable->decrementNPartner(address);
 }

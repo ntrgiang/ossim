@@ -373,7 +373,7 @@ GossipUserData* NewscastBase::getPeerData(IPvXAddress addr){
 
 // Interface: GossipProtocol -->
 bool NewscastBase::joinNetwork(IPvXAddress bootstrap){
-    m_apTable->addPeerAddress(m_localAddress);
+    m_apTable->addAddress(m_localAddress);
     m_Active = true;
 
     doBootstrap(bootstrap);

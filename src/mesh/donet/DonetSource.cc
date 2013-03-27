@@ -78,7 +78,10 @@ void DonetSource::initialize(int stage)
 
 
     // -- Register itself to the Active Peer Table
-    m_apTable->addSourceAddress(getNodeAddress(), param_maxNOP);
+    //m_apTable->addSourceAddress(getNodeAddress(), param_maxNOP);
+    //m_apTable->addSourceAddress(getNodeAddress());
+    m_apTable->addAddress(getNodeAddress());
+    m_memManager->addSourceAddress(getNodeAddress(), param_maxNOP);
 
     // -------------------------------------------------------------------------
     // -------------------------------- Timers ---------------------------------
