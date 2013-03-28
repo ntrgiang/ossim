@@ -145,9 +145,10 @@ void CoolstreamingPeer::checkPartners()
                     break;
             }
 
-
             if (debugOutput)
-                m_outFileDebug << simTime().str() << " Stalemate ... removing: " << partners.at(random)->getAddress().str() << endl;
+                m_outFileDebug << simTime().str()
+                               << " Stalemate ... removing: "
+                               << partners.at(random)->getAddress().str() << endl;
 
             // send a revoke packet
             CoolstreamingPartnershipRevokePacket* resp = new CoolstreamingPartnershipRevokePacket();
@@ -180,7 +181,9 @@ void CoolstreamingPeer::checkParents()
             std::vector<CoolstreamingPartner*>::iterator it;
 
             if (debugOutput)
-                m_outFileDebug << simTime().str() << " Parent " << ((parent == NULL)? " NULL ": parent->getAddress().str()) << " for substream " << (Si) << " NOT GOOD!" << endl;
+                m_outFileDebug << simTime().str()
+                               << " Parent " << ((parent == NULL)? " NULL ": parent->getAddress().str())
+                               << " for substream " << (Si) << " NOT GOOD!" << endl;
             EV << "CoolstreamingPeer::checkParents()->Parent NOT GOOD :("  << endl;
             // look for possible partners satisfying the inequalities
             for (it = partners.begin(); it != partners.end(); it++)
@@ -192,7 +195,8 @@ void CoolstreamingPeer::checkParents()
                 for (it = partners.begin(); it != partners.end(); it++)
                     possiblePartners.push_back(*it);
 
-            EV << "CoolstreamingPeer::checkParents()->Possible Parents-2: " << possiblePartners.size() << endl;
+            EV << "CoolstreamingPeer::checkParents()->Possible Parents-2: "
+               << possiblePartners.size() << endl;
             if (possiblePartners.size() > 0)
             { // there is atleast 1 possible new partner for this substream
                 // inform the old parent
@@ -237,9 +241,13 @@ void CoolstreamingPeer::checkParents()
 
 bool CoolstreamingPeer::satisfiesInequalitys(CoolstreamingPartner* partner, int substream)
 {
-    EV << "CoolstreamingPeer::satisfiesInequalitys() me, partner " << m_localAddress.str() << partner->getAddress().str() << endl;
+    EV << "CoolstreamingPeer::satisfiesInequalitys() me, partner "
+       << m_localAddress.str() << partner->getAddress().str() << endl;
     // inequality 1
-    EV << "CoolstreamingPeer::satisfiesInequalitys() 1: " << getLatestSequenceNumber(substream) << " _ " << partner->getLatestSequence(substream) << " ? " << param_coolstreaming_Ts << endl;
+    EV << "CoolstreamingPeer::satisfiesInequalitys() 1: "
+       << getLatestSequenceNumber(substream) << " _ "
+       << partner->getLatestSequence(substream) << " ? "
+       << param_coolstreaming_Ts << endl;
     if ( partner->getLatestSequence(substream) - getLatestSequenceNumber(substream) >= param_coolstreaming_Ts)
         return false;
 
@@ -251,7 +259,9 @@ bool CoolstreamingPeer::satisfiesInequalitys(CoolstreamingPartner* partner, int 
         inequalTwo = max (inequalTwo, (*it)->getLatestSequence(substream));
     }
 
-    EV << "CoolstreamingPeer::satisfiesInequalitys() 2: " << inequalTwo << " _ " << partner->getLatestSequence(substream) << " ? " << param_coolstreaming_Tp << endl;
+    EV << "CoolstreamingPeer::satisfiesInequalitys() 2: "
+       << inequalTwo << " _ " << partner->getLatestSequence(substream)
+       << " ? " << param_coolstreaming_Tp << endl;
     if (inequalTwo - partner->getLatestSequence(substream) >= param_coolstreaming_Tp)
         return false;
 

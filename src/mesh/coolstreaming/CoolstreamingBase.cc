@@ -105,6 +105,7 @@ void CoolstreamingBase::initBase()
         m_outFileDebug.open(filename.c_str(), std::fstream::out);
         m_outFileDebug << simTime().str() << " INIT " << endl;
     }
+
 }
 
 void CoolstreamingBase::processPacket(cPacket *pkt)
@@ -249,15 +250,22 @@ void CoolstreamingBase::handleTimerMessage(cMessage *msg)
             CoolstreamingPartner* parent = getParent(i);
             if (parent != NULL)
             {
-                EV << "[" << i << "] " << getLatestSequenceNumber(i) << " from " << parent->getAddress().str() << endl;
+                EV << "[" << i << "] " << getLatestSequenceNumber(i)
+                   << " from " << parent->getAddress().str() << endl;
                 if (debugOutput)
-                    m_outFileDebug << simTime().str() << " [" << i << "] " << getLatestSequenceNumber(i) << " (" << getLatestSequenceNumberB(i) << ") from " << parent->getAddress().str() << endl;
+                    m_outFileDebug << simTime().str()
+                                   << " [" << i << "] " << getLatestSequenceNumber(i)
+                                   << " (" << getLatestSequenceNumberB(i) << ") from "
+                                   << parent->getAddress().str() << endl;
             }
             else
             {
-                EV << "[" << i << "] " << getLatestSequenceNumber(i) << " NO PARENT" << endl;
+                EV << "[" << i << "] "
+                   << getLatestSequenceNumber(i) << " NO PARENT" << endl;
                 if (debugOutput)
-                    m_outFileDebug << simTime().str() << " [" << i << "] " << getLatestSequenceNumber(i) << " (" << getLatestSequenceNumberB(i) << ") NO PARENT" << endl;
+                    m_outFileDebug << simTime().str()
+                                   << " [" << i << "] " << getLatestSequenceNumber(i)
+                                   << " (" << getLatestSequenceNumberB(i) << ") NO PARENT" << endl;
             }
         }
 
@@ -279,12 +287,14 @@ void CoolstreamingBase::handleTimerMessage(cMessage *msg)
 
         scheduleAt(simTime() + param_BufferMapInterval, timer_BufferMap);
     }
-
-    if (msg == timer_CheckPartners)
+    else  if (msg == timer_CheckPartners)
+    {
         checkPartners();
+    }
 }
 
-void CoolstreamingBase::sendBufferMap(CoolstreamingPartner* dest){
+void CoolstreamingBase::sendBufferMap(CoolstreamingPartner* dest)
+{
     CoolstreamingBufferMapPacket* pkt = new CoolstreamingBufferMapPacket();
 
     pkt->setSubscribeArraySize(param_SubstreamCount);
@@ -300,7 +310,8 @@ void CoolstreamingBase::sendBufferMap(CoolstreamingPartner* dest){
     sendToDispatcher(pkt, m_localPort, dest->getAddress(), m_destPort);
 }
 
-int CoolstreamingBase::getLatestSequenceNumber(int substream){
+int CoolstreamingBase::getLatestSequenceNumber(int substream)
+{
 
     int ok = 0;
     int last = m_videoBuffer->getBufferEndSeqNum() + ( substream - (m_videoBuffer->getBufferEndSeqNum() % param_SubstreamCount));
