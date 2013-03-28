@@ -131,7 +131,7 @@ protected:
     //mutable AddressSet activePeerList;
 
     //GlobalStatistic *m_gstat;
-    StatisticBase *m_gstat;
+    //StatisticBase *m_gstat;
 
     std::string m_name;
 
