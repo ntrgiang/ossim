@@ -19,8 +19,6 @@ network Newscast_Homo_oneRouter_Network extends BasicNetwork
         int nNodePerRouter = default(1);
         @display("bgb=472,295");
         string churnModel = default("StaticChurn");
-//        int videoStreamingBitRate @unit(bps) = default(512kbps);
-//        int chunkSize @unit(byte) = default(8KiB);
 
     submodules:
         NewscastSourceNode: NewscastSourceNode {
@@ -48,9 +46,9 @@ network Newscast_Homo_oneRouter_Network extends BasicNetwork
             @display("p=77,171");
         }
 
-        globalStatistic: GlobalStatistic {
-            @display("p=77,248");
-        }
+//        globalStatistic: GlobalStatistic {
+//            @display("p=77,248");
+//        }
 
     connections:
         // -- Connect Source
