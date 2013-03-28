@@ -43,7 +43,8 @@
 #ifndef NEWSCASTSOURCE_H_
 #define NEWSCASTSOURCE_H_
 
-class NewscastSource : public NewscastBase {
+class NewscastSource : public NewscastBase
+{
 public:
     NewscastSource();
     virtual ~NewscastSource();

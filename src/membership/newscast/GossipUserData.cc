@@ -34,16 +34,20 @@
 
 #include "GossipUserData.h"
 
-GossipUserData::GossipUserData(){
+GossipUserData::GossipUserData()
+{
 }
 
-GossipUserData::~GossipUserData(){
+GossipUserData::~GossipUserData()
+{
 }
 
-GossipUserData*  GossipUserData::dup()const{
+GossipUserData*  GossipUserData::dup()const
+{
     return new GossipUserData;
 }
 
-long GossipUserData::getSizeInBits(){
+long GossipUserData::getSizeInBits()
+{
     return 0;
 }

@@ -39,7 +39,8 @@
 
 #include "NewscastBase.h"
 
-class NewscastPeer: public NewscastBase {
+class NewscastPeer: public NewscastBase
+{
 public:
     NewscastPeer();
     virtual ~NewscastPeer();

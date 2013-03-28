@@ -41,7 +41,8 @@
 #include "simtime_t.h"
 #include "GossipUserData.h"
 
-class NewscastCacheEntry {
+class NewscastCacheEntry
+{
 public:
     NewscastCacheEntry();
     virtual ~NewscastCacheEntry();

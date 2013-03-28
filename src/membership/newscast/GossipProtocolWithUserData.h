@@ -40,7 +40,8 @@
 #include "GossipProtocol.h"
 #include "GossipUserData.h"
 
-class GossipProtocolWithUserData : public GossipProtocol {
+class GossipProtocolWithUserData : public GossipProtocol
+{
 public:
     GossipProtocolWithUserData();
     virtual ~GossipProtocolWithUserData();

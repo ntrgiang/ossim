@@ -1311,7 +1311,7 @@ bool DonetPeer::sendPartnershipRequest(void)
     do
     {
        count++;
-       addressRandPeer = m_memManager->getARandPeer(getNodeAddress());
+       addressRandPeer = m_memManager->getRandomPeer(getNodeAddress());
        if (count > 10)
           return false;
     }

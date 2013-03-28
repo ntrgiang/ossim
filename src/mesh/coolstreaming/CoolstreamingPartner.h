@@ -43,7 +43,8 @@
 #ifndef COOLSTREAMINGPARTNER_H_
 #define COOLSTREAMINGPARTNER_H_
 
-class CoolstreamingPartner {
+class CoolstreamingPartner
+{
 public:
     CoolstreamingPartner(int substreams);
     virtual ~CoolstreamingPartner();
@@ -57,7 +58,8 @@ public:
     void setLastSeen(simtime_t seen);
 
     // @brief returns if this partner is a child for the given substream
-    bool isChild(int substream){
+    bool isChild(int substream)
+    {
         if (deleted)
             //MessageBoxA(0,"DELETED","CoolstreamingPartner::isChild",0);
             throw cException("DELETED CoolstreamingPartner::isChild");
@@ -65,7 +67,8 @@ public:
     }
 
     // @brief returns if this partner is the parent of any substream
-    bool isParent(){
+    bool isParent()
+    {
         if (deleted)
             //MessageBoxA(0,"DELETED","CoolstreamingPartner::isParent",0);
             throw cException("DELETED CoolstreamingPartner::isParent");
@@ -76,7 +79,8 @@ public:
     }
 
     // @brief returns if this partner is the parent of the given substream
-    bool isParent(int substream){
+    bool isParent(int substream)
+    {
         if (deleted)
             //MessageBoxA(0,"DELETED","CoolstreamingPartner::isParent",0);
             throw cException("DELETED CoolstreamingPartner::isParent");

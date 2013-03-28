@@ -57,7 +57,8 @@
 
 
 //class NewscastBase : public cSimpleModule, public GossipProtocolWithUserData {
-class NewscastBase : public GossipProtocolWithUserData {
+class NewscastBase : public GossipProtocolWithUserData
+{
 public:
     NewscastBase();
     virtual ~NewscastBase();

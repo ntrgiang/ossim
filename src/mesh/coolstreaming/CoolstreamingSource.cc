@@ -38,16 +38,19 @@
 
 Define_Module(CoolstreamingSource);
 
-CoolstreamingSource::CoolstreamingSource() {
+CoolstreamingSource::CoolstreamingSource()
+{
     // TODO Auto-generated constructor stub
 
 }
 
-CoolstreamingSource::~CoolstreamingSource() {
+CoolstreamingSource::~CoolstreamingSource()
+{
     // TODO Auto-generated destructor stub
 }
 
-void CoolstreamingSource::initialize(int stage){
+void CoolstreamingSource::initialize(int stage)
+{
     if (stage != 3)
         return;
 

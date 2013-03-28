@@ -36,16 +36,18 @@
 
 Define_Module(NewscastStatistic);
 
-NewscastStatistic::NewscastStatistic() {
+NewscastStatistic::NewscastStatistic()
+{
 }
 
-NewscastStatistic::~NewscastStatistic() {
+NewscastStatistic::~NewscastStatistic()
+{
     m_outFileRandomIPs.close();
     m_outFileConnections.close();
 }
 
-void NewscastStatistic::initialize(int stage){
-
+void NewscastStatistic::initialize(int stage)
+{
     if (stage != 3)
         return;
     //m_outFileRandomIPs.open(".//results//newscastGetRandomIPs.txt", std::fstream::out);
@@ -54,11 +56,13 @@ void NewscastStatistic::initialize(int stage){
     m_outFileConnections.open(par("newscastConnectionsLOG").stringValue(), std::fstream::out);
 }
 
-void NewscastStatistic::writeGotRandomIP(IPvXAddress addr){
+void NewscastStatistic::writeGotRandomIP(IPvXAddress addr)
+{
     m_outFileRandomIPs << addr << endl;
 }
 
-void NewscastStatistic::writeCacheConnections(IPvXAddress src, std::vector<IPvXAddress> knownPeers){
+void NewscastStatistic::writeCacheConnections(IPvXAddress src, std::vector<IPvXAddress> knownPeers)
+{
     for (unsigned int i = 0; i < knownPeers.size(); i++)
         m_outFileConnections << src << ";" << knownPeers.at(i) << endl;
     //m_outFileConnections << src << ";" << knownPeers.size() << endl;

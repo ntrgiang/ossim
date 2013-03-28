@@ -37,12 +37,14 @@
 #include "regmacros.h"
 Define_Module(NewscastPeer);
 
-NewscastPeer::NewscastPeer() {
+NewscastPeer::NewscastPeer()
+{
     // TODO Auto-generated constructor stub
 
 }
 
-NewscastPeer::~NewscastPeer() {
+NewscastPeer::~NewscastPeer()
+{
     // TODO Auto-generated destructor stub
 }
 

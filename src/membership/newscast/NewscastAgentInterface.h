@@ -44,7 +44,8 @@
 #include "NewscastCache.h"
 #include "IPvXAddress.h"
 
-class NewscastAgentInterface {
+class NewscastAgentInterface
+{
 public:
     NewscastAgentInterface();
     virtual ~NewscastAgentInterface();

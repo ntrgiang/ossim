@@ -39,7 +39,8 @@
 
 #include "cobject.h"
 
-class GossipUserData : cObject {
+class GossipUserData : cObject
+{
 public:
     GossipUserData();
     virtual ~GossipUserData();

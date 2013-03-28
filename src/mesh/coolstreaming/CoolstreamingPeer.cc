@@ -38,23 +38,27 @@
 
 Define_Module(CoolstreamingPeer);
 
-CoolstreamingPeer::CoolstreamingPeer() {
+CoolstreamingPeer::CoolstreamingPeer()
+{
     // TODO Auto-generated constructor stub
 
 }
 
-CoolstreamingPeer::~CoolstreamingPeer() {
+CoolstreamingPeer::~CoolstreamingPeer()
+{
     if (timer_CheckParents) delete cancelEvent(timer_CheckParents);
 }
 
 void CoolstreamingPeer::initialize(int stage){
+
     if (stage != 3)
         return;
 
     initBase();
 
     stalemateDetection = new int[param_SubstreamCount];
-    for (int i = 0; i < param_SubstreamCount; i++){
+    for (int i = 0; i < param_SubstreamCount; i++)
+    {
         stalemateDetection[i] = 0;
     }
 
@@ -73,15 +77,16 @@ void CoolstreamingPeer::initialize(int stage){
 
 }
 
-void CoolstreamingPeer::handleTimerMessage(cMessage *msg){
+void CoolstreamingPeer::handleTimerMessage(cMessage *msg)
+{
     if (msg == timer_CheckParents)
         checkParents();
 
     CoolstreamingBase::handleTimerMessage(msg);
 }
 
-void CoolstreamingPeer::checkPartners(){
-
+void CoolstreamingPeer::checkPartners()
+{
     EV << "CoolstreamingPeer::checkPartners()" << endl;
 
     removeTimeoutedPartners();
@@ -93,25 +98,32 @@ void CoolstreamingPeer::checkPartners(){
         // query as many as we need ... (TODO: peers can get multiply requests ...)
         int count = (param_minNOP - partners.size());
         EV << "CoolstreamingPeer::checkPartners()->Queries: " << count << endl;
-        for (int i = 0 ; i < min (10, count); i++){
-            newPartner = m_Gossiper->getRandomPeer(m_localAddress);
+        for (int i = 0 ; i < min (10, count); i++)
+        {
+            //newPartner = m_Gossiper->getRandomPeer(m_localAddress);
+            newPartner = m_memManager->getRandomPeer(m_localAddress);
             EV << "CoolstreamingPeer::checkPartners()->target" << newPartner.str() << endl;
             if (newPartner.isUnspecified())
                 break;
             //MessageBoxA(0,"Test3","Test3",0);
-            if (! isPartner(newPartner)){
+            if (! isPartner(newPartner))
+            {
                 CoolstreamingPartnershipRequestPacket* pkt = new CoolstreamingPartnershipRequestPacket();
                 sendToDispatcher(pkt, m_localPort, newPartner, m_destPort);
             }
         }
         //MessageBoxA(0,"need new partner! DONE","CoolstreamingPeer::checkPartners",0);
-    }else{ // stalemate detection, only if we have enough partners
+    }
+    else
+    { // stalemate detection, only if we have enough partners
         bool stalemate = false;
         int newMax;
-        for (int s = 0; s < param_SubstreamCount; s++){
+        for (int s = 0; s < param_SubstreamCount; s++)
+        {
             // get the latest chunk for this substream
             newMax = 0;
-            for (unsigned int i = 0; i < partners.size(); i++){
+            for (unsigned int i = 0; i < partners.size(); i++)
+            {
                 newMax = max(newMax, partners.at(i)->getLatestSequence(s));
             }
 
@@ -122,10 +134,12 @@ void CoolstreamingPeer::checkPartners(){
         }
 
         // if a stalemate was detected, drop a random partner
-        if (stalemate){
+        if (stalemate)
+        {
             // select a random partner, 3 tries to find one who is not a parent
             int random;
-            for (int i = 0; i < 3; i++){
+            for (int i = 0; i < 3; i++)
+            {
                 random = (int)intrand(partners.size());
                 if (!partners.at(random)->isParent())
                     break;
@@ -147,18 +161,21 @@ void CoolstreamingPeer::checkPartners(){
     scheduleAt(simTime() + param_CheckPartnersInterval, timer_CheckPartners);
 }
 
-void CoolstreamingPeer::checkParents(){
+void CoolstreamingPeer::checkParents()
+{
     CoolstreamingPartner* parent;
 
     EV << "CoolstreamingPeer::checkParents() for " << m_localAddress.str() << endl;
 
     std::set<CoolstreamingPartner*> sendMaps;
 
-    for (int Si = 0; Si < param_SubstreamCount; Si++){  // check for each substream
+    for (int Si = 0; Si < param_SubstreamCount; Si++)
+    {  // check for each substream
         parent = getParent(Si);
         EV << "CoolstreamingPeer::checkParents()->" << Si << " _ " << ((parent == NULL)?"NULL":parent->getAddress().str()) << endl;
         // does the current partner mets the condition?
-        if ( (parent == NULL) || (!satisfiesInequalitys(parent, Si)) ){
+        if ( (parent == NULL) || (!satisfiesInequalitys(parent, Si)) )
+        {
             std::vector<CoolstreamingPartner*> possiblePartners;
             std::vector<CoolstreamingPartner*>::iterator it;
 
@@ -176,9 +193,11 @@ void CoolstreamingPeer::checkParents(){
                     possiblePartners.push_back(*it);
 
             EV << "CoolstreamingPeer::checkParents()->Possible Parents-2: " << possiblePartners.size() << endl;
-            if (possiblePartners.size() > 0){ // there is atleast 1 possible new partner for this substream
+            if (possiblePartners.size() > 0)
+            { // there is atleast 1 possible new partner for this substream
                 // inform the old parent
-                if (parent != NULL){
+                if (parent != NULL)
+                {
                     parent->setParent(Si, false);
                     //sendBufferMap(parent);
                     sendMaps.insert(parent);
@@ -186,7 +205,8 @@ void CoolstreamingPeer::checkParents(){
 
                 // select a random new parent and inform him
                 int index;
-                for (int i = 0; i < 3; i++){    // try 3 times to find a partner who is not our child ...
+                for (int i = 0; i < 3; i++)
+                {    // try 3 times to find a partner who is not our child ...
                     index = (int)intrand(possiblePartners.size());
                     if (!possiblePartners.at(index)->isChild(Si))
                         break;
@@ -215,7 +235,8 @@ void CoolstreamingPeer::checkParents(){
     scheduleAt(simTime() + param_coolstreaming_Ta + (int)intrand(1), timer_CheckParents);
 }
 
-bool CoolstreamingPeer::satisfiesInequalitys(CoolstreamingPartner* partner, int substream){
+bool CoolstreamingPeer::satisfiesInequalitys(CoolstreamingPartner* partner, int substream)
+{
     EV << "CoolstreamingPeer::satisfiesInequalitys() me, partner " << m_localAddress.str() << partner->getAddress().str() << endl;
     // inequality 1
     EV << "CoolstreamingPeer::satisfiesInequalitys() 1: " << getLatestSequenceNumber(substream) << " _ " << partner->getLatestSequence(substream) << " ? " << param_coolstreaming_Ts << endl;
@@ -225,7 +246,8 @@ bool CoolstreamingPeer::satisfiesInequalitys(CoolstreamingPartner* partner, int 
 
     int inequalTwo = 0;
     std::vector<CoolstreamingPartner*>::iterator it;
-    for (it = partners.begin(); it != partners.end(); it++){
+    for (it = partners.begin(); it != partners.end(); it++)
+    {
         inequalTwo = max (inequalTwo, (*it)->getLatestSequence(substream));
     }
 
@@ -237,10 +259,12 @@ bool CoolstreamingPeer::satisfiesInequalitys(CoolstreamingPartner* partner, int 
     return true;
 }
 
-bool CoolstreamingPeer::satisfiesInequalityTwo(CoolstreamingPartner* partner, int substream){
+bool CoolstreamingPeer::satisfiesInequalityTwo(CoolstreamingPartner* partner, int substream)
+{
     int inequalTwo = 0;
     std::vector<CoolstreamingPartner*>::iterator it;
-    for (it = partners.begin(); it != partners.end(); it++){
+    for (it = partners.begin(); it != partners.end(); it++)
+    {
         inequalTwo = max (inequalTwo, (*it)->getLatestSequence(substream));
     }
 

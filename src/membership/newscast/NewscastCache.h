@@ -40,11 +40,12 @@
 #include "NewscastCacheEntry.h"
 #include "cownedobject.h"
 
-class NewscastCache : public ::cOwnedObject{
+class NewscastCache : public ::cOwnedObject
+{
 public:
     // @brief intiates a cache with a fixed size
     NewscastCache(int size);
-    NewscastCache(){m_maxEntries = 5;};
+    NewscastCache(){m_maxEntries = 5;}
     virtual ~NewscastCache();
 
     // @brief adds or updates a entry for the agent

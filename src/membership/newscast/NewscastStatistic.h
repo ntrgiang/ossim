@@ -45,7 +45,8 @@
 #ifndef NEWSCASTSTATISTIC_H_
 #define NEWSCASTSTATISTIC_H_
 
-class NewscastStatistic : public cSimpleModule {
+class NewscastStatistic : public cSimpleModule
+{
 public:
     NewscastStatistic();
     virtual ~NewscastStatistic();

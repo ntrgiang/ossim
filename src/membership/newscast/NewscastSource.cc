@@ -41,11 +41,13 @@
 #include "regmacros.h"
 Define_Module(NewscastSource);
 
-NewscastSource::NewscastSource() {
+NewscastSource::NewscastSource()
+{
     //ownValue = new SpecialObject(); // TODO: remove
 }
 
-NewscastSource::~NewscastSource() {
+NewscastSource::~NewscastSource()
+{
     // TODO Auto-generated destructor stub
 }
 

@@ -37,13 +37,15 @@
 
 #include "CoolstreamingPartner.h"
 
-CoolstreamingPartner::CoolstreamingPartner(int substreams) {
+CoolstreamingPartner::CoolstreamingPartner(int substreams)
+{
     mSubstreams = substreams;
     hasSequence = new int[substreams];
     mIsChild     = new bool[substreams];
     mIsParent    = new bool[substreams];
 
-    for (int i = 0; i < substreams; i++){
+    for (int i = 0; i < substreams; i++)
+    {
         hasSequence[i] = 0;
         mIsChild[i]     = false;
         mIsParent[i]    = false;
@@ -52,11 +54,13 @@ CoolstreamingPartner::CoolstreamingPartner(int substreams) {
     deleted = false;
 }
 
-CoolstreamingPartner::~CoolstreamingPartner() {
+CoolstreamingPartner::~CoolstreamingPartner()
+{
     // TODO Auto-generated destructor stub
 }
 
-void CoolstreamingPartner::updateFromMessage(CoolstreamingBufferMapPacket* pkt){
+void CoolstreamingPartner::updateFromMessage(CoolstreamingBufferMapPacket* pkt)
+{
     for (unsigned int i = 0; i < pkt->getSequenceNumbersArraySize(); i++)
         hasSequence[i] = pkt->getSequenceNumbers(i);
     for (unsigned int i = 0; i < pkt->getSubscribeArraySize(); i++)
@@ -68,7 +72,8 @@ void CoolstreamingPartner::updateFromMessage(CoolstreamingBufferMapPacket* pkt){
         throw cException("DELETED CoolstreamingPartner::updateFromMessag");
 }
 
-int CoolstreamingPartner::getLatestSequence(int substream){
+int CoolstreamingPartner::getLatestSequence(int substream)
+{
     if (deleted)
             //MessageBoxA(0,"DELETED","CoolstreamingPartner::getLatestSequence",0);
             throw cException("DELETED CoolstreamingPartner::getLatestSequence");
@@ -76,7 +81,8 @@ int CoolstreamingPartner::getLatestSequence(int substream){
     return hasSequence[substream];
 }
 
-void CoolstreamingPartner::setParent(int substream, bool val){
+void CoolstreamingPartner::setParent(int substream, bool val)
+{
     if (deleted)
         //MessageBoxA(0,"DELETED","CoolstreamingPartner::setParent",0);
         throw cException("DELETED CoolstreamingPartner::setParent");
@@ -84,10 +90,12 @@ void CoolstreamingPartner::setParent(int substream, bool val){
 }
 
 
-void CoolstreamingPartner::updateLastSeen(){
+void CoolstreamingPartner::updateLastSeen()
+{
     lastSeen = simTime();
 }
 
-void CoolstreamingPartner::setLastSeen(simtime_t seen){
+void CoolstreamingPartner::setLastSeen(simtime_t seen)
+{
     lastSeen = seen;
 }

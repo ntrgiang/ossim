@@ -34,10 +34,12 @@
 
 #include "GossipProtocol.h"
 
-GossipProtocol ::GossipProtocol(){
+GossipProtocol ::GossipProtocol()
+{
 
 }
-GossipProtocol::~GossipProtocol(){
+GossipProtocol::~GossipProtocol()
+{
 
 }
 
@@ -51,11 +53,13 @@ GossipProtocol::~GossipProtocol(){
 //IPvXAddress GossipProtocol::getRandomPeer(){
 //    return "0.0.0.0";
 //}
-IPvXAddress GossipProtocol::getRandomPeer(IPvXAddress notThisAddress){
+IPvXAddress GossipProtocol::getRandomPeer(IPvXAddress notThisAddress)
+{
     return "0.0.0.0";
 }
 
-std::vector<IPvXAddress> GossipProtocol::getKnownPeers(){
+std::vector<IPvXAddress> GossipProtocol::getKnownPeers()
+{
     std::vector<IPvXAddress> nul;
     return nul;
 }

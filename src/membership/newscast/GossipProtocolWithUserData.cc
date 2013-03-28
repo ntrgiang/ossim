@@ -34,13 +34,19 @@
 
 #include "GossipProtocolWithUserData.h"
 
-GossipProtocolWithUserData::GossipProtocolWithUserData(){
-}
-GossipProtocolWithUserData::~GossipProtocolWithUserData(){
+GossipProtocolWithUserData::GossipProtocolWithUserData()
+{
 }
 
-void GossipProtocolWithUserData::setOwnData(GossipUserData* data){
+GossipProtocolWithUserData::~GossipProtocolWithUserData()
+{
 }
-GossipUserData* GossipProtocolWithUserData::getPeerData(IPvXAddress addr){
+
+void GossipProtocolWithUserData::setOwnData(GossipUserData* data)
+{
+}
+
+GossipUserData* GossipProtocolWithUserData::getPeerData(IPvXAddress addr)
+{
     return NULL;
 }

@@ -39,7 +39,8 @@
 #ifndef COOLSTREAMINGPEER_H_
 #define COOLSTREAMINGPEER_H_
 
-class CoolstreamingPeer : public CoolstreamingBase{
+class CoolstreamingPeer : public CoolstreamingBase
+{
 public:
     CoolstreamingPeer();
     virtual ~CoolstreamingPeer();

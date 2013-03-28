@@ -34,16 +34,19 @@
 
 #include "NewscastCacheEntry.h"
 
-NewscastCacheEntry::NewscastCacheEntry() {
+NewscastCacheEntry::NewscastCacheEntry()
+{
     m_value = NULL;
     m_address = IPvXAddress("0.0.0.0");
 }
 
-NewscastCacheEntry::~NewscastCacheEntry() {
+NewscastCacheEntry::~NewscastCacheEntry()
+{
     if (m_value) delete m_value;
 }
 
-long NewscastCacheEntry::getEstimatedSizeInBits(){
+long NewscastCacheEntry::getEstimatedSizeInBits()
+{
     long ret = 0;
 
     ret = (sizeof(m_address) + m_agent.size() + sizeof(m_timestamp))*8;
