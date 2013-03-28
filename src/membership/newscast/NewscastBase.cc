@@ -381,15 +381,18 @@ bool NewscastBase::joinNetwork(IPvXAddress bootstrap){
 
     return true;
 }
-void NewscastBase::leaveNetwork(){
-    cancelEvent(timer_ExchangeCache);
-    m_Active = false;
-    m_apTable->deletePeerAddress(m_localAddress);
-}
-IPvXAddress NewscastBase::getRandomPeer(){
-    NewscastCacheEntry entry = m_cache.getRandomEntry();
-    return entry.getAddress();
-}
+
+//void NewscastBase::leaveNetwork(){
+//    cancelEvent(timer_ExchangeCache);
+//    m_Active = false;
+//    m_apTable->deletePeerAddress(m_localAddress);
+//}
+
+//IPvXAddress NewscastBase::getRandomPeer(){
+//    NewscastCacheEntry entry = m_cache.getRandomEntry();
+//    return entry.getAddress();
+//}
+
 IPvXAddress NewscastBase::getRandomPeer(IPvXAddress notThisAddress){
     // no entries in cache :(
     if (m_cache.getSize() == 0)

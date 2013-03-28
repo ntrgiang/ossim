@@ -38,18 +38,30 @@
 #define GOSSIPPROTOCOL_H_
 
 #include "IPvXAddress.h"
+#include "MembershipBase.h"
 
-class GossipProtocol {
+//class GossipProtocol {
+class GossipProtocol : public MembershipBase
+{
 public:
     GossipProtocol();
     virtual ~GossipProtocol();
 
-    virtual bool joinNetwork(IPvXAddress bootstrap = "0.0.0.0");
-    virtual void leaveNetwork();
+    //virtual bool joinNetwork(IPvXAddress bootstrap = "0.0.0.0") = 0;
+    //virtual void leaveNetwork();
 
-    virtual IPvXAddress getRandomPeer();
+    //virtual IPvXAddress getRandomPeer();
     virtual IPvXAddress getRandomPeer(IPvXAddress notThisAddress);
     virtual std::vector<IPvXAddress> getKnownPeers();
+
+    // -- Old interface
+    virtual void addSourceAddress(const IPvXAddress &address, int maxNOP=0) = 0;
+    virtual void addPeerAddress(const IPvXAddress &address, int maxNOP=0) = 0;
+    virtual bool deletePeerAddress(const IPvXAddress &address) = 0;
+
+    virtual void incrementNPartner(const IPvXAddress &addr) = 0;
+    virtual void decrementNPartner(const IPvXAddress &addr) = 0;
+
 };
 
 #endif /* GOSSIPPROTOCOL_H_ */

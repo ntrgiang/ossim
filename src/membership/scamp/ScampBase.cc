@@ -543,7 +543,7 @@ void ScampBase::handleAckPacket(cPacket *pkt)
 //   return m_apTable->getARandPeer();
 //}
 
-IPvXAddress ScampBase::getARandPeer(IPvXAddress address)
+IPvXAddress ScampBase::getRandomPeer(IPvXAddress address)
 {
    // Dummy implementation
    // TODO: implementation should be placed here

@@ -56,7 +56,8 @@
 #include "Dispatcher.h"
 
 
-class NewscastBase : public cSimpleModule, public GossipProtocolWithUserData {
+//class NewscastBase : public cSimpleModule, public GossipProtocolWithUserData {
+class NewscastBase : public GossipProtocolWithUserData {
 public:
     NewscastBase();
     virtual ~NewscastBase();
@@ -73,14 +74,25 @@ public:
 
     // Interface: GossipProtocol -->
     bool joinNetwork(IPvXAddress bootstrap = "0.0.0.0");
-    void leaveNetwork();
+    //void leaveNetwork();
+
+    // -- obsolete?
     // @brief returns a random Peer address from the local cache
-    IPvXAddress getRandomPeer();
+    //IPvXAddress getRandomPeer();
+
     // @brief returns a random Peer address from the local cache exluding a specified address
     IPvXAddress getRandomPeer(IPvXAddress notThisAddress);
     // @brief returns a list of all peer addresses from the local cache
     std::vector<IPvXAddress> getKnownPeers();
     // <-- Interface: GossipProtocol
+
+    // -- old interface
+    void addSourceAddress(const IPvXAddress &address, int maxNOP=0) {};
+    void addPeerAddress(const IPvXAddress &address, int maxNOP=0) {};
+    bool deletePeerAddress(const IPvXAddress &address) { return false; };
+
+    void incrementNPartner(const IPvXAddress &addr) {};
+    void decrementNPartner(const IPvXAddress &addr) {};
 
 protected:
     // seems like the multiple stages are needed for the ip interface :/

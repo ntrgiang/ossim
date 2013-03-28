@@ -41,14 +41,3 @@ MembershipBase::~MembershipBase() {
     // TODO Auto-generated destructor stub
 }
 
-/*
-void MembershipBase::initialize()
-{
-
-}
-
-void MembershipBase::writeToMcache(void)
-{
-
-}
-*/

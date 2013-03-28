@@ -70,7 +70,7 @@ protected:
     // Define functions in Base class
 public:
     //IPvXAddress getARandPeer();
-    IPvXAddress getARandPeer(IPvXAddress address);
+    IPvXAddress getRandomPeer(IPvXAddress address);
 
     void addPeerAddress(const IPvXAddress &address, int maxNOP=0);
     void addSourceAddress(const IPvXAddress &address, int maxNOP=0);

@@ -41,16 +41,16 @@ GossipProtocol::~GossipProtocol(){
 
 }
 
-bool GossipProtocol::joinNetwork(IPvXAddress bootstrap){
-    return false;
-}
-void GossipProtocol::leaveNetwork(){
+//bool GossipProtocol::joinNetwork(IPvXAddress bootstrap){
+//    return false;
+//}
+//void GossipProtocol::leaveNetwork(){
 
-}
+//}
 
-IPvXAddress GossipProtocol::getRandomPeer(){
-    return "0.0.0.0";
-}
+//IPvXAddress GossipProtocol::getRandomPeer(){
+//    return "0.0.0.0";
+//}
 IPvXAddress GossipProtocol::getRandomPeer(IPvXAddress notThisAddress){
     return "0.0.0.0";
 }

@@ -31,7 +31,10 @@
 
 package so.membership.newscast;
 
-simple NewscastBase
+import so.membership.MembershipBase;
+
+//simple NewscastBase
+simple NewscastBase extends MembershipBase
 {
     parameters:
         @class(NewscastBase);
@@ -42,8 +45,8 @@ simple NewscastBase
         // intervall for cache exchanges
         double exchangeCacheIntervall @unit(s) = default(5.0s);
  
-    gates:
-        // -- Gates to the Dispatcher module
-        input dpIn @labels(DpControlInfo/up);
-        output dpOut @labels(DpControlInfo/down);
+//    gates:
+//        // -- Gates to the Dispatcher module
+//        input dpIn @labels(DpControlInfo/up);
+//        output dpOut @labels(DpControlInfo/down);
 }

@@ -51,7 +51,7 @@ public:
      * @return a random address of existing active peers
      * This returned address should be different from the address in the parameter list
      */
-    virtual IPvXAddress getARandPeer(IPvXAddress address) = 0;
+    virtual IPvXAddress getRandomPeer(IPvXAddress address) = 0;
 
     /**
      * @brief addSourceAddress

@@ -52,7 +52,7 @@ public:
 
 public:
     //IPvXAddress getARandPeer();
-    virtual IPvXAddress getARandPeer(IPvXAddress address);
+    virtual IPvXAddress getRandomPeer(IPvXAddress address);
 
     void addPeerAddress(const IPvXAddress &address, int maxNOP=0);
     void addSourceAddress(const IPvXAddress &address, int maxNOP=0);

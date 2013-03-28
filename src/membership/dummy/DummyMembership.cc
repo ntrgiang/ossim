@@ -57,7 +57,7 @@ void DummyMembership::initialize(int stage)
 //   return m_apTable->getARandPeer();
 //}
 
-IPvXAddress DummyMembership::getARandPeer(IPvXAddress address)
+IPvXAddress DummyMembership::getRandomPeer(IPvXAddress address)
 {
    Enter_Method("getARandPeer()");
 
@@ -123,6 +123,7 @@ void DummyMembership::addSourceAddress(const IPvXAddress &address, int maxNOP)
 bool DummyMembership::deletePeerAddress(const IPvXAddress &address)
 {
    //return m_apTable->deletePeerAddress(address);
+   return false;
 }
 
 void DummyMembership::incrementNPartner(const IPvXAddress &address)
