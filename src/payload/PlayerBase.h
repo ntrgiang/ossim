@@ -35,7 +35,7 @@
 #include "VideoBuffer.h"
 #include "VideoChunkPacket_m.h"
 #include "AppSettingDonet.h"
-#include "GlobalStatistic.h"
+//#include "GlobalStatistic.h"
 
 #define PLAYER_STATE_IDLE       0
 #define PLAYER_STATE_BUFFERING  1
@@ -47,8 +47,8 @@
 
 class PlayerBase : public cSimpleModule {
 public:
-    PlayerBase() {};
-    virtual ~PlayerBase() {};
+    PlayerBase() {}
+    virtual ~PlayerBase() {}
 
 protected:
     virtual void handleMessage(cMessage *msg) = 0;

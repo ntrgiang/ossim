@@ -37,7 +37,7 @@
 #include "VideoBuffer.h"
 #include "VideoChunkPacket_m.h"
 #include "AppSettingDonet.h"
-#include "GlobalStatistic.h"
+//#include "GlobalStatistic.h"
 #include "DonetStatistic.h"
 
 //#define PLAYER_STATE_IDLE       0
@@ -90,14 +90,14 @@ protected:
     double  m_interval_newChunk;
     int     m_chunkSize; // Bytes
 
-   // -- Some new parameters for the Finite State Machine
+    // -- Some new parameters for the Finite State Machine
     double  param_percent_buffer_low, param_percent_buffer_high;
     int     param_max_skipped_chunk;
     double  param_interval_probe_playerStart;
 
     // Obsolete -- since moved up the PlayerBase class
     // -- Statistics locally
-    //long int m_countChunkHit, m_countChunkMiss;
+    //long int m_countChunkHit, m_countChunkMiss;[
 
     int m_skip;
 
