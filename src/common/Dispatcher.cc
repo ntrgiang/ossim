@@ -34,7 +34,7 @@
 #include "DpControlInfo_m.h"
 #include "UDPControlInfo_m.h"
 
-Define_Module(Dispatcher);
+Define_Module(Dispatcher)
 
 Dispatcher::Dispatcher() {
     // TODO Auto-generated constructor stub

@@ -37,9 +37,9 @@
 // @brief the implementation of the newscast source, inherits NewscastBase
 
 #include "NewscastSource.h"
-
 #include "regmacros.h"
-Define_Module(NewscastSource);
+
+Define_Module(NewscastSource)
 
 NewscastSource::NewscastSource()
 {

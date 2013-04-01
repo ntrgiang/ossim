@@ -32,7 +32,7 @@
 
 #include "ScampStatistic.h"
 
-Define_Module(ScampStatistic);
+Define_Module(ScampStatistic)
 
 ScampStatistic::ScampStatistic() {
     // TODO Auto-generated constructor stub

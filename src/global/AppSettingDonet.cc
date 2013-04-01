@@ -31,7 +31,7 @@
 
 #include "AppSettingDonet.h"
 
-Define_Module(AppSettingDonet);
+Define_Module(AppSettingDonet)
 
 AppSettingDonet::AppSettingDonet() {}
 

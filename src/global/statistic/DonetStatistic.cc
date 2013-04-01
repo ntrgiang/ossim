@@ -32,7 +32,7 @@
 
 #include "DonetStatistic.h"
 
-Define_Module(DonetStatistic);
+Define_Module(DonetStatistic)
 
 DonetStatistic::DonetStatistic() {
     // TODO Auto-generated constructor stub

@@ -29,23 +29,12 @@
 // -----------------------------------------------------------------------------
 //
 
-//#include "VideoSource.h"
-
 #include <algorithm>
 #include <cstring>
 #include <cstdio>
-#include "UDPControlInfo_m.h"
-//#include "UDPPacket.h"
-//#include <IPAddressResolver.h>
-//#include <csimulation.h>
-
 #include "ScampSource.h"
 
-#include "PeerStreamingPacket_m.h"
-#include "MeshPeerStreamingPacket_m.h"
-#include "GossipMembershipPacket_m.h"
-
-Define_Module(ScampSource);
+Define_Module(ScampSource)
 
 ScampSource::ScampSource()
 {

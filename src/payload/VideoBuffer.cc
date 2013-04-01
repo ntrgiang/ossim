@@ -41,7 +41,7 @@
 
 using namespace std;
 
-Define_Module(VideoBuffer);
+Define_Module(VideoBuffer)
 
 VideoBuffer::VideoBuffer() {}
 

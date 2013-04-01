@@ -95,6 +95,7 @@ public:
     void incrementNPartner(const IPvXAddress &addr) {};
     void decrementNPartner(const IPvXAddress &addr) {};
 
+
 protected:
     // seems like the multiple stages are needed for the ip interface :/
     virtual int numInitStages() const { return 5; }

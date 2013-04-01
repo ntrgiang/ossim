@@ -31,7 +31,7 @@
 
 #include "ExponentialChurnModel.h"
 
-Define_Module(ExponentialChurnModel);
+Define_Module(ExponentialChurnModel)
 
 double ExponentialChurnModel::m_absoluteInterval = 0.0;
 

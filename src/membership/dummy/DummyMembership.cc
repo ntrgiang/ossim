@@ -32,7 +32,7 @@
 
 #include "DummyMembership.h"
 
-Define_Module(DummyMembership);
+Define_Module(DummyMembership)
 
 map<IPvXAddress, ActivePeerItem> DummyMembership::m_activePeerList;
 vector<IPvXAddress> DummyMembership::m_tempList;
@@ -140,8 +140,8 @@ void DummyMembership::decrementNPartner(const IPvXAddress &address)
    //m_apTable->decrementNPartner(address);
 }
 
-//int DummyMembership::getActivePeerNumber(void)
-//{
-//   return m_activePeerList.size();
-////   return -9;
-//}
+int DummyMembership::getActivePeerNumber(void)
+{
+   return m_activePeerList.size();
+//   return -9;
+}

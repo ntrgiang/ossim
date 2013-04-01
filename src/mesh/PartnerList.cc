@@ -35,7 +35,7 @@
 #include <omnetpp.h>
 #include <map>
 
-Define_Module(PartnerList);
+Define_Module(PartnerList)
 
 PartnerList::PartnerList() {
     // TODO Auto-generated constructor stub

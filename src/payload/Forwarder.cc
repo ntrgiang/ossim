@@ -33,7 +33,7 @@
 #include "Forwarder.h"
 #include "DpControlInfo_m.h"
 
-Define_Module(Forwarder);
+Define_Module(Forwarder)
 
 void RecordCountChunk::print()
 {

@@ -29,20 +29,19 @@
 // -----------------------------------------------------------------------------
 //
 
-#include "InterfaceTableAccess.h"
-#include "IPv4InterfaceData.h"
+//#include "InterfaceTableAccess.h"
+//#include "IPv4InterfaceData.h"
+//#include "IChurnGenerator.h"
+//#include "MeshPeerStreamingPacket_m.h"
+//#include <cmessage.h>
 
 #include "DonetPeer.h"
-#include "IChurnGenerator.h"
 #include "DpControlInfo_m.h"
-#include "MeshPeerStreamingPacket_m.h"
-
 #include <algorithm>
-#include <cmessage.h>
 
 using namespace std;
 
-Define_Module(DonetPeer);
+Define_Module(DonetPeer)
 
 DonetPeer::DonetPeer() {}
 DonetPeer::~DonetPeer()

@@ -32,7 +32,7 @@
 
 #include "PlayerSimpleSkip.h"
 
-Define_Module(PlayerSimpleSkip);
+Define_Module(PlayerSimpleSkip)
 
 PlayerSimpleSkip::PlayerSimpleSkip() {
     // TODO Auto-generated constructor stub

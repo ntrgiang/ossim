@@ -32,7 +32,7 @@
 
 #include "ChunkGenerator.h"
 
-Define_Module(ChunkGenerator);
+Define_Module(ChunkGenerator)
 
 ChunkGenerator::ChunkGenerator() {
     // TODO Auto-generated constructor stub

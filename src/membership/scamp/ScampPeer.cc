@@ -48,7 +48,7 @@
 #include <vector>
 #include <algorithm>
 
-Define_Module(ScampPeer);
+Define_Module(ScampPeer)
 
 ScampPeer::ScampPeer()
 {

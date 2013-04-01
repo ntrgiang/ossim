@@ -30,14 +30,14 @@
 //
 
 
-#include "IPv4InterfaceData.h"
-#include "InterfaceTableAccess.h"
+//#include "IPv4InterfaceData.h"
+//#include "InterfaceTableAccess.h"
+//#include "MeshPeerStreamingPacket_m.h"
 
 #include "DonetSource.h"
 #include "DpControlInfo_m.h"
-#include "MeshPeerStreamingPacket_m.h"
 
-Define_Module(DonetSource);
+Define_Module(DonetSource)
 
 DonetSource::DonetSource() {}
 DonetSource::~DonetSource()

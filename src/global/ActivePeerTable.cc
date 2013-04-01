@@ -32,7 +32,7 @@
 #include "ActivePeerTable.h"
 #include <algorithm>
 
-Define_Module(ActivePeerTable);
+Define_Module(ActivePeerTable)
 
 void ActivePeerTable::updateDisplayString()
 {

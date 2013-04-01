@@ -30,7 +30,6 @@
 //
 
 #include "DonetPeer.h"
-
 #include <algorithm>
 
 using namespace std;

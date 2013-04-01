@@ -32,7 +32,6 @@
 #include "UniformChurn.h"
 
 Define_Module(UniformChurn);
-//Define_Module(ActivePeerTable);
 
 double UniformChurn::m_absoluteInterval = -1.0;
 

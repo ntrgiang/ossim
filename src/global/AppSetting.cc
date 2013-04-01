@@ -31,7 +31,7 @@
 
 #include "AppSetting.h"
 
-Define_Module(AppSetting);
+Define_Module(AppSetting)
 
 AppSetting::AppSetting() { }
 

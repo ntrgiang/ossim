@@ -33,9 +33,9 @@
 // @brief the implementation of the newscast peer, inherits NewscastBase
 
 #include "NewscastPeer.h"
+//#include "regmacros.h"
 
-#include "regmacros.h"
-Define_Module(NewscastPeer);
+Define_Module(NewscastPeer)
 
 NewscastPeer::NewscastPeer()
 {

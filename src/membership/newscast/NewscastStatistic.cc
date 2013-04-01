@@ -34,7 +34,7 @@
 
 #include "NewscastStatistic.h"
 
-Define_Module(NewscastStatistic);
+Define_Module(NewscastStatistic)
 
 NewscastStatistic::NewscastStatistic()
 {
