@@ -271,3 +271,5 @@ simulations/run-scripts/get-runs-number.sh
 simulations/run-scripts/gdb-donet.sh
 simulations/run-scripts/execute-data-analysis.sh
 simulations/run-scripts/donet-sim.sh
+src/global/statistic/StreamingStatistic.ned
+src/global/statistic/StreamingStatistic.h
