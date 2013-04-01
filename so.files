@@ -60,9 +60,6 @@ src/global/logger/Logger.ned
 src/global/observer/MeshOverlayObserver.cc
 src/global/observer/MeshOverlayObserver.h
 src/global/observer/MeshOverlayObserver.ned
-src/global/statistic/GlobalStatistic.cc
-src/global/statistic/GlobalStatistic.h
-src/global/statistic/GlobalStatistic.ned
 src/global/ActivePeerInfo.cc
 src/global/ActivePeerInfo.h
 src/global/ActivePeerTable.cc
@@ -273,3 +270,5 @@ simulations/run-scripts/execute-data-analysis.sh
 simulations/run-scripts/donet-sim.sh
 src/global/statistic/StreamingStatistic.ned
 src/global/statistic/StreamingStatistic.h
+src/global/statistic/DiscoveryStatistic.ned
+src/global/statistic/DiscoveryStatistic.h
