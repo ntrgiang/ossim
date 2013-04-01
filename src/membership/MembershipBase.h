@@ -86,6 +86,8 @@ public:
     virtual void incrementNPartner(const IPvXAddress &addr) = 0;
     virtual void decrementNPartner(const IPvXAddress &addr) = 0;
 
+    virtual int getActivePeerNumber(void) { return 0; }
+
 //protected:
 //    virtual void writeToMcache(void) = 0;
 };

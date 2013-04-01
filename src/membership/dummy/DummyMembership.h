@@ -62,6 +62,8 @@ public:
     void incrementNPartner(const IPvXAddress &addr);
     void decrementNPartner(const IPvXAddress &addr);
 
+    int getActivePeerNumber(void);
+
 private:
     static map<IPvXAddress, ActivePeerItem> m_activePeerList;
     static vector<IPvXAddress> m_tempList;

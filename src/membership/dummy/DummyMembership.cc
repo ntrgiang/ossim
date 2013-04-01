@@ -112,6 +112,10 @@ void DummyMembership::addPeerAddress(const IPvXAddress &address, int maxNOP)
 
 void DummyMembership::addSourceAddress(const IPvXAddress &address, int maxNOP)
 {
+   Enter_Method("addSourceAddress()");
+
+   EV << "Source address: " << address << " -- maxNOP: " << maxNOP << endl;
+
    ActivePeerItem item;
       item.m_maxNOP = maxNOP;
       item.m_current_nPartner = 0;
@@ -135,3 +139,9 @@ void DummyMembership::decrementNPartner(const IPvXAddress &address)
 {
    //m_apTable->decrementNPartner(address);
 }
+
+//int DummyMembership::getActivePeerNumber(void)
+//{
+//   return m_activePeerList.size();
+////   return -9;
+//}
