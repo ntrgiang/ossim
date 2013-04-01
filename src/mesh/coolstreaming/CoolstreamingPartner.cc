@@ -62,9 +62,15 @@ CoolstreamingPartner::~CoolstreamingPartner()
 void CoolstreamingPartner::updateFromMessage(CoolstreamingBufferMapPacket* pkt)
 {
     for (unsigned int i = 0; i < pkt->getSequenceNumbersArraySize(); i++)
+    {
         hasSequence[i] = pkt->getSequenceNumbers(i);
+        EV << "sequence number: " << hasSequence[i] << endl;
+    }
     for (unsigned int i = 0; i < pkt->getSubscribeArraySize(); i++)
+    {
         mIsChild[i] = pkt->getSubscribe(i);
+        EV << "is child: " << mIsChild[i] << endl;
+    }
     updateLastSeen();
 
     if (deleted)

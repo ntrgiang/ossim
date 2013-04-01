@@ -38,6 +38,8 @@ simple CoolstreamingPeer extends CoolstreamingBase
     parameters:
         @class(CoolstreamingPeer);
 
+        volatile double startTime @unit(s);
+
         int coolstreaming_Ts = default(100);
         int coolstreaming_Tp = default(150);
         double coolstreaming_Ta @unit(s) = default(10.0s);

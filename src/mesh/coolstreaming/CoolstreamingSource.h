@@ -39,7 +39,8 @@
 #ifndef COOLSTREAMINGSOURCE_H_
 #define COOLSTREAMINGSOURCE_H_
 
-class CoolstreamingSource : public CoolstreamingBase{
+class CoolstreamingSource : public CoolstreamingBase
+{
 public:
     CoolstreamingSource();
     virtual ~CoolstreamingSource();
@@ -47,6 +48,10 @@ public:
 protected:
     virtual int numInitStages() const { return 4; }
     virtual void initialize(int stage);
+
+private:
+    int m_nActive;
+
 };
 
 #endif /* COOLSTREAMINGSOURCE_H_ */

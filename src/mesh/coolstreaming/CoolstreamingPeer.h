@@ -54,6 +54,10 @@ protected:
     // @brief overrides the checkPartners function of the base-class to check if new partners are needed and to query them
     void checkPartners();
 
+private:
+//   void handleTimerJoin(void);
+   void bindToGlobalModule();
+
     // parent managment ->
 private:
     // @brief continue to query other peers for partnership until the number is reached
@@ -78,6 +82,10 @@ private:
     // @brief checks if a partner would be good for a given substream
     bool satisfiesInequalityTwo(CoolstreamingPartner* partner, int substream);
     // <- parent managment
+
+private:
+    cMessage *timer_getJoinTime;
+    cMessage *timer_join;
 };
 
 #endif /* COOLSTREAMINGPEER_H_ */

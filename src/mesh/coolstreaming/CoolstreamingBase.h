@@ -84,6 +84,13 @@ public:
     bool isPartner(IPvXAddress addr);
     // @brief finds the pointer to a partner for a given address
     CoolstreamingPartner* findPartner(IPvXAddress addr);
+
+//protected:
+//    virtual int numInitStages() const { return 4; }
+
+//    virtual void initialize(int stage);
+//    virtual void finish();
+
 protected:
     // @brief handles the intiation of this base class
     void initBase();

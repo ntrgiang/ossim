@@ -36,12 +36,11 @@
 
 #include "CoolstreamingSource.h"
 
-Define_Module(CoolstreamingSource);
+Define_Module(CoolstreamingSource)
 
 CoolstreamingSource::CoolstreamingSource()
 {
     // TODO Auto-generated constructor stub
-
 }
 
 CoolstreamingSource::~CoolstreamingSource()
@@ -55,4 +54,20 @@ void CoolstreamingSource::initialize(int stage)
         return;
 
     initBase();
+
+    m_apTable->addAddress(getNodeAddress());
+    m_apTable->printActivePeerTable();
+
+    m_memManager->addSourceAddress(getNodeAddress(), param_maxNOP);
+
+    m_nActive = -1;
+
+    m_nActive = m_memManager->getActivePeerNumber();
+
+    scheduleAt(simTime() + param_CheckPartnersInterval, timer_CheckPartners);
+
+    WATCH(param_maxNOP);
+    WATCH(m_localAddress);
+    WATCH(m_nActive);
+    WATCH(m_memManager);
 }

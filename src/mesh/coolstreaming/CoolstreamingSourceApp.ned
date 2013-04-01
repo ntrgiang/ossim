@@ -39,6 +39,7 @@ import so.payload.ChunkGenerator;
 import so.payload.Forwarder;
 import so.payload.VideoBuffer;
 import so.membership.newscast.NewscastPeer;
+import so.membership.dummy.DummyMembership;
 
 module CoolstreamingSourceApp
 {
@@ -71,7 +72,8 @@ module CoolstreamingSourceApp
             @display("p=133,110");
         }
         
-        gossipProtocol : NewscastPeer;
+        //gossipProtocol : NewscastPeer;
+        gossipProtocol : DummyMembership;
         
         dispatcher: Dispatcher {
             @display("p=133,253;i=block/dispatch");
