@@ -3,8 +3,7 @@ package so.simulations;
 import so.global.ActivePeerTable;
 import so.global.churn.IChurnModel;
 import so.global.churn.StaticChurn;
-//import so.global.statistic.GlobalStatistic;
-import so.global.statistic.IStatisticBase;
+import so.global.statistic.IDiscoveryStatistic;
 import so.global.statistic.ScampStatistic;
 
 import so.membership.scamp.ScampPeerNode;
@@ -49,7 +48,7 @@ network Scamp_Homo_oneRouter_Network extends BasicNetwork
             @display("p=77,171");
         }
 
-        globalStatistic: <statisticModule> like IStatisticBase {
+        globalStatistic: <statisticModule> like IDiscoveryStatistic {
             @display("p=77,248");
         }
 

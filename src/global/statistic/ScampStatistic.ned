@@ -31,7 +31,8 @@
 
 package so.global.statistic;
 
-simple ScampStatistic like IStatisticBase
+//simple ScampStatistic like IStatisticBase
+simple ScampStatistic like IDiscoveryStatistic
 {
    parameters:
 

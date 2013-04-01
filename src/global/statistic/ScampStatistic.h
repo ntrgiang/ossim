@@ -37,7 +37,8 @@
 //#include "IPvXAddress.h"
 //#include <fstream>
 //#include "ccomponent.h"
-#include "StatisticBase.h"
+//#include "StatisticBase.h"
+#include "DiscoveryStatistic.h"
 
 #ifndef SCAMP_STATISTIC_H_
 #define SCAMP_STATISTIC_H_
@@ -45,7 +46,8 @@
 //class ActivePeerTable;
 
 //class GlobalStatistic : public cSimpleModule, protected INotifiable
-class ScampStatistic : public StatisticBase
+//class ScampStatistic : public StatisticBase
+class ScampStatistic : public DiscoveryStatistic
 {
 public:
     ScampStatistic();
