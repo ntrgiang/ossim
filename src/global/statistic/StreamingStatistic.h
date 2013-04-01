@@ -32,14 +32,15 @@
 
 #include "NotificationBoard.h"
 
-#ifndef STATISTIC_BASE_H_
-#define STATISTIC_BASE_H_
+#ifndef STREAMING_STATISTIC_H_
+#define STREAMING_STATISTIC_H_
 
-class StatisticBase : public cSimpleModule, protected INotifiable
+//class StreamingStatistic : public StatisticBase
+class StreamingStatistic : public cSimpleModule, protected INotifiable
 {
 public:
-    virtual ~StatisticBase() {};
+    virtual ~StreamingStatistic() {}
 
 };
 
-#endif /* STATISTIC_BASE_H_ */
+#endif // STREAMING_STATISTIC_H_

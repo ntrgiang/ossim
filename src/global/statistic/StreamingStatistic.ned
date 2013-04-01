@@ -33,7 +33,9 @@
 package so.global.statistic;
 
 //simple StatisticBase
-moduleinterface IStatisticBase
+//moduleinterface IStatisticBase
+//simple StreamingStatistic like IStatisticBase
+moduleinterface IStreamingStatistic
 {
     parameters:
         @display("i=block/user");

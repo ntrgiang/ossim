@@ -37,6 +37,7 @@
 #include "IPvXAddress.h"
 #include <fstream>
 #include "StatisticBase.h"
+#include "StreamingStatistic.h"
 //#include "ccomponent.h"
 
 #ifndef DONET_STATISTIC_H_
@@ -45,7 +46,8 @@
 class ActivePeerTable;
 
 //class GlobalStatistic : public cSimpleModule, protected INotifiable
-class DonetStatistic : public StatisticBase
+//class DonetStatistic : public StatisticBase
+class DonetStatistic : public StreamingStatistic
 {
 public:
     DonetStatistic();

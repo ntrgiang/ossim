@@ -32,7 +32,11 @@
 
 package so.global.statistic;
 
-simple DonetStatistic like IStatisticBase
+//import package so.global.StreamingStatistic;
+
+//simple DonetStatistic like IStatisticBase
+//simple DonetStatistic extends StreamingStatistic
+simple DonetStatistic like IStreamingStatistic
 {
    parameters:
 
