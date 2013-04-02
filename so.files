@@ -126,9 +126,9 @@ src/payload/ChunkGenerator.ned
 src/payload/Forwarder.cc
 src/payload/Forwarder.h
 src/payload/Forwarder.ned
-src/payload/Player.cc
-src/payload/Player.h
-src/payload/Player.ned
+src/payload/PlayerSkipStall.cc
+src/payload/PlayerSkipStall.h
+src/payload/PlayerSkipStall.ned
 src/payload/VideoBuffer.cc
 src/payload/VideoBuffer.h
 src/payload/VideoBuffer.ned
