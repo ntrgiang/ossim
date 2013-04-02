@@ -84,7 +84,7 @@ void PlayerSimpleSkip::initialize(int stage)
 
     temp = simulation.getModuleByPath("globalStatistic");
     //m_stat = check_and_cast<StatisticBase *>(temp);
-    m_stat = check_and_cast<DonetStatistic *>(temp);
+    //m_stat = check_and_cast<StreamingStatistic *>(temp);
 
     timer_nextChunk     = new cMessage("PLAYER_TIMER_NEXT_CHUNK");
     timer_playerStart   = new cMessage("PLAYER_TIMER_START");
@@ -368,11 +368,11 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
     {
        long int delta = m_count_chunkHit - m_count_prev_chunkHit;
        m_count_prev_chunkHit = m_count_chunkHit;
-       m_stat->increaseChunkHit((int)delta);
+       //m_stat->increaseChunkHit((int)delta);
 
        delta = m_count_chunkMiss - m_count_prev_chunkMiss;
        m_count_prev_chunkMiss = m_count_chunkMiss;
-       m_stat->increaseChunkMiss((int)delta);
+       //m_stat->increaseChunkMiss((int)delta);
 
        scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
     }
