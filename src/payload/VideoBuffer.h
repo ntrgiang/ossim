@@ -37,14 +37,15 @@
 #define __VIDEOBUFFER_CROSSCHECK__ true
 #define __VIDEO_BUFFER_DEBUG__ false
 
-#include <queue>
-#include "MeshPeerStreamingPacket_m.h"
+//#include <queue>
+//#include "MeshPeerStreamingPacket_m.h"
+//#include "StatisticBase.h"
+//#include "GlobalStatistic.h"
+
 #include "VideoChunkPacket_m.h"
 #include "AppCommon.h"
 #include "BufferMap.h"
 #include "StreamingStatistic.h"
-//#include "StatisticBase.h"
-//#include "GlobalStatistic.h"
 
 // listening support ->
 #include "VideoBufferListener.h"
@@ -52,16 +53,15 @@
 
 
 typedef struct __STRM_BUF_ELEM {
-    __STRM_BUF_ELEM() : m_chunk(NULL) {};
+    __STRM_BUF_ELEM() : m_chunk(NULL) {}
     //MeshVideoChunkPacket *m_chunk;
     VideoChunkPacket *m_chunk;
     SEQUENCE_NUMBER_T m_recved_time;
 } STREAM_BUFFER_ELEMENT_T;
 
-class VideoBuffer : public cSimpleModule {
-//class VideoBuffer {
+class VideoBuffer : public cSimpleModule
+{
 public:
-//    VideoBuffer(int size);
     VideoBuffer();
     virtual ~VideoBuffer();
 
@@ -83,7 +83,6 @@ public:
 
     inline SEQUENCE_NUMBER_T getBufferStartSeqNum(void) { return m_bufferStart_seqNum; }
     inline void setBufferStartSeqNum(SEQUENCE_NUMBER_T val) { m_bufferStart_seqNum = val; }
-
 
     inline SEQUENCE_NUMBER_T getBufferEndSeqNum(void) { return m_bufferEnd_seqNum; }
     inline void setBufferEndSeqNum(SEQUENCE_NUMBER_T val) { m_bufferEnd_seqNum = val; }
@@ -112,7 +111,6 @@ public:
     bool isInBuffer(SEQUENCE_NUMBER_T seq_num);
     bool inBuffer(SEQUENCE_NUMBER_T seq_num);
     SIM_TIME_T getReceivedTime(SEQUENCE_NUMBER_T seq_num);
-//    MeshVideoChunkPacket *getChunk(SEQUENCE_NUMBER_T seq_num);
     STREAM_BUFFER_ELEMENT_T & getBufferElement(SEQUENCE_NUMBER_T seq_num);
     void captureVideoBuffer(BufferMap *bm);
     void fillBufferMapPacket(MeshBufferMapPacket *bmPkt);
@@ -125,7 +123,6 @@ public:
 
 //    double getDeadline(SEQUENCE_NUMBER_T seq_num) const;
 
-
     // Debug
     void printStatus();
 
@@ -137,9 +134,6 @@ public:
 private:
     // -- Pointers to external modules
 //    AppSettingDonet *m_appSetting;
-
-    // old version which uses queue
-    //    std::queue<STREAM_BUFFER_ELEMENT_T> m_streamBuffer;
 
     std::vector<STREAM_BUFFER_ELEMENT_T> m_streamBuffer;
     // sequence numbers
