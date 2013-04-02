@@ -39,7 +39,12 @@
 class StreamingStatistic : public cSimpleModule, protected INotifiable
 {
 public:
+    StreamingStatistic() {}
     virtual ~StreamingStatistic() {}
+
+public:
+    virtual void increaseChunkHit(const int &delta) = 0;
+    virtual void increaseChunkMiss(const int &delta) = 0;
 
 };
 
