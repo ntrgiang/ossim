@@ -38,7 +38,6 @@
 #include <fstream>
 #include "StatisticBase.h"
 #include "StreamingStatistic.h"
-//#include "ccomponent.h"
 
 #ifndef DONET_STATISTIC_H_
 #define DONET_STATISTIC_H_
@@ -63,8 +62,8 @@ public:
     virtual void finish();
 
     // -- For cListener (maybe!)
-//    virtual void receiveSignal(cComponent *src, simsignal_t id, long l) ;
-//    virtual void receiveSignal(cComponent *src, simsignal_t id, cObject* obj)
+//    virtual void receiveSignal(cComponent *src, simsignal_t id, long l);
+//    virtual void receiveSignal(cComponent *src, simsignal_t id, cObject* obj);
 
 private:
     void handleTimerMessage(cMessage *msg);
