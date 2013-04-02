@@ -29,22 +29,21 @@
 // -----------------------------------------------------------------------------
 //
 
-/*
-#include "Player.h"
+#include "PlayerSkipStall.h"
 
-Define_Module(Player);
+Define_Module(PlayerSkipStall)
 
-Player::Player() {
+PlayerSkipStall::PlayerSkipStall() {
     // TODO Auto-generated constructor stub
 }
 
-Player::~Player()
+PlayerSkipStall::~PlayerSkipStall()
 {
     if (timer_nextChunk != NULL) { delete cancelEvent(timer_nextChunk); timer_nextChunk = NULL; }
     if (timer_playerStart) cancelAndDelete(timer_playerStart);
 }
 
-void Player::initialize(int stage)
+void PlayerSkipStall::initialize(int stage)
 {
     if (stage == 0)
     {
@@ -72,7 +71,7 @@ void Player::initialize(int stage)
 //    if (!m_videoBuffer) throw cException("Null pointer for the AppSetting module");
 
     temp = simulation.getModuleByPath("globalStatistic");
-    m_stat = check_and_cast<GlobalStatistic *>(temp);
+    m_stat = check_and_cast<StreamingStatistic *>(temp);
     //    m_stat = dynamic_cast<GlobalStatistic *>(temp);
 //    if (!m_stat) throw cException("Null pointer for the GlobalStatistic module");
 
@@ -115,7 +114,7 @@ void Player::initialize(int stage)
     WATCH(m_interval_newChunk);
 }
 
-void Player::activate(void)
+void PlayerSkipStall::activate(void)
 {
     Enter_Method("activate()");
 
@@ -127,12 +126,12 @@ void Player::activate(void)
     scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
 }
 
-void Player::finish()
+void PlayerSkipStall::finish()
 {
 
 }
 
-void Player::handleMessage(cMessage *msg)
+void PlayerSkipStall::handleMessage(cMessage *msg)
 {
     Enter_Method("handleMessage");
 
@@ -145,7 +144,7 @@ void Player::handleMessage(cMessage *msg)
     handleTimerMessage(msg);
 }
 
-void Player::handleTimerMessage(cMessage *msg)
+void PlayerSkipStall::handleTimerMessage(cMessage *msg)
 {
     Enter_Method("handleTimerMessage");
 
@@ -211,8 +210,8 @@ void Player::handleTimerMessage(cMessage *msg)
                 // -- Statistics collection
                 emit(sig_chunkHit, m_id_nextChunk);
                 emit(sig_chunkSeek, m_id_nextChunk);
-                m_stat->reportChunkHit(m_id_nextChunk);
-                m_stat->reportChunkSeek(m_id_nextChunk);
+//                m_stat->reportChunkHit(m_id_nextChunk);
+//                m_stat->reportChunkSeek(m_id_nextChunk);
 
                 break;
             }
@@ -261,11 +260,11 @@ void Player::handleTimerMessage(cMessage *msg)
                     // -- Statistics collection
                     emit(sig_chunkMiss, m_id_nextChunk);
                     emit(sig_chunkSeek, m_id_nextChunk);
-                    m_stat->reportChunkMiss(m_id_nextChunk);
-                    m_stat->reportChunkSeek(m_id_nextChunk);
+//                    m_stat->reportChunkMiss(m_id_nextChunk);
+//                    m_stat->reportChunkSeek(m_id_nextChunk);
 
                     // on-going stuff
-                    m_stat->reportSkipChunk();
+//                    m_stat->reportSkipChunk();
                 }
                 else // Cannot skip any more chunk
                 {
@@ -277,10 +276,10 @@ void Player::handleTimerMessage(cMessage *msg)
 
                     // -- Statistics collection
                     emit(sig_stall, 1);
-                    m_stat->reportStall();
+//                    m_stat->reportStall();
 
                     // -- on-going stuff
-                    m_stat->reportStallDuration();
+//                    m_stat->reportStallDuration();
                 }
 
                 ++m_countChunkMiss;
@@ -294,7 +293,7 @@ void Player::handleTimerMessage(cMessage *msg)
                     // -- State remains
 
                     // -- on-going stuff
-                    m_stat->reportStallDuration();
+//                    m_stat->reportStallDuration();
                 }
                 else // Cannot stall the video any more
                 {
@@ -306,10 +305,10 @@ void Player::handleTimerMessage(cMessage *msg)
 
                     // -- Statistics collection
                     emit(sig_rebuffering, 1);
-                    m_stat->reportRebuffering();
+//                    m_stat->reportRebuffering();
 
                     // -- on-going stuff
-                    m_stat->reportRebuffering();
+//                    m_stat->reportRebuffering();
                 }
                 break;
             }
@@ -363,7 +362,7 @@ void Player::handleTimerMessage(cMessage *msg)
 //    }
 }
 
-void Player::startPlayer()
+void PlayerSkipStall::startPlayer()
 {
     Enter_Method("startPlayer");
     scheduleAt(simTime(), timer_nextChunk);
@@ -376,17 +375,17 @@ void Player::startPlayer()
 
 }
 
-SEQUENCE_NUMBER_T Player::getCurrentPlaybackPoint(void)
+SEQUENCE_NUMBER_T PlayerSkipStall::getCurrentPlaybackPoint(void)
 {
     return m_id_nextChunk;
 }
 
-bool Player::playerStarted(void)
+bool PlayerSkipStall::playerStarted(void)
 {
     return m_playerStarted;
 }
 
-bool Player::shouldResumePlaying(SEQUENCE_NUMBER_T seq_num)
+bool PlayerSkipStall::shouldResumePlaying(SEQUENCE_NUMBER_T seq_num)
 {
     // !!! Asuming that the seq_num is a valid value within the range [id_start, id_end]
 
@@ -395,4 +394,3 @@ bool Player::shouldResumePlaying(SEQUENCE_NUMBER_T seq_num)
 
     return false;
 }
-*/

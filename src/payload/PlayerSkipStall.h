@@ -29,14 +29,14 @@
 // -----------------------------------------------------------------------------
 //
 
-/*
-#ifndef PLAYER_H_
-#define PLAYER_H_
+#ifndef PLAYER_SKIP_STALL_H_
+#define PLAYER_SKIP_STALL_H_
 
 #include "VideoBuffer.h"
 #include "VideoChunkPacket_m.h"
 #include "AppSettingDonet.h"
-#include "GlobalStatistic.h"
+#include "PlayerBase.h"
+//#include "GlobalStatistic.h"
 //#include "DonetPeer.h"
 
 #define PLAYER_STATE_IDLE       0
@@ -47,10 +47,11 @@
 #define EVENT_CHUNK_NOT_IN_BUFFER   0
 #define EVENT_CHUNK_IN_BUFFER       1
 
-class Player : public cSimpleModule {
+class PlayerSkipStall : public PlayerBase
+{
 public:
-    Player();
-    virtual ~Player();
+    PlayerSkipStall();
+    virtual ~PlayerSkipStall();
 
 protected:
     virtual int numInitStages() const { return 4; }
@@ -61,13 +62,18 @@ protected:
     void handleTimerMessage(cMessage *msg);
 
 public:
+    void stopPlayer(void) {} // TODO
+    void scheduleStopPlayer(void) {} // TODO
     void startPlayer(void);
+
     SEQUENCE_NUMBER_T getCurrentPlaybackPoint(void);
     bool playerStarted(void);
     void activate(void);
 
     inline long int getCountChunkHit(void) { return m_countChunkHit; }
     inline long int getCountChunkMiss(void) { return m_countChunkMiss; }
+
+    double getContinuityIndex(void) { return 0.0; } // TODO
 
 private:
     bool shouldResumePlaying(SEQUENCE_NUMBER_T seq_num);
@@ -101,7 +107,7 @@ protected:
     // -- Pointers to external modules
     VideoBuffer *m_videoBuffer;
     AppSettingDonet *m_appSetting;
-    StatisticBase *m_stat;
+    StreamingStatistic *m_stat;
 
     // -- Signal for data collection
     simsignal_t sig_timePlayerStart;
@@ -116,5 +122,4 @@ protected:
 
 };
 
-#endif // PLAYER_H_
-*/
+#endif // PLAYER_SKIP_STALL_H_

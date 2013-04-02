@@ -31,7 +31,7 @@
 
 package so.payload;
 
-simple Player
+simple PlayerSkipStall like PlayerBase
 {
    parameters:
       @class(Player);
