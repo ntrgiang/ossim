@@ -56,7 +56,7 @@ PlayerSimpleSkip::~PlayerSimpleSkip()
        cancelAndDelete(timer_playerStop);
     }
 
-    if (timer_reportStatistic) cancelAndDelete(timer_reportStatistic);
+    //if (timer_reportStatistic) cancelAndDelete(timer_reportStatistic);
 }
 
 void PlayerSimpleSkip::initialize(int stage)
@@ -89,7 +89,7 @@ void PlayerSimpleSkip::initialize(int stage)
     timer_nextChunk     = new cMessage("PLAYER_TIMER_NEXT_CHUNK");
     timer_playerStart   = new cMessage("PLAYER_TIMER_START");
     timer_playerStop    = new cMessage("PLAYER_TIMER_STOP");
-    timer_reportStatistic = new cMessage("PLAYER_TIMER_REPORT_STATISTIC");
+    //timer_reportStatistic = new cMessage("PLAYER_TIMER_REPORT_STATISTIC");
 
     // -- Reading parameters from module itself
     param_interval_recheckVideoBuffer = par("interval_recheckVideoBuffer");
@@ -211,7 +211,7 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
                 scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
 
                 // -- Schedule to report chunkHit, chunkMiss
-                scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
+                //scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
             }
             break;
         }
@@ -364,18 +364,18 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
         } // else ~ chunk not in buffer
 
     } // timer_nextChunk
-    else if (msg == timer_reportStatistic)
-    {
-       long int delta = m_count_chunkHit - m_count_prev_chunkHit;
-       m_count_prev_chunkHit = m_count_chunkHit;
-       //m_stat->increaseChunkHit((int)delta);
+//    else if (msg == timer_reportStatistic)
+//    {
+//       long int delta = m_count_chunkHit - m_count_prev_chunkHit;
+//       m_count_prev_chunkHit = m_count_chunkHit;
+//       //m_stat->increaseChunkHit((int)delta);
 
-       delta = m_count_chunkMiss - m_count_prev_chunkMiss;
-       m_count_prev_chunkMiss = m_count_chunkMiss;
-       //m_stat->increaseChunkMiss((int)delta);
+//       delta = m_count_chunkMiss - m_count_prev_chunkMiss;
+//       m_count_prev_chunkMiss = m_count_chunkMiss;
+//       //m_stat->increaseChunkMiss((int)delta);
 
-       scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
-    }
+//       scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
+//    }
     else if (msg == timer_playerStop)
     {
        stopPlayer();

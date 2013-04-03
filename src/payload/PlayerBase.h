@@ -55,8 +55,6 @@ protected:
 
 public:
     virtual void activate(void) = 0;
-    virtual void startPlayer(void) = 0;
-    virtual void stopPlayer(void) = 0;
     virtual void scheduleStopPlayer(void) = 0;
 
     virtual SEQUENCE_NUMBER_T getCurrentPlaybackPoint(void) = 0;
@@ -71,12 +69,16 @@ public:
     inline int getState(void) { return m_state; }
 
 protected:
+    virtual void startPlayer(void) = 0;
+    virtual void stopPlayer(void) = 0;
+
+protected:
     long int m_count_chunkHit, m_count_chunkMiss;
     long int m_count_prev_chunkHit, m_count_prev_chunkMiss;
 
     double param_interval_reportStatistic;
 
-    cMessage *timer_reportStatistic;
+    //cMessage *timer_reportStatistic;
 
     // -- State variable
     bool m_playerStarted;

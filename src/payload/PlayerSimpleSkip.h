@@ -49,7 +49,8 @@
 #define EVENT_CHUNK_NOT_IN_BUFFER   0
 #define EVENT_CHUNK_IN_BUFFER       1
 
-class PlayerSimpleSkip : public PlayerBase {
+class PlayerSimpleSkip : public PlayerBase
+{
 public:
     PlayerSimpleSkip();
     virtual ~PlayerSimpleSkip();
@@ -63,17 +64,17 @@ protected:
     void handleTimerMessage(cMessage *msg);
 
 public:
-    void startPlayer(void);
-    void stopPlayer(void);
+    void activate(void);
     void scheduleStopPlayer(void);
 
     SEQUENCE_NUMBER_T getCurrentPlaybackPoint(void);
     bool playerStarted(void);
-    void activate(void);
 
     double getContinuityIndex(void);
 
 private:
+    void startPlayer(void);
+    void stopPlayer(void);
     bool shouldResumePlaying(SEQUENCE_NUMBER_T seq_num);
 
 protected:

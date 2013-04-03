@@ -57,7 +57,7 @@ simple PlayerSimpleSkip like PlayerBase
 
       //@statistic[stall](title="Number of stall events"; source=Signal_Stall; record=sum,vector);
 
-      @statistic[timePlayerStart](source=Signal_timePlayerStart; record=last);
+      //@statistic[timePlayerStart](source=Signal_timePlayerStart; record=last);
       
    //gates:
    //    input bufferIn   @label(VideoChunk/up);
