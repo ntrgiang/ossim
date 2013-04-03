@@ -37,4 +37,5 @@ src/tree/TreePeerStreamingPacket_m.cc
 src/tree/TreePeerStreamingPacket_m.h
 src/common/DpControlInfo_m.cc
 src/common/DpControlInfo_m.h
-
+src/mesh/coolstreaming/CoolstreamingPacket_m.cc
+src/mesh/coolstreaming/CoolstreamingPacket_m.h
