@@ -379,13 +379,13 @@ void PartnerList::getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddre
     std::map<IPvXAddress, NeighborInfo>::iterator iter;
     for (iter = m_map.begin(); iter != m_map.end(); ++iter)
     {
-        NeighborInfo nbr_info = iter->second;
-        if (nbr_info.getLastRecvBmTime() != -1)
+        //NeighborInfo nbr_info = iter->second;
+        if (iter->second.getLastRecvBmTime() != -1)
         {
             //EV << "  -- At peer " << iter->first << ": ";
-            if (nbr_info.isInRecvBufferMap(seq_num))
+            if (iter->second.isInRecvBufferMap(seq_num))
             {
-                if (nbr_info.getNChunkScheduled() < nbr_info.getUploadRate_Chunk())
+                if (iter->second.getNChunkScheduled() < iter->second.getUploadRate_Chunk())
                 {
                    holderList.push_back(iter->first);
                    // EV << "\tPartner " << iter->first << " HAS the chunk " << seq_num << endl;
