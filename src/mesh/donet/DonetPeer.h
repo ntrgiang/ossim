@@ -1,4 +1,4 @@
-//  
+//
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -103,6 +103,8 @@ private:
 
     void updateDataExchangeRecord(double samplingInterval);
 
+    void handleTimerReportStatistic();
+
     // !!! obsolete !!!
 //    void join();
 //    void findMorePartner();
@@ -153,6 +155,7 @@ private:
     cMessage *timer_findMorePartner;
     cMessage *timer_startPlayer;
     cMessage *timer_timeout_joinReqAccept;
+    cMessage *timer_reportStatistic;
 
     //cMessage *timer_timeout_waiting_accept;
     //cMessage *timer_timeout_waiting_ack;
@@ -177,6 +180,7 @@ private:
     double  param_interval_waitingPartnershipResponse;
     double  param_interval_partnershipRefinement;
     double  param_interval_partnerlistCleanup;
+    double  param_interval_reportStatistic;
 
     //double  param_baseValue_requestGreedyFactor;
     //double  param_aggressiveValue_requestGreedyFactor
@@ -203,8 +207,9 @@ private:
     IChurnGenerator *m_churn;
 
     // -- Pointer to external modules
-    //Player *m_player; // TODO: should be obsolete!!!
     PlayerBase *m_player;
+//    StreamingStatistic *m_gstat;
+
 
     // State variables
     bool m_scheduling_started;
@@ -237,6 +242,10 @@ private:
     // -- The number of chunks received previously at the Video Buffer
     long int m_prevNChunkReceived;
     int m_downloadRate_chunk;
+
+    // -- For reporting statistics
+    long int m_count_prev_chunkHit, m_count_prev_chunkMiss;
+
 
     // --------------------------- Optimization --------------------------------
     std::vector<IPvXAddress> m_blacklist;

@@ -108,7 +108,8 @@ void DonetPeer::initialize(int stage)
     timer_sendBufferMap     = new cMessage("MESH_PEER_TIMER_SEND_BUFFERMAP");
     timer_findMorePartner   = new cMessage("MESH_PEER_TIMER_FIND_MORE_PARTNER");
     timer_startPlayer       = new cMessage("MESH_PEER_TIMER_START_PLAYER");
-    timer_sendReport        = new cMessage("MESH_PEER_TIMER_SEND_REPORT");
+    //timer_sendReport        = new cMessage("MESH_PEER_TIMER_SEND_REPORT");
+    timer_reportStatistic   = new cMessage("MESH_PEER_TIMER_REPORT_STATISTIC");
 
     //timer_timeout_waiting_accept = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
     timer_timeout_waiting_response  = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
@@ -123,12 +124,14 @@ void DonetPeer::initialize(int stage)
     //param_chunkSchedulingInterval       = par("chunkSchedulingInterval");
     //    param_interval_rejoin               = par("interval_rejoin");
 
-    param_interval_chunkScheduling      = par("interval_chunkScheduling");
-    param_interval_findMorePartner      = par("interval_findMorePartner");
-    param_interval_timeout_joinReqAck   = par("interval_timeout_joinReqAck");
-    param_interval_starPlayer           = par("interval_startPlayer");
-    param_interval_partnershipRefinement = par("interval_partnershipRefinement");
-    param_interval_partnerlistCleanup   = par("interval_partnerlistCleanup");
+    param_interval_chunkScheduling        = par("interval_chunkScheduling");
+    param_interval_findMorePartner        = par("interval_findMorePartner");
+    param_interval_timeout_joinReqAck     = par("interval_timeout_joinReqAck");
+    param_interval_starPlayer             = par("interval_startPlayer");
+    param_interval_partnershipRefinement  = par("interval_partnershipRefinement");
+    param_interval_partnerlistCleanup     = par("interval_partnerlistCleanup");
+    param_interval_reportStatistic        = par("interval_reportStatistic");
+
     param_threshold_idleDuration_buffermap = par("threshold_idleDuration_buffermap");
 
     param_nNeighbor_SchedulingStart     = par("nNeighbor_SchedulingStart");
@@ -148,6 +151,8 @@ void DonetPeer::initialize(int stage)
     param_interval_waitingPartnershipResponse   = par("interval_waitingPartnershipResponse").doubleValue();
 
     scheduleAt(simTime() + par("startTime").doubleValue(), timer_getJoinTime);
+
+    scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
 
     // m_nChunk_perSchedulingInterval = param_interval_chunkScheduling * param_downBw / param_chunkSize / 8;
 
@@ -263,6 +268,7 @@ void DonetPeer::initialize(int stage)
     WATCH(param_maxNOP);
     WATCH(param_offsetNOP);
     WATCH(param_interval_partnerlistCleanup);
+    WATCH(param_interval_reportStatistic);
     WATCH(param_threshold_idleDuration_buffermap);
 
     WATCH(m_videoStreamChunkRate);
@@ -285,7 +291,7 @@ void DonetPeer::finish()
         cancelAndDeleteAllTimer();
 
         // -- Debug
-    m_gstat->reportNumberOfPartner(m_partnerList->getSize());
+    //m_gstat->reportNumberOfPartner(m_partnerList->getSize());
 
     //reportStatus();
 }
@@ -352,77 +358,30 @@ void DonetPeer::cancelAndDeleteAllTimer()
        timer_partnerListCleanup = NULL;
     }
 
+    if (timer_reportStatistic != NULL)
+    {
+       delete cancelEvent(timer_reportStatistic);
+       timer_reportStatistic = NULL;
+    }
+
+//    if (timer_reportStatistic != NULL) cancelAndDelete(timer_reportStatistic);
+
 }
 
 void DonetPeer::cancelAllTimer()
 {
-//   if(timer_getJoinTime->isScheduled() == true)
-//   {
-//      cancelEvent(timer_getJoinTime);
-//   }
-
-//   if (timer_join->isScheduled() == true)
-//   {
-//      cancelEvent(timer_join);
-//   }
-
-//   if (timer_sendBufferMap->isScheduled() == true)
-//   {
-//      cancelEvent(timer_sendBufferMap);
-//   }
-
-//   if (timer_chunkScheduling->isScheduled() == true)
-//   {
-//      cancelEvent(timer_chunkScheduling);
-//   }
-
-//   if (timer_findMorePartner->isScheduled() == true)
-//   {
-//      cancelEvent(timer_findMorePartner);
-//   }
-
-//   if (timer_startPlayer->isScheduled() == true)
-//   {
-//      cancelEvent(timer_startPlayer);
-//   }
-
-//   if (timer_sendReport->isScheduled() == true)
-//   {
-//      cancelEvent(timer_sendReport);
-//   }
-
-//   if (timer_timeout_waiting_response->isScheduled() == true)
-//   {
-//      cancelEvent(timer_timeout_waiting_response);
-//   }
-
-//   if (timer_partnershipRefinement->isScheduled() == true)
-//   {
-//      cancelEvent(timer_partnershipRefinement);
-//   }
-
-//   if (timer_partnerListCleanup->isScheduled() == true)
-//   {
-//      cancelEvent(timer_partnerListCleanup);
-//   }
-
-   // one time timer --> no need to cancel them
-      //cancelEvent(timer_getJoinTime);
-//      cancelEvent(timer_join);
-
-   // obsolete timers
-//      cancelEvent(timer_sendReport);
-//      cancelEvent(timer_timeout_waiting_response);
-
    cancelEvent(timer_sendBufferMap);
    cancelEvent(timer_chunkScheduling);
    cancelEvent(timer_findMorePartner);
-      cancelEvent(timer_partnershipRefinement);
-      cancelEvent(timer_partnerListCleanup);
+   cancelEvent(timer_partnershipRefinement);
+   cancelEvent(timer_partnerListCleanup);
+   cancelEvent(timer_reportStatistic);
 }
 
 void DonetPeer::handleTimerMessage(cMessage *msg)
 {
+    Enter_Method("handleTimerMessage()");
+
     if (msg == timer_sendBufferMap)
     {
         sendBufferMap();
@@ -432,6 +391,12 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
     {
         chunkScheduling();
         scheduleAt(simTime() + param_interval_chunkScheduling, timer_chunkScheduling);
+    }
+    else if (msg == timer_reportStatistic)
+    {
+       EV << "hehehehe" << endl;
+       handleTimerReportStatistic();
+       scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
     }
     else if (msg == timer_findMorePartner)
     {
@@ -467,10 +432,10 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
         // -- Schedule for a rejoin (if any)
         // scheduleAt(simTime() + param_interval_rejoin, timer_join);
     }
-    else if (msg == timer_sendReport)
-    {
-       handleTimerReport();
-    }
+//    else if (msg == timer_sendReport)
+//    {
+//       handleTimerReport();
+//    }
 }
 
 void DonetPeer::handleTimerJoin(void)
@@ -916,6 +881,37 @@ void DonetPeer::handleTimerTimeoutWaitingAccept()
     } // switch()
 }
 
+//void DonetPeer::handleTimerReport()
+//{
+
+//}
+
+void DonetPeer::handleTimerReportStatistic()
+{
+   //if (m_player->playerStarted() == true)
+   if (m_player->getState() == PLAYER_STATE_PLAYING)
+   {
+      //long m_count_chunkHit = m_player->getCountChunkHit();
+      //long int delta = m_count_chunkHit - m_count_prev_chunkHit;
+      long int delta = m_player->getCountChunkHit() - m_count_prev_chunkHit;
+      m_count_prev_chunkHit = m_player->getCountChunkHit();
+      m_gstat->increaseChunkHit((int)delta);
+      EV << "Got it: " << delta << endl;
+
+      //long m_count_chunkMiss = m_player->getCountChunkMiss();
+      //delta = m_count_chunkMiss - m_count_prev_chunkMiss;
+      delta = m_player->getCountChunkMiss() - m_count_prev_chunkMiss;
+      m_count_prev_chunkMiss = m_player->getCountChunkMiss();
+      m_gstat->increaseChunkMiss((int)delta);
+      EV << "Got it, 2: " << delta << endl;
+   }
+   else
+   {
+//      m_gstat->increaseChunkHit(0);
+//      m_gstat->increaseChunkMiss(0);
+   }
+
+}
 
 void DonetPeer::processPacket(cPacket *pkt)
 {
@@ -1641,8 +1637,8 @@ void DonetPeer::chunkScheduling()
 
     m_videoBuffer->printStatus();
 
-    randomChunkScheduling();
-//        donetChunkScheduling();
+//    randomChunkScheduling();
+        donetChunkScheduling();
 }
 
 void DonetPeer::reportLocalStatistic(void)

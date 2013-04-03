@@ -96,7 +96,7 @@ protected:
     // Timer
     void handleTimerTimeoutWaitingAccept();
     void handleTimerTimeoutWaitingAck();
-    void handleTimerReport(void);
+//    void handleTimerReport(void);
 
     // -- BufferMap
     void sendBufferMap(void);

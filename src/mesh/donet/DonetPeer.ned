@@ -55,6 +55,8 @@ simple DonetPeer extends DonetBase
 
         double interval_partnershipRefinement   @unit(s) = default(0.5s);
         double interval_partnerlistCleanup      @unit(s) = default(0.5s);
+
+        double interval_reportStatistic         @unit(s) = default(30s);
         
         // double keepAliveInterval             @unit(s) = default(1s);
         
