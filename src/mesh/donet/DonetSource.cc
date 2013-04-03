@@ -184,10 +184,10 @@ void DonetSource::handleTimerMessage(cMessage *msg)
        handleTimerPartnerlistCleanup();
        scheduleAt(simTime() + param_interval_partnerlistCleanup, timer_partnerListCleanup);
     }
-    else if (msg == timer_sendReport)
-    {
-       handleTimerReport();
-    }
+//    else if (msg == timer_sendReport)
+//    {
+//       handleTimerReport();
+//    }
 }
 
 void DonetSource::handleTimerPartnerlistCleanup()
