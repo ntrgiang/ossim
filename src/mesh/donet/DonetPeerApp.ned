@@ -56,14 +56,13 @@ module DonetPeerApp
     submodules:
         //membership: ScampPeer {
         membership: DummyMembership {
-            //membership: OracleMembership {
             @display("p=51,173;i=block/users");
         }
         mesh: DonetPeer {
             @display("p=132,173;i=block/network2");
         }
         partnerList: PartnerList {
-            @display("p=132,173;i=block/network2");
+            @display("p=132,104;i=block/network2");
         }
         forwarder: Forwarder {
             @display("p=211,173;i=block/rxtx");
