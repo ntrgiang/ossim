@@ -334,11 +334,11 @@ void DonetPeer::cancelAndDeleteAllTimer()
        timer_startPlayer       = NULL;
     }
 
-    if (timer_sendReport != NULL)
-    {
-       delete cancelEvent(timer_sendReport);
-       timer_sendReport       = NULL;
-    }
+//    if (timer_sendReport != NULL)
+//    {
+//       delete cancelEvent(timer_sendReport);
+//       timer_sendReport       = NULL;
+//    }
 
     if (timer_timeout_waiting_response != NULL)
     {

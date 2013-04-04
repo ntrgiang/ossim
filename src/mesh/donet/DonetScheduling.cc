@@ -118,7 +118,7 @@ void DonetPeer::donetChunkScheduling(void)
 
     // -- Have a copy of the expected_set, so that chunks which has been found a supplier will be deleted from this copy
 
-    std::map<SEQUENCE_NUMBER_T, std::vector<IPvXAddress> > holder;
+    //std::map<SEQUENCE_NUMBER_T, std::vector<IPvXAddress> > holder;
     // -------------------------------------------------------------------------
     // -- Browse through the expected_set
     // -------------------------------------------------------------------------

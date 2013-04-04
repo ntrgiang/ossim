@@ -47,10 +47,10 @@ DonetSource::~DonetSource()
        delete cancelEvent(timer_sendBufferMap);    timer_sendBufferMap = NULL;
     }
 
-    if (timer_sendReport != NULL)
-    {
-       delete cancelEvent(timer_sendReport);       timer_sendReport = NULL;
-    }
+//    if (timer_sendReport != NULL)
+//    {
+//       delete cancelEvent(timer_sendReport);       timer_sendReport = NULL;
+//    }
 }
 
 void DonetSource::initialize(int stage)
@@ -72,7 +72,7 @@ void DonetSource::initialize(int stage)
     param_threshold_idleDuration_buffermap = par("threshold_idleDuration_buffermap");
 
     timer_sendBufferMap = new cMessage("MESH_SOURCE_TIMER_SEND_BUFFERMAP");
-    timer_sendReport    = new cMessage("MESH_SOURCE_TIMER_SEND_REPORT");
+//    timer_sendReport    = new cMessage("MESH_SOURCE_TIMER_SEND_REPORT");
 
     timer_partnerListCleanup = new cMessage("MESH_SOURCE_TIMER_PARTNERLIST_CLEANUP");
 
