@@ -129,6 +129,8 @@ public:
     void reportStallDuration(double dur);
     void reportStallDuration(void); // overload the above function
 
+    void reportSystemSize(void);
+
     // -- Function to produce signals to collect stats about CI
     void collectCI(void);
     void collectSkipChunk(void);
@@ -143,17 +145,22 @@ public:
     void reportMeshJoin();
 
     void reportNumberOfPartner(int nPartner);
+    void reportNumberOfPartner(IPvXAddress addr, int nPartner);
     void reportNumberOfJoin(int val);
 
 private:
     NotificationBoard *nb; // cached pointer
     ActivePeerTable *m_apTable; // To get the number of active node for averaging recorded results
 
+    map<IPvXAddress, int> m_peerList;
+
     // -- Parameters
     double param_interval_reportCI;
+    double param_interval_reportSystemSize;
 
     // -- Messages
     cMessage *timer_reportCI;
+    cMessage *timer_reportSystemSize; // to tell instantiated number of active peers in the system
 
     cOutVector m_joinTime;
 
@@ -185,7 +192,7 @@ private:
     long double m_count_stallDuration;
     long m_count_stallDuration_chunk;
 
-    // -- Signals
+    // ---------------------------- Signals ------------------------------------
     simsignal_t sig_dummy_chunkHit;
 
     simsignal_t sig_chunkHit;
@@ -198,6 +205,7 @@ private:
     simsignal_t sig_rebuffering;
     simsignal_t sig_stallDuration;
     simsignal_t sig_ci;
+    simsignal_t sig_systemSize;
 
     // should be obsolete
     simsignal_t sig_chunkSeek;

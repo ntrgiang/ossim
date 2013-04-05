@@ -41,6 +41,9 @@
 
 using namespace std;
 
+// ------------------------ Static members -------------------------------------
+double DonetPeer::param_interval_reportActive = 0.0;
+
 Define_Module(DonetPeer)
 
 DonetPeer::DonetPeer() {}
@@ -111,6 +114,7 @@ void DonetPeer::initialize(int stage)
     timer_startPlayer       = new cMessage("MESH_PEER_TIMER_START_PLAYER");
     //timer_sendReport        = new cMessage("MESH_PEER_TIMER_SEND_REPORT");
     timer_reportStatistic   = new cMessage("MESH_PEER_TIMER_REPORT_STATISTIC");
+    timer_reportActive      = new cMessage("MESH_PEER_TIMER_REPORT_ACTIVE");
 
     //timer_timeout_waiting_accept = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
     timer_timeout_waiting_response  = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
@@ -133,6 +137,9 @@ void DonetPeer::initialize(int stage)
     param_interval_partnerlistCleanup     = par("interval_partnerlistCleanup");
     param_interval_reportStatistic        = par("interval_reportStatistic");
 
+    if (!param_interval_reportActive)
+       param_interval_reportActive = par("interval_reportActive");
+
     param_threshold_idleDuration_buffermap = par("threshold_idleDuration_buffermap");
 
     param_nNeighbor_SchedulingStart     = par("nNeighbor_SchedulingStart");
@@ -154,6 +161,7 @@ void DonetPeer::initialize(int stage)
     scheduleAt(simTime() + par("startTime").doubleValue(), timer_getJoinTime);
 
     scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
+    scheduleAt(simTime() + param_interval_reportActive, timer_reportActive);
 
     // m_nChunk_perSchedulingInterval = param_interval_chunkScheduling * param_downBw / param_chunkSize / 8;
 
@@ -270,6 +278,7 @@ void DonetPeer::initialize(int stage)
     WATCH(param_offsetNOP);
     WATCH(param_interval_partnerlistCleanup);
     WATCH(param_interval_reportStatistic);
+    WATCH(param_interval_reportActive);
     WATCH(param_threshold_idleDuration_buffermap);
 
     WATCH(m_videoStreamChunkRate);
@@ -398,6 +407,11 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
        EV << "hehehehe" << endl;
        handleTimerReportStatistic();
        scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
+    }
+    else if (msg == timer_reportActive)
+    {
+       handleTimerReportActive();
+       scheduleAt(simTime() + param_interval_reportActive, timer_reportActive);
     }
     else if (msg == timer_findMorePartner)
     {
@@ -929,6 +943,13 @@ void DonetPeer::handleTimerReportStatistic()
 //      m_gstat->increaseChunkMiss(0);
    }
 
+}
+
+void DonetPeer::handleTimerReportActive()
+{
+   Enter_Method("handleTimerReportActive");
+
+   m_gstat->reportNumberOfPartner(getNodeAddress(), m_partnerList->m_map.size());
 }
 
 void DonetPeer::processPacket(cPacket *pkt)

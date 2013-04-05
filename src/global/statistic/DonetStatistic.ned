@@ -42,6 +42,7 @@ simple DonetStatistic like IStreamingStatistic
 
       string gstatLog = default("..//results//gstatlog.txt");
       double interval_reportCI @unit(s) = default(0.5s);
+      double interval_reportSystemSize @unit(s) = default(0.5s);
 
 
 // -----------------------------------------------------------------------------
@@ -80,6 +81,9 @@ simple DonetStatistic like IStreamingStatistic
         // new stat - periodically
         // @statistic[CI](source="Signal_CI"; record=last,vector);
         @statistic[globalCI](source="Signal_CI"; record=last,mean,vector);
+
+        // To get the number active peers in the system
+        @statistic[systemSize](source="Signal_SystemSize"; record=mean,vector);
 
         //@statistic[SkipChunk](source="Signal_SkipChunk"; record=last,vector);
 

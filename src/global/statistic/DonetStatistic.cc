@@ -1,4 +1,4 @@
-//  
+//
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -48,6 +48,51 @@ DonetStatistic::~DonetStatistic() {
     }
 }
 
+void DonetStatistic::finish()
+{
+    // -- Close the log file
+    m_outFile.close();
+
+//    EV << "Everage size of InView: " << getAverageSizeInView() << endl;
+//    EV << "Everage size of PartialView: " << getAverageSizePartialView() << endl;
+
+    // -- Final Size of InViews & PartialViews
+//    m_finalSizeIV.record();
+//    m_finalSizePV.record();
+
+//    EV << "InView statistics: Max: " << m_finalSizeIV.getMax()
+//            << " -- Min: " << m_finalSizeIV.getMin()
+//            << " -- Mean: " << m_finalSizeIV.getMean() << endl;
+
+//    EV << "PartialView statistics: Max: " << m_finalSizePV.getMax()
+//                << " -- Min: " << m_finalSizePV.getMin()
+//                << " -- Mean: " << m_finalSizePV.getMean() << endl;
+
+//    EV << "Work around with subscriptions: " << endl;
+//    EV << "NEW: " << m_count_NEW << " -- IGN: " << m_count_IGN << " -- ACK: " << m_count_ACK << endl;
+
+    // -- Record a scalar value
+//    EV << "Accumulated PVsize: " << m_accumulatedSizePV << endl;
+//    EV << "Number of reported nodes: " << m_totalNode << endl;
+//    recordScalar("Average PartialView Size", m_accumulatedSizePV/(double)m_totalNode);
+
+    // -- For the histogram of the partial view sizes
+//    m_sizePV.recordAs("histogram of pvSize");
+
+    // -- For the histogram of the partial view sizes
+//    m_sizeIV.recordAs("histogram of ivSize");
+
+    // -- For checking the number of new App messages created and deleted
+    //EV << "The number of App message left: " << m_countAppMsgNew << endl;
+    //EV << "The number of ignored messaged (because of returning to sender: " << m_countSelfAppMsg << endl;
+
+    // -- For calculating and recording reach ratio
+//    EV << "The reach ratio (it should approximate the total number of nodes): "
+//            << 1 + (double)m_countReach / m_countAppMsgNew << endl;
+
+    recordScalar("Reach Ratio", (double)m_countReach / m_countAppMsgNew);
+}
+
 //void DonetStatistic::initialize()
 void DonetStatistic::initialize(int stage)
 {
@@ -70,6 +115,7 @@ void DonetStatistic::initialize(int stage)
         sig_rebuffering       = registerSignal("Signal_Rebuffering");
         sig_stallDuration     = registerSignal("Signal_StallDuration");
         sig_ci                = registerSignal("Signal_CI");
+        sig_systemSize        = registerSignal("Signal_SystemSize");
 
         // should be obsolete
         sig_chunkSeek       = registerSignal("Signal_ChunkSeek");
@@ -79,8 +125,10 @@ void DonetStatistic::initialize(int stage)
         sig_nJoin       = registerSignal("Signal_nJoin");
 
         timer_reportCI = new cMessage("GLOBAL_STATISTIC_REPORT_CI");
+        timer_reportSystemSize = new cMessage("GLOBAL_STATISTIC_REPORT_SYSTEM_SIZE");
 
         param_interval_reportCI = par("interval_reportCI").doubleValue();
+        param_interval_reportSystemSize = par("interval_reportSystemSize");
 
         m_count_allChunk = 0L;
         m_count_chunkHit = 0L;
@@ -117,6 +165,7 @@ void DonetStatistic::initialize(int stage)
     //m_outFile << "test" << endl;
 
     scheduleAt(simTime() + param_interval_reportCI, timer_reportCI);
+    scheduleAt(simTime() + param_interval_reportSystemSize, timer_reportSystemSize);
 
 //    cNumericResultRecorder *listener = new cNumericResultRecorder;
 //    simulation.getSystemModule()->subscribe("chunkHit_Global", listener);
@@ -171,56 +220,6 @@ void DonetStatistic::handleMessage(cMessage *msg)
     }
 }
 
-void DonetStatistic::receiveChangeNotification(int category, const cPolymorphic *details)
-{
-    return;
-}
-
-void DonetStatistic::finish()
-{
-    // -- Close the log file
-    m_outFile.close();
-
-//    EV << "Everage size of InView: " << getAverageSizeInView() << endl;
-//    EV << "Everage size of PartialView: " << getAverageSizePartialView() << endl;
-
-    // -- Final Size of InViews & PartialViews
-//    m_finalSizeIV.record();
-//    m_finalSizePV.record();
-
-//    EV << "InView statistics: Max: " << m_finalSizeIV.getMax()
-//            << " -- Min: " << m_finalSizeIV.getMin()
-//            << " -- Mean: " << m_finalSizeIV.getMean() << endl;
-
-//    EV << "PartialView statistics: Max: " << m_finalSizePV.getMax()
-//                << " -- Min: " << m_finalSizePV.getMin()
-//                << " -- Mean: " << m_finalSizePV.getMean() << endl;
-
-//    EV << "Work around with subscriptions: " << endl;
-//    EV << "NEW: " << m_count_NEW << " -- IGN: " << m_count_IGN << " -- ACK: " << m_count_ACK << endl;
-
-    // -- Record a scalar value
-//    EV << "Accumulated PVsize: " << m_accumulatedSizePV << endl;
-//    EV << "Number of reported nodes: " << m_totalNode << endl;
-//    recordScalar("Average PartialView Size", m_accumulatedSizePV/(double)m_totalNode);
-
-    // -- For the histogram of the partial view sizes
-//    m_sizePV.recordAs("histogram of pvSize");
-
-    // -- For the histogram of the partial view sizes
-//    m_sizeIV.recordAs("histogram of ivSize");
-
-    // -- For checking the number of new App messages created and deleted
-    //EV << "The number of App message left: " << m_countAppMsgNew << endl;
-    //EV << "The number of ignored messaged (because of returning to sender: " << m_countSelfAppMsg << endl;
-
-    // -- For calculating and recording reach ratio
-//    EV << "The reach ratio (it should approximate the total number of nodes): "
-//            << 1 + (double)m_countReach / m_countAppMsgNew << endl;
-
-    recordScalar("Reach Ratio", (double)m_countReach / m_countAppMsgNew);
-}
-
 void DonetStatistic::handleTimerMessage(cMessage *msg)
 {
     if (msg == timer_reportCI)
@@ -232,7 +231,18 @@ void DonetStatistic::handleTimerMessage(cMessage *msg)
 
         scheduleAt(simTime() + param_interval_reportCI, timer_reportCI);
     }
+    else if (msg == timer_reportSystemSize)
+    {
+       reportSystemSize();
+       scheduleAt(simTime() + param_interval_reportSystemSize, timer_reportSystemSize);
+    }
 }
+
+void DonetStatistic::receiveChangeNotification(int category, const cPolymorphic *details)
+{
+    return;
+}
+
 
 // ----------------- Interface in effect -------------------------
 void DonetStatistic::writeActivePeerTable2File(vector<IPvXAddress> activePeerList)
@@ -463,6 +473,23 @@ void DonetStatistic::reportRebuffering(const SEQUENCE_NUMBER_T &seq_num)
     emit(sig_rebuffering, seq_num);
 }
 
+void DonetStatistic::reportSystemSize()
+{
+   Enter_Method("reportSystemSize");
+
+   int count = 0;
+   map<IPvXAddress, int>::iterator iter;
+   for (map<IPvXAddress, int>::iterator iter = m_peerList.begin();
+        iter != m_peerList.end(); ++iter)
+   {
+      if (iter->second > 0) count++;
+   }
+
+   EV << "Number of reported peers: " << m_peerList.size() << endl;
+   EV << "Current system size: " << count << endl;
+   emit(sig_systemSize, count+1); // plus one for the streaming server
+}
+
 // should be obsolete
 void DonetStatistic::reportStall()
 {
@@ -529,6 +556,12 @@ void DonetStatistic::reportMeshJoin()
 void DonetStatistic::reportNumberOfPartner(int nPartner)
 {
     emit(sig_nPartner, nPartner);
+}
+
+void DonetStatistic::reportNumberOfPartner(IPvXAddress addr, int nPartner)
+{
+   m_peerList[addr] = nPartner;
+    //emit(sig_nPartner, nPartner);
 }
 
 void DonetStatistic::reportNumberOfJoin(int val)
