@@ -365,6 +365,12 @@ void DonetPeer::cancelAndDeleteAllTimer()
        timer_reportStatistic = NULL;
     }
 
+    if (timer_leave != NULL)
+    {
+       delete cancelEvent(timer_leave);
+       timer_leave = NULL;
+    }
+
 //    if (timer_reportStatistic != NULL) cancelAndDelete(timer_reportStatistic);
 
 }
