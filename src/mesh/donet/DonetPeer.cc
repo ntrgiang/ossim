@@ -102,6 +102,7 @@ void DonetPeer::initialize(int stage)
     // -- One-time timers
     timer_getJoinTime       = new cMessage("MESH_PEER_TIMER_GET_JOIN_TIME");
     timer_join              = new cMessage("MESH_PEER_TIMER_JOIN");
+    timer_leave             = new cMessage("MESH_PEER_TIMER_LEAVE");
 
     // -- Repeated timers
     timer_chunkScheduling   = new cMessage("MESH_PEER_TIMER_CHUNK_SCHEDULING");
@@ -421,8 +422,11 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
     else if (msg == timer_getJoinTime)
     {
         m_arrivalTime = m_churn->getArrivalTime();
+        m_departureTime = m_arrivalTime + m_churn->getSessionDuration();
+
         EV << "Scheduled arrival time: " << simTime().dbl() + m_arrivalTime << endl;
         scheduleAt(simTime() + m_arrivalTime, timer_join);
+        scheduleAt(simTime() + m_departureTime, timer_leave);
     }
     else if (msg == timer_join)
     {
@@ -431,6 +435,10 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
 
         // -- Schedule for a rejoin (if any)
         // scheduleAt(simTime() + param_interval_rejoin, timer_join);
+    }
+    else if (msg == timer_leave)
+    {
+       handleTimerLeave();
     }
 //    else if (msg == timer_sendReport)
 //    {
@@ -492,6 +500,16 @@ void DonetPeer::handleTimerJoin(void)
     } // switch()
 }
 
+void DonetPeer::handleTimerLeave()
+{
+   Enter_Method("handleTimerLeave()");
+
+   // should send all leave message to partners
+//   MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
+//        sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
+
+//   MeshPartnershipLeavePacket *leavePkt =
+}
 
 void DonetPeer::handleTimerFindMorePartner(void)
 {

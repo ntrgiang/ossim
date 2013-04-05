@@ -413,12 +413,14 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
     }
     case MESH_JOIN_STATE_IDLE:
     {
-        throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE) nodes");
+       // TODO
+        //throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE) nodes");
         break;
     }
     case MESH_JOIN_STATE_IDLE_WAITING:
     {
-        throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE_WAITING) nodes");
+       // TODO
+        //throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE_WAITING) nodes");
         break;
     }
     default:

@@ -88,6 +88,7 @@ private:
     // *************************************************************************
     // -- Partnership
     void handleTimerJoin(void);
+    void handleTimerLeave();
     void handleTimerFindMorePartner(void);
     void handleTimerTimeoutWaitingAccept();
     void handleTimerPartnershipRefinement(void);
@@ -151,6 +152,7 @@ private:
 // -----------------------------------------------------------------------------
     cMessage *timer_getJoinTime;
     cMessage *timer_join;
+    cMessage *timer_leave;
     cMessage *timer_chunkScheduling;
     cMessage *timer_findMorePartner;
     cMessage *timer_startPlayer;

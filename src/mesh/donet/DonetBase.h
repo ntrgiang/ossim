@@ -156,6 +156,7 @@ protected:
 
     // --- Additional variables for debugging purposes
     double m_arrivalTime;
+    double m_departureTime;
     double m_joinTime;
     double m_video_startTime;
     SEQUENCE_NUMBER_T m_head_videoStart;
