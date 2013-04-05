@@ -105,6 +105,7 @@ private:
     void updateDataExchangeRecord(double samplingInterval);
 
     void handleTimerReportStatistic();
+    void handleTimerReportActive();
 
     // !!! obsolete !!!
 //    void join();
@@ -158,6 +159,7 @@ private:
     cMessage *timer_startPlayer;
     cMessage *timer_timeout_joinReqAccept;
     cMessage *timer_reportStatistic;
+    cMessage *timer_reportActive;
 
     //cMessage *timer_timeout_waiting_accept;
     //cMessage *timer_timeout_waiting_ack;
@@ -183,6 +185,7 @@ private:
     double  param_interval_partnershipRefinement;
     double  param_interval_partnerlistCleanup;
     double  param_interval_reportStatistic;
+    static double  param_interval_reportActive;
 
     //double  param_baseValue_requestGreedyFactor;
     //double  param_aggressiveValue_requestGreedyFactor
