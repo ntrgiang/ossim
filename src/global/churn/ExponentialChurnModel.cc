@@ -34,6 +34,7 @@
 Define_Module(ExponentialChurnModel)
 
 double ExponentialChurnModel::m_absoluteInterval = 0.0;
+//ExponentialChurnModel::m_absoluteInterval = 0.0;
 
 ExponentialChurnModel::ExponentialChurnModel() {
     // TODO Auto-generated constructor stub

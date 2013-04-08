@@ -36,7 +36,7 @@
 #ifndef UNIFORM_CHURN_H_
 #define UNIFORM_CHURN_H_
 
-class UniformChurn : public IChurnGenerator, public cSimpleModule, protected INotifiable
+class UniformChurn : public IChurnGenerator, public cSimpleModule
 {
 public:
     UniformChurn();
@@ -45,15 +45,13 @@ public:
 protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
-    virtual void receiveChangeNotification(int category, const cPolymorphic *details);
 
 public:
     virtual double getArrivalTime();
     virtual double getSessionDuration();
     virtual double getDepartureTime();
-private:
-    NotificationBoard *nb; // cached pointer
 
+private:
     // -- Parameters
     double param_lowerBoundAT;
     double param_upperBoundAT;

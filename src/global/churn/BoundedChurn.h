@@ -36,7 +36,6 @@
 #ifndef BOUNDED_CHURN_H_
 #define BOUNDED_CHURN_H_
 
-//class BoundedChurn : public IChurnGenerator, public cSimpleModule, protected INotifiable
 class BoundedChurn : public IChurnGenerator, public cSimpleModule
 {
 public:
@@ -52,9 +51,8 @@ public:
     virtual double getArrivalTime();
     virtual double getSessionDuration();
     virtual double getDepartureTime();
-private:
-    NotificationBoard *nb; // cached pointer
 
+private:
     // -- Parameters
     double m_joinStart;
     double m_joinDuration;

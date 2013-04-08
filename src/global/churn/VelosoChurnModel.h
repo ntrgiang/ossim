@@ -36,7 +36,6 @@
 #ifndef VELOSO_CHURN_H_
 #define VELOSO_CHURN_H_
 
-//class VelosoChurnModel : public IChurnGenerator, public cSimpleModule, protected INotifiable
 class VelosoChurnModel : public IChurnGenerator, public cSimpleModule
 {
 public:
@@ -65,10 +64,6 @@ private:
 
     // Accumulated value to referback to the origine
     static double m_absoluteInterval;
-
-    // -- Signals
-//    simsignal_t sig_arrivalTime;
-//    simsignal_t sig_sessionDuration;
 };
 
 #endif /* VELOSO_CHURN_H_ */

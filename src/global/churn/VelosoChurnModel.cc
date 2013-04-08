@@ -38,45 +38,32 @@ double VelosoChurnModel::m_absoluteInterval = 0.0;
 
 VelosoChurnModel::VelosoChurnModel() {
     // TODO Auto-generated constructor stub
-
 }
 
 VelosoChurnModel::~VelosoChurnModel() {
     // TODO Auto-generated destructor stub
 }
 
-//void VelosoChurnModel::initialize(int stage)
 void VelosoChurnModel::initialize()
 {
-//    sig_arrivalTime = registerSignal("arrivalTime");
-//    sig_sessionDuration = registerSignal("sessionDuration");
-
-    // get a pointer to the NotificationBoard module and IInterfaceTable
-//    nb = NotificationBoardAccess().get();
-
-//    nb->subscribe(this, NF_INTERFACE_CREATED);
-//    nb->subscribe(this, NF_INTERFACE_DELETED);
-//    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
-//    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
-//    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
-
     // -- Get parameters
     param_rng       = par("rng");
     param_a         = par("a");
     param_b         = par("b");
     param_mu        = par("mu");
     param_lambda    = par("lambda");
+
+    WATCH(param_rng);
+    WATCH(param_a);
+    WATCH(param_b);
+    WATCH(param_mu);
+    WATCH(param_lambda);
 }
 
 void VelosoChurnModel::handleMessage(cMessage *)
 {
     EV << "ActivePeerTable doesn't process messages!" << endl;
 }
-
-//void VelosoChurnModel::receiveChangeNotification(int category, const cPolymorphic *details)
-//{
-//    return;
-//}
 
 double VelosoChurnModel::getArrivalTime()
 {
@@ -93,9 +80,6 @@ double VelosoChurnModel::getArrivalTime()
 
     m_joinTime = m_absoluteInterval;
 
-    // -- Emitting signals for statistics collection
-//    emit(sig_arrivalTime, m_absoluteInterval);
-
     return m_absoluteInterval;
 }
 
@@ -111,9 +95,6 @@ double VelosoChurnModel::getSessionDuration()
     //double duration = lognormal(mean, stddev, param_rng);
     double duration = lognormal(mean, stddev);
 
-    // -- Emitting signals for statistics collection
-//    emit(sig_sessionDuration, duration);
-
     return duration;
 }
 
@@ -128,12 +109,6 @@ double VelosoChurnModel::getDepartureTime()
     if (variance < 0) return -1.0;
 
     double stddev = sqrt(variance);
-
-    //double duration = lognormal(mean, stddev, param_rng);
-//    double duration = lognormal(mean, stddev);
-
-    // -- Emitting signals for statistics collection
-//    emit(sig_sessionDuration, duration);
 
     return (lognormal(mean, stddev) + m_joinTime);
 }

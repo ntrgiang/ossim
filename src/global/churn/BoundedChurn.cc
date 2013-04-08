@@ -43,15 +43,6 @@ BoundedChurn::~BoundedChurn() {
 
 void BoundedChurn::initialize()
 {
-    // get a pointer to the NotificationBoard module and IInterfaceTable
-//    nb = NotificationBoardAccess().get();
-
-//    nb->subscribe(this, NF_INTERFACE_CREATED);
-//    nb->subscribe(this, NF_INTERFACE_DELETED);
-//    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
-//    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
-//    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
-
     // -- Reading parameters
     m_leave = par("leave");
     m_joinStart = par("joinStart");

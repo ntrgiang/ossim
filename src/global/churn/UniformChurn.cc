@@ -45,15 +45,6 @@ UniformChurn::~UniformChurn() {
 
 void UniformChurn::initialize()
 {
-    // get a pointer to the NotificationBoard module and IInterfaceTable
-    nb = NotificationBoardAccess().get();
-
-    nb->subscribe(this, NF_INTERFACE_CREATED);
-    nb->subscribe(this, NF_INTERFACE_DELETED);
-    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
-    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
-    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
-
     // -- Reading parameters
     m_leave = par("leave");
     param_lowerBoundAT = par("lowerBoundAT");
@@ -71,11 +62,6 @@ void UniformChurn::initialize()
 void UniformChurn::handleMessage(cMessage *)
 {
     EV << "ActivePeerTable doesn't process messages!" << endl;
-}
-
-void UniformChurn::receiveChangeNotification(int category, const cPolymorphic *details)
-{
-    return;
 }
 
 double UniformChurn::getArrivalTime()

@@ -51,8 +51,6 @@ public:
     double getDepartureTime();
 
 private:
-//    NotificationBoard *nb; // cached pointer
-
     // -- Parameters
     int param_rng;
 
@@ -64,10 +62,6 @@ private:
 
     // Accumulated value to referback to the origine
     static double m_absoluteInterval;
-
-    // -- Signals
-//    simsignal_t sig_arrivalTime;
-//    simsignal_t sig_sessionDuration;
 };
 
 #endif /* EXPONENTIAL_CHURN_H_ */
