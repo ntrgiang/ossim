@@ -42,15 +42,15 @@ public:
     UniformChurn();
     virtual ~UniformChurn();
 
+protected:
     virtual void initialize();
-//    virtual void initialize(int stage);
-//    virtual int numInitStages() {return 4;}
     virtual void handleMessage(cMessage *msg);
     virtual void receiveChangeNotification(int category, const cPolymorphic *details);
 
 public:
     virtual double getArrivalTime();
     virtual double getSessionDuration();
+    virtual double getDepartureTime();
 private:
     NotificationBoard *nb; // cached pointer
 

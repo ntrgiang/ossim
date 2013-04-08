@@ -37,7 +37,6 @@ double ExponentialChurnModel::m_absoluteInterval = 0.0;
 
 ExponentialChurnModel::ExponentialChurnModel() {
     // TODO Auto-generated constructor stub
-
 }
 
 ExponentialChurnModel::~ExponentialChurnModel() {
@@ -47,17 +46,17 @@ ExponentialChurnModel::~ExponentialChurnModel() {
 //void ExponentialChurnModel::initialize(int stage)
 void ExponentialChurnModel::initialize()
 {
-    sig_arrivalTime = registerSignal("arrivalTime");
-    sig_sessionDuration = registerSignal("sessionDuration");
+//    sig_arrivalTime = registerSignal("arrivalTime");
+//    sig_sessionDuration = registerSignal("sessionDuration");
 
     // get a pointer to the NotificationBoard module and IInterfaceTable
-    nb = NotificationBoardAccess().get();
+//    nb = NotificationBoardAccess().get();
 
-    nb->subscribe(this, NF_INTERFACE_CREATED);
-    nb->subscribe(this, NF_INTERFACE_DELETED);
-    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
-    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
-    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
+//    nb->subscribe(this, NF_INTERFACE_CREATED);
+//    nb->subscribe(this, NF_INTERFACE_DELETED);
+//    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
+//    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
+//    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
 
     // -- Get parameters
     param_arrivalRate = par("arrivalRate");
@@ -70,11 +69,6 @@ void ExponentialChurnModel::initialize()
 void ExponentialChurnModel::handleMessage(cMessage *)
 {
     throw cException("ActivePeerTable doesn't process messages!");
-}
-
-void ExponentialChurnModel::receiveChangeNotification(int category, const cPolymorphic *details)
-{
-    return;
 }
 
 double ExponentialChurnModel::getArrivalTime()
@@ -91,16 +85,26 @@ double ExponentialChurnModel::getArrivalTime()
     // -- Accumulate the value into the origine
     m_absoluteInterval += deltaT;
 
-    emit(sig_arrivalTime, m_absoluteInterval);
+    m_joinTime = m_absoluteInterval;
+
+//    emit(sig_arrivalTime, m_absoluteInterval);
 
     return m_absoluteInterval;
 }
 
 double ExponentialChurnModel::getSessionDuration()
 {
-    double duration = exponential(param_meanDuration);
+    return (exponential(param_meanDuration));
+}
 
-    emit(sig_sessionDuration, duration);
-
-    return duration;
+double ExponentialChurnModel::getDepartureTime()
+{
+   if (m_leave == false)
+   {
+      return (-1.0);
+   }
+   else
+   {
+      return (m_joinTime + exponential(param_meanDuration));
+   }
 }

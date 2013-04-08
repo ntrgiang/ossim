@@ -35,24 +35,23 @@
 #ifndef EXPONENTIAL_CHURN_H_
 #define EXPONENTIAL_CHURN_H_
 
-class ExponentialChurnModel : public IChurnGenerator, public cSimpleModule, protected INotifiable
+//class ExponentialChurnModel : public IChurnGenerator, public cSimpleModule, protected INotifiable
+class ExponentialChurnModel : public IChurnGenerator, public cSimpleModule
 {
 public:
     ExponentialChurnModel();
     virtual ~ExponentialChurnModel();
 
     virtual void initialize();
-//    virtual void initialize(int stage);
-//    virtual int numInitStages() {return 4;}
     virtual void handleMessage(cMessage *msg);
-    virtual void receiveChangeNotification(int category, const cPolymorphic *details);
 
 public:
     double getArrivalTime();
     double getSessionDuration();
+    double getDepartureTime();
 
 private:
-    NotificationBoard *nb; // cached pointer
+//    NotificationBoard *nb; // cached pointer
 
     // -- Parameters
     int param_rng;
@@ -67,8 +66,8 @@ private:
     static double m_absoluteInterval;
 
     // -- Signals
-    simsignal_t sig_arrivalTime;
-    simsignal_t sig_sessionDuration;
+//    simsignal_t sig_arrivalTime;
+//    simsignal_t sig_sessionDuration;
 };
 
 #endif /* EXPONENTIAL_CHURN_H_ */

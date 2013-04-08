@@ -42,12 +42,6 @@ src/global/churn/ExponentialChurnModel.h
 src/global/churn/ExponentialChurnModel.ned
 src/global/churn/IChurnGenerator.h
 src/global/churn/IChurnModel.ned
-src/global/churn/PoissonChurnModel.cc
-src/global/churn/PoissonChurnModel.h
-src/global/churn/PoissonChurnModel.ned
-src/global/churn/StaticChurn.cc
-src/global/churn/StaticChurn.h
-src/global/churn/StaticChurn.ned
 src/global/churn/UniformChurn.cc
 src/global/churn/UniformChurn.h
 src/global/churn/UniformChurn.ned
@@ -272,3 +266,6 @@ src/global/statistic/StreamingStatistic.ned
 src/global/statistic/StreamingStatistic.h
 src/global/statistic/DiscoveryStatistic.ned
 src/global/statistic/DiscoveryStatistic.h
+src/global/churn/BoundedChurn.ned
+src/global/churn/BoundedChurn.h
+src/global/churn/BoundedChurn.cc

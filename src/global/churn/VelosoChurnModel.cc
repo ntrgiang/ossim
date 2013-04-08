@@ -48,17 +48,17 @@ VelosoChurnModel::~VelosoChurnModel() {
 //void VelosoChurnModel::initialize(int stage)
 void VelosoChurnModel::initialize()
 {
-    sig_arrivalTime = registerSignal("arrivalTime");
-    sig_sessionDuration = registerSignal("sessionDuration");
+//    sig_arrivalTime = registerSignal("arrivalTime");
+//    sig_sessionDuration = registerSignal("sessionDuration");
 
     // get a pointer to the NotificationBoard module and IInterfaceTable
-    nb = NotificationBoardAccess().get();
+//    nb = NotificationBoardAccess().get();
 
-    nb->subscribe(this, NF_INTERFACE_CREATED);
-    nb->subscribe(this, NF_INTERFACE_DELETED);
-    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
-    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
-    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
+//    nb->subscribe(this, NF_INTERFACE_CREATED);
+//    nb->subscribe(this, NF_INTERFACE_DELETED);
+//    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
+//    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
+//    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
 
     // -- Get parameters
     param_rng       = par("rng");
@@ -73,10 +73,10 @@ void VelosoChurnModel::handleMessage(cMessage *)
     EV << "ActivePeerTable doesn't process messages!" << endl;
 }
 
-void VelosoChurnModel::receiveChangeNotification(int category, const cPolymorphic *details)
-{
-    return;
-}
+//void VelosoChurnModel::receiveChangeNotification(int category, const cPolymorphic *details)
+//{
+//    return;
+//}
 
 double VelosoChurnModel::getArrivalTime()
 {
@@ -91,8 +91,10 @@ double VelosoChurnModel::getArrivalTime()
     // -- Accumulate the value into the origine
     m_absoluteInterval += deltaT;
 
+    m_joinTime = m_absoluteInterval;
+
     // -- Emitting signals for statistics collection
-    emit(sig_arrivalTime, m_absoluteInterval);
+//    emit(sig_arrivalTime, m_absoluteInterval);
 
     return m_absoluteInterval;
 }
@@ -110,7 +112,28 @@ double VelosoChurnModel::getSessionDuration()
     double duration = lognormal(mean, stddev);
 
     // -- Emitting signals for statistics collection
-    emit(sig_sessionDuration, duration);
+//    emit(sig_sessionDuration, duration);
 
     return duration;
+}
+
+double VelosoChurnModel::getDepartureTime()
+{
+   if (m_leave == false)
+      return (-1.0);
+
+    double mean = exp(param_mu + 0.5 * param_lambda * param_lambda);
+    double variance =  (exp(param_lambda * param_lambda) - 1) * (exp(2 * param_mu + param_lambda * param_lambda));
+
+    if (variance < 0) return -1.0;
+
+    double stddev = sqrt(variance);
+
+    //double duration = lognormal(mean, stddev, param_rng);
+//    double duration = lognormal(mean, stddev);
+
+    // -- Emitting signals for statistics collection
+//    emit(sig_sessionDuration, duration);
+
+    return (lognormal(mean, stddev) + m_joinTime);
 }

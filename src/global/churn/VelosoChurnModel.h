@@ -36,25 +36,22 @@
 #ifndef VELOSO_CHURN_H_
 #define VELOSO_CHURN_H_
 
-class VelosoChurnModel : public IChurnGenerator, public cSimpleModule, protected INotifiable
+//class VelosoChurnModel : public IChurnGenerator, public cSimpleModule, protected INotifiable
+class VelosoChurnModel : public IChurnGenerator, public cSimpleModule
 {
 public:
     VelosoChurnModel();
     virtual ~VelosoChurnModel();
 
     virtual void initialize();
-//    virtual void initialize(int stage);
-//    virtual int numInitStages() {return 4;}
     virtual void handleMessage(cMessage *msg);
-    virtual void receiveChangeNotification(int category, const cPolymorphic *details);
 
 public:
     double getArrivalTime();
     double getSessionDuration();
+    double getDepartureTime();
 
 private:
-    NotificationBoard *nb; // cached pointer
-
     // -- Parameters
     int param_rng;
 
@@ -70,8 +67,8 @@ private:
     static double m_absoluteInterval;
 
     // -- Signals
-    simsignal_t sig_arrivalTime;
-    simsignal_t sig_sessionDuration;
+//    simsignal_t sig_arrivalTime;
+//    simsignal_t sig_sessionDuration;
 };
 
 #endif /* VELOSO_CHURN_H_ */

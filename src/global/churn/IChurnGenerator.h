@@ -36,11 +36,17 @@ class IChurnGenerator
 {
 public:
     // IChurnGenerator() {};
-    virtual ~IChurnGenerator() {};
+    virtual ~IChurnGenerator() {}
 
 public:
     virtual double getArrivalTime() = 0;
     virtual double getSessionDuration() = 0;
+    virtual double getDepartureTime() = 0;
+
+protected:
+   bool m_leave;
+   double m_joinTime;
 };
+
 
 #endif /* ICHURNGENERATOR_H_ */

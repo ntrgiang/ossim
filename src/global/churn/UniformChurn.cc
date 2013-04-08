@@ -37,7 +37,6 @@ double UniformChurn::m_absoluteInterval = -1.0;
 
 UniformChurn::UniformChurn() {
     // TODO Auto-generated constructor stub
-
 }
 
 UniformChurn::~UniformChurn() {
@@ -56,11 +55,17 @@ void UniformChurn::initialize()
     nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
 
     // -- Reading parameters
+    m_leave = par("leave");
     param_lowerBoundAT = par("lowerBoundAT");
     param_upperBoundAT = par("upperBoundAT");
     param_lowerBoundDT = par("lowerBoundDT");
     param_upperBoundDT = par("upperBoundDT");
 
+    WATCH(m_leave);
+    WATCH(param_lowerBoundAT);
+    WATCH(param_upperBoundAT);
+    WATCH(param_lowerBoundDT);
+    WATCH(param_upperBoundDT);
 }
 
 void UniformChurn::handleMessage(cMessage *)
@@ -81,12 +86,32 @@ double UniformChurn::getArrivalTime()
 
     m_absoluteInterval += arrivalTime;
 
+    m_joinTime = m_absoluteInterval;
+
     return m_absoluteInterval;
 }
 
 double UniformChurn::getSessionDuration()
 {
-    double duration = uniform(param_lowerBoundDT, param_upperBoundDT);
+   if (m_leave == false)
+   {
+      return (-1.0);
+   }
+   else
+   {
+      return (uniform(param_lowerBoundDT, param_upperBoundDT));
+   }
+}
 
-    return duration;
+double UniformChurn::getDepartureTime()
+{
+   if (m_leave == false)
+   {
+      return (-1.0);
+   }
+   else
+   {
+      return (uniform(param_lowerBoundDT, param_upperBoundDT) + m_joinTime);
+   }
+
 }
