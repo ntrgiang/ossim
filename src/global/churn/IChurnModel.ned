@@ -37,6 +37,4 @@ moduleinterface IChurnModel
 {
     parameters:
         @display("i=block/user");
-
-        bool leave = default(false);
 }

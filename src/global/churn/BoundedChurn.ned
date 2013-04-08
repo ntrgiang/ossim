@@ -35,6 +35,8 @@ package so.global.churn;
 simple BoundedChurn like IChurnModel
 {
     parameters:
+        bool leave = default(false);
+
         // -- Lower & upper bound for Arrival Times
         double joinStart @unit(seconds);
         double joinDuration @unit(seconds);

@@ -43,6 +43,8 @@ package so.global.churn;
 simple ExponentialChurnModel like IChurnModel
 {
     parameters:
+        bool leave = default(false);
+
         int rng = default(1234);
         
         // -- For the Exponential distribution of inter-arrival times

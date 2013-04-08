@@ -40,6 +40,8 @@ package so.global.churn;
 simple VelosoChurnModel like IChurnModel
 {
     parameters:
+        bool leave = default(false);
+
         int rng = default(1);
         
         // -- For the Pareto distribution
