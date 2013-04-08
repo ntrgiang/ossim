@@ -20,7 +20,7 @@
 // this program. If not, see <http://www.gnu.org/licenses/>.
 
 // -----------------------------------------------------------------------------
-// PoissonChurnModel.ned
+// UniformChurn.h
 // -----------------------------------------------------------------------------
 // (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
 //
@@ -29,22 +29,38 @@
 // -----------------------------------------------------------------------------
 //
 
-//import simpleoverlay.global.churn.IChurnModel;
 
-package so.global.churn;
+#include "IChurnGenerator.h"
+#include "NotificationBoard.h"
 
+#ifndef BOUNDED_CHURN_H_
+#define BOUNDED_CHURN_H_
 
-// This model implements the Lifetime model with
-// -- Poisson arrival process --> inter-arrival times follow an Exponential distribution
-// -- Session times follow an Exponential distribution
-
-simple PoissonChurnModel like IChurnModel
+//class BoundedChurn : public IChurnGenerator, public cSimpleModule, protected INotifiable
+class BoundedChurn : public IChurnGenerator, public cSimpleModule
 {
-    parameters:
-        int rng = default(1234);
-        
-        double arrivalRate = default(1.0);      // in [arrivals per second]
-        double meanSessionTime = default(3.0);  // in [seconds]
-}
+public:
+    BoundedChurn();
+    virtual ~BoundedChurn();
 
+protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+//    virtual void receiveChangeNotification(int category, const cPolymorphic *details);
 
+public:
+    virtual double getArrivalTime();
+    virtual double getSessionDuration();
+    virtual double getDepartureTime();
+private:
+    NotificationBoard *nb; // cached pointer
+
+    // -- Parameters
+    double m_joinStart;
+    double m_joinDuration;
+    double m_leaveStart;
+    double m_leaveDuration;
+
+};
+
+#endif // BOUNDED_CHURN_H_

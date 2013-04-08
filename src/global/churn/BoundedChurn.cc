@@ -20,7 +20,7 @@
 // this program. If not, see <http://www.gnu.org/licenses/>.
 
 // -----------------------------------------------------------------------------
-// PoissonChurnModel.cc
+// UniformChurn.cc
 // -----------------------------------------------------------------------------
 // (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
 //
@@ -29,65 +29,75 @@
 // -----------------------------------------------------------------------------
 //
 
-#include "PoissonChurnModel.h"
+#include "BoundedChurn.h"
 
-Define_Module(PoissonChurnModel);
+Define_Module(BoundedChurn);
 
-double PoissonChurnModel::m_absoluteInterval = 0.0;
-
-PoissonChurnModel::PoissonChurnModel() {
+BoundedChurn::BoundedChurn() {
     // TODO Auto-generated constructor stub
-
 }
 
-PoissonChurnModel::~PoissonChurnModel() {
+BoundedChurn::~BoundedChurn() {
     // TODO Auto-generated destructor stub
 }
 
-//void PoissonChurnModel::initialize(int stage)
-void PoissonChurnModel::initialize()
+void BoundedChurn::initialize()
 {
     // get a pointer to the NotificationBoard module and IInterfaceTable
-    nb = NotificationBoardAccess().get();
+//    nb = NotificationBoardAccess().get();
 
-    nb->subscribe(this, NF_INTERFACE_CREATED);
-    nb->subscribe(this, NF_INTERFACE_DELETED);
-    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
-    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
-    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
+//    nb->subscribe(this, NF_INTERFACE_CREATED);
+//    nb->subscribe(this, NF_INTERFACE_DELETED);
+//    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
+//    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
+//    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
 
-    // -- Get parameters
-    param_rng               = par("rng");
-    param_arrivalRate       = par("arrivalRate");
-    param_meanSessionTime   = par("meanSessionTime");
+    // -- Reading parameters
+    m_leave = par("leave");
+    m_joinStart = par("joinStart");
+    m_joinDuration = par("joinDuration");
+    m_leaveStart = par("leaveStart");
+    m_leaveDuration = par("leaveDuration");
+
+    WATCH(m_leave);
+    WATCH(m_joinStart);
+    WATCH(m_joinDuration);
+    WATCH(m_leaveStart);
+    WATCH(m_leaveDuration);
 }
 
-void PoissonChurnModel::handleMessage(cMessage *)
+void BoundedChurn::handleMessage(cMessage *)
 {
     EV << "ActivePeerTable doesn't process messages!" << endl;
 }
 
-void PoissonChurnModel::receiveChangeNotification(int category, const cPolymorphic *details)
+double BoundedChurn::getArrivalTime()
 {
-    return;
+   m_joinTime = uniform(m_joinStart, m_joinStart + m_joinDuration);
+
+   return m_joinTime;
 }
 
-double PoissonChurnModel::getArrivalTime()
+double BoundedChurn::getSessionDuration()
 {
-    if (param_arrivalRate == 0) return -1;
-
-    // -- Get an interval which follows an exponential distribution with rate param_arrivalRate
-    double deltaT = exponential(1/param_arrivalRate, param_rng);
-
-    // -- Accumulate the value into the origine
-    m_absoluteInterval += deltaT;
-
-    return m_absoluteInterval;
+   if (m_leave == false)
+   {
+      return (-1.0);
+   }
+   else
+   {
+      return uniform(m_leaveStart, m_leaveStart + m_leaveDuration) - m_joinTime;
+   }
 }
 
-double PoissonChurnModel::getSessionDuration()
+double BoundedChurn::getDepartureTime()
 {
-    double deltaT = exponential(param_meanSessionTime, param_rng);
-
-    return deltaT;
+   if (m_leave == false)
+   {
+      return (-1.0);
+   }
+   else
+   {
+      return uniform(m_leaveStart, m_leaveStart + m_leaveDuration);
+   }
 }

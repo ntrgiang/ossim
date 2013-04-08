@@ -20,7 +20,7 @@
 // this program. If not, see <http://www.gnu.org/licenses/>.
 
 // -----------------------------------------------------------------------------
-// StaticChurn.ned
+// UniformChurn.ned
 // -----------------------------------------------------------------------------
 // (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
 //
@@ -30,27 +30,16 @@
 //
 
 
-
 package so.global.churn;
 
-simple StaticChurn like IChurnModel
+simple BoundedChurn like IChurnModel
 {
     parameters:
-//        double arrivalTime      @unit(seconds) = default(1.0);
-//        double sessionDuration  @unit(seconds) = default(11.0);
-        
         // -- Lower & upper bound for Arrival Times
-        double lowerBoundAT @unit(seconds);
-        double upperBoundAT @unit(seconds);
+        double joinStart @unit(seconds);
+        double joinDuration @unit(seconds);
         
-//        double arrivalTime @units(milliseconds) = default(1.0);
-//        double departTime @units(milliseconds) = default(11.0);
-        
-        // -- Possible signals
-        @signal[arrivalTime](type="double");
-        @signal[sessionDuration](type="double");
-        
-        // -- Statistics
-        @statistic[arrivalTime](title="Global Arrival Times"; source=arrivalTime; record=count, vector);
-        @statistic[sessionDuration](title="Global Session Durations"; source=sessionDuration; record=count, vector);
+        // -- Lower & upper bound for Departure Times
+        double leaveStart @unit(seconds);
+        double leaveDuration @unit(seconds);
 }
