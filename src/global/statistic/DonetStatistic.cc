@@ -477,17 +477,27 @@ void DonetStatistic::reportSystemSize()
 {
    Enter_Method("reportSystemSize");
 
+   EV << "report system size: " << endl;
    int count = 0;
-   map<IPvXAddress, int>::iterator iter;
    for (map<IPvXAddress, int>::iterator iter = m_peerList.begin();
         iter != m_peerList.end(); ++iter)
    {
+      EV << iter->second << endl;
       if (iter->second > 0) count++;
    }
 
    EV << "Number of reported peers: " << m_peerList.size() << endl;
    EV << "Current system size: " << count << endl;
    emit(sig_systemSize, count+1); // plus one for the streaming server
+}
+
+void DonetStatistic::printActivePeerList(void)
+{
+   for (std::map<IPvXAddress, int>::iterator iter = m_peerList.begin();
+        iter != m_peerList.end(); ++iter)
+   {
+      EV << iter->first << " with " << iter->second << " partner(s)" << endl;
+   }
 }
 
 // should be obsolete
@@ -558,10 +568,19 @@ void DonetStatistic::reportNumberOfPartner(int nPartner)
     emit(sig_nPartner, nPartner);
 }
 
-void DonetStatistic::reportNumberOfPartner(IPvXAddress addr, int nPartner)
+void DonetStatistic::reportNumberOfPartner(const IPvXAddress &addr, const int &nPartner)
 {
+   Enter_Method("reportNumberOfPartner");
+
+   EV << "Report number of partners" << endl;
+   EV << "Peer " << addr << " with " << nPartner << " partners" << endl;
+   printActivePeerList();
+   EV << endl << endl;
+
    m_peerList[addr] = nPartner;
     //emit(sig_nPartner, nPartner);
+
+   printActivePeerList();
 }
 
 void DonetStatistic::reportNumberOfJoin(int val)

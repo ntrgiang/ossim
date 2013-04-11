@@ -309,7 +309,7 @@ void DonetBase::reportStatus()
 {
     Partnership p;
         p.address           = getNodeAddress();
-        p.arrivalTime       = m_arrivalTime;
+        //p.arrivalTime       = m_arrivalTime;
         p.joinTime          = m_joinTime;
         p.nPartner          = m_partnerList->getSize();
         p.video_startTime   = m_video_startTime;
@@ -432,6 +432,30 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
 
 }
 
+//void DonetBase::processPartnerLeave(cPacket *pkt)
+//{
+//   Enter_Method("processPartnerLeave()");
+
+//   EV << endl << "-------- Process partner leave ---------------" << endl;
+
+//   // -- Get the identifier (IP:port) and upBw of the requester
+//   IPvXAddress leaveAddress;
+//   int leavePort;
+//   //MeshPartnershipLeavePacket *memPkt = check_and_cast<MeshPartnershipLeavePacket *>(pkt);
+//      getSender(pkt, leaveAddress, leavePort);
+
+//   EV << "Requester: " << endl
+//      << "-- Address:\t\t"         << leaveAddress << endl;
+
+//   EV << "Partner list before removing partner: " << endl;
+//   m_partnerList->print();
+
+//   m_partnerList->m_map.erase(m_partnerList->m_map.find(leaveAddress));
+
+//   EV << "Partner list after removing partner: " << endl;
+//   m_partnerList->print();
+//}
+
 void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
 {
     if (canAcceptMorePartner())
@@ -500,8 +524,13 @@ void DonetBase::processPartnershipLeave(cPacket *pkt)
    getSender(pkt, leavingAddress, senderPort);
    //MeshChunkRequestPacket *reqPkt = check_and_cast<MeshChunkRequestPacket *>(pkt);
 
-   EV << "Chunk request received from " << leavingAddress << ": " << endl;
+   EV << "Leave request received from " << leavingAddress << endl;
+
+   EV << "Partner list before removing partner: " << endl;
+   m_partnerList->print();
 
    m_partnerList->deleteAddress(leavingAddress);
 
+   EV << "Partner list after removing partner: " << endl;
+   m_partnerList->print();
 }

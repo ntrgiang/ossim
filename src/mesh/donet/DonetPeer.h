@@ -143,6 +143,8 @@ private:
     void printListOfRequestedChunk(void);
     bool inScarityState(void);
 
+    MeshPartnershipLeavePacket* generatePartnershipRequestLeavePacket();
+
 
 //    bool shouldStartPlayer(void);
 //    void startPlayer(void);

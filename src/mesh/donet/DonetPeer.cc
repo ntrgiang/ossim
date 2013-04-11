@@ -1,4 +1,4 @@
-//  
+//
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -240,7 +240,7 @@ void DonetPeer::initialize(int stage)
     sig_nBufferMapReceived = registerSignal("Signal_nBufferMapReceived");
 
     // -- Debugging variables
-    m_arrivalTime = -1.0;
+//    m_arrivalTime = -1.0;
     m_joinTime = -1.0;
     m_video_startTime = -1.0;
     m_head_videoStart = -1L;
@@ -380,6 +380,11 @@ void DonetPeer::cancelAndDeleteAllTimer()
        timer_leave = NULL;
     }
 
+    if (timer_reportActive != NULL)
+    {
+       delete cancelEvent(timer_reportActive);
+       timer_reportActive = NULL;
+    }
 //    if (timer_reportStatistic != NULL) cancelAndDelete(timer_reportStatistic);
 
 }
@@ -392,6 +397,7 @@ void DonetPeer::cancelAllTimer()
    cancelEvent(timer_partnershipRefinement);
    cancelEvent(timer_partnerListCleanup);
    cancelEvent(timer_reportStatistic);
+   cancelEvent(timer_reportActive);
 }
 
 void DonetPeer::handleTimerMessage(cMessage *msg)
@@ -441,12 +447,21 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
     }
     else if (msg == timer_getJoinTime)
     {
-        m_arrivalTime = m_churn->getArrivalTime();
-        m_departureTime = m_arrivalTime + m_churn->getSessionDuration();
+        double arrivalTime = m_churn->getArrivalTime();
 
-        EV << "Scheduled arrival time: " << simTime().dbl() + m_arrivalTime << endl;
-        scheduleAt(simTime() + m_arrivalTime, timer_join);
-        scheduleAt(simTime() + m_departureTime, timer_leave);
+        EV << "Scheduled arrival time: " << simTime().dbl() + arrivalTime << endl;
+        scheduleAt(simTime() + arrivalTime, timer_join);
+
+        double departureTime = m_churn->getDepartureTime();
+        if (departureTime > 0.0)
+        {
+           EV << "Scheduled departure time: " << simTime().dbl() + departureTime << endl;
+           scheduleAt(simTime() + departureTime, timer_leave);
+        }
+        else
+        {
+           EV << "DepartureTime = " << departureTime << " --> peer won't leave" << endl;
+        }
     }
     else if (msg == timer_join)
     {
@@ -458,6 +473,7 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
     }
     else if (msg == timer_leave)
     {
+       //EV << "Timer leave" << endl;
        handleTimerLeave();
     }
 //    else if (msg == timer_sendReport)
@@ -524,11 +540,33 @@ void DonetPeer::handleTimerLeave()
 {
    Enter_Method("handleTimerLeave()");
 
-   // should send all leave message to partners
-//   MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
-//        sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
+   EV << "Handle timer leave" << endl;
 
-//   MeshPartnershipLeavePacket *leavePkt =
+   MeshPartnershipLeavePacket *leavePkt = generatePartnershipRequestLeavePacket();
+
+   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+        iter != m_partnerList->m_map.end(); ++iter)
+   {
+      sendToDispatcher(leavePkt->dup(), m_localPort, iter->first, m_destPort);
+   }
+   delete leavePkt; leavePkt = NULL;
+
+   // - clear the partnerlist
+   m_partnerList->m_map.clear();
+
+   // - Report to Active Peer Table
+   m_apTable->removeAddress(getNodeAddress());
+
+   // - Report to Discovery Layer
+   m_memManager->deletePeerAddress(getNodeAddress());
+
+   // - Report to statistic module
+//   m_gstat->reportNumberOfPartner(getNodeAddress(), 0); // left the system
+   m_gstat->reportNumberOfPartner(getNodeAddress(), m_partnerList->m_map.size()); // leaving
+
+   cancelAllTimer();
+
+   m_state = MESH_JOIN_STATE_IDLE;
 }
 
 void DonetPeer::handleTimerFindMorePartner(void)
@@ -1899,4 +1937,10 @@ void DonetPeer::printListOfRequestedChunk(void)
     EV << endl;
 }
 
+MeshPartnershipLeavePacket* DonetPeer::generatePartnershipRequestLeavePacket()
+{
+    MeshPartnershipLeavePacket *leavePkt = new MeshPartnershipLeavePacket("MESH_PEER_LEAVE");
+        leavePkt->setBitLength(m_appSetting->getPacketSizePartnershipLeave());
 
+    return leavePkt;
+}

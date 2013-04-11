@@ -145,8 +145,11 @@ public:
     void reportMeshJoin();
 
     void reportNumberOfPartner(int nPartner);
-    void reportNumberOfPartner(IPvXAddress addr, int nPartner);
+    void reportNumberOfPartner(const IPvXAddress &addr, const int &nPartner);
     void reportNumberOfJoin(int val);
+
+private:
+    void printActivePeerList(void);
 
 private:
     NotificationBoard *nb; // cached pointer

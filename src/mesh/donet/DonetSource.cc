@@ -96,13 +96,13 @@ void DonetSource::initialize(int stage)
     // -- States
     m_state = MESH_JOIN_STATE_ACTIVE;
 
-    sig_pRequestRecv = registerSignal("Signal_pRequestRecv");
+    //sig_pRequestRecv = registerSignal("Signal_pRequestRecv");
     sig_pRejectSent = registerSignal("Signal_pRejectSent");
 
     sig_pRequestRecv_whileWaiting = registerSignal("Signal_pRequestRecv_whileWaiting");
 
     // --- For logging variables
-    m_arrivalTime = -1.0;
+//    m_arrivalTime = -1.0;
     m_joinTime = -1.0;
     m_video_startTime = -1.0;
     m_head_videoStart = -1L;
@@ -270,6 +270,11 @@ void DonetSource::processPacket(cPacket *pkt)
         // Does NOTHING! Video Source does not process Buffer Map
         processPeerBufferMap(pkt);
         break;
+    }
+    case MESH_PARTNERSHIP_LEAVE:
+    {
+       processPartnershipLeave(pkt);
+       break;
     }
     default:
     {

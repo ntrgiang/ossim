@@ -126,7 +126,8 @@ void DummyMembership::addSourceAddress(const IPvXAddress &address, int maxNOP)
 
 bool DummyMembership::deletePeerAddress(const IPvXAddress &address)
 {
-   //return m_apTable->deletePeerAddress(address);
+   Enter_Method("deletePeerAddress()");
+   m_activePeerList.erase(address);
    return false;
 }
 

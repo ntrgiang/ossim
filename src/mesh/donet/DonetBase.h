@@ -50,7 +50,8 @@
 
 //class Logger;
 
-enum Mesh_Join_State {
+enum Mesh_Join_State
+{
     MESH_JOIN_STATE_IDLE            = 0,
     MESH_JOIN_STATE_IDLE_WAITING    = 1,
     MESH_JOIN_STATE_ACTIVE          = 2,
@@ -88,6 +89,7 @@ protected:
     // *************************************************************************
     // -- Partner Management
     void processPartnershipRequest(cPacket *pkt);
+//    void processPartnerLeave(cPacket *pkt);
     void considerAcceptPartner(PendingPartnershipRequest requester);
     bool canAcceptMorePartner(void);
     void addPartner(IPvXAddress remote, double bw);
@@ -155,8 +157,8 @@ protected:
 
 
     // --- Additional variables for debugging purposes
-    double m_arrivalTime;
-    double m_departureTime;
+//    double m_arrivalTime;
+//    double m_departureTime;
     double m_joinTime;
     double m_video_startTime;
     SEQUENCE_NUMBER_T m_head_videoStart;
