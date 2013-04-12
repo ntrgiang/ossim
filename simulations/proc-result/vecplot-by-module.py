@@ -21,7 +21,12 @@
 // Authors: Stephan Krause
 //
 // Modified: Giang Nguyen
+// Added option -m --module
 //
+// Sample command:
+// ./vecplot-by-module.py localCI:vector ../results/Donet_Homo_oneRouter_Network-0.vec -r 0 150 -m "peerNode[6]"
+//
+
 """
 
 import matplotlib.pyplot as plt
