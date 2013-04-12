@@ -74,8 +74,6 @@ void DonetPeer::initialize(int stage)
 //        sig_maxHead  = registerSignal("Signal_MaxHead");
 //        sig_currentPlaybackPoint = registerSignal("Signal_CurrentPlaybackPoint");
 
-//        sig_localCI = registerSignal("Signal_LocalCI");
-
         return;
     }
     if (stage != 3)
@@ -123,10 +121,9 @@ void DonetPeer::initialize(int stage)
 
     timer_partnerListCleanup = new cMessage("MESH_PEER_TIMER_PARTNERLIST_CLEANUP");
 
-
     // Parameters of the module itself
     // param_bufferMapInterval             = par("bufferMapInterval");
-    //param_chunkSchedulingInterval       = par("chunkSchedulingInterval");
+    // param_chunkSchedulingInterval       = par("chunkSchedulingInterval");
     //    param_interval_rejoin               = par("interval_rejoin");
 
     param_interval_chunkScheduling        = par("interval_chunkScheduling");
@@ -233,7 +230,6 @@ void DonetPeer::initialize(int stage)
     sig_schedWin_end    = registerSignal("Signal_SchedWin_end");
 
     sig_localCI = registerSignal("Signal_LocalCI");
-    sig_myci = registerSignal("Signal_myCI");
 
     sig_inThroughput = registerSignal("Signal_InThroughput");
 
@@ -257,6 +253,8 @@ void DonetPeer::initialize(int stage)
     m_seqNum_schedWinEnd = 0L;
     m_seqNum_schedWinHead = 0L;
 
+    m_count_prev_chunkHit = 0L;
+    m_count_prev_chunkMiss = 0L;
     // -------------------------------------------------------------------------
     // --------------------------- WATCH ---------------------------------------
     // -------------------------------------------------------------------------
@@ -1747,7 +1745,6 @@ void DonetPeer::reportLocalStatistic(void)
     else
     {
        emit(sig_localCI, (long double)nHit / (nHit + nMiss));
-//       emit(sig_localCI, (long double)nHit);
     }
 }
 

@@ -145,7 +145,6 @@ private:
 
     MeshPartnershipLeavePacket* generatePartnershipRequestLeavePacket();
 
-
 //    bool shouldStartPlayer(void);
 //    void startPlayer(void);
 
@@ -271,8 +270,7 @@ private:
        simsignal_t sig_schedWin_start;
        simsignal_t sig_schedWin_end;
 
-    simsignal_t sig_localCI;
-    simsignal_t sig_myci;
+       simsignal_t sig_localCI;
 
     // -- Chunks
        simsignal_t sig_chunkRequestSeqNum;
@@ -307,4 +305,4 @@ private:
 
 };
 
-#endif
+#endif // DONETPEER_H_

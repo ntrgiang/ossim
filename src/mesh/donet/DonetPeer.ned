@@ -83,16 +83,20 @@ simple DonetPeer extends DonetBase
         // ------------------------------ Statistics ---------------------------
         // ---------------------------------------------------------------------
 
+        // -- For debug
+        // @statistic[localCI](source="Signal_LocalCI"; record=min,max,mean,last,vector);
+
+        // -- Old metrics
         // -- Possible signals to collect
         @signal[Signal_chunkRequest](type=long);
-        @statistic[chunkRequest](title="Sequence Number of chunk requests"; source=Signal_chunkRequest; record=count, vector);
+        //@statistic[chunkRequest](title="Sequence Number of chunk requests"; source=Signal_chunkRequest; record=count, vector);
 
 
         // -- title="Number of new chunk for scheduling per cycle";
         //@statistic[newChunkForRequest](source=Signal_nNewChunkForRequestPerCycle; record=vector);
 
         // -- title="Number of requested chunks per cycle";
-        @statistic[nChunkRequested](source=Signal_nChunkRequested; record=mean,vector);
+        //@statistic[nChunkRequested](source=Signal_nChunkRequested; record=mean,vector);
         
         // -- title="Number of partners";
         //@statistic[nPartner](source=Signal_nPartner; record=last,vector);
@@ -113,8 +117,6 @@ simple DonetPeer extends DonetBase
     //@statistic[pRejectRecv](title="Partnership reject received"; source=Signal_pRejectRecv; record=count,vector);
     //@statistic[pRequestRecv_whileWaiting](title="Number of timeout events"; source=Signal_pRequestRecv_whileWaiting; record=count,vector);
 
-    //@statistic[localCI](source="Signal_LocalCI"; record=min,max,mean,last,vector);
-    //@statistic[myCI](source="Signal_myCI"; record=min,max,mean,last,vector);
 
 // ----------- Ranges of the received Buffer maps and current playback point
     //@statistic[minStart](source=Signal_MinStart; record=vector);
