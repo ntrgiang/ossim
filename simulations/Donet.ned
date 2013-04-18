@@ -42,7 +42,7 @@ network Donet_Homo_oneRouter_Network extends BasicNetwork
         }
         channel Channel_homo_up extends ned.DatarateChannel
         {
-            datarate = 900kbps;
+            datarate = 1100kbps;
         }
         channel Channel_homo_down extends ned.DatarateChannel
         {
