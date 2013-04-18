@@ -39,3 +39,7 @@ src/common/DpControlInfo_m.cc
 src/common/DpControlInfo_m.h
 src/mesh/coolstreaming/CoolstreamingPacket_m.cc
 src/mesh/coolstreaming/CoolstreamingPacket_m.h
+src/common/PeerStreamingPacket_m.h
+src/common/PeerStreamingPacket_m.cc
+src/membership/newscast/NewscastPacket_m.h
+src/membership/newscast/NewscastPacket_m.cc
