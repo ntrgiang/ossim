@@ -967,9 +967,10 @@ void DonetPeer::handleTimerReportStatistic()
    if (simTime().dbl() < simulation.getWarmupPeriod().dbl())
       return;
 
+   reportHitMiss();
 }
 
-void DonetPeer::ReportHitMiss()
+void DonetPeer::reportHitMiss()
 {
    if (m_player->getState() == PLAYER_STATE_PLAYING)
    {
