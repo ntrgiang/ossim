@@ -15,18 +15,19 @@
 //
 
 
-package p2pstreaming.underlay.networks;
+//package p2pstreaming.underlay.networks;
+package so.simulations;
 
-import p2pstreaming.modules.Statistic.Statistics;
-import p2pstreaming.modules.Attacker.AttackerModule;
-import p2pstreaming.modules.Attacker.UnderlayAttacker.UnderlayAttackerModule;
-import p2pstreaming.modules.CoordinateSystem.CoordinateLoader;
-import p2pstreaming.modules.Configuration.Configuration;
-import p2pstreaming.modules.Bootstrap.Bootstrap;
+//import p2pstreaming.modules.Statistic.Statistics;
+//import p2pstreaming.modules.Attacker.AttackerModule;
+//import p2pstreaming.modules.Attacker.UnderlayAttacker.UnderlayAttackerModule;
+//import p2pstreaming.modules.CoordinateSystem.CoordinateLoader;
+//import p2pstreaming.modules.Configuration.Configuration;
+//import p2pstreaming.modules.Bootstrap.Bootstrap;
 import p2pstreaming.modules.ALM_RouterSupport.ARS_RouterManager;
-import p2pstreaming.modules.Streaming.GlobalStreamTable;
+//import p2pstreaming.modules.Streaming.GlobalStreamTable;
 import p2pstreaming.underlay.InetUnderlayConfigurator;
-import p2pstreaming.underlay.StatisticHost;
+//import p2pstreaming.underlay.StatisticHost;
 import p2pstreaming.underlay.StatisticRouter;
 
 
@@ -64,30 +65,30 @@ module RouterLineNetwork
                 @display("i=block/uparrow");
         }
 
-        statistics: Statistics {
-            parameters:
-                @display("i=block/table");
-        }
-        attacker: AttackerModule {
-            parameters:
-                @display("i=abstract/people");
-        }
-        underlayAttacker: UnderlayAttackerModule {
-            parameters:
-                @display("i=abstract/people");
-        }
-        coordLoader: CoordinateLoader {
-            parameters:
-                @display("i=device/receiverdish");
-        }
-        configuration: Configuration {
-            parameters:
-                @display("i=block/table");
-        }
-        bootstrap: Bootstrap {
-            parameters:
-                @display("i=block/table");
-        }
+//        statistics: Statistics {
+//            parameters:
+//                @display("i=block/table");
+//        }
+//        attacker: AttackerModule {
+//            parameters:
+//                @display("i=abstract/people");
+//        }
+//        underlayAttacker: UnderlayAttackerModule {
+//            parameters:
+//                @display("i=abstract/people");
+//        }
+//        coordLoader: CoordinateLoader {
+//            parameters:
+//                @display("i=device/receiverdish");
+//        }
+//        configuration: Configuration {
+//            parameters:
+//                @display("i=block/table");
+//        }
+//        bootstrap: Bootstrap {
+//            parameters:
+//                @display("i=block/table");
+//        }
         rt[r+1]: StatisticRouter {
             parameters:
                 @display("i=abstract/router");

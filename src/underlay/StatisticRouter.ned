@@ -8,7 +8,8 @@
 //
 
 
-package p2pstreaming.underlay;
+..package p2pstreaming.underlay;
+package so.underlay;
 
 import inet.base.NotificationBoard;
 import inet.networklayer.common.InterfaceTable;
