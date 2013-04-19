@@ -294,3 +294,10 @@ src/underlay/networks/GTITM_TS_ATT2.ned
 src/underlay/networks/GTITM_TS_ATT.ned
 src/underlay/networks/750GLP-RIOU.ned
 src/underlay/networks/750GLP-HIOU.ned
+src/underlay/PPDatatypes.h
+src/underlay/INetModuleAccess.h
+src/underlay/CooperativeModule.h
+src/underlay/CooperativeModule.cc
+src/underlay/Configuration/Configuration.ned
+src/underlay/Configuration/Configuration.h
+src/underlay/Configuration/Configuration.cc
