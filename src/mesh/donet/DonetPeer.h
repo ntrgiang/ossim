@@ -135,6 +135,7 @@ private:
 
     void updateRange(void);
     void reportLocalStatistic(void);
+    void ReportHitMiss();
 
     int numberOfChunkToRequestPerCycle(void);
     double currentRequestGreedyFactor(void);

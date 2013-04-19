@@ -38,6 +38,7 @@
 #include "DonetPeer.h"
 #include "DpControlInfo_m.h"
 #include <algorithm>
+#include <csimulation.h>
 
 using namespace std;
 
@@ -963,6 +964,13 @@ void DonetPeer::handleTimerTimeoutWaitingAccept()
 void DonetPeer::handleTimerReportStatistic()
 {
    //if (m_player->playerStarted() == true)
+   if (simTime().dbl() < simulation.getWarmupPeriod().dbl())
+      return;
+
+}
+
+void DonetPeer::ReportHitMiss()
+{
    if (m_player->getState() == PLAYER_STATE_PLAYING)
    {
       //long m_count_chunkHit = m_player->getCountChunkHit();
@@ -984,7 +992,6 @@ void DonetPeer::handleTimerReportStatistic()
 //      m_gstat->increaseChunkHit(0);
 //      m_gstat->increaseChunkMiss(0);
    }
-
 }
 
 void DonetPeer::handleTimerReportActive()
