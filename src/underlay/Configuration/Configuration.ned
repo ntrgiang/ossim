@@ -1,4 +1,5 @@
-package p2pstreaming.modules.Configuration;
+//package p2pstreaming.modules.Configuration;
+package so.underlay.Configuration;
 
 simple Configuration
 {

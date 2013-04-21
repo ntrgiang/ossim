@@ -8,7 +8,7 @@
 //
 
 
-..package p2pstreaming.underlay;
+//package p2pstreaming.underlay;
 package so.underlay;
 
 import inet.base.NotificationBoard;
@@ -19,12 +19,20 @@ import inet.linklayer.ethernet.EthernetInterface;
 import inet.transport.udp.UDP;
 import inet.nodes.inet.NetworkLayer;
 
-import p2pstreaming.base.inet.InterfaceTableMobility;
-import p2pstreaming.base.inet.NetworkLayerMobility;
-import p2pstreaming.modules.Statistic.RoutingCostTable;
-import p2pstreaming.modules.Statistic.PacketCountTable;
-import p2pstreaming.modules.Statistic.HostStatistics;
-import p2pstreaming.modules.ALM_RouterSupport.ARS_Controller;
+//import p2pstreaming.base.inet.InterfaceTableMobility;
+//import p2pstreaming.base.inet.NetworkLayerMobility;
+//import p2pstreaming.modules.Statistic.RoutingCostTable;
+//import p2pstreaming.modules.Statistic.PacketCountTable;
+//import p2pstreaming.modules.Statistic.HostStatistics;
+//import p2pstreaming.modules.ALM_RouterSupport.ARS_Controller;
+
+import so.underlay.InterfaceTableMobility;
+//import so.underlay.NetworkLayerMobility;
+//import so.underlay.Statistic.RoutingCostTable;
+//import p2pstreaming.modules.Statistic.PacketCountTable;
+//import p2pstreaming.modules.Statistic.HostStatistics;
+//import so.underlay.ALM_RouterSupport.ARS_Controller;
+
 
 //
 // \IP router.
@@ -89,10 +97,10 @@ module StatisticRouter
                 ifIn[sizeof(out)];
                 ifOut[sizeof(out)];
         }
-        arsController: ARS_Controller {
-            parameters:
-                @display("p=430,140;i=block/uparrow");
-        }        
+//        arsController: ARS_Controller {
+//            parameters:
+//                @display("p=430,140;i=block/uparrow");
+//        }
         udp: UDP {
         	parameters:
         		@display("i=block/transport");
@@ -122,7 +130,7 @@ module StatisticRouter
 		
 		udp.ipIn <-- networkLayer.udpOut;
 		udp.ipOut --> networkLayer.udpIn;
-		udp.appOut[0] --> arsController.from_udp;
-		udp.appIn[0] <-- arsController.to_udp;
+//		udp.appOut[0] --> arsController.from_udp;
+//		udp.appIn[0] <-- arsController.to_udp;
 		
 }

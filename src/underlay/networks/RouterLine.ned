@@ -28,7 +28,8 @@ import p2pstreaming.modules.ALM_RouterSupport.ARS_RouterManager;
 //import p2pstreaming.modules.Streaming.GlobalStreamTable;
 import p2pstreaming.underlay.InetUnderlayConfigurator;
 //import p2pstreaming.underlay.StatisticHost;
-import p2pstreaming.underlay.StatisticRouter;
+
+//import p2pstreaming.underlay.StatisticRouter;
 
 
 channel fiberline extends ned.DatarateChannel
@@ -60,10 +61,10 @@ module RouterLineNetwork
             clients = clients;
             @display("i=block/cogwheel");
         }
-        routerManager: ARS_RouterManager {
-            parameters:
-                @display("i=block/uparrow");
-        }
+//        routerManager: ARS_RouterManager {
+//            parameters:
+//                @display("i=block/uparrow");
+//        }
 
 //        statistics: Statistics {
 //            parameters:
@@ -89,10 +90,17 @@ module RouterLineNetwork
 //            parameters:
 //                @display("i=block/table");
 //        }
-        rt[r+1]: StatisticRouter {
+
+//        rt[r+1]: StatisticRouter {
+//            parameters:
+//                @display("i=abstract/router");
+//        }
+
+        rt[r+1]: Router {
             parameters:
                 @display("i=abstract/router");
         }
+
 
     connections allowunconnected:
 
