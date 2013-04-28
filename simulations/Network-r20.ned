@@ -12,13 +12,15 @@ package so.simulations;
 //
 // Prototype for modules that can be used as node in a GTITM_TransitStub_Network
 //
+//import so.simulations.BaseNetworkModule;
 import so.underlay.inet.GtitmRouter;
 import so.underlay.inet.InetUnderlayConfigurator;
 
 //
 // GT-ITM TS topology exported via BRITE.
 //
-module Network_r20
+module Network_r20 extends BaseNetworkModule
+//module Network_r20
 {
     parameters:
 		int nRouter;
