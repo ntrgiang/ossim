@@ -261,7 +261,7 @@ void InetUnderlayConfigurator::assignAddresses(cTopology& topo,	NodeInfoVector& 
 
       uint32 addr;
       cModule* node = topo.getNode(i)->getModule();
-      if (strcmp(node->getName(), "srv") == 0)
+      if (strcmp(node->getName(), "sourceNode") == 0)
       {
          addr = networkAddress | uint32(1 + node->getIndex());
          //numIPNodes++;
@@ -300,7 +300,7 @@ IPAddress InetUnderlayConfigurator::assignAddress(cModule* terminal) {
    uint32 netmask = IPAddress(par("netmask").stringValue()).getInt();
    uint32 addr;
 
-   if (strcmp(terminal->getName(), "srv") == 0)
+   if (strcmp(terminal->getName(), "sourceNode") == 0)
       addr = networkAddress | uint32(1 + terminal->getIndex());
    else
       addr = networkAddress | uint32(++numIPNodes + maxNumSources);
@@ -405,7 +405,8 @@ void InetUnderlayConfigurator::connect(cModule* terminal, bool conn) {
    }
    // - get moduleType for creation of new dynamic modules
    cModuleType *moduleTypePPP = cModuleType::get("inet.linklayer.ppp.PPPInterface");
-   cModuleType *moduleTypeStatistic = cModuleType::get("p2pstreaming.modules.Statistic.HostStatistics");
+   //cModuleType *moduleTypeStatistic = cModuleType::get("p2pstreaming.modules.Statistic.HostStatistics");
+   //cModuleType *moduleTypeStatistic = cModuleType::get("so.mesh.donet.DonetNode");
    // - look for an unconnected ppp-module in the router
    int i = 0;
    while (router->findSubmodule("ppp", i) != -1)
@@ -417,11 +418,15 @@ void InetUnderlayConfigurator::connect(cModule* terminal, bool conn) {
    cGate* routerInGate = NULL;
    //if (router->gateSize("out") < (i + 1)) {
    if (router->gateSize("ppg$o") < (i + 1)) {
-      routerOutGate = router->getOrCreateFirstUnconnectedGate("out", 'o', false, true);
-      routerInGate = router->getOrCreateFirstUnconnectedGate("in", 'i', false, true);
+      //routerOutGate = router->getOrCreateFirstUnconnectedGate("out", 'o', false, true);
+      //routerInGate = router->getOrCreateFirstUnconnectedGate("in", 'i', false, true);
+      routerOutGate = router->getOrCreateFirstUnconnectedGate("pppg$o", 'o', false, true);
+      routerInGate = router->getOrCreateFirstUnconnectedGate("pppg$i", 'i', false, true);
    } else {
-      routerOutGate = router->gate("out", i);
-      routerInGate = router->gate("in", i);
+      //routerOutGate = router->gate("out", i);
+      //routerInGate = router->gate("in", i);
+      routerOutGate = router->gate("pppg$o", i);
+      routerInGate = router->gate("pppg$i", i);
    }
 
    assert(routerOutGate != NULL && routerInGate != NULL);
@@ -455,18 +460,18 @@ void InetUnderlayConfigurator::connect(cModule* terminal, bool conn) {
 
    // - create new ppp-module and statistic module
    cModule* moduleRouterPPP = moduleTypePPP->create("ppp", router, i, i);
-   cModule* moduleStatistic = moduleTypeStatistic->create("statistics", router, i, i);
+   //cModule* moduleStatistic = moduleTypeStatistic->create("statistics", router, i, i);
    moduleRouterPPP->changeParentTo(router);
-   moduleStatistic->changeParentTo(router);
-   moduleStatistic->setGateSize("ifOut", i + 1);
-   moduleStatistic->setGateSize("ifIn", i + 1);
+   //moduleStatistic->changeParentTo(router);
+   //moduleStatistic->setGateSize("ifOut", i + 1);
+   //moduleStatistic->setGateSize("ifIn", i + 1);
    moduleRouterPPP->finalizeParameters();
-   moduleStatistic->finalizeParameters();
+   //moduleStatistic->finalizeParameters();
 
    // - connect all gates
    // -- in between terminal and router
-   routerOutGate->connectTo(terminal->gate("in", 0), channelIn, false);
-   terminal->gate("out", 0)->connectTo(routerInGate, channelOut, false);
+   //routerOutGate->connectTo(terminal->gate("in", 0), channelIn, false);
+   terminal->gate("pppg$o", 0)->connectTo(routerInGate, channelOut, false);
    // -- initialize the channels
    if(conn) {
       channelIn->callInitialize();
@@ -474,12 +479,12 @@ void InetUnderlayConfigurator::connect(cModule* terminal, bool conn) {
    }
 
    // -- at router side
-   moduleRouterPPP->gate("netwOut")->connectTo(moduleStatistic->gate("ifIn", i));
-   moduleRouterPPP->gate("phys$o")->connectTo(router->gate("out", i));
+   //moduleRouterPPP->gate("netwOut")->connectTo(moduleStatistic->gate("ifIn", i));
+   moduleRouterPPP->gate("phys$o")->connectTo(router->gate("pppg$o", i));
    router->gate("in", i)->connectTo(moduleRouterPPP->gate("phys$i"));
-   moduleStatistic->gate("ifOut", i)-> connectTo(moduleRouterPPP->gate("netwIn"));
-   moduleStatistic->gate("to_network")-> connectTo(router->getSubmodule("networkLayer")->gate("ifIn", i));
-   router->getSubmodule("networkLayer")->gate("ifOut", i)->connectTo(moduleStatistic->gate("from_network"));
+   //moduleStatistic->gate("ifOut", i)-> connectTo(moduleRouterPPP->gate("netwIn"));
+   //moduleStatistic->gate("to_network")-> connectTo(router->getSubmodule("networkLayer")->gate("ifIn", i));
+   //router->getSubmodule("networkLayer")->gate("ifOut", i)->connectTo(moduleStatistic->gate("from_network"));
 
    //finalize statistic-module at router side
    moduleStatistic->buildInside();
@@ -511,7 +516,7 @@ void InetUnderlayConfigurator::connect(cModule* terminal, bool conn) {
 cModule* InetUnderlayConfigurator::createNode(bool conn) {
 
    // derive overlay node from ned
-   std::string nameStr = "p2pstreaming.underlay.StatisticHost";
+   std::string nameStr = "so.mesh.donet.DonetNode";
    cModuleType* moduleType = cModuleType::get(nameStr.c_str());
    std::string displayString;
    cModule* terminal = NULL;
@@ -519,7 +524,7 @@ cModule* InetUnderlayConfigurator::createNode(bool conn) {
    if (numSources < maxNumSources) {
 
       DEBUGOUT(" Creating source node");
-      terminal = moduleType->create("srv", getParentModule(), maxNumSources, numSources);
+      terminal = moduleType->create("sourceNode", getParentModule(), maxNumSources, numSources);
       displayString = "i=device/server;tt=The Source node - Providing content into the network";
       DEBUGOUT(" Creating source");
       numSources++;
@@ -531,8 +536,9 @@ cModule* InetUnderlayConfigurator::createNode(bool conn) {
    }
 
    assert(terminal);
-   terminal->setGateSize("out", 1);
-   terminal->setGateSize("in", 1);
+   //terminal->setGateSize("out", 1);
+   //terminal->setGateSize("in", 1);
+   terminal->setGateSize("pppg", 1);
    terminal->finalizeParameters();
    terminal->setDisplayString(displayString.c_str());
    terminal->buildInside();
@@ -540,7 +546,7 @@ cModule* InetUnderlayConfigurator::createNode(bool conn) {
 
    nodeList.insert(terminal);
    // Giang
-   //connect(terminal,conn);
+   connect(terminal,conn);
    /**
      * initialize the terminals until stage 1 since we are already in stage 2
      */
@@ -1069,7 +1075,7 @@ void InetUnderlayConfigurator::checkRessources(){
    //	int sumRessources = 0;
    for(int srv = 0; srv < networkTopology.getNumNodes(); srv++){
       cTopology::Node* node = networkTopology.getNode( srv );
-      if( !( node->getModule()->isName( "srv" ) ) ) continue;
+      if( !( node->getModule()->isName( "sourceNode" ) ) ) continue;
       //		cModule* nodeModule = node->getModule();
       //      UserInterface* ui = check_and_cast<UserInterface*>( nodeModule->getModuleByRelativePath("udpApp[0].application") );
       //		sumRessources += ui->par("numParallelStreams").longValue();

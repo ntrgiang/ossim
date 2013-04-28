@@ -280,3 +280,6 @@ simulations/RouterLine.ned
 simulations/GTITM_TS_IPv4Underlay_sd4_ts16_ss16_td4_06_tn5_09_sn5_04_n420_e1212.ned
 src/underlay/inet/GtitmRouter.ned
 simulations/Network-r20.ned
+simulations/BaseNetworkModule.ned
+src/mesh/donet/DonetNode.ned
+src/common/IGenericApp.ned
