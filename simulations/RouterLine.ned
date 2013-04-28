@@ -15,7 +15,6 @@
 //
 
 
-//package p2pstreaming.underlay.networks;
 package so.simulations;
 
 //import p2pstreaming.modules.Statistic.Statistics;
@@ -28,8 +27,12 @@ package so.simulations;
 //import p2pstreaming.underlay.StatisticHost;
 //import p2pstreaming.underlay.StatisticRouter;
 
+import inet.nodes.inet.Router;
+import so.underlay.inet.InetUnderlayConfigurator;
+
+//import inet.networklayer.autorouting.FlatNetworkConfigurator;
+
 //import p2pstreaming.modules.ALM_RouterSupport.ARS_RouterManager;
-import so.underlay.InetUnderlayConfigurator;
 
 channel fiberline extends ned.DatarateChannel
 {
@@ -48,18 +51,28 @@ channel ethernetline extends ned.DatarateChannel
 module RouterLineNetwork
 {
     parameters:
-        double r;
-        int clients;
+        int nRouter;
+        int nClient;
     submodules:
-        globalStreamTable: GlobalStreamTable {
-            @display("i=block/table");
-        }
+//        globalStreamTable: GlobalStreamTable {
+//            @display("i=block/table");
+//        }
+
         configurator: InetUnderlayConfigurator {
             networkAddress = "141.24.0.0";
             netmask = "255.255.0.0";
-            clients = clients;
+            clients = nClient;
             @display("i=block/cogwheel");
         }
+
+//        configurator: FlatNetworkConfigurator {
+//            @display("p=77,29;i=block/cogwheel");
+//            networkAddress = "192.168.0.0";
+//            netmask = "255.255.0.0";
+//        }
+
+
+
 //        routerManager: ARS_RouterManager {
 //            parameters:
 //                @display("i=block/uparrow");
@@ -95,22 +108,32 @@ module RouterLineNetwork
 //                @display("i=abstract/router");
 //        }
 
-        rt[r+1]: Router {
+        router[nRouter+1]: Router {
             parameters:
                 @display("i=abstract/router");
         }
 
+//    connections allowunconnected:
 
-    connections allowunconnected:
+//        router[nRouter].out++ --> ethernetline --> router[nRouter/2].in++;
+//        router[nRouter].in++ <-- ethernetline <-- router[nRouter/2].out++;
 
-        rt[r].out++ --> ethernetline --> rt[r/2].in++;
-        rt[r].in++ <-- ethernetline <-- rt[r/2].out++;
+//        for i=0..nRouter-2 {
+//            router[i].out++ --> fiberline --> router[i+1].in++;
+//            router[i].in++ <-- fiberline <-- router[i+1].out++;
+//        }
 
-        for i=0..r-2 {
-            rt[i].out++ --> fiberline --> rt[i+1].in++;
-            rt[i].in++ <-- fiberline <-- rt[i+1].out++;
+        connections allowunconnected:
+
+        router[nRouter].pppg$o++ --> ethernetline --> router[nRouter/2].pppg$i++;
+        router[nRouter].pppg$i++ <-- ethernetline <-- router[nRouter/2].pppg$o++;
+
+        for i=0..nRouter-2 {
+            router[i].pppg$o++ --> fiberline --> router[i+1].pppg$i++;
+            router[i].pppg$i++ <-- fiberline <-- router[i+1].pppg$o++;
         }
 }
+
 
 network RouterLine extends RouterLineNetwork
 {
