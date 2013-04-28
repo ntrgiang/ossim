@@ -31,20 +31,18 @@
 
 package so.mesh.donet;
 
+import so.common.GenericApp;
 import so.common.Dispatcher;
-import so.membership.dummy.DummyMembership;
-import so.membership.oracle.OracleMembership;
-import so.membership.MCache;
 
+import so.membership.dummy.DummyMembership;
+import so.membership.MCache;
 import so.mesh.donet.DonetPeer;
 import so.mesh.PartnerList;
 import so.payload.Forwarder;
 import so.payload.VideoBuffer;
-import so.payload.Player;
 import so.payload.PlayerSimpleSkip;
-//import simpleoverlay.global.AppSettingDonet;
 
-module DonetPeerApp
+module DonetPeerApp like GenericApp
 {
     parameters:
         @display("bgb=270,294");
