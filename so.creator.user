@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by Qt Creator 2.5.2, 2013-04-21T11:54:49. -->
+<!-- Written by Qt Creator 2.5.2, 2013-04-28T16:22:54. -->
 <qtcreator>
  <data>
   <variable>GenericProjectManager.GenericProject.Toolchain</variable>
@@ -131,7 +131,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.1">
-    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-c Donet_Homo_oneRouter_Network /nix/workspace/omnet422-inet118/so/simulations/Donet.ini -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src</value>
+    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-c Donet_Homo_oneRouter_Network %{buildDir}/simulations/Donet.ini -n %{buildDir}/src:%{buildDir}/simulations:%{buildDir}/../inet/src</value>
     <value type="int" key="ProjectExplorer.CustomExecutableRunConfiguration.BaseEnvironmentBase">2</value>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Executable">%{buildDir}/src/so</value>
     <value type="bool" key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal">false</value>
