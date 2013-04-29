@@ -28,20 +28,6 @@ public: // OMNeT++ stuff
    virtual void finish();
 
 public:
-   cTopology topo;
-   NodeInfoVector nodeInfo; // will be of size topo.nodes[]
-   std::map<SimTime, IPAddress> jumps;
-   std::set<cModule*> nodeList;
-   int numIPNodes;
-   int numNodes;
-   int numRouter;
-   int numTerminals;
-   int numSources;
-   int maxNumSources;
-   IInterfaceTable *oldIT;
-   bool noneTransitNodesAccessRouters;
-
-public:
    void addDefaultRoutes(cTopology& topo, NodeInfoVector& nodeInfo, cModule *jumpedNode);
    void addDefaultRoutes(cTopology& topo, NodeInfoVector& nodeInfo);
    void addDefaultRoutes();
@@ -57,11 +43,13 @@ public:
    bool updateRoutes(cModule *jumpedNode, bool multihoming, cModule *modulePPP);
 
 protected:
-   IPAddress assignAddress(cModule* terminal);
+   IPAddress assignPeerAddress(cModule* terminal);
    void assignAddresses(cTopology& topo, NodeInfoVector& nodeInfo);
-   cModule* createNode(bool conn);
-   void initNodes();
    void initSources();
+   void initPeers();
+   cModule* createNode(bool conn);
+   cModule* createSourceNode(bool conn);
+   cModule* createPeerNode(bool conn);
    void getAccessRouter();
    // TODO
    // removeOverlayNode(cModule* terminal);
@@ -77,6 +65,20 @@ private:
    // Access delay bounds for clients
    double minAccessDelay;
    double maxAccessDelay;
+
+public:
+   cTopology topo;
+   NodeInfoVector nodeInfo; // will be of size topo.nodes[]
+   std::map<SimTime, IPAddress> jumps;
+   std::set<cModule*> nodeList;
+   int numIPNodes;
+   int numNodes;
+   int numRouter;
+   int numTerminals;
+   int numSources;
+   int maxNumSources;
+   IInterfaceTable *oldIT;
+   bool noneTransitNodesAccessRouters;
 };
 
 #endif /* INETUNDERLAYCONFIGURATOR_H_ */
