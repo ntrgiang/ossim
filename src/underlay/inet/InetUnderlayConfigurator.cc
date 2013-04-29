@@ -60,40 +60,41 @@ void InetUnderlayConfigurator::initialize(int stage) {
 
       // extract topology into the cTopology object, then fill in
       // isIPNode, rt and ift members of nodeInfo[]
-//              extractTopology(topo, nodeInfo);// giang
+              extractTopology(topo, nodeInfo);// giang
 
 //               assign addresses to IP nodes, and also store result in nodeInfo[].address
-//              assignAddresses(topo, nodeInfo);// giang
+              assignAddresses(topo, nodeInfo);// giang
 
       // add default routes to hosts (nodes with a single attachment);
       // also remember result in nodeInfo[].usesDefaultRoute
-//              addDefaultRoutes(topo, nodeInfo);// giang
+              addDefaultRoutes(topo, nodeInfo);// giang
 
       // calculate shortest paths, and add corresponding static routes
-      //        fillRoutingTables(topo, nodeInfo);// giang
+              fillRoutingTables(topo, nodeInfo);// giang
 
       // update display string
-      //        setDisplayString(topo, nodeInfo);// giang
+              setDisplayString(topo, nodeInfo);// giang
 
       // Schedule the creation of overlay nodes
-//              scheduleAt(simTime(), new cMessage("CreateAllNodes")); // giang
+              scheduleAt(simTime(), new cMessage("CreateAllNodes")); // giang
       //scheduleAt(simTime() + 1, new cMessage("CreateNode"));
 
    }
 //   if (stage == 5)	checkRessources(); // checks available streaming capacity
 }
 
-void InetUnderlayConfigurator::finish() {
-
+void InetUnderlayConfigurator::finish()
+{
    FlatNetworkConfigurator::finish();
 }
 
-void InetUnderlayConfigurator::handleMessage(cMessage* msg) {
-
+void InetUnderlayConfigurator::handleMessage(cMessage* msg)
+{
    assert(msg->isSelfMessage());
 
    if(strcmp(msg->getName(),"CreateAllNodes") == 0)
    {
+      EV << "Going to create all nodes ..." << endl;
       DEBUGOUT("CreateAllNodes path");
       //create all nodes at once
       initNodes();
@@ -104,6 +105,7 @@ void InetUnderlayConfigurator::handleMessage(cMessage* msg) {
       // when all potential ALM routers are deployed.
       // This needs to be done before printLiveStart is happening, which is evaluating the actual ALM router positions.
       // kfournisseur();
+
 
    // currently not used
    }
@@ -127,7 +129,7 @@ void InetUnderlayConfigurator::handleMessage(cMessage* msg) {
       else
       {
          // init kfournisseur module
-         kfournisseur();
+         //kfournisseur();
          delete msg;
          msg = NULL;
       }
@@ -550,22 +552,21 @@ cModule* InetUnderlayConfigurator::createNode(bool conn)
    }
 
    assert(terminal);
-   //terminal->setGateSize("out", 1);
-   //terminal->setGateSize("in", 1);
    terminal->setGateSize("pppg", 1);
    terminal->finalizeParameters();
    terminal->setDisplayString(displayString.c_str());
-   terminal->buildInside();
+//   terminal->buildInside(); // FIXME
    terminal->scheduleStart(simTime());
 
    nodeList.insert(terminal);
    // Giang
-   connect(terminal,conn);
+   // -- Connect the terminal to a random access router
+   //   connect(terminal,conn);
    /**
      * initialize the terminals until stage 1 since we are already in stage 2
      */
-   terminal->callInitialize(0);
-   terminal->callInitialize(1);
+//   terminal->callInitialize(0);
+//   terminal->callInitialize(1);
 
    return terminal;
 }
@@ -960,11 +961,12 @@ void InetUnderlayConfigurator::initSources() {
  * Testing method:
  * Creates all terminals
  */
-void InetUnderlayConfigurator::initNodes() {
-
+void InetUnderlayConfigurator::initNodes()
+{
    // add ordinary nodes
-   for (int i = 0; i < numNodes; i++) {
-
+   EV << "Adding " << numNodes << " ... " << endl;
+   for (int i = 0; i < numNodes; i++)
+   {
       cModule* terminal = createNode(false);
       extractTopology(topo,nodeInfo);
       IPAddress addr = assignAddress(terminal);
@@ -1069,18 +1071,19 @@ bool InetUnderlayConfigurator::updateRoutes(cModule *overlayNode, bool multihomi
  * Initializes the Kfournisseur-Module for solving k-center.
  * This does not depend on the actual alm router positions but on the (potential alm-) router positions.
  */
+/*
 void InetUnderlayConfigurator::kfournisseur() {
 
-   //    ARSPositionCollector* arsPC = ARSPositionCollectorAccess().get();
-   //    ARS_RouterManager* routerManager = ARS_RouterManagerAccess().get();
-   //    assert(arsPC);
-   //    assert(routerManager);
+       ARSPositionCollector* arsPC = ARSPositionCollectorAccess().get();
+       ARS_RouterManager* routerManager = ARS_RouterManagerAccess().get();
+       assert(arsPC);
+       assert(routerManager);
 
-   //    arsPC->configure(accessRouter, nodeList, &topo, routerManager->getNumALMRouter());
+       arsPC->configure(accessRouter, nodeList, &topo, routerManager->getNumALMRouter());
 }
+*/
 
-
-
+/*
 void InetUnderlayConfigurator::checkRessources(){
    cModule* network = this;
    while ((network != NULL) && !network->getModuleType()->isNetwork())
@@ -1099,3 +1102,4 @@ void InetUnderlayConfigurator::checkRessources(){
    }
    //	if( sumRessources < gT->par( "numStreams" ).longValue() ) throw cRuntimeError( "There are less ressources than streams" );
 }
+*/

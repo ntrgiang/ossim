@@ -60,13 +60,15 @@ protected:
    IPAddress assignAddress(cModule* terminal);
    void assignAddresses(cTopology& topo, NodeInfoVector& nodeInfo);
    cModule* createNode(bool conn);
-   void kfournisseur();
    void initNodes();
    void initSources();
    void getAccessRouter();
    // TODO
    // removeOverlayNode(cModule* terminal);
-   void checkRessources();
+
+   // not used!
+   //   void kfournisseur();
+   //   void checkRessources();
 
 private:
    std::vector<cModule*> accessRouter; // WATCHOUT!!! vector of pointers
