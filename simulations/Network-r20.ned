@@ -28,7 +28,7 @@ module Network_r20 extends BaseNetworkModule
     submodules:
         configurator: InetUnderlayConfigurator {
             parameters:
-                networkAddress = "141.24.0.0";
+                networkAddress = "192.168.0.0";
                 netmask = "255.255.0.0";
                 clients = nClient;
                 @display("i=block/cogwheel");
