@@ -60,14 +60,14 @@ void InetUnderlayConfigurator::initialize(int stage) {
 
       // extract topology into the cTopology object, then fill in
       // isIPNode, rt and ift members of nodeInfo[]
-      //        extractTopology(topo, nodeInfo);// giang
+//              extractTopology(topo, nodeInfo);// giang
 
-      //         assign addresses to IP nodes, and also store result in nodeInfo[].address
-      //        assignAddresses(topo, nodeInfo);// giang
+//               assign addresses to IP nodes, and also store result in nodeInfo[].address
+//              assignAddresses(topo, nodeInfo);// giang
 
       // add default routes to hosts (nodes with a single attachment);
       // also remember result in nodeInfo[].usesDefaultRoute
-      //        addDefaultRoutes(topo, nodeInfo);// giang
+//              addDefaultRoutes(topo, nodeInfo);// giang
 
       // calculate shortest paths, and add corresponding static routes
       //        fillRoutingTables(topo, nodeInfo);// giang
@@ -76,11 +76,11 @@ void InetUnderlayConfigurator::initialize(int stage) {
       //        setDisplayString(topo, nodeInfo);// giang
 
       // Schedule the creation of overlay nodes
-      //        scheduleAt(simTime(), new cMessage("CreateAllNodes")); // giang
+//              scheduleAt(simTime(), new cMessage("CreateAllNodes")); // giang
       //scheduleAt(simTime() + 1, new cMessage("CreateNode"));
 
    }
-   if (stage == 5)	checkRessources(); // checks available streaming capacity
+//   if (stage == 5)	checkRessources(); // checks available streaming capacity
 }
 
 void InetUnderlayConfigurator::finish() {
@@ -92,8 +92,8 @@ void InetUnderlayConfigurator::handleMessage(cMessage* msg) {
 
    assert(msg->isSelfMessage());
 
-   if(strcmp(msg->getName(),"CreateAllNodes") == 0) {
-
+   if(strcmp(msg->getName(),"CreateAllNodes") == 0)
+   {
       DEBUGOUT("CreateAllNodes path");
       //create all nodes at once
       initNodes();
@@ -101,11 +101,14 @@ void InetUnderlayConfigurator::handleMessage(cMessage* msg) {
       msg = NULL;
 
       // init and execute kfournisseur module to solve k-center problem
-      // when all potential ALM routers are deployed. This needs to be done before printLiveStart is happening, which is evaluating the actual ALM router positions.
-      kfournisseur();
+      // when all potential ALM routers are deployed.
+      // This needs to be done before printLiveStart is happening, which is evaluating the actual ALM router positions.
+      // kfournisseur();
 
-      // currently not used
-   } else if(strcmp(msg->getName(),"CreateNode") == 0) {
+   // currently not used
+   }
+   else if(strcmp(msg->getName(),"CreateNode") == 0)
+   {
       DEBUGOUT("CreateNode path");
       //create a single node
       cModule* terminal = createNode(false);
@@ -113,13 +116,16 @@ void InetUnderlayConfigurator::handleMessage(cMessage* msg) {
       IPAddress addr = assignAddress(terminal);
       DEBUGOUT("created terminal cli["<<numTerminals<<"] and addr "<< addr);
       fillRoutingTables(terminal, addr);
-      for(int i=2;i<=numInitStages();i++)
+      for(int i=2; i<=numInitStages(); i++)
          terminal->callInitialize(i);
 
       setDisplayString(topo, nodeInfo);
-      if(numTerminals < numNodes) {
+      if(numTerminals < numNodes)
+      {
          scheduleAt(simTime()+1, msg);
-      } else {
+      }
+      else
+      {
          // init kfournisseur module
          kfournisseur();
          delete msg;
@@ -417,11 +423,11 @@ void InetUnderlayConfigurator::connect(cModule* terminal, bool conn) {
    cGate* routerOutGate = NULL;
    cGate* routerInGate = NULL;
    //if (router->gateSize("out") < (i + 1)) {
-   if (router->gateSize("ppg$o") < (i + 1)) {
+   if (router->gateSize("pppg$o") < (i + 1)) {
       //routerOutGate = router->getOrCreateFirstUnconnectedGate("out", 'o', false, true);
       //routerInGate = router->getOrCreateFirstUnconnectedGate("in", 'i', false, true);
-      routerOutGate = router->getOrCreateFirstUnconnectedGate("pppg$o", 'o', false, true);
-      routerInGate = router->getOrCreateFirstUnconnectedGate("pppg$i", 'i', false, true);
+      routerOutGate = router->getOrCreateFirstUnconnectedGate("pppg", 'o', false, true);
+      routerInGate = router->getOrCreateFirstUnconnectedGate("pppg", 'i', false, true);
    } else {
       //routerOutGate = router->gate("out", i);
       //routerInGate = router->gate("in", i);
@@ -462,15 +468,15 @@ void InetUnderlayConfigurator::connect(cModule* terminal, bool conn) {
    cModule* moduleRouterPPP = moduleTypePPP->create("ppp", router, i, i);
    //cModule* moduleStatistic = moduleTypeStatistic->create("statistics", router, i, i);
    moduleRouterPPP->changeParentTo(router);
+   moduleRouterPPP->finalizeParameters();
    //moduleStatistic->changeParentTo(router);
    //moduleStatistic->setGateSize("ifOut", i + 1);
    //moduleStatistic->setGateSize("ifIn", i + 1);
-   moduleRouterPPP->finalizeParameters();
    //moduleStatistic->finalizeParameters();
 
    // - connect all gates
    // -- in between terminal and router
-   //routerOutGate->connectTo(terminal->gate("in", 0), channelIn, false);
+   routerOutGate->connectTo(terminal->gate("pppg$i", 0), channelIn, false);
    terminal->gate("pppg$o", 0)->connectTo(routerInGate, channelOut, false);
    // -- initialize the channels
    if(conn) {
@@ -481,16 +487,22 @@ void InetUnderlayConfigurator::connect(cModule* terminal, bool conn) {
    // -- at router side
    //moduleRouterPPP->gate("netwOut")->connectTo(moduleStatistic->gate("ifIn", i));
    moduleRouterPPP->gate("phys$o")->connectTo(router->gate("pppg$o", i));
-   router->gate("in", i)->connectTo(moduleRouterPPP->gate("phys$i"));
+   router->gate("pppg$i", i)->connectTo(moduleRouterPPP->gate("phys$i"));
+   router->getSubmodule("networkLayer")->gate("ifOut", i)->connectTo(moduleRouterPPP->gate("netwIn"));
+   moduleRouterPPP->gate("netwOut")->connectTo(router->getSubmodule("networkLayer")->gate("ifIn", i));
+
+   // -- By-pass the moduleStatistic
    //moduleStatistic->gate("ifOut", i)-> connectTo(moduleRouterPPP->gate("netwIn"));
    //moduleStatistic->gate("to_network")-> connectTo(router->getSubmodule("networkLayer")->gate("ifIn", i));
    //router->getSubmodule("networkLayer")->gate("ifOut", i)->connectTo(moduleStatistic->gate("from_network"));
 
+   // -- By-pass the moduleStatistic
    //finalize statistic-module at router side
-   moduleStatistic->buildInside();
-   moduleStatistic->setDisplayString("i=block/network2");
-   moduleStatistic->scheduleStart(simTime());
-   moduleStatistic->callInitialize();
+//   moduleStatistic->buildInside();
+//   moduleStatistic->setDisplayString("i=block/network2");
+//   moduleStatistic->scheduleStart(simTime());
+//   moduleStatistic->callInitialize();
+
    //no formal used ppp-module was found, finalize the new ppp-module
    moduleRouterPPP->buildInside();
    moduleRouterPPP->setDisplayString("i=block/ifcard");
@@ -513,23 +525,25 @@ void InetUnderlayConfigurator::connect(cModule* terminal, bool conn) {
  * @param conn	true if channel should be initialized during establishing connection
  * @return  a pointer to the new terminal
  */
-cModule* InetUnderlayConfigurator::createNode(bool conn) {
-
+cModule* InetUnderlayConfigurator::createNode(bool conn)
+{
    // derive overlay node from ned
    std::string nameStr = "so.mesh.donet.DonetNode";
    cModuleType* moduleType = cModuleType::get(nameStr.c_str());
    std::string displayString;
    cModule* terminal = NULL;
 
-   if (numSources < maxNumSources) {
-
+   if (numSources < maxNumSources)
+   {
       DEBUGOUT(" Creating source node");
       terminal = moduleType->create("sourceNode", getParentModule(), maxNumSources, numSources);
       displayString = "i=device/server;tt=The Source node - Providing content into the network";
       DEBUGOUT(" Creating source");
       numSources++;
-   } else {
-      terminal = moduleType->create("cli", getParentModule(), numNodes, numTerminals);
+   }
+   else
+   {
+      terminal = moduleType->create("peerNode", getParentModule(), numNodes, numTerminals);
       displayString = "i=device/wifilaptop_l;i2=block/circle_s";
       DEBUGOUT(" Creating terminal node");
       numTerminals++;
@@ -560,15 +574,18 @@ cModule* InetUnderlayConfigurator::createNode(bool conn) {
 /**
  * FIXME @Markus description required
  */
-void InetUnderlayConfigurator::deleteOutdatedRoutes() {
-
+void InetUnderlayConfigurator::deleteOutdatedRoutes()
+{
    std::map<SimTime, IPAddress>::iterator iter;
    std::map<SimTime, IPAddress> delList;
    iter = jumps.begin();
-   while (iter != jumps.end()) {
-      if ((simTime() - (iter->first)) > 500) {
+   while (iter != jumps.end())
+   {
+      if ((simTime() - (iter->first)) > 500)
+      {
          DEBUGOUT("saved Jump Time " << iter->first << " for Node " << iter->second << " --> delete Route in Routers");
-         for (int j = 0; j < (int)topo.getNumNodes(); j++) {
+         for (int j = 0; j < (int)topo.getNumNodes(); j++)
+         {
             if (!nodeInfo[j].isIPNode) continue;
             cTopology::Node *atNode = topo.getNode(j);
             if (atNode->getNumPaths() == 0) continue; // not connected
