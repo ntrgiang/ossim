@@ -32,6 +32,8 @@
 package so.mesh.donet;
 
 import so.common.Dispatcher;
+import so.common.GenericApp;
+
 import so.membership.MCache;
 import so.membership.dummy.DummyMembership;
 import so.mesh.donet.DonetSource;
@@ -40,7 +42,7 @@ import so.payload.ChunkGenerator;
 import so.payload.Forwarder;
 import so.payload.VideoBuffer;
 
-module DonetSourceApp
+module DonetSourceApp like GenericApp
 {
     parameters:
         @display("bgb=287,308");
