@@ -40,6 +40,5 @@ module BaseNetworkModule
         logger: Logger {
             @display("p=77,510");
         }
-
 }
 

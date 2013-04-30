@@ -1,3 +1,34 @@
+//
+// =============================================================================
+// OSSIM : A Generic Simulation Framework for Overlay Streaming
+// =============================================================================
+//
+// (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
+//
+// Project Info: http://www.p2p.tu-darmstadt.de/research/ossim
+//
+// OSSIM is free software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software
+// Foundation, either version 3 of the License, or (at your option) any later
+// version.
+//
+// OSSIM is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with
+// this program. If not, see <http://www.gnu.org/licenses/>.
+//
+// -----------------------------------------------------------------------------
+// InetUnderlayConfigurator.h
+// -----------------------------------------------------------------------------
+// (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
+//
+// Contributors: Mathias Fischer;
+// Code Reviewers: Giang Nguyen;
+// -----------------------------------------------------------------------------
+//
+
 /*
  * InetUnderlayConfigurator.h
  *
@@ -8,11 +39,9 @@
 #ifndef INETUNDERLAYCONFIGURATOR_H_
 #define INETUNDERLAYCONFIGURATOR_H_
 
-//#include "p2pstreaming.h"
 #include "INETDefs.h"
 #include "IPAddress.h"
 #include <map>
-//#include "../networklayer/autorouting/FlatNetworkConfigurator.h"
 #include "../../../inet/src/networklayer/autorouting/FlatNetworkConfigurator.h"
 
 class IInterfaceTable;
@@ -59,24 +88,26 @@ protected:
    //   void checkRessources();
 
 private:
-   std::vector<cModule*> accessRouter; // WATCHOUT!!! vector of pointers
-   std::vector<std::pair<cModule*,double> > accessRoutersWeighted;
+   std::vector<cModule*> m_accessRouterList; // WATCHOUT!!! vector of pointers
+   std::vector<std::pair<cModule*,double> > m_accessRoutersWeighted;
 
    // Access delay bounds for clients
-   double minAccessDelay;
-   double maxAccessDelay;
+   double m_minAccessDelay;
+   double m_maxAccessDelay;
 
-public:
-   cTopology topo;
-   NodeInfoVector nodeInfo; // will be of size topo.nodes[]
+protected:
+   cTopology m_topo;
+   NodeInfoVector m_nodeInfo; // will be of size topo.nodes[]
    std::map<SimTime, IPAddress> jumps;
-   std::set<cModule*> nodeList;
+   std::set<cModule*> m_nodeList;
    int numIPNodes;
-   int numNodes;
-   int numRouter;
-   int numTerminals;
-   int numSources;
-   int maxNumSources;
+
+   int param_numSources;
+   int param_numPeers;
+   int param_numRouters;
+
+   int m_numTerminals;
+   int m_numSources;
    IInterfaceTable *oldIT;
    bool noneTransitNodesAccessRouters;
 };

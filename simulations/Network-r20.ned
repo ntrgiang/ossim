@@ -1,18 +1,46 @@
 //
+// =============================================================================
+// OSSIM : A Generic Simulation Framework for Overlay Streaming
+// =============================================================================
+//
+// (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
+//
+// Project Info: http://www.p2p.tu-darmstadt.de/research/ossim
+//
+// OSSIM is free software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software
+// Foundation, either version 3 of the License, or (at your option) any later
+// version.
+//
+// OSSIM is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with
+// this program. If not, see <http://www.gnu.org/licenses/>.
+//
+// -----------------------------------------------------------------------------
+// Network-r20.ned
+// -----------------------------------------------------------------------------
+// (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
+//
+// Contributors: Mathias Fischer;
+// Code Reviewers: Giang Nguyen;
+// -----------------------------------------------------------------------------
+//
+
+//
 // OMNeT++ network description -- exported from GT-ITM (alt) topology
 // Generator Model Used:
 //   Model (8 - Imported From format file /home/sdelling/workspace/gtitm-topology-generator/topologies/small_gtitm_ts_spec-0.gtts ): 156 380 380.0 transtub 380.0 0.0 0.0 3.0 3.0 12.0 12.0 12.0 12.0 12.0 3.0 3.0 112.0 112.0 3.0 3.0 0.3 0.3 0.0 0.0 0.0 0.0 0.0 0.0 4.0 4.0 56.0 56.0 3.0 3.0 0.5 0.5 0.0 0.0 0.0 0.0 0.0 0.0 4.0 4.0 46.0 46.0 3.0 3.0 0.2 0.2 0.0 0.0 0.0 0.0 0.0 112.0 3.0 4.0 2.0 
 //
 
-//This file must be placed under p2pstreaming/src/underlay/inetunderlay
-
-//Package
 package so.simulations;
 
 //
 // Prototype for modules that can be used as node in a GTITM_TransitStub_Network
 //
-//import so.simulations.BaseNetworkModule;
+import so.simulations.BaseNetworkModule;
 import so.underlay.inet.GtitmRouter;
 import so.underlay.inet.InetUnderlayConfigurator;
 
@@ -20,17 +48,16 @@ import so.underlay.inet.InetUnderlayConfigurator;
 // GT-ITM TS topology exported via BRITE.
 //
 module Network_r20 extends BaseNetworkModule
-//module Network_r20
 {
     parameters:
-		int nRouter;
-		int nClient;
+        //int nRouters; // no impact
+        int nPeers;
     submodules:
         configurator: InetUnderlayConfigurator {
             parameters:
                 networkAddress = "192.168.0.0";
                 netmask = "255.255.0.0";
-                clients = nClient;
+                nPeers = nPeers;
                 @display("i=block/cogwheel");
         }
         rt[16]: GtitmRouter {

@@ -1,22 +1,35 @@
 //
-// Copyright (C) 2004 Andras Varga
+// =============================================================================
+// OSSIM : A Generic Simulation Framework for Overlay Streaming
+// =============================================================================
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
+// Project Info: http://www.p2p.tu-darmstadt.de/research/ossim
 //
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program; if not, see <http://www.gnu.org/licenses/>.
+// OSSIM is free software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software
+// Foundation, either version 3 of the License, or (at your option) any later
+// version.
+//
+// OSSIM is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with
+// this program. If not, see <http://www.gnu.org/licenses/>.
+//
+// -----------------------------------------------------------------------------
+// InetUnderlayConfigurator.ned
+// -----------------------------------------------------------------------------
+// (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
+//
+// Contributors: Mathias Fischer;
+// Code Reviewers: Giang Nguyen;
+// -----------------------------------------------------------------------------
 //
 
 
-//package p2pstreaming.underlay;
 package so.underlay.inet;
 
 //
@@ -61,13 +74,13 @@ package so.underlay.inet;
 simple InetUnderlayConfigurator
 {
 	parameters:
-		string networkAddress = default("192.168.0.0"); // network part of the address (see netmask parameter)
-		string netmask = default("255.255.0.0"); // host part of addresses are autoconfigured
+        string networkAddress = default("192.168.0.0");
+        string netmask = default("255.255.0.0");
 		@display("i=block/broadcast");
-		int clients;
-		int sources = default(1);
+        int nPeers;
+        int nSources = default(1);
 		bool noneTransitNodesAccessRouters;
-		double simTimeLimit;
+        // double simTimeLimit;
         double minAccessDelay;
         double maxAccessDelay;
 }
