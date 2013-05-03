@@ -140,7 +140,7 @@ void PlayerSimpleSkip::activate(void)
 
    if (m_state != PLAYER_STATE_IDLE)
    {
-      throw cException("Wrong Player state %d (PLAYER_STATE_BUFFERING) while expecting %d (PLAYER_STATE_IDLE)",
+      throw cException("Wrong Player state %d while expecting %d (PLAYER_STATE_IDLE)",
                        m_state, PLAYER_STATE_IDLE);
    }
 
@@ -217,7 +217,7 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
         }
         default:
         {
-            throw cException("Wrong state %d while expecting %d", m_state, PLAYER_STATE_BUFFERING);
+            throw cException("Wrong state %d while expecting PLAYER_STATE_BUFFERING", m_state);
         }
         }
     }
