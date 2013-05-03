@@ -57,8 +57,17 @@ void CoolstreamingPeer::initialize(int stage){
         return;
 
     bindToGlobalModule();
+
+    // bind to mesh module
+    // -- Player
+    cModule *temp = getParentModule()->getModuleByRelativePath("player");
+    //m_player = check_and_cast<Player *>(temp);
+    m_player = check_and_cast<PlayerBase *>(temp);
+    EV << "Binding to churnModerator is completed successfully" << endl;
+
     initBase();
 
+    m_state = MESH_JOIN_STATE_IDLE;
     // -------------------------------------------------------------------------
     // -------------------------------- Timers ---------------------------------
     // -------------------------------------------------------------------------

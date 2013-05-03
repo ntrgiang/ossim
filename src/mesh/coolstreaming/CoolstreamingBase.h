@@ -46,8 +46,10 @@
 #include "ActivePeerTable.h"
 #include "AppSettingDonet.h"
 #include "IChurnGenerator.h"
-#include "MeshOverlayObserver.h"
-#include "Logger.h"
+#include "PlayerBase.h"
+
+//#include "MeshOverlayObserver.h"
+//#include "Logger.h"
 
 #include "GossipProtocol.h"
 
@@ -195,9 +197,12 @@ protected:
 //    Logger                  *m_logger;
 
     // -- Pointers to /local/ modules
-    VideoBuffer *m_videoBuffer;
-    Forwarder   *m_forwarder;
-    MembershipBase *m_memManager;
+    VideoBuffer      *m_videoBuffer;
+    Forwarder        *m_forwarder;
+    MembershipBase   *m_memManager;
+    PlayerBase       *m_player;
+
+    int m_state;
 };
 
 #endif /* CoolstreamingBase_H_ */

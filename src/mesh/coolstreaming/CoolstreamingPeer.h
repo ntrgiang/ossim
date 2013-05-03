@@ -86,6 +86,7 @@ private:
 private:
     cMessage *timer_getJoinTime;
     cMessage *timer_join;
+
 };
 
 #endif /* COOLSTREAMINGPEER_H_ */
