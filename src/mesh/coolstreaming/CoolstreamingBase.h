@@ -191,8 +191,8 @@ protected:
     // -- Pointers to /global/ modules
     AppSettingDonet         *m_appSetting;
     IChurnGenerator         *m_churn;
-    MeshOverlayObserver     *m_meshOverlayObserver;
-    Logger                  *m_logger;
+//    MeshOverlayObserver     *m_meshOverlayObserver;
+//    Logger                  *m_logger;
 
     // -- Pointers to /local/ modules
     VideoBuffer *m_videoBuffer;
