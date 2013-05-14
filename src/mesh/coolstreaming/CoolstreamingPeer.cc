@@ -40,278 +40,302 @@ Define_Module(CoolstreamingPeer)
 
 CoolstreamingPeer::CoolstreamingPeer()
 {
-    // TODO Auto-generated constructor stub
+   // TODO Auto-generated constructor stub
 
 }
 
 CoolstreamingPeer::~CoolstreamingPeer()
 {
-    if (timer_CheckParents) delete cancelEvent(timer_CheckParents);
-    if (timer_getJoinTime) cancelAndDelete(timer_getJoinTime);
-    if (timer_join) cancelAndDelete(timer_join);
+   if (timer_CheckParents) delete cancelEvent(timer_CheckParents);
+   if (timer_getJoinTime) cancelAndDelete(timer_getJoinTime);
+   if (timer_join) cancelAndDelete(timer_join);
+
+   if (timer_reportStatistic != NULL)
+   {
+      delete cancelEvent(timer_reportStatistic);
+      timer_reportStatistic = NULL;
+   }
 }
 
 void CoolstreamingPeer::initialize(int stage){
 
-    if (stage != 3)
-        return;
+   if (stage != 3)
+      return;
 
-    bindToGlobalModule();
+   bindToGlobalModule();
 
-    // bind to mesh module
-    // -- Player
-    cModule *temp = getParentModule()->getModuleByRelativePath("player");
-    //m_player = check_and_cast<Player *>(temp);
-    m_player = check_and_cast<PlayerBase *>(temp);
-    EV << "Binding to churnModerator is completed successfully" << endl;
+   // bind to mesh module
+   // -- Player
+   cModule *temp = getParentModule()->getModuleByRelativePath("player");
+   //m_player = check_and_cast<Player *>(temp);
+   m_player = check_and_cast<PlayerBase *>(temp);
+   EV << "Binding to churnModerator is completed successfully" << endl;
 
-    initBase();
+   initBase();
 
-    m_state = MESH_JOIN_STATE_IDLE;
-    // -------------------------------------------------------------------------
-    // -------------------------------- Timers ---------------------------------
-    // -------------------------------------------------------------------------
-    // -- One-time timers
-    timer_getJoinTime       = new cMessage("CS_PEER_TIMER_GET_JOIN_TIME");
-    timer_join              = new cMessage("CS_PEER_TIMER_JOIN");
+   m_state = MESH_JOIN_STATE_IDLE;
+   // -------------------------------------------------------------------------
+   // -------------------------------- Timers ---------------------------------
+   // -------------------------------------------------------------------------
+   // -- One-time timers
+   timer_getJoinTime       = new cMessage("CS_PEER_TIMER_GET_JOIN_TIME");
+   timer_join              = new cMessage("CS_PEER_TIMER_JOIN");
+   timer_reportStatistic   = new cMessage("MESH_PEER_TIMER_REPORT_STATISTIC");
 
-    stalemateDetection = new int[param_SubstreamCount];
-    for (int i = 0; i < param_SubstreamCount; i++)
-    {
-        stalemateDetection[i] = 0;
-    }
+   stalemateDetection = new int[param_SubstreamCount];
+   for (int i = 0; i < param_SubstreamCount; i++)
+   {
+      stalemateDetection[i] = 0;
+   }
 
-    // read Parameters
-    param_minNOP = par("minNOP");
-    if (param_minNOP > param_maxNOP) param_minNOP = param_maxNOP;
+   // read Parameters
+   param_minNOP = par("minNOP");
+   if (param_minNOP > param_maxNOP) param_minNOP = param_maxNOP;
 
-    // -- multiply with substream count because of the internal counting
-    param_coolstreaming_Ts = par("coolstreaming_Ts").longValue() * param_SubstreamCount;
-    param_coolstreaming_Tp = par("coolstreaming_Tp").longValue() * param_SubstreamCount;
-    param_coolstreaming_Ta = par("coolstreaming_Ta");
+   // -- multiply with substream count because of the internal counting
+   param_coolstreaming_Ts = par("coolstreaming_Ts").longValue() * param_SubstreamCount;
+   param_coolstreaming_Tp = par("coolstreaming_Tp").longValue() * param_SubstreamCount;
+   param_coolstreaming_Ta = par("coolstreaming_Ta");
 
-    // create messages
-    timer_CheckParents  = new cMessage("COOLSTREAMING_TIMER_CHECK_PARENTS");
+   param_interval_reportStatistic = par("interval_reportStatistic").doubleValue();
 
-    // schedule timers
-    scheduleAt(simTime() + param_coolstreaming_Ta, timer_CheckParents);
-    scheduleAt(simTime() + par("startTime").doubleValue(), timer_getJoinTime);
+   // Initialization
+   m_count_prev_chunkHit = 0L;
+   m_count_prev_chunkMiss = 0L;
 
-    WATCH(m_memManager);
-    //WATCH(m_player);
+   // create messages
+   timer_CheckParents  = new cMessage("COOLSTREAMING_TIMER_CHECK_PARENTS");
+
+   // schedule timers
+   scheduleAt(simTime() + param_coolstreaming_Ta, timer_CheckParents);
+   scheduleAt(simTime() + par("startTime").doubleValue(), timer_getJoinTime);
+   scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
+
+   WATCH(m_memManager);
+   //WATCH(m_player);
 }
 
 void CoolstreamingPeer::handleTimerMessage(cMessage *msg)
 {
-    if (msg == timer_CheckParents)
-    {
-        checkParents();
-    }
-    else if (msg == timer_getJoinTime)
-    {
-       if (m_churn == NULL)   throw cException("null pointer to churn");
-        double m_arrivalTime = m_churn->getArrivalTime();
+   if (msg == timer_CheckParents)
+   {
+      checkParents();
+   }
+   else if (msg == timer_reportStatistic)
+   {
+      EV << "hehehehe" << endl;
+      handleTimerReportStatistic();
+      scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
+   }
+   else if (msg == timer_getJoinTime)
+   {
+      if (m_churn == NULL)   throw cException("null pointer to churn");
+      double m_arrivalTime = m_churn->getArrivalTime();
 
-        EV << "Scheduled arrival time: " << simTime().dbl() + m_arrivalTime << endl;
-        scheduleAt(simTime() + m_arrivalTime, timer_join);
-    }
-    else if (msg == timer_join)
-    {
-        //join();
-        //handleTimerJoin();
+      EV << "Scheduled arrival time: " << simTime().dbl() + m_arrivalTime << endl;
+      scheduleAt(simTime() + m_arrivalTime, timer_join);
+   }
+   else if (msg == timer_join)
+   {
+      //join();
+      //handleTimerJoin();
 
-        checkPartners();
+      checkPartners();
 
-        // -- Schedule for a rejoin (if any)
-        // scheduleAt(simTime() + param_interval_rejoin, timer_join);
-    }
-    else
-    {
-       CoolstreamingBase::handleTimerMessage(msg);
-    }
+      // -- Schedule for a rejoin (if any)
+      // scheduleAt(simTime() + param_interval_rejoin, timer_join);
+   }
+   else
+   {
+      CoolstreamingBase::handleTimerMessage(msg);
+   }
 }
 
 void CoolstreamingPeer::bindToGlobalModule()
 {
-    // -- Churn
-    cModule *temp = simulation.getModuleByPath("churnModerator");
-    m_churn = check_and_cast<IChurnGenerator *>(temp);
-    EV << "Binding to churnModerator is completed successfully" << endl;
+   // -- Churn
+   cModule *temp = simulation.getModuleByPath("churnModerator");
+   m_churn = check_and_cast<IChurnGenerator *>(temp);
+   EV << "Binding to churnModerator is completed successfully" << endl;
+
+   temp = simulation.getModuleByPath("globalStatistic");
+   m_gstat = check_and_cast<DonetStatistic *>(temp);
+   EV << "Binding to globalStatistic is completed successfully" << endl;
 }
 
 void CoolstreamingPeer::checkPartners()
 {
-    EV << "CoolstreamingPeer::checkPartners()" << endl;
+   EV << "CoolstreamingPeer::checkPartners()" << endl;
 
-    removeTimeoutedPartners();
+   removeTimeoutedPartners();
 
-    EV << "CoolstreamingPeer::checkPartners()" << partners.size() << " _ " << param_minNOP << endl;
+   EV << "CoolstreamingPeer::checkPartners()" << partners.size() << " _ " << param_minNOP << endl;
 
-    if (partners.size() < param_minNOP){ // not enough partners?
-        IPvXAddress newPartner;
-        // query as many as we need ... (TODO: peers can get multiply requests ...)
-        int count = (param_minNOP - partners.size());
-        EV << "CoolstreamingPeer::checkPartners()->Queries: " << count << endl;
-        for (int i = 0 ; i < min (10, count); i++)
-        {
-            //newPartner = m_Gossiper->getRandomPeer(m_localAddress);
-            int nActive = m_memManager->getActivePeerNumber();
+   if (partners.size() < param_minNOP){ // not enough partners?
+      IPvXAddress newPartner;
+      // query as many as we need ... (TODO: peers can get multiply requests ...)
+      int count = (param_minNOP - partners.size());
+      EV << "CoolstreamingPeer::checkPartners()->Queries: " << count << endl;
+      for (int i = 0 ; i < min (10, count); i++)
+      {
+         //newPartner = m_Gossiper->getRandomPeer(m_localAddress);
+         int nActive = m_memManager->getActivePeerNumber();
 
-            newPartner = m_memManager->getRandomPeer(m_localAddress);
+         newPartner = m_memManager->getRandomPeer(m_localAddress);
 
-            EV << endl << "*******************************************************************" << endl;
-            EV << endl << "*******************************************************************" << endl;
-            EV << endl << "*******************************************************************" << endl;
-            EV << "Current active list size: " << nActive << endl;
-            EV << "Partner address: " << newPartner << endl;
-            EV << endl << "*******************************************************************" << endl;
-            EV << endl << "*******************************************************************" << endl;
-            EV << endl << "*******************************************************************" << endl;
+         EV << endl << "*******************************************************************" << endl;
+         EV << endl << "*******************************************************************" << endl;
+         EV << endl << "*******************************************************************" << endl;
+         EV << "Current active list size: " << nActive << endl;
+         EV << "Partner address: " << newPartner << endl;
+         EV << endl << "*******************************************************************" << endl;
+         EV << endl << "*******************************************************************" << endl;
+         EV << endl << "*******************************************************************" << endl;
 
-            EV << "CoolstreamingPeer::checkPartners()->target" << newPartner.str() << endl;
-            if (newPartner.isUnspecified())
-                break;
-            if (! isPartner(newPartner))
-            {
-                CoolstreamingPartnershipRequestPacket* pkt;
-                pkt = new CoolstreamingPartnershipRequestPacket("CS_PARTNER_REQUEST");
-                sendToDispatcher(pkt, m_localPort, newPartner, m_destPort);
-            }
-        }
-    }
-    else
-    { // stalemate detection, only if we have enough partners
-        bool stalemate = false;
-        int newMax;
-        for (int s = 0; s < param_SubstreamCount; s++)
-        {
-            // get the latest chunk for this substream
-            newMax = 0;
-            for (unsigned int i = 0; i < partners.size(); i++)
-            {
-                newMax = max(newMax, partners.at(i)->getLatestSequence(s));
-            }
+         EV << "CoolstreamingPeer::checkPartners()->target" << newPartner.str() << endl;
+         if (newPartner.isUnspecified())
+            break;
+         if (! isPartner(newPartner))
+         {
+            CoolstreamingPartnershipRequestPacket* pkt;
+            pkt = new CoolstreamingPartnershipRequestPacket("CS_PARTNER_REQUEST");
+            sendToDispatcher(pkt, m_localPort, newPartner, m_destPort);
+         }
+      }
+   }
+   else
+   { // stalemate detection, only if we have enough partners
+      bool stalemate = false;
+      int newMax;
+      for (int s = 0; s < param_SubstreamCount; s++)
+      {
+         // get the latest chunk for this substream
+         newMax = 0;
+         for (unsigned int i = 0; i < partners.size(); i++)
+         {
+            newMax = max(newMax, partners.at(i)->getLatestSequence(s));
+         }
 
-            // if there was no change we assume a stalemate
-            if (newMax == stalemateDetection[s])
-                stalemate = true;
-            stalemateDetection[s] = newMax;
-        }
+         // if there was no change we assume a stalemate
+         if (newMax == stalemateDetection[s])
+            stalemate = true;
+         stalemateDetection[s] = newMax;
+      }
 
-        // if a stalemate was detected, drop a random partner
-        if (stalemate)
-        {
-            // select a random partner, 3 tries to find one who is not a parent
-            int random;
-            for (int i = 0; i < 3; i++)
-            {
-                random = (int)intrand(partners.size());
-                if (!partners.at(random)->isParent())
-                    break;
-            }
+      // if a stalemate was detected, drop a random partner
+      if (stalemate)
+      {
+         // select a random partner, 3 tries to find one who is not a parent
+         int random;
+         for (int i = 0; i < 3; i++)
+         {
+            random = (int)intrand(partners.size());
+            if (!partners.at(random)->isParent())
+               break;
+         }
 
-            if (debugOutput)
-                m_outFileDebug << simTime().str()
-                               << " Stalemate ... removing: "
-                               << partners.at(random)->getAddress().str() << endl;
+         if (debugOutput)
+            m_outFileDebug << simTime().str()
+                           << " Stalemate ... removing: "
+                           << partners.at(random)->getAddress().str() << endl;
 
-            // send a revoke packet
-            CoolstreamingPartnershipRevokePacket* resp = new CoolstreamingPartnershipRevokePacket("CS_PARTNER_REVOKE");
-            sendToDispatcher(resp, m_localPort, partners.at(random)->getAddress(), m_destPort);
+         // send a revoke packet
+         CoolstreamingPartnershipRevokePacket* resp = new CoolstreamingPartnershipRevokePacket("CS_PARTNER_REVOKE");
+         sendToDispatcher(resp, m_localPort, partners.at(random)->getAddress(), m_destPort);
 
-            // remove partner
-            removePartner(partners.at(random)->getAddress());
-        }
-    }
+         // remove partner
+         removePartner(partners.at(random)->getAddress());
+      }
+   }
 
-    scheduleAt(simTime() + param_CheckPartnersInterval, timer_CheckPartners);
+   scheduleAt(simTime() + param_CheckPartnersInterval, timer_CheckPartners);
 }
 
 void CoolstreamingPeer::checkParents()
 {
-    CoolstreamingPartner* parent;
+   CoolstreamingPartner* parent;
 
-    EV << "CoolstreamingPeer::checkParents() for " << m_localAddress.str() << endl;
+   EV << "CoolstreamingPeer::checkParents() for " << m_localAddress.str() << endl;
 
-    std::set<CoolstreamingPartner*> sendMaps;
+   std::set<CoolstreamingPartner*> sendMaps;
 
-    for (int Si = 0; Si < param_SubstreamCount; Si++)
-    {  // check for each substream
-        parent = getParent(Si);
-        EV << "CoolstreamingPeer::checkParents()->" << Si
-           << " _ " << ((parent == NULL)?"NULL":parent->getAddress().str()) << endl;
-        // does the current partner mets the condition?
-        if ( (parent == NULL) || (!satisfiesInequalitys(parent, Si)) )
-        {
-            std::vector<CoolstreamingPartner*> possiblePartners;
-            std::vector<CoolstreamingPartner*>::iterator it;
+   for (int Si = 0; Si < param_SubstreamCount; Si++)
+   {  // check for each substream
+      parent = getParent(Si);
+      EV << "CoolstreamingPeer::checkParents()->" << Si
+         << " _ " << ((parent == NULL)?"NULL":parent->getAddress().str()) << endl;
+      // does the current partner mets the condition?
+      if ( (parent == NULL) || (!satisfiesInequalitys(parent, Si)) )
+      {
+         std::vector<CoolstreamingPartner*> possiblePartners;
+         std::vector<CoolstreamingPartner*>::iterator it;
+
+         if (debugOutput)
+            m_outFileDebug << simTime().str()
+                           << " Parent " << ((parent == NULL)? " NULL ": parent->getAddress().str())
+                           << " for substream " << (Si) << " NOT GOOD!" << endl;
+         EV << "CoolstreamingPeer::checkParents()->Parent NOT GOOD :("  << endl;
+         // look for possible partners satisfying the inequalities
+         for (it = partners.begin(); it != partners.end(); it++)
+            if ( satisfiesInequalityTwo(*it, Si) )
+               possiblePartners.push_back(*it);
+
+         EV << "CoolstreamingPeer::checkParents()->Possible Parents: " << possiblePartners.size() << endl;
+         if ( (possiblePartners.size() == 0) && ( parent == NULL ) )
+         {
+            // it seems like no one is good but we have no parent so select one at random
+            for (it = partners.begin(); it != partners.end(); it++)
+            {
+               possiblePartners.push_back(*it);
+            }
+         }
+         EV << "CoolstreamingPeer::checkParents()->Possible Parents-2: "
+            << possiblePartners.size() << endl;
+         if (possiblePartners.size() > 0)
+         { // there is atleast 1 possible new partner for this substream
+            // inform the old parent
+            if (parent != NULL)
+            {
+               parent->setParent(Si, false);
+               //sendBufferMap(parent);
+               sendMaps.insert(parent);
+            }
+
+            // select a random new parent and inform him
+            int index;
+            for (int i = 0; i < 3; i++)
+            {    // try 3 times to find a partner who is not our child ...
+               index = (int)intrand(possiblePartners.size());
+               if (!possiblePartners.at(index)->isChild(Si))
+                  break;
+            }
+            possiblePartners.at(index)->setParent(Si, true);
+
+            EV << "CoolstreamingPeer::checkParents()->setStart: "
+               << possiblePartners.at(index)->getLatestSequence(Si) << endl;
+
+            if (m_videoBuffer->getBufferStartSeqNum() > possiblePartners.at(index)->getLatestSequence(Si))
+               m_videoBuffer->setBufferStartSeqNum(possiblePartners.at(index)->getLatestSequence(Si));
 
             if (debugOutput)
-                m_outFileDebug << simTime().str()
-                               << " Parent " << ((parent == NULL)? " NULL ": parent->getAddress().str())
-                               << " for substream " << (Si) << " NOT GOOD!" << endl;
-            EV << "CoolstreamingPeer::checkParents()->Parent NOT GOOD :("  << endl;
-            // look for possible partners satisfying the inequalities
-            for (it = partners.begin(); it != partners.end(); it++)
-                if ( satisfiesInequalityTwo(*it, Si) )
-                        possiblePartners.push_back(*it);
+               m_outFileDebug << simTime().str()
+                              << " Set new parent: " << (Si)
+                              << " _ " << m_videoBuffer->getBufferStartSeqNum()
+                              << " to " << possiblePartners.at(index)->getAddress().str() << endl;
 
-            EV << "CoolstreamingPeer::checkParents()->Possible Parents: " << possiblePartners.size() << endl;
-            if ( (possiblePartners.size() == 0) && ( parent == NULL ) )
-            {
-                // it seems like no one is good but we have no parent so select one at random
-                for (it = partners.begin(); it != partners.end(); it++)
-                {
-                    possiblePartners.push_back(*it);
-                }
-            }
-            EV << "CoolstreamingPeer::checkParents()->Possible Parents-2: "
-               << possiblePartners.size() << endl;
-            if (possiblePartners.size() > 0)
-            { // there is atleast 1 possible new partner for this substream
-                // inform the old parent
-                if (parent != NULL)
-                {
-                    parent->setParent(Si, false);
-                    //sendBufferMap(parent);
-                    sendMaps.insert(parent);
-                }
+            //sendBufferMap(possiblePartners.at(index));
+            sendMaps.insert(possiblePartners.at(index));
+         }
+      }
+   }
 
-                // select a random new parent and inform him
-                int index;
-                for (int i = 0; i < 3; i++)
-                {    // try 3 times to find a partner who is not our child ...
-                    index = (int)intrand(possiblePartners.size());
-                    if (!possiblePartners.at(index)->isChild(Si))
-                        break;
-                }
-                possiblePartners.at(index)->setParent(Si, true);
+   EV << "CoolstreamingPeer::checkParents() sending Maps: " << sendMaps.size() << endl;
+   std::set<CoolstreamingPartner*>::iterator it;
+   for (it = sendMaps.begin(); it != sendMaps.end(); it++)
+      sendBufferMap(*it);
+   //    sendMaps.clear();
 
-                EV << "CoolstreamingPeer::checkParents()->setStart: "
-                   << possiblePartners.at(index)->getLatestSequence(Si) << endl;
-
-                if (m_videoBuffer->getBufferStartSeqNum() > possiblePartners.at(index)->getLatestSequence(Si))
-                    m_videoBuffer->setBufferStartSeqNum(possiblePartners.at(index)->getLatestSequence(Si));
-
-                if (debugOutput)
-                    m_outFileDebug << simTime().str()
-                                   << " Set new parent: " << (Si)
-                                   << " _ " << m_videoBuffer->getBufferStartSeqNum()
-                                   << " to " << possiblePartners.at(index)->getAddress().str() << endl;
-
-                //sendBufferMap(possiblePartners.at(index));
-                sendMaps.insert(possiblePartners.at(index));
-            }
-        }
-    }
-
-    EV << "CoolstreamingPeer::checkParents() sending Maps: " << sendMaps.size() << endl;
-    std::set<CoolstreamingPartner*>::iterator it;
-    for (it = sendMaps.begin(); it != sendMaps.end(); it++)
-        sendBufferMap(*it);
-//    sendMaps.clear();
-
-    scheduleAt(simTime() + param_coolstreaming_Ta + (int)intrand(1), timer_CheckParents);
+   scheduleAt(simTime() + param_coolstreaming_Ta + (int)intrand(1), timer_CheckParents);
 }
 
 //void CoolstreamingPeer::handleTimerJoin(void)
@@ -351,47 +375,76 @@ void CoolstreamingPeer::checkParents()
 
 bool CoolstreamingPeer::satisfiesInequalitys(CoolstreamingPartner* partner, int substream)
 {
-    EV << "CoolstreamingPeer::satisfiesInequalitys() me, partner "
-       << m_localAddress.str() << partner->getAddress().str() << endl;
-    // inequality 1
-    EV << "CoolstreamingPeer::satisfiesInequalitys() 1: "
-       << getLatestSequenceNumber(substream) << " _ "
-       << partner->getLatestSequence(substream) << " ? "
-       << param_coolstreaming_Ts << endl;
+   EV << "CoolstreamingPeer::satisfiesInequalitys() me, partner "
+      << m_localAddress.str() << partner->getAddress().str() << endl;
+   // inequality 1
+   EV << "CoolstreamingPeer::satisfiesInequalitys() 1: "
+      << getLatestSequenceNumber(substream) << " _ "
+      << partner->getLatestSequence(substream) << " ? "
+      << param_coolstreaming_Ts << endl;
 
-    if (partner->getLatestSequence(substream) - getLatestSequenceNumber(substream) >= param_coolstreaming_Ts)
-        return false;
+   if (partner->getLatestSequence(substream) - getLatestSequenceNumber(substream) >= param_coolstreaming_Ts)
+      return false;
 
 
-    int inequalTwo = 0;
-    std::vector<CoolstreamingPartner*>::iterator it;
-    for (it = partners.begin(); it != partners.end(); it++)
-    {
-        inequalTwo = max (inequalTwo, (*it)->getLatestSequence(substream));
-    }
+   int inequalTwo = 0;
+   std::vector<CoolstreamingPartner*>::iterator it;
+   for (it = partners.begin(); it != partners.end(); it++)
+   {
+      inequalTwo = max (inequalTwo, (*it)->getLatestSequence(substream));
+   }
 
-    EV << "CoolstreamingPeer::satisfiesInequalitys() 2: "
-       << inequalTwo << " _ " << partner->getLatestSequence(substream)
-       << " ? " << param_coolstreaming_Tp << endl;
-    if (inequalTwo - partner->getLatestSequence(substream) >= param_coolstreaming_Tp)
-        return false;
+   EV << "CoolstreamingPeer::satisfiesInequalitys() 2: "
+      << inequalTwo << " _ " << partner->getLatestSequence(substream)
+      << " ? " << param_coolstreaming_Tp << endl;
+   if (inequalTwo - partner->getLatestSequence(substream) >= param_coolstreaming_Tp)
+      return false;
 
-    // substream parent is ok
-    return true;
+   // substream parent is ok
+   return true;
 }
 
 bool CoolstreamingPeer::satisfiesInequalityTwo(CoolstreamingPartner* partner, int substream)
 {
-    int inequalTwo = 0;
-    std::vector<CoolstreamingPartner*>::iterator it;
-    for (it = partners.begin(); it != partners.end(); it++)
-    {
-        inequalTwo = max (inequalTwo, (*it)->getLatestSequence(substream));
-    }
+   int inequalTwo = 0;
+   std::vector<CoolstreamingPartner*>::iterator it;
+   for (it = partners.begin(); it != partners.end(); it++)
+   {
+      inequalTwo = max (inequalTwo, (*it)->getLatestSequence(substream));
+   }
 
-    if (inequalTwo - partner->getLatestSequence(substream) >= param_coolstreaming_Tp)
-        return false;
+   if (inequalTwo - partner->getLatestSequence(substream) >= param_coolstreaming_Tp)
+      return false;
 
-    // substream parent is ok
-    return true;
+   // substream parent is ok
+   return true;
+}
+
+void CoolstreamingPeer::handleTimerReportStatistic()
+{
+//   if (simTime().dbl() < simulation.getWarmupPeriod().dbl())
+//      return;
+
+   reportHitMiss();
+}
+
+void CoolstreamingPeer::reportHitMiss()
+{
+   if (m_player->getState() == PLAYER_STATE_PLAYING)
+   {
+      long int delta = m_player->getCountChunkHit() - m_count_prev_chunkHit;
+      m_count_prev_chunkHit = m_player->getCountChunkHit();
+      m_gstat->increaseChunkHit((int)delta);
+      EV << "Got it: " << delta << endl;
+
+      delta = m_player->getCountChunkMiss() - m_count_prev_chunkMiss;
+      m_count_prev_chunkMiss = m_player->getCountChunkMiss();
+      m_gstat->increaseChunkMiss((int)delta);
+      EV << "Got it, 2: " << delta << endl;
+   }
+   else
+   {
+//      m_gstat->increaseChunkHit(0);
+//      m_gstat->increaseChunkMiss(0);
+   }
 }

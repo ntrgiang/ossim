@@ -1,4 +1,4 @@
-//  
+//
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -42,50 +42,64 @@
 class CoolstreamingPeer : public CoolstreamingBase
 {
 public:
-    CoolstreamingPeer();
-    virtual ~CoolstreamingPeer();
+   CoolstreamingPeer();
+   virtual ~CoolstreamingPeer();
 
 protected:
-    virtual int numInitStages() const { return 5; }
-    virtual void initialize(int stage);
+   virtual int numInitStages() const { return 5; }
+   virtual void initialize(int stage);
 
-    virtual void handleTimerMessage(cMessage *msg);
+   virtual void handleTimerMessage(cMessage *msg);
 
-    // @brief overrides the checkPartners function of the base-class to check if new partners are needed and to query them
-    void checkPartners();
+   // @brief overrides the checkPartners function of the base-class to check if new partners are needed and to query them
+   void checkPartners();
 
 private:
-//   void handleTimerJoin(void);
+   //   void handleTimerJoin(void);
    void bindToGlobalModule();
 
-    // parent managment ->
+   // parent managment ->
 private:
-    // @brief continue to query other peers for partnership until the number is reached
-    unsigned int param_minNOP;
+   // @brief continue to query other peers for partnership until the number is reached
+   unsigned int param_minNOP;
 
-    // @brief to check if there are any partners receiving new chunks
-    int* stalemateDetection;
+   // @brief to check if there are any partners receiving new chunks
+   int* stalemateDetection;
 
-    // @brief defines the maximum number of tolerated chunk delay
-    int param_coolstreaming_Ts;
-    // @brief defines the maximum number of chunks which a parent can be behind other partners
-    int param_coolstreaming_Tp;
-    // @brief interval to check parents
-    double param_coolstreaming_Ta;
+   // @brief defines the maximum number of tolerated chunk delay
+   int param_coolstreaming_Ts;
+   // @brief defines the maximum number of chunks which a parent can be behind other partners
+   int param_coolstreaming_Tp;
+   // @brief interval to check parents
+   double param_coolstreaming_Ta;
 
-    cMessage* timer_CheckParents;
+   cMessage* timer_CheckParents;
 
-    // @brief checks if the current parents deliver the substreams fast enough
-    void checkParents();
-    // @brief checks if a partner would be good for a given substream
-    bool satisfiesInequalitys(CoolstreamingPartner* partner, int substream);
-    // @brief checks if a partner would be good for a given substream
-    bool satisfiesInequalityTwo(CoolstreamingPartner* partner, int substream);
-    // <- parent managment
+   // @brief checks if the current parents deliver the substreams fast enough
+   void checkParents();
+   // @brief checks if a partner would be good for a given substream
+   bool satisfiesInequalitys(CoolstreamingPartner* partner, int substream);
+   // @brief checks if a partner would be good for a given substream
+   bool satisfiesInequalityTwo(CoolstreamingPartner* partner, int substream);
+   // <- parent managment
+
+   // @brief handles the event to report statistics
+   void handleTimerReportStatistic();
+
+   // @brief reports chunk hit and chunk miss
+   void reportHitMiss();
 
 private:
-    cMessage *timer_getJoinTime;
-    cMessage *timer_join;
+   cMessage *timer_getJoinTime;
+   cMessage *timer_join;
+   cMessage *timer_reportStatistic;
+
+   double param_interval_reportStatistic;
+
+   // -- For reporting statistics
+   long int m_count_prev_chunkHit, m_count_prev_chunkMiss;
+
+   DonetStatistic *m_gstat;
 
 };
 
