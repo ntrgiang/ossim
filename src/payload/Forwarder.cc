@@ -91,6 +91,8 @@ void Forwarder::initialize(int stage)
     m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
 
     m_count_totalChunk_incoming = 0L;
+
+    WATCH(m_count_totalChunk_incoming);
 }
 
 void Forwarder::finish()

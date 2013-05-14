@@ -129,6 +129,8 @@ void PlayerSimpleSkip::initialize(int stage)
     WATCH(m_appSetting);
     WATCH(m_chunkSize);
     WATCH(m_interval_newChunk);
+    WATCH(m_count_chunkHit);
+    WATCH(m_state);
 
 }
 
