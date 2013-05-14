@@ -253,7 +253,6 @@ private:
     // -- For reporting statistics
     long int m_count_prev_chunkHit, m_count_prev_chunkMiss;
 
-
     // --------------------------- Optimization --------------------------------
     std::vector<IPvXAddress> m_blacklist;
 
