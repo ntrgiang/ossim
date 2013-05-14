@@ -422,8 +422,8 @@ bool CoolstreamingPeer::satisfiesInequalityTwo(CoolstreamingPartner* partner, in
 
 void CoolstreamingPeer::handleTimerReportStatistic()
 {
-//   if (simTime().dbl() < simulation.getWarmupPeriod().dbl())
-//      return;
+   if (simTime().dbl() < simulation.getWarmupPeriod().dbl())
+      return;
 
    reportHitMiss();
 }
