@@ -43,7 +43,7 @@ network Coolstreaming_Homo_oneRouter_Network extends BasicNetwork
         }
         channel Channel_homo_up extends ned.DatarateChannel
         {
-            datarate = 500kbps;
+            datarate = 1100kbps;
         }
         channel Channel_homo_down extends ned.DatarateChannel
         {
