@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by Qt Creator 2.5.2, 2013-04-30T07:59:00. -->
+<!-- Written by Qt Creator 2.5.2, 2013-05-14T22:46:54. -->
 <qtcreator>
  <data>
   <variable>GenericProjectManager.GenericProject.Toolchain</variable>
@@ -54,7 +54,7 @@
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">GenericProjectManager.GenericTarget</value>
    <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
    <value type="int" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
-   <value type="int" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
+   <value type="int" key="ProjectExplorer.Target.ActiveRunConfiguration">5</value>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.0">
     <value type="QString" key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory">/nix/workspace/omnet422-inet118/so</value>
     <value type="QString" key="ProjectExplorer.BuildCOnfiguration.ToolChain">ProjectExplorer.ToolChain.Gcc:{5c80550d-6fa7-4771-b258-7a71a810784e}</value>

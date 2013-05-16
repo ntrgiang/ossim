@@ -43,6 +43,8 @@ simple CoolstreamingPeer extends CoolstreamingBase
         int coolstreaming_Ts = default(100);
         int coolstreaming_Tp = default(150);
         double coolstreaming_Ta @unit(s) = default(10.0s);
+
+        double interval_reportStatistic @unit(s) = default(0.5s);
 }
 
 

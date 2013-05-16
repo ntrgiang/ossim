@@ -171,6 +171,16 @@ void CoolstreamingBase::processPartnershipPacket(CoolstreamingPacket *pkt)
         if (partners.size() < param_maxNOP )
         {    // we can accept more partners -> send an accept
             addPartner(src);
+
+            if (m_state == MESH_JOIN_STATE_IDLE)
+            {
+               m_state = MESH_JOIN_STATE_ACTIVE;
+
+               // -- Active Player
+               EV << "-- Player will be actived now" << endl;
+               m_player->activate();
+
+            }
         }
         else
         {  // send a revoke ... if we have enough partners now ...
@@ -559,12 +569,12 @@ void CoolstreamingBase::bindToGlobalModule(void)
     m_appSetting = check_and_cast<AppSettingDonet *>(temp);
     EV << "Binding to AppSettingDonet is completed successfully" << endl;
 
-    temp = simulation.getModuleByPath("meshObserver");
-    m_meshOverlayObserver = check_and_cast<MeshOverlayObserver *>(temp);
-    EV << "Binding to MeshOverlayObserver is completed successfully" << endl;
+//    temp = simulation.getModuleByPath("meshObserver");
+//    m_meshOverlayObserver = check_and_cast<MeshOverlayObserver *>(temp);
+//    EV << "Binding to MeshOverlayObserver is completed successfully" << endl;
 
-    temp = simulation.getModuleByPath("logger");
-    m_logger = check_and_cast<Logger *>(temp);
-    EV << "Binding to Logger is completed successfully" << endl;
+//    temp = simulation.getModuleByPath("logger");
+//    m_logger = check_and_cast<Logger *>(temp);
+//    EV << "Binding to Logger is completed successfully" << endl;
 
 }
