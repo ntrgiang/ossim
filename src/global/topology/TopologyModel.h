@@ -1,11 +1,12 @@
 #ifndef TOPOLOGYMODEL_H
 #define TOPOLOGYMODEL_H
 
-#include "p2pstreaming.h"
 #include "PPDatatypes.h"
+#include <boost/shared_ptr.hpp>
+#include <boost/foreach.hpp>
 
-class Stream;
-class Stripe;
+#define foreach BOOST_FOREACH
+#define reverse_foreach BOOST_REVERSE_FOREACH
 
 typedef boost::shared_ptr<PPIPvXAddressSet>	IPSetSmartPtr;
 
@@ -25,7 +26,6 @@ protected:
     Centrality       inEdgesCtr;       ///< cache for number of incoming edges
     LoadMap          load;
     Nodetime         age;
-    PPIPvXAddressSet mobileNodes;
     PPIPvXAddressSet nodesServiceLost; ///< nodes that are already out of service
     PPIPvXAddressSet roots;
     PPStringSet      stripes;
@@ -39,7 +39,6 @@ protected:
 public:
     TopologyModel();
     ~TopologyModel();
-    void        setMobileNode(IPvXAddress);
 
     int         calculate(const IPvXAddress& vertex, std::string& stripe);      ///< calculates the successor number in one stripe for vertex
     int         calculateSource(const IPvXAddress& vertex, std::string& stripe);
@@ -55,24 +54,23 @@ public:
     int         countChildrenMaxLevel(const IPvXAddress& vertex, const int maxLevel) const;
     int         countSuccessors(const IPvXAddress& vertex);
     int         countSuccessors(const IPvXAddress& vertex, std::string stripe);
-    int         countSuccessors(const Stripe* stripe);
     int         countSuccessors(std::string stripe);
     int         countNotConnected();
 
     int         numInboundEdges(const IPvXAddress& vertex) const;
 
-    void        addVertex(const Stream* stream, const IPvXAddress vertex);
+    void	 	addVertex(const IPvXAddress vertex);
     void        addVertex(const std::string& stripe, const IPvXAddress vertex);
     void        removeVertex(const IPvXAddress& vertex);
-    void        removeVertex(const Stream* stream, const IPvXAddress& vertex);
     virtual int removeVertexRecursive(const IPvXAddress& vertex);
-    int         removeVertexRecursive(const Stripe* stripe, const IPvXAddress &vertex);
     int         removeVertexRecursive(const std::string& stripe, const IPvXAddress &vertex);
     int         removeVertexRecursive(const std::string& stripe, const IPvXAddress &vertex, bool loss);
     bool        hasVertex(const IPvXAddress& vertex);
 
     void        removeInboundEdges(const IPvXAddress to);
+    void        addEdge(const IPvXAddress from, const IPvXAddress to);
     void        addEdge(const std::string& stripe, const IPvXAddress from, const IPvXAddress to);
+    void        removeEdge(const IPvXAddress& from, const IPvXAddress& to);
     void        removeEdge(const std::string& stripe, const IPvXAddress& from, const IPvXAddress& to);
 
     bool        hasEdge(const std::string& stripe, const IPvXAddress& from, const IPvXAddress& to) const;
@@ -119,7 +117,6 @@ public:
     void        resetLoss();
     void        setNumRequiredStripes(int num);
     void        setNumStripes(int num);
-    void        setStripes(Stream* stream);
     void        setStripes(PPStringSet stripeSet);
 
     // Head-related functions
@@ -132,6 +129,7 @@ public:
     double      getSmallestHeadStability();
 
     void        insertTopology(TopologyModel modelToInsert);
+    PPEdgeList  getEdges();
     PPEdgeList  getEdges(std::string stripe);
     PPIPvXAddressSet getVertexes();
 };

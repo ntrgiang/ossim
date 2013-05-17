@@ -1,7 +1,4 @@
 #include "TopologyModel.h"
-#include "p2pstreaming.h"
-#include "Stream.h"
-#include "Stripe.h"
 #include <iomanip>
 #include <queue>
 
@@ -18,6 +15,9 @@ TopologyModel::TopologyModel() {
     numStripes = 0;
     numNodes = 0;
     this->minRequiredStripes = 1;
+    // FIXME: 	this is a hack to prevent that the data structure
+    // 		has to be changed to cover mesh-based streaming
+    stripes.insert("0-0");
 }
 
 
@@ -38,6 +38,7 @@ void TopologyModel::setRoot(const IPvXAddress& root) {
 
 
 IPvXAddress TopologyModel::getRoot() const {
+
     if(roots.size() > 0)
         return IPvXAddress(IPAddress::UNSPECIFIED_ADDRESS);
 
@@ -64,10 +65,6 @@ int TopologyModel::countChildren(const IPvXAddress& vertex) const {
     return children.size();
 }
 
-
-void TopologyModel::setMobileNode(IPvXAddress mobNode) {
-    mobileNodes.insert(mobNode);
-}
 
 
 /**
@@ -126,9 +123,6 @@ int TopologyModel::countSuccessors(const IPvXAddress& vertex, std::string stripe
     return calculate(vertex, stripe);
 }
 
-int TopologyModel::countSuccessors(const Stripe* stripe) {
-    return countSuccessors(stripe->getId());
-}
 
 int TopologyModel::countSuccessors(const std::string stripe) {
     int succ = 0;
@@ -155,32 +149,15 @@ int TopologyModel::countNotConnected() {
 }
 
 
+
 /**
  * add a new vertex into topology
  */
-void TopologyModel::addVertex(const Stream* stream, const IPvXAddress vertex) {
+void TopologyModel::addVertex(const IPvXAddress vertex) {
 
-    if(roots.find(vertex) == roots.end()){
-        DEBUGOUT("addVertex " << vertex);
-        centrality[vertex] = 0;
-        inEdgesCtr[vertex] = 0;
-        age[vertex] = (double) simTime().dbl();
-
-        bool found = false;
-        foreach(Stripe* stripe, stream->getStripes()) {
-            if(graph[stripe->getId()].find(vertex) == graph[stripe->getId()].end()) {
-                graph[stripe->getId()][vertex]; // add empty entry in graph
-            } else found |= true;
-        }
-        if(!found) numNodes++;
-
-    } else { // adding root entry
-        foreach(Stripe* stripe, stream->getStripes()) {
-            if(graph[stripe->getId()].find(vertex) == graph[stripe->getId()].end())
-                graph[stripe->getId()][vertex];
-        }
-    }
+    addVertex("0-0", vertex);
 }
+
 
 void TopologyModel::addVertex(const std::string& stripe, const IPvXAddress vertex) {
 
@@ -235,11 +212,6 @@ int TopologyModel::removeVertexRecursive(const IPvXAddress& vertex) {
         return affected;
 }
 
-
-
-int TopologyModel::removeVertexRecursive(const Stripe* stripe, const IPvXAddress &vertex) {
-    return removeVertexRecursive(stripe->getId(), vertex, false);
-}
 
 int TopologyModel::removeVertexRecursive(const std::string& stripe, const IPvXAddress &vertex) {
     return removeVertexRecursive(stripe, vertex, false);
@@ -335,42 +307,11 @@ void TopologyModel::removeVertex(const IPvXAddress &vertex) {
     calculated = false;
 }
 
-/**
- * This method removes the node vertex and all
- * incident and adjacent edges.
- */
-void TopologyModel::removeVertex(const Stream* stream, const IPvXAddress& vertex) {
-    DEBUGOUT("removeVertex " << vertex);
 
-    centrality.erase(vertex);
-    inEdgesCtr.erase(vertex);
-    numNodes--;
+void TopologyModel::addEdge(const IPvXAddress from, const IPvXAddress to) {
 
-    // For each stripe, remove all edges in and out of this node
-    foreach(Stripe* cStripe, stream->getStripes()) {
-        std::string stripe = cStripe->getId();
-        // Remove all incident edges
-        Vertexes::iterator it = graph[stripe].begin();
-        while (it != graph[stripe].end()) {
-            it->second.erase(vertex);
-            it++;
-        }
-
-        // Remove all adjacent edges
-        std::set<IPvXAddress>::iterator itset;
-        for (itset = graph[stripe][vertex].begin(); itset != graph[stripe][vertex].end(); itset++) {
-            inEdgesCtr[*itset]--;
-            DEBUGOUT(" \\ removeVertex " << vertex << "->" << *itset << " in " << stripe << " decreases #inbound[to]=" << inEdgesCtr[*itset] << " >= 0");
-        }
-        graph[stripe].erase(vertex);
-    }
-
-    //FIXME age currently not multi-stream capable
-    age.erase(vertex);
-
-    calculated = false;
+    addEdge("0-0", from, to);
 }
-
 
 void TopologyModel::addEdge(const std::string& stripe, const IPvXAddress from, const IPvXAddress to) {
 
@@ -413,6 +354,11 @@ void TopologyModel::addEdge(const std::string& stripe, const IPvXAddress from, c
     calculated = false;
 }
 
+
+void TopologyModel::removeEdge(const IPvXAddress& from, const IPvXAddress& to) {
+
+    removeEdge("0-0",from, to);
+}
 
 void TopologyModel::removeEdge(const std::string& stripe, const IPvXAddress& from, const IPvXAddress& to) {
 
@@ -715,12 +661,6 @@ void TopologyModel::setAge(const IPvXAddress ip, double nodeAge) {
 
 void TopologyModel::setNumStripes(int num) {
     numStripes = +num;
-}
-
-
-void TopologyModel::setStripes(Stream* stream){
-    foreach(Stripe* stripe, stream->getStripes())
-        stripes.insert(stripe->getId());
 }
 
 
@@ -1145,6 +1085,10 @@ int TopologyModel::getNumRootSuccessors() {
     return counter;
 }
 
+PPEdgeList TopologyModel::getEdges() {
+
+    return getEdges("0-0");
+}
 
 PPEdgeList TopologyModel::getEdges(std::string stripe) {
     PPEdgeList edges;
