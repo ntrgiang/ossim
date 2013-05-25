@@ -86,7 +86,7 @@ void AttackerModule::attackGlobal() {
 
     // put stats here
     int damage = oT->attackRecursive(numAttack);
-    //FIXME recording the damage
+    //recording the damage
     attackerDamage.collect((double) damage);
     attackerDamageTime.record((double) damage);
 }
