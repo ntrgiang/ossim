@@ -52,7 +52,6 @@ public:
     DonetStatistic();
     virtual ~DonetStatistic();
 
-//    virtual void initialize();
     virtual int numInitStages() const  {return 4;}
     virtual void initialize(int stage);
 
@@ -119,23 +118,12 @@ public:
     void reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num);
     void reportRebuffering(const SEQUENCE_NUMBER_T &seq_num);
 
-    void increaseChunkHit(const int &delta);
-    void increaseChunkMiss(const int &delta);
-
     void reportStall(); // should be obsolete
 
     void reportSkipChunk(void);
     void reportRebuffering(void);
     void reportStallDuration(double dur);
     void reportStallDuration(void); // overload the above function
-
-    void reportSystemSize(void);
-
-    // -- Function to produce signals to collect stats about CI
-    void collectCI(void);
-    void collectSkipChunk(void);
-    void collectStallDuration(void);
-    void collectRebuffering(void);
 
     void reportRequestedChunk(const SEQUENCE_NUMBER_T &seq_num);
     void reportDuplicatedChunk(const SEQUENCE_NUMBER_T &seq_num);
@@ -147,6 +135,29 @@ public:
     void reportNumberOfPartner(int nPartner);
     void reportNumberOfPartner(const IPvXAddress &addr, const int &nPartner);
     void reportNumberOfJoin(int val);
+
+    //
+    // Currently used --->
+    //
+    void reportSystemSize(void);
+
+    // -- Function to produce signals to collect stats about CI
+    void collectCI(void);
+    void collectSkipChunk(void);
+    void collectStallDuration(void);
+    void collectRebuffering(void);
+
+    void reportDelays(void);
+
+    // -- To calculate Continuity Index
+    void increaseChunkHit(const int &delta);
+    void increaseChunkMiss(const int &delta);
+
+    // -- To calculate Delay
+    void collectDeltaDelayOneOverlayHop(const double &);
+    void collectDeltaOverlayHopCount(const long &);
+    void collectDeltaNumberOfReceivedChunk(const long &);
+    // <--- Currently used
 
 private:
     void printActivePeerList(void);
@@ -189,11 +200,19 @@ private:
     long m_count_chunkMiss;
     long m_count_allChunk;
 
+    long m_count_chunkHit_prev;
+    long m_count_allChunk_prev;
+
     // -- Regarding statistics from all Players
     long m_count_skipChunk;
     long m_count_rebuffering;
     long double m_count_stallDuration;
     long m_count_stallDuration_chunk;
+
+    // -- Calculate delays (end-to-end, overlay hop count, underlay hop count
+    long double   m_totalEndToEndDelay;
+    long long     m_totalNumberOfReceivedChunk;
+    long long     m_totalOverlayHopCount;
 
     // ---------------------------- Signals ------------------------------------
     simsignal_t sig_dummy_chunkHit;
@@ -208,7 +227,12 @@ private:
     simsignal_t sig_rebuffering;
     simsignal_t sig_stallDuration;
     simsignal_t sig_ci;
+    simsignal_t sig_ci_delta;
     simsignal_t sig_systemSize;
+
+    // -- Delays
+    simsignal_t sig_DelayOneOverlayHop;
+    simsignal_t sig_overlayHopCount;
 
     // should be obsolete
     simsignal_t sig_chunkSeek;
