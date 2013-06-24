@@ -65,6 +65,8 @@ public:
     DonetPeer();
     virtual ~DonetPeer();
 
+    void gracefulLeave(void);
+
 protected:
     virtual int numInitStages() const { return 4; }
     virtual void initialize(int stage);
@@ -253,7 +255,6 @@ private:
     // -- For reporting statistics
     long int m_count_prev_chunkHit, m_count_prev_chunkMiss;
 
-
     // --------------------------- Optimization --------------------------------
     std::vector<IPvXAddress> m_blacklist;
 
@@ -303,6 +304,10 @@ private:
     simsignal_t sig_timeout;
 
     simsignal_t sig_nBufferMapReceived;
+
+    // -- Delays measurement
+    simsignal_t sig_e2eDelay;
+    simsignal_t sig_overlayHopCount;
 
 };
 

@@ -51,7 +51,6 @@ module DonetSourceNode
         @labels(node,ethernet-node);
         @display("i=device/pc2;bgb=425,456");
         bool IPForward = default(false);
-//        int namid = default(-1);
         string routingFile = default("");
         int numExtInterfaces = default(0);
         
@@ -59,19 +58,16 @@ module DonetSourceNode
         inout pppg[] @labels(PPPFrame-conn);
         inout ethg[] @labels(EtherFrame-conn);
     submodules:
-        //        namTrace: NAMTraceWriter {
-        //            parameters:
-        //                namid = namid;
-        //                @display("p=57,294");
-        //        }
         notificationBoard: NotificationBoard {
             parameters:
                 @display("p=57,54");
         }
+
         interfaceTable: InterfaceTable {
             parameters:
                 @display("p=57,134");
         }
+
         routingTable: RoutingTable {
             parameters:
                 IPForward = IPForward;
@@ -79,14 +75,17 @@ module DonetSourceNode
                 routingFile = routingFile;
                 @display("p=57,214");
         }
+
         peerApp: DonetSourceApp {
             parameters:
                 @display("p=163,67;i=block/app");
         }
+
         udp: UDP {
             parameters:
                 @display("p=336,141");
         }
+
         networkLayer: NetworkLayer {
             parameters:
                 proxyARP = false;
@@ -95,14 +94,17 @@ module DonetSourceNode
                 ifIn[sizeof(pppg)+sizeof(ethg)+numExtInterfaces];
                 ifOut[sizeof(pppg)+sizeof(ethg)+numExtInterfaces];
         }
+
         ppp[sizeof(pppg)]: PPPInterface {
             parameters:
                 @display("p=186,390,row,90;q=txQueue");
         }
+
         eth[sizeof(ethg)]: EthernetInterface {
             parameters:
                 @display("p=336,390,row,90;q=txQueue");
         }
+
         tcpdump: TCPDump {
             parameters:
                 @display("p=336,302;i=abstract/cache_s");

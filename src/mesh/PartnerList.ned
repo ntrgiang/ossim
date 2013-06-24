@@ -49,5 +49,6 @@ simple PartnerList
 {
     parameters:
         @display("i=block/table");
+        bool debug = default(false);
 }
 

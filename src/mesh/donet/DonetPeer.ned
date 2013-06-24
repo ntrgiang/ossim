@@ -40,6 +40,10 @@ simple DonetPeer extends DonetBase
         
         // Debug
         // bool moduleDebug = default(false);
+
+        // --- Features
+        //
+        bool trEnabled = default(false); // Traceroute module
         
         // Timer
         volatile double startTime @unit(s);
@@ -84,7 +88,7 @@ simple DonetPeer extends DonetBase
         // ---------------------------------------------------------------------
 
         // -- For debug
-        // @statistic[localCI](source="Signal_LocalCI"; record=min,max,mean,last,vector);
+        @statistic[localCI](source="Signal_LocalCI"; record=min,max,mean,last,vector);
 
         // -- Old metrics
         // -- Possible signals to collect
@@ -134,6 +138,9 @@ simple DonetPeer extends DonetBase
 
     //@statistic[rateBufferMapReceived](source=Signal_nBufferMapReceived; record=mean,vector);
 
+    // -- Delays
+    //@statistic[e2eDelay](source="Signal_EndToEndDelay"; record=mean,vector);
+    //@statistic[overlayHopCount](source="Signal_OverlayHopCount"; record=mean,vector);
 
     // Template::
     //@statistic[n]();

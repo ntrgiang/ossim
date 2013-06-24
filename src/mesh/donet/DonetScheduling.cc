@@ -384,7 +384,7 @@ void DonetPeer::donetChunkScheduling(void)
             int currentSize = copied_expected_set.size();
             for (int k = 0; k < currentSize; ++k)
             {
-               EV << "nHolder > 1; k = " << k << endl;
+               //EV << "nHolder > 1; k = " << k << endl;
                m_partnerList->updateChunkAvailTime(holderList[0],
                                                    copied_expected_set[k],
                                                    (param_chunkSize*8)/peerUpBw);

@@ -136,7 +136,7 @@ public:
     void printSendBm(const IPvXAddress &address);
 
 private:
-    //typedef std::map<IPvXAddress, NeighborInfo *> AddressList;
+    bool m_debug;
     typedef std::map<IPvXAddress, NeighborInfo> AddressList;
     mutable AddressList m_map;
     int m_bufferSize;
@@ -144,7 +144,6 @@ private:
     friend class DonetPeer;
     friend class DonetBase;
     friend class DonetSource;
-
 };
 
 #endif /* PARTNERLIST_H_ */

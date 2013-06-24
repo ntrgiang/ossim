@@ -32,9 +32,20 @@
 #include "DonetBase.h"
 #include "DpControlInfo_m.h"
 
+#ifndef debugOUT
+#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
+#endif
+
+bool DonetBase::m_trEnabled = false;
+
 DonetBase::DonetBase() {}
 
 DonetBase::~DonetBase() {}
+
+void DonetBase::initialize()
+{
+   m_debug = (hasPar("debug")) ? par("debug").boolValue() : false;
+}
 
 void DonetBase::handleMessage(cMessage *msg)
 {
@@ -215,6 +226,17 @@ void DonetBase::bindToGlobalModule(void)
 
 }
 
+void DonetBase::bindToExternalModule()
+{
+   Enter_Method("bindToExternalModule()");
+
+   // -- Binding to the Traceroute module
+//   cModule *temp = getParentModule()->getParentModule()->getModuleByRelativePath("networkLayer")->getModuleByRelativePath("traceroute");
+//   m_traceroute = check_and_cast<Traceroute *>(temp);
+//   EV << "Binding to Traceroute is completed successfully" << endl;
+
+}
+
 void DonetBase::bindtoStatisticModule()
 {
    Enter_Method("bindToStatisticModule()");
@@ -245,6 +267,8 @@ const IPvXAddress& DonetBase::getSender(const cPacket *pkt) const
 
 void DonetBase::processChunkRequest(cPacket *pkt)
 {
+   Enter_Method("processChunkRequest");
+
     EV << "---------- Process chunk request ------------------------------------" << endl;
     // Debug
     ++m_nChunkRequestReceived;
@@ -480,6 +504,7 @@ void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
 
         MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
         sendToDispatcher(acceptPkt, m_localPort, requester.address, requester.port);
+
     }
     else
     {
@@ -518,6 +543,11 @@ void DonetBase::processPartnershipLeave(cPacket *pkt)
    Enter_Method("processPartnershipLeave()");
    EV << endl << "-------- Process partnership Leave --------------------------------" << endl;
 
+   if (m_state == MESH_JOIN_STATE_IDLE)
+   {
+      debugOUT << "node " << getNodeAddress() << " is idle --> message should be ignored" << endl;
+      return;
+   }
    // -- Get the identifier (IP:port) and upBw of the requester
    IPvXAddress leavingAddress = IPvXAddress("10.0.0.9");;
    int senderPort = 0;
@@ -529,8 +559,24 @@ void DonetBase::processPartnershipLeave(cPacket *pkt)
    EV << "Partner list before removing partner: " << endl;
    m_partnerList->print();
 
+   debugOUT << "node " << getNodeAddress() << " received LEAVE msg from " << leavingAddress << endl;
+   //debugOUT << "numPartners before: " << m_partnerList->getSize() << endl;
+
    m_partnerList->deleteAddress(leavingAddress);
+
+   //debugOUT << "numPartners after: " << m_partnerList->getSize() << endl;
+
+   //debugOUT << "Partnerlist after delete partner: " << endl;
+   //m_partnerList->print();
 
    EV << "Partner list after removing partner: " << endl;
    m_partnerList->print();
 }
+
+//void DonetBase::sendTraceRouteMsg(IPvXAddress addr)
+//{
+//   StartTraceroute *startmsg = new StartTraceroute();
+//   startmsg->setDest(addr);
+//   sendToDispatcher(startmsg);
+//   //cSimpleModule::send(startmsg,"to_trcrt");
+//}
