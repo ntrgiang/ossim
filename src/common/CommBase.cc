@@ -34,6 +34,10 @@
 #include "IPv4InterfaceData.h"
 #include "InterfaceTableAccess.h"
 
+#ifndef debugOUT
+#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
+#endif
+
 CommBase::CommBase() {
     // TODO Auto-generated constructor stub
 }
@@ -139,6 +143,7 @@ void CommBase::findNodeAddress(void)
 
 IPvXAddress CommBase::getNodeAddress(void)
 {
+    if(m_localAddress.isUnspecified()) findNodeAddress();
     return m_localAddress;
 }
 
