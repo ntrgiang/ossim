@@ -35,6 +35,7 @@ simple CommBase
 {
     parameters:
         @class(CommBase);
+        bool debug = default(false);
 
     gates:
         // -- Gates to the Dispatcher module

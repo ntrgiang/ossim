@@ -37,8 +37,6 @@
 
 #include "ActivePeerTable.h"
 #include "IChurnGenerator.h"
-//#include "GlobalStatistic.h"
-#include "StatisticBase.h"
 
 class CommBase : public cSimpleModule {
 public:
@@ -69,10 +67,9 @@ protected:
     void bindToGlobalModule(void);
 
 protected:
+    bool m_debug;
     IChurnGenerator *m_churn;
     ActivePeerTable *m_apTable;
-//    StatisticBase *m_gstat;
-    //GlobalStatistic *m_gstat;
 
     IPvXAddress m_localAddress;
 };
