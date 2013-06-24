@@ -115,7 +115,12 @@ void DonetStatistic::initialize(int stage)
         sig_rebuffering       = registerSignal("Signal_Rebuffering");
         sig_stallDuration     = registerSignal("Signal_StallDuration");
         sig_ci                = registerSignal("Signal_CI");
+        sig_ci_delta          = registerSignal("Signal_CI_delta");
         sig_systemSize        = registerSignal("Signal_SystemSize");
+
+        // -- Delays
+        sig_DelayOneOverlayHop     = registerSignal("Signal_DelayOneOverlayHop");
+        sig_overlayHopCount   = registerSignal("Signal_OverlayHopCount");
 
         // should be obsolete
         sig_chunkSeek       = registerSignal("Signal_ChunkSeek");
@@ -133,6 +138,9 @@ void DonetStatistic::initialize(int stage)
         m_count_allChunk = 0L;
         m_count_chunkHit = 0L;
         m_count_chunkMiss = 0L;
+
+        m_count_allChunk_prev = 0L;
+        m_count_chunkHit_prev = 0L;
 
 //        std::vector<cIListener*> localListener;
 //        localListener = getLocalSignalListeners(sig_dummy_chunkHit);
@@ -186,6 +194,10 @@ void DonetStatistic::initialize(int stage)
     m_count_IGN = 0L;
     m_count_ACK = 0L;
 
+    m_totalEndToEndDelay = 0.0L;
+    m_totalNumberOfReceivedChunk = 0L;
+    m_totalOverlayHopCount = 0L;
+
     // -- data to be processed with R
 //    m_accumulatedSizePV = 0L;
 //    m_totalNode = 0;
@@ -228,6 +240,8 @@ void DonetStatistic::handleTimerMessage(cMessage *msg)
         collectSkipChunk();
         collectStallDuration();
         collectRebuffering();
+
+        reportDelays();
 
         scheduleAt(simTime() + param_interval_reportCI, timer_reportCI);
     }
@@ -511,11 +525,29 @@ void DonetStatistic::collectCI(void)
 {
    if (m_count_allChunk)
    {
+      long delta_allChunk = m_count_allChunk - m_count_allChunk_prev;
+//      std::cout << "all: " << m_count_allChunk << ", " << m_count_allChunk_prev << ", " << delta_allChunk << endl;
+      m_count_allChunk_prev = m_count_allChunk;
+
+      long delta_chunkHit = m_count_chunkHit - m_count_chunkHit_prev;
+//      std::cout << "hit: " << m_count_chunkHit << ", " << m_count_chunkHit_prev << ", " << delta_chunkHit << endl;
+      m_count_chunkHit_prev = m_count_chunkHit;
+
+      if (delta_allChunk)
+      {
+         emit(sig_ci_delta, (long double) delta_chunkHit / delta_allChunk);
+      }
+      else
+      {
+         emit(sig_ci_delta, 0.0);
+      }
+
       emit(sig_ci, (long double)m_count_chunkHit/m_count_allChunk);
    }
    else
    {
       emit(sig_ci, 0.0);
+      emit(sig_ci_delta, 0.0);
    }
 
 }
@@ -556,6 +588,30 @@ void DonetStatistic::reportRebuffering()
     //emit(sig_rebuffering, 1);
     ++m_count_rebuffering;
 }
+
+void DonetStatistic::reportDelays(void)
+{
+   if (simTime().dbl() < simulation.getWarmupPeriod().dbl())
+      return;
+
+//   if (m_totalNumberOfReceivedChunk == 0L)
+//   {
+//      emit(sig_DelayOneOverlayHop, 0.0);
+//      emit(sig_overlayHopCount, 0L);
+//   }
+//   else
+//   {
+//      emit(sig_DelayOneOverlayHop, m_totalEndToEndDelay / m_totalNumberOfReceivedChunk);
+//      emit(sig_overlayHopCount, (long double)(m_totalOverlayHopCount / m_totalNumberOfReceivedChunk));
+//   }
+
+   if (m_totalNumberOfReceivedChunk > 0L)
+   {
+      emit(sig_DelayOneOverlayHop, m_totalEndToEndDelay / m_totalNumberOfReceivedChunk);
+      emit(sig_overlayHopCount, (long double)(m_totalOverlayHopCount / m_totalNumberOfReceivedChunk));
+   }
+}
+
 // -------------------------------------------- END OF ON-GOING ----------------
 
 void DonetStatistic::reportMeshJoin()
@@ -586,4 +642,19 @@ void DonetStatistic::reportNumberOfPartner(const IPvXAddress &addr, const int &n
 void DonetStatistic::reportNumberOfJoin(int val)
 {
     emit(sig_nJoin, val);
+}
+
+void DonetStatistic::collectDeltaDelayOneOverlayHop(const double &delta)
+{
+   m_totalEndToEndDelay += delta;
+}
+
+void DonetStatistic::collectDeltaOverlayHopCount(const long &delta)
+{
+   m_totalOverlayHopCount += delta;
+}
+
+void DonetStatistic::collectDeltaNumberOfReceivedChunk(const long &delta)
+{
+   m_totalNumberOfReceivedChunk += delta;
 }
