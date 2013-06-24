@@ -121,14 +121,24 @@ public:
 
     void initializeRangeVideoBuffer(SEQUENCE_NUMBER_T seq);
 
-//    double getDeadline(SEQUENCE_NUMBER_T seq_num) const;
+    // -- Local statistics
+    inline long getNumberOfReceivedChunk() { return m_nChunkReceived; }
+    inline long double getTotalDelayOneOverlayHop() { return m_totalDelay_oneOverlayHop; }
+    inline double getTotalOverlayHopCount() { return m_totalOverlayHopCount; }
 
-    // Debug
+    // @brief returns the difference of the number of received chunks between two sampling
+    long getDeltaNumberOfReceivedChunk();
+
+    // @brief returns the difference of the end-to-end delays between two sampling
+    double getDeltaDelayOneOverlayHop();
+
+    // @brief returns the difference of the overlay hop counts between two sampling
+    long getDeltaOverlayHopCount();
+
+    // @brief prints the current status of the video buffer
     void printStatus();
 
-    /*
-     * Get the number of elements which are attached with VideoPackets
-     */
+    // @brief returns the number of elements which are attached with VideoPackets
     int getNumberActiveElement(void);
 
 private:
@@ -136,6 +146,7 @@ private:
 //    AppSettingDonet *m_appSetting;
 
     std::vector<STREAM_BUFFER_ELEMENT_T> m_streamBuffer;
+
     // sequence numbers
     SEQUENCE_NUMBER_T m_bufferStart_seqNum; // staring sequence number of the buffer
     SEQUENCE_NUMBER_T m_bufferEnd_seqNum;   // ending sequence number of the buffer
@@ -160,6 +171,14 @@ private:
     // -- To know the current status
     double m_time_firstChunk;
     long m_nChunkReceived;
+    long m_prev_nChunkReceived;
+
+    // -- To measure delay (end-to-end or hop count)
+    long double m_totalDelay_oneOverlayHop;
+    long double m_prev_totalEndToEndDelay;
+
+    long long m_totalOverlayHopCount;
+    long long m_prev_totalOverlayHopCount;
 
     // -- signals for statistical analysis
     simsignal_t signal_seqNum_receivedChunk;

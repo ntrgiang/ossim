@@ -59,7 +59,7 @@ private:
 
    long int m_prev_chunkSent;
    long int m_prev_chunkReceived;
-//   long int m_chunkExchanged;
+   //   long int m_chunkExchanged;
    double m_oriTime; // Time when the record was created for the first time
 
    friend class Forwarder;
@@ -78,7 +78,7 @@ public:
 
    inline long int getCountTotalChunkIncoming(void) { return m_count_totalChunk_incoming; }
 
-   void sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort);
+   virtual void sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort);
    void getRecordChunk(IPvXAddress &addr, RecordCountChunk&);
    const RecordCountChunk & getRecordChunk(IPvXAddress &addr);
 
@@ -91,16 +91,17 @@ public:
    void printRecord(void);
 
 private:
-    // -- Utility functions
-    // int getLocalPort();
+   // -- Utility functions
+   // int getLocalPort();
 
 protected:
-    // -- Pointers to external modules
-    VideoBuffer *m_videoBuffer;
-    Dispatcher *m_dispatcher;
+   // -- Pointers to external modules
+   VideoBuffer *m_videoBuffer;
+   Dispatcher *m_dispatcher;
 
-    std::map<IPvXAddress, RecordCountChunk> m_record_countChunk;
-    long int m_count_totalChunk_incoming; // from all partners
+   std::map<IPvXAddress, RecordCountChunk> m_record_countChunk;
+   long int m_count_totalChunk_incoming; // from all partners
+
 };
 
 #endif /* FORWARDER_H_ */

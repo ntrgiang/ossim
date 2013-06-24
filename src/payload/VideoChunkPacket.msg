@@ -39,6 +39,8 @@ class PeerStreamingPacket;
 packet VideoChunkPacket extends PeerStreamingPacket
 {
     packetGroup = PACKET_GROUP_VIDEO_CHUNK;
-    long seqNumber @getter(getSeqNumber) @setter(setSeqNumber);
-    double timeStamp @getter(getTimeStamp) @setter(setTimeStamp);
+    long    seqNumber            @getter(getSeqNumber)            @setter(setSeqNumber);
+    double  originalTimeStamp    @getter(getOriginalTimeStamp)    @setter(setOriginalTimeStamp);
+    double  sentTimeStamp        @getter(getSentTimeStamp)        @setter(setSentTimeStamp);
+    int     overlayHopCount      @getter(getOverlayHopCount)      @setter(setOverlayHopCount);
 }

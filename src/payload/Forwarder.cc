@@ -1,4 +1,4 @@
-//  
+//
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -7,16 +7,16 @@
 //
 // Project Info: http://www.p2p.tu-darmstadt.de/research/ossim
 //
-// OSSIM is free software: you can redistribute it and/or modify it under the 
-// terms of the GNU General Public License as published by the Free Software 
-// Foundation, either version 3 of the License, or (at your option) any later 
+// OSSIM is free software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software
+// Foundation, either version 3 of the License, or (at your option) any later
 // version.
 //
-// OSSIM is distributed in the hope that it will be useful, but WITHOUT ANY 
+// OSSIM is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 // A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License along with 
+// You should have received a copy of the GNU General Public License along with
 // this program. If not, see <http://www.gnu.org/licenses/>.
 
 // -----------------------------------------------------------------------------
@@ -49,48 +49,50 @@ Forwarder::Forwarder() {}
 
 Forwarder::~Forwarder() {}
 
-void Forwarder::handleMessage(cMessage* msg)
-{
-    Enter_Method("handleMessage");
-
-    if (msg->isSelfMessage())
-    {
-        throw cException("No timer is used in this module");
-        return;
-    }
-
-    // -------------------------------------------------------------------------
-    // -- For incoming chunks
-    // -------------------------------------------------------------------------
-
-    IPvXAddress senderAddress;
-    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(msg->getControlInfo());
-    senderAddress = controlInfo->getSrcAddr();
-
-    PeerStreamingPacket *appMsg = check_and_cast<PeerStreamingPacket *>(msg);
-    EV << "PacketGroup = " << appMsg->getPacketGroup() << endl;
-    if (appMsg->getPacketGroup() != PACKET_GROUP_VIDEO_CHUNK)
-        throw cException("Wrong packet type!");
-
-    EV << "A video chunk has just been received from " << senderAddress << endl;
-    VideoChunkPacket *chunkPkt = check_and_cast<VideoChunkPacket *>(appMsg);
-
-    m_videoBuffer->insertPacket(chunkPkt);
-
-    // -- Local record of incoming chunks
-    updateReceivedChunkRecord(senderAddress);
-    ++m_count_totalChunk_incoming;
-}
-
 void Forwarder::initialize(int stage)
 {
-    if (stage != 3)
-        return;
+   if (stage != 3)
+      return;
 
-    cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
-    m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
+   cModule* temp = getParentModule()->getModuleByRelativePath("videoBuffer");
+   m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
 
-    m_count_totalChunk_incoming = 0L;
+   m_count_totalChunk_incoming = 0L;
+
+   WATCH(m_count_totalChunk_incoming);
+}
+
+void Forwarder::handleMessage(cMessage* msg)
+{
+   Enter_Method("handleMessage");
+
+   if (msg->isSelfMessage())
+   {
+      throw cException("No timer is used in this module");
+      return;
+   }
+
+   // -------------------------------------------------------------------------
+   // -- For incoming chunks
+   // -------------------------------------------------------------------------
+
+   IPvXAddress senderAddress;
+   DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(msg->getControlInfo());
+   senderAddress = controlInfo->getSrcAddr();
+
+   PeerStreamingPacket *appMsg = check_and_cast<PeerStreamingPacket *>(msg);
+   EV << "PacketGroup = " << appMsg->getPacketGroup() << endl;
+   if (appMsg->getPacketGroup() != PACKET_GROUP_VIDEO_CHUNK)
+      throw cException("Wrong packet type!");
+
+   EV << "A video chunk has just been received from " << senderAddress << endl;
+   VideoChunkPacket *chunkPkt = check_and_cast<VideoChunkPacket *>(appMsg);
+
+   m_videoBuffer->insertPacket(chunkPkt);
+
+   // -- Local record of incoming chunks
+   updateReceivedChunkRecord(senderAddress);
+   ++m_count_totalChunk_incoming;
 }
 
 void Forwarder::finish()
@@ -100,46 +102,46 @@ void Forwarder::finish()
 
 void Forwarder::sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort)
 {
-    Enter_Method("sendChunk");
+   Enter_Method("sendChunk");
 
-    VideoChunkPacket *chunkPkt = m_videoBuffer->getChunk(seq)->dup();
+   VideoChunkPacket *chunkPkt = m_videoBuffer->getChunk(seq)->dup();
 
-    sendToDispatcher(chunkPkt, getLocalPort(), destAddress, destPort);
+   sendToDispatcher(chunkPkt, getLocalPort(), destAddress, destPort);
 
-    //updateSentChunkRecord(destAddress);
+   //updateSentChunkRecord(destAddress);
 
 }
 
 void Forwarder::updateSentChunkRecord(IPvXAddress& destAddress)
 {
-    // -- Update the record about sent Chunk
-    std::map<IPvXAddress, RecordCountChunk>::iterator iter;
-    iter = m_record_countChunk.find(destAddress);
+   // -- Update the record about sent Chunk
+   std::map<IPvXAddress, RecordCountChunk>::iterator iter;
+   iter = m_record_countChunk.find(destAddress);
 
-    if (iter == m_record_countChunk.end()) // New entry
-    {
-       addRecord(destAddress);
-    }
-    else
-    {
-       iter->second.m_chunkSent += 1;
-    }
+   if (iter == m_record_countChunk.end()) // New entry
+   {
+      addRecord(destAddress);
+   }
+   else
+   {
+      iter->second.m_chunkSent += 1;
+   }
 }
 
 void Forwarder::updateReceivedChunkRecord(IPvXAddress& senderAddress)
 {
-    // -- Update the record about received Chunk
-    std::map<IPvXAddress, RecordCountChunk>::iterator iter;
-    iter = m_record_countChunk.find(senderAddress);
+   // -- Update the record about received Chunk
+   std::map<IPvXAddress, RecordCountChunk>::iterator iter;
+   iter = m_record_countChunk.find(senderAddress);
 
-    if (iter == m_record_countChunk.end()) // New entry
-    {
-       addRecord(senderAddress);
-    }
-    else
-    {
-       iter->second.m_chunkReceived += 1;
-    }
+   if (iter == m_record_countChunk.end()) // New entry
+   {
+      addRecord(senderAddress);
+   }
+   else
+   {
+      iter->second.m_chunkReceived += 1;
+   }
 }
 
 void Forwarder::getRecordChunk(IPvXAddress &addr, RecordCountChunk& record)
@@ -200,4 +202,3 @@ void Forwarder::addRecord(const IPvXAddress & address)
 
    m_record_countChunk.insert(std::pair<IPvXAddress, RecordCountChunk>(address, newRecord));
 }
-
