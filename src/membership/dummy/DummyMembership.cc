@@ -77,12 +77,16 @@ IPvXAddress DummyMembership::getRandomPeer(IPvXAddress address)
    {
       if (iter->first == address)
          continue;
+      if (iter->second.m_current_nPartner >= iter->second.m_maxNOP)
+         continue;
 
-      for (int i = iter->second.m_current_nPartner; i < iter->second.m_maxNOP; ++i)
-      {
-         m_tempList.push_back(iter->first);
-         EV << "Address: " << iter->first << endl;
-      }
+      m_tempList.push_back(iter->first);
+
+//      for (int i = iter->second.m_current_nPartner; i < iter->second.m_maxNOP; ++i)
+//      {
+//         m_tempList.push_back(iter->first);
+//         EV << "Address: " << iter->first << endl;
+//      }
    }
 
    int size = m_tempList.size();
