@@ -40,14 +40,17 @@ package so.simulations;
 //
 // Prototype for modules that can be used as node in a GTITM_TransitStub_Network
 //
-import so.simulations.BaseNetworkModule;
+import so.simulations.BaseNetworkUnderlayAttackModule;
+import so.simulations.BaseNetworkOverlayAttackModule;
 import so.underlay.inet.GtitmRouter;
+import so.underlay.inet.RouterTR;
 import so.underlay.inet.InetUnderlayConfigurator;
 
 //
 // GT-ITM TS topology exported via BRITE.
 //
-module Network_r20 extends BaseNetworkModule
+//module Network_r20 extends BaseNetworkOverlayAttackModule
+module Network_r20 extends BaseNetworkUnderlayAttackModule
 {
     parameters:
         //int nRouters; // no impact
@@ -60,7 +63,8 @@ module Network_r20 extends BaseNetworkModule
                 nPeers = nPeers;
                 @display("i=block/cogwheel");
         }
-        rt[16]: GtitmRouter {
+        //rt[16]: GtitmRouter {
+        rt[16]: RouterTR {
             parameters:
                 @display("i=abstract/router");
         }

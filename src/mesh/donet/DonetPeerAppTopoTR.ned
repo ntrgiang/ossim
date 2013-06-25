@@ -20,7 +20,7 @@
 // this program. If not, see <http://www.gnu.org/licenses/>.
 
 // -----------------------------------------------------------------------------
-// DonetSourceApp.ned
+// DonetPeerApp.ned
 // -----------------------------------------------------------------------------
 // (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
 //
@@ -31,79 +31,83 @@
 
 package so.mesh.donet;
 
-import so.common.Dispatcher;
 import so.common.GenericApp;
+import so.common.Dispatcher;
 
-import so.membership.MCache;
 import so.membership.dummy.DummyMembership;
-import so.mesh.donet.DonetSource;
+import so.membership.MCache;
+import so.mesh.donet.DonetPeer;
 import so.mesh.PartnerList;
-import so.payload.ChunkGenerator;
 import so.payload.Forwarder;
-import so.payload.ForwarderTopo;
+import so.payload.ForwarderTopoTR;
 import so.payload.VideoBuffer;
+import so.payload.PlayerSimpleSkip;
 
-module DonetSourceApp like GenericApp
+module DonetPeerAppTopoTR like GenericApp
 {
     parameters:
-        @display("bgb=287,308");
+        @display("bgb=270,294");
 
     gates:
         input udpIn;
         output udpOut;
 
     submodules:
-        //membership: ScampPeer {
         membership: DummyMembership {
-            @display("p=52,179;i=block/users");
+            @display("p=51,173;i=block/users");
         }
-        mesh: DonetSource {
-            @display("p=133,179;i=block/network2");
+
+        mesh: DonetPeer {
+            @display("p=132,173;i=block/network2");
         }
-        //forwarder: Forwarder {
-        forwarder: ForwarderTopo {
-            @display("p=212,179;i=block/rxtx");
-        }
-        mCache: MCache {
-            @display("p=52,110;i=abstract/cache");
-        }
-        videoBuffer: VideoBuffer {
-            @display("p=212,110;i=block/buffer2");
-        }
-        chunkGenerator: ChunkGenerator {
-            @display("p=212,37;i=block/source");
-        }
+
         partnerList: PartnerList {
-            @display("p=133,110");
+            @display("p=132,104;i=block/network2");
         }
+
+        forwarder: ForwarderTopoTR {
+            @display("p=211,173;i=block/rxtx");
+        }
+
+        videoBuffer: VideoBuffer {
+            @display("p=211,104;i=block/buffer2");
+        }
+
+        player: PlayerSimpleSkip {
+            //player: <playerModule> like PlayerBase {
+            @display("p=211,44;i=device/terminal");
+        }
+
         dispatcher: Dispatcher {
-            @display("p=133,253;i=block/dispatch");
+            @display("p=132,247;i=block/dispatch");
         }
-    //        appSetting: AppSettingDonet {
-    //            @display("p=41,191");
-    //        }
+
+//    connections allowunconnected:
     connections:
         // Connect Gossip module to the Dispatcher
+        //
         dispatcher.overlayIn++ <-- membership.dpOut;
         dispatcher.overlayOut++ --> membership.dpIn;
 
         // Connect Mesh module to the Dispatcher
+        //
         dispatcher.overlayIn++ <-- mesh.dpOut;
         dispatcher.overlayOut++ --> mesh.dpIn;
 
         // Connect Forwarder module to the Dispatcher
+        //
         dispatcher.overlayIn++ <-- forwarder.dpOut;
         dispatcher.overlayOut++ --> forwarder.dpIn;
 
         // Connect Dispatcher to module's ports
+        //
         dispatcher.udpIn <-- udpIn;
         dispatcher.udpOut --> udpOut;
-
+        
         // Connect Forwarder to Video Buffer
         //forwarder.bufferOut --> videoBuffer.forwarderIn;
         //forwarder.bufferIn <-- videoBuffer.forwarderOut;
 
         // Connect Video Buffer to Player
-        // videoBuffer.playerOut --> player.bufferIn;
-
+        //videoBuffer.playerOut --> player.bufferIn;
 }

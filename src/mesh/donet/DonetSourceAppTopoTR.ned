@@ -20,7 +20,7 @@
 // this program. If not, see <http://www.gnu.org/licenses/>.
 
 // -----------------------------------------------------------------------------
-// DonetSourceApp.ned
+// DonetSourceAppTopoTR.ned
 // -----------------------------------------------------------------------------
 // (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
 //
@@ -40,10 +40,10 @@ import so.mesh.donet.DonetSource;
 import so.mesh.PartnerList;
 import so.payload.ChunkGenerator;
 import so.payload.Forwarder;
-import so.payload.ForwarderTopo;
+import so.payload.ForwarderTopoTR;
 import so.payload.VideoBuffer;
 
-module DonetSourceApp like GenericApp
+module DonetSourceAppTopoTR like GenericApp
 {
     parameters:
         @display("bgb=287,308");
@@ -57,31 +57,35 @@ module DonetSourceApp like GenericApp
         membership: DummyMembership {
             @display("p=52,179;i=block/users");
         }
+
         mesh: DonetSource {
             @display("p=133,179;i=block/network2");
         }
-        //forwarder: Forwarder {
-        forwarder: ForwarderTopo {
+
+        forwarder: ForwarderTopoTR {
             @display("p=212,179;i=block/rxtx");
         }
+
         mCache: MCache {
             @display("p=52,110;i=abstract/cache");
         }
+
         videoBuffer: VideoBuffer {
             @display("p=212,110;i=block/buffer2");
         }
+
         chunkGenerator: ChunkGenerator {
             @display("p=212,37;i=block/source");
         }
+
         partnerList: PartnerList {
             @display("p=133,110");
         }
+
         dispatcher: Dispatcher {
             @display("p=133,253;i=block/dispatch");
         }
-    //        appSetting: AppSettingDonet {
-    //            @display("p=41,191");
-    //        }
+
     connections:
         // Connect Gossip module to the Dispatcher
         dispatcher.overlayIn++ <-- membership.dpOut;

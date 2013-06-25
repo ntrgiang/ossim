@@ -20,31 +20,55 @@
 // this program. If not, see <http://www.gnu.org/licenses/>.
 
 // -----------------------------------------------------------------------------
-// CoolstreamingPeer.ned
+// ForwarderTopo.h
 // -----------------------------------------------------------------------------
 // (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
 //
-// Contributors: Thorsten Jacobi;
-// Code Reviewers: Giang;
+// Contributors: Giang;
+// Code Reviewers: -;
 // -----------------------------------------------------------------------------
 //
 
-package so.mesh.coolstreaming;
 
-import so.mesh.coolstreaming.CoolstreamingBase;
 
-simple CoolstreamingPeer extends CoolstreamingBase
+
+#ifndef FORWARDERTOPO_H_
+#define FORWARDERTOPO_H_
+
+#include "Forwarder.h"
+#include "OverlayTopology.h"
+#include "Traceroute.h"
+
+// @brief reports source & dest of a chunk speicified by observedChunk
+class ForwarderTopo : public Forwarder
 {
-    parameters:
-        @class(CoolstreamingPeer);
+public:
+   ForwarderTopo();
+   virtual ~ForwarderTopo();
 
-        volatile double startTime @unit(s);
+protected:
+   virtual void handleMessage(cMessage* msg);
+   virtual int numInitStages() const { return 4; }
+   virtual void initialize(int stage);
+   virtual void finish();
 
-        int coolstreaming_Ts = default(100);
-        int coolstreaming_Tp = default(150);
-        double coolstreaming_Ta @unit(s) = default(10.0s);
+public:
+   void sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort);
 
-        double interval_reportStatistic @unit(s) = default(0.5s);
-}
+protected:
 
+   // @brief stores the seq_num of the chunk to be observed
+   static long m_observedChunk;
+   // @brief stores the sequence of the overlay to be observed
+   static int m_topoSequence;
 
+   //Traceroute* m_traceroute;
+
+   // -- Pointers to the global modules
+   OverlayTopology* m_topoObserver;
+
+   bool isSource();
+
+};
+
+#endif /* FORWARDERTOPO_H_ */

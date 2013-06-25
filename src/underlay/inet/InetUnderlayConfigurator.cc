@@ -672,7 +672,8 @@ cModule* InetUnderlayConfigurator::createSourceNode(bool conn)
       //DEBUGOUT(" Creating source node");
 
       // -- derive overlay node from ned
-      std::string nameStr = "so.mesh.donet.DonetSourceNode";
+      //std::string nameStr = "so.mesh.donet.DonetSourceNode";
+      std::string nameStr = "so.mesh.donet.DonetSourceNodeTR";
       cModuleType* moduleType = cModuleType::get(nameStr.c_str());
       assert(moduleType);
 
@@ -719,7 +720,8 @@ cModule* InetUnderlayConfigurator::createPeerNode(bool conn)
    if (m_numTerminals < param_numPeers)
    {
       // -- derive overlay node from ned
-      std::string nameStr = "so.mesh.donet.DonetPeerNode";
+      //std::string nameStr = "so.mesh.donet.DonetPeerNode";
+      std::string nameStr = "so.mesh.donet.DonetPeerNodeTR";
       cModuleType* moduleType = cModuleType::get(nameStr.c_str());
       assert(moduleType);
 

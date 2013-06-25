@@ -45,3 +45,8 @@ src/common/PeerStreamingPacket_m.cc
 src/membership/newscast/NewscastPacket_m.h
 src/membership/newscast/NewscastPacket_m.cc
 simulations/run-scripts/callgrind.out.*
+src/underlay/inet/traceroute/RouteMsg_m.cc
+src/underlay/inet/traceroute/RouteMsg_m.h
+src/underlay/inet/traceroute/StartTraceroute_m.cc
+src/underlay/inet/traceroute/StartTraceroute_m.h
+src/Makefile

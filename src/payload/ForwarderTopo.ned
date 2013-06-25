@@ -20,31 +20,25 @@
 // this program. If not, see <http://www.gnu.org/licenses/>.
 
 // -----------------------------------------------------------------------------
-// CoolstreamingPeer.ned
+// ForwarderTopo.ned
 // -----------------------------------------------------------------------------
 // (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
 //
-// Contributors: Thorsten Jacobi;
-// Code Reviewers: Giang;
+// Contributors: Giang;
+// Code Reviewers: -;
 // -----------------------------------------------------------------------------
 //
 
-package so.mesh.coolstreaming;
 
-import so.mesh.coolstreaming.CoolstreamingBase;
+package so.payload;
 
-simple CoolstreamingPeer extends CoolstreamingBase
+import so.common.CommBase;
+import so.payload.Forwarder;
+
+simple ForwarderTopo extends Forwarder
 {
     parameters:
-        @class(CoolstreamingPeer);
-
-        volatile double startTime @unit(s);
-
-        int coolstreaming_Ts = default(100);
-        int coolstreaming_Tp = default(150);
-        double coolstreaming_Ta @unit(s) = default(10.0s);
-
-        double interval_reportStatistic @unit(s) = default(0.5s);
+        @class(ForwarderTopo);
 }
 
 

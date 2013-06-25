@@ -5,11 +5,9 @@ import ned.DatarateChannel;
 import so.global.ActivePeerTable;
 import so.global.churn.IChurnModel;
 import so.global.churn.StaticChurn;
-//import so.global.statistic.GlobalStatistic;
-import so.global.statistic.IStatisticBase;
+import so.global.statistic.IStreamingStatistic;
 
 
-import so.global.statistic.Statistic;
 import so.global.observer.MeshOverlayObserver;
 import so.global.logger.Logger;
 
@@ -45,7 +43,7 @@ network Coolstreaming_Homo_oneRouter_Network extends BasicNetwork
         }
         channel Channel_homo_up extends ned.DatarateChannel
         {
-            datarate = 500kbps;
+            datarate = 1100kbps;
         }
         channel Channel_homo_down extends ned.DatarateChannel
         {
@@ -75,8 +73,7 @@ network Coolstreaming_Homo_oneRouter_Network extends BasicNetwork
             @display("p=77,171");
         }
 
-        //globalStatistic: GlobalStatistic {
-        globalStatistic: <statisticModule> like IStatisticBase {
+        globalStatistic: <statisticModule> like IStreamingStatistic {
             @display("p=77,248;i=device/disk");
         }
         //        globalStatisic: Statistic {
@@ -85,11 +82,11 @@ network Coolstreaming_Homo_oneRouter_Network extends BasicNetwork
         appSetting: AppSettingDonet {
             @display("p=77,328;i=block/wheelbarrow");
         }
-        meshObserver: MeshOverlayObserver {
-            @display("p=184,29");
-        }
-        logger: Logger {
-        }
+//        meshObserver: MeshOverlayObserver {
+//            @display("p=184,29");
+//        }
+//        logger: Logger {
+//        }
     connections:
         // -- old set-up
 //        sourceNode.pppg$o++ --> Channel0_up --> router.pppg$i++;
