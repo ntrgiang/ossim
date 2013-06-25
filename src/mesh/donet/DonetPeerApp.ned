@@ -39,7 +39,6 @@ import so.membership.MCache;
 import so.mesh.donet.DonetPeer;
 import so.mesh.PartnerList;
 import so.payload.Forwarder;
-import so.payload.ForwarderTopo;
 import so.payload.VideoBuffer;
 import so.payload.PlayerSimpleSkip;
 
@@ -63,8 +62,7 @@ module DonetPeerApp like GenericApp
         partnerList: PartnerList {
             @display("p=132,104;i=block/network2");
         }
-        //forwarder: Forwarder {
-        forwarder: ForwarderTopo {
+        forwarder: Forwarder {
             @display("p=211,173;i=block/rxtx");
         }
         videoBuffer: VideoBuffer {

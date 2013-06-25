@@ -40,7 +40,6 @@ import so.mesh.donet.DonetSource;
 import so.mesh.PartnerList;
 import so.payload.ChunkGenerator;
 import so.payload.Forwarder;
-import so.payload.ForwarderTopo;
 import so.payload.VideoBuffer;
 
 module DonetSourceApp like GenericApp
@@ -60,8 +59,7 @@ module DonetSourceApp like GenericApp
         mesh: DonetSource {
             @display("p=133,179;i=block/network2");
         }
-        //forwarder: Forwarder {
-        forwarder: ForwarderTopo {
+        forwarder: Forwarder {
             @display("p=212,179;i=block/rxtx");
         }
         mCache: MCache {
