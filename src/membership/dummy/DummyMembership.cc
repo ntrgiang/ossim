@@ -31,6 +31,7 @@
 
 
 #include "DummyMembership.h"
+#include "assert.h"
 
 Define_Module(DummyMembership)
 
@@ -38,12 +39,12 @@ map<IPvXAddress, ActivePeerItem> DummyMembership::m_activePeerList;
 vector<IPvXAddress> DummyMembership::m_tempList;
 
 DummyMembership::DummyMembership() {
-    // TODO Auto-generated constructor stub
+   // TODO Auto-generated constructor stub
 
 }
 
 DummyMembership::~DummyMembership() {
-    // TODO Auto-generated destructor stub
+   // TODO Auto-generated destructor stub
 }
 
 void DummyMembership::initialize(int stage)
@@ -77,39 +78,44 @@ IPvXAddress DummyMembership::getRandomPeer(IPvXAddress address)
    {
       if (iter->first == address)
          continue;
-      if (iter->second.m_current_nPartner >= iter->second.m_maxNOP)
-         continue;
+
+      //
+      //      if (iter->second.m_current_nPartner >= iter->second.m_maxNOP)
+      //         continue;
 
       m_tempList.push_back(iter->first);
 
-//      for (int i = iter->second.m_current_nPartner; i < iter->second.m_maxNOP; ++i)
-//      {
-//         m_tempList.push_back(iter->first);
-//         EV << "Address: " << iter->first << endl;
-//      }
+      //      for (int i = iter->second.m_current_nPartner; i < iter->second.m_maxNOP; ++i)
+      //      {
+      //         m_tempList.push_back(iter->first);
+      //         EV << "Address: " << iter->first << endl;
+      //      }
    }
 
-   int size = m_tempList.size();
+//   int size = m_tempList.size();
 
-   if (size <= 0)
-   {
+//   if (size <= 0)
+//   {
       //throw cException("Wrong size of the tempList %d", size);
 
       // Hacking !!! (return the address of the source
-      return m_activePeerList.begin()->first;
-   }
+//      return m_activePeerList.begin()->first;
+//   }
 
-   int aRandomIndex = (int)intrand(size);
+//   int aRandomIndex = (int)intrand(size);
 
-   return m_tempList[aRandomIndex];
+//   return m_tempList[aRandomIndex];
+
+   assert(m_tempList.size() > 0);
+   return m_tempList[(int)intrand(m_tempList.size())];
 }
 
 void DummyMembership::addPeerAddress(const IPvXAddress &address, int maxNOP)
 {
    ActivePeerItem item;
-      item.m_maxNOP = maxNOP;
-      item.m_current_nPartner = 1; // peer can only be "in" if it has one partner
-      item.m_joinTime = simTime().dbl();
+   item.m_maxNOP = maxNOP;
+   item.m_current_nPartner = 1; // peer can only be "in" if it has one partner
+   item.m_joinTime = simTime().dbl();
 
    m_activePeerList.insert(pair<IPvXAddress, ActivePeerItem>(address, item));
 }
@@ -121,9 +127,9 @@ void DummyMembership::addSourceAddress(const IPvXAddress &address, int maxNOP)
    EV << "Source address: " << address << " -- maxNOP: " << maxNOP << endl;
 
    ActivePeerItem item;
-      item.m_maxNOP = maxNOP;
-      item.m_current_nPartner = 0;
-      item.m_joinTime = simTime().dbl();
+   item.m_maxNOP = maxNOP;
+   item.m_current_nPartner = 0;
+   item.m_joinTime = simTime().dbl();
 
    m_activePeerList.insert(pair<IPvXAddress, ActivePeerItem>(address, item));
 }
@@ -148,5 +154,5 @@ void DummyMembership::decrementNPartner(const IPvXAddress &address)
 int DummyMembership::getActivePeerNumber(void)
 {
    return m_activePeerList.size();
-//   return -9;
+   //   return -9;
 }
