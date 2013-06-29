@@ -39,4 +39,5 @@ simple DummyMembership extends MembershipBase
     parameters:
         @class(DummyMembership);
 
+
 }

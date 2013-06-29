@@ -44,29 +44,30 @@ struct ActivePeerItem
 
 class DummyMembership : public MembershipBase {
 public:
-    DummyMembership();
-    virtual ~DummyMembership();
+   DummyMembership();
+   virtual ~DummyMembership();
 
-    virtual int numInitStages() const  {return 4;}
-    virtual void initialize(int stage);
+   virtual int numInitStages() const  {return 4;}
+   virtual void initialize(int stage);
 
 public:
-    //IPvXAddress getARandPeer();
-    virtual IPvXAddress getRandomPeer(IPvXAddress address);
+   //IPvXAddress getARandPeer();
+   virtual IPvXAddress getRandomPeer(IPvXAddress address);
 
-    void addPeerAddress(const IPvXAddress &address, int maxNOP=0);
-    void addSourceAddress(const IPvXAddress &address, int maxNOP=0);
+   void addPeerAddress(const IPvXAddress &address, int maxNOP=0);
+   void addSourceAddress(const IPvXAddress &address, int maxNOP=0);
 
-    bool deletePeerAddress(const IPvXAddress &address);
+   bool deletePeerAddress(const IPvXAddress &address);
 
-    void incrementNPartner(const IPvXAddress &addr);
-    void decrementNPartner(const IPvXAddress &addr);
+   void incrementNPartner(const IPvXAddress &addr);
+   void decrementNPartner(const IPvXAddress &addr);
 
-    int getActivePeerNumber(void);
+   int getActivePeerNumber(void);
 
 private:
-    static map<IPvXAddress, ActivePeerItem> m_activePeerList;
-    static vector<IPvXAddress> m_tempList;
+   bool m_debug;
+   static map<IPvXAddress, ActivePeerItem> m_activePeerList;
+   static vector<IPvXAddress> m_tempList;
 
 };
 

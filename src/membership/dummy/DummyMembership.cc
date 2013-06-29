@@ -35,6 +35,10 @@
 
 Define_Module(DummyMembership)
 
+#ifndef debugOUT
+#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << " @ " << simTime().dbl() << ": "
+#endif
+
 map<IPvXAddress, ActivePeerItem> DummyMembership::m_activePeerList;
 vector<IPvXAddress> DummyMembership::m_tempList;
 
@@ -49,6 +53,10 @@ DummyMembership::~DummyMembership() {
 
 void DummyMembership::initialize(int stage)
 {
+   if (stage == 0)
+   {
+      m_debug = (hasPar("debug")) ? par("debug").boolValue() : false;
+   }
    if (stage != 3)
       return;
 }
@@ -79,33 +87,11 @@ IPvXAddress DummyMembership::getRandomPeer(IPvXAddress address)
       if (iter->first == address)
          continue;
 
-      //
-      //      if (iter->second.m_current_nPartner >= iter->second.m_maxNOP)
-      //         continue;
-
       m_tempList.push_back(iter->first);
 
-      //      for (int i = iter->second.m_current_nPartner; i < iter->second.m_maxNOP; ++i)
-      //      {
-      //         m_tempList.push_back(iter->first);
-      //         EV << "Address: " << iter->first << endl;
-      //      }
    }
 
-//   int size = m_tempList.size();
-
-//   if (size <= 0)
-//   {
-      //throw cException("Wrong size of the tempList %d", size);
-
-      // Hacking !!! (return the address of the source
-//      return m_activePeerList.begin()->first;
-//   }
-
-//   int aRandomIndex = (int)intrand(size);
-
-//   return m_tempList[aRandomIndex];
-
+   //debugOUT << "current list size: " << m_tempList.size() << endl;
    assert(m_tempList.size() > 0);
    return m_tempList[(int)intrand(m_tempList.size())];
 }
