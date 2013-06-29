@@ -1749,12 +1749,6 @@ void DonetPeer::chunkScheduling()
       return;
    }
 
-   //    if (m_seqNum_schedWinHead <= 0)
-   //    {
-   //        EV << "Scheduling Window is empty, exiting from chunk scheduling" << endl;
-   //        return;
-   //    }
-
    if (m_scheduling_started == false)
    {
       int ret = initializeSchedulingWindow();
@@ -1800,13 +1794,18 @@ void DonetPeer::chunkScheduling()
    // -- Update the range variables (for scheduling windows)
    updateRange();
 
-   EV << "Partners of " << getNodeAddress() << ": ";
-   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
-        iter != m_partnerList->m_map.end(); ++iter)
-   {
-      EV << iter->first << " -- ";
-   }
-   EV << endl;
+//   if (getNodeAddress() == IPvXAddress("192.168.0.16"))
+//   {
+//      debugOUT << "Partners of the peer " << getNodeAddress() << " are: " << endl;
+
+//      for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+//           iter != m_partnerList->m_map.end(); ++iter)
+//      {
+//         debugOUT << iter->first << " with buffer map: " << endl;
+//         iter->second.printRecvBm2();
+//      }
+//      debugOUT << endl;
+//   }
 
    // -------------------------------------------------------------------------
    // --- Debugging

@@ -79,6 +79,9 @@ void DonetPeer::donetChunkScheduling(void)
        debugOUT << "current playback point: " << m_player->getCurrentPlaybackPoint() << endl;
        debugOUT << "lower_bound: " << lower_bound << " -- upper_bound: " << upper_bound << endl;
        debugOUT << "percent fill of the buffer: " << m_videoBuffer->getPercentFill() << endl;
+       debugOUT << "Buffer start: " << m_videoBuffer->getBufferStartSeqNum()
+                   << " -- Buffer end: " << m_videoBuffer->getBufferEndSeqNum()
+                   << " -- Buffer head: " << m_videoBuffer->getHeadReceivedSeqNum() << endl;
        debugOUT << "----------------------------" << endl;
     }
 
@@ -145,7 +148,10 @@ void DonetPeer::donetChunkScheduling(void)
 
         int nHolder = m_partnerList->getNumberOfHolder(seq_num);
 
-        //EV << "Chunk " << seq_num << " with " << nHolder << " holders" << endl;
+        if (getNodeAddress() == IPvXAddress("192.168.0.16"))
+        {
+           debugOUT << "Chunk " << seq_num << " with " << nHolder << " holders -- " << endl;
+        }
 
         if (nHolder == 0)
         {
@@ -456,6 +462,9 @@ void DonetPeer::donetChunkScheduling(void)
     {
        m_sched_window.start += m_videoStreamChunkRate;
        m_sched_window.end  += m_videoStreamChunkRate;
+
+       m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
+       m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
     }
 
     EV << "m_sched_window.start = " << m_sched_window.start << endl;
