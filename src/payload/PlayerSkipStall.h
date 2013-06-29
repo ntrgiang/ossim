@@ -75,6 +75,9 @@ public:
 
    double getContinuityIndex(void) { return 0.0; } // TODO
 
+    // TODO-Giang: move this function (and one at SimpleSkip up to the base)!!!
+    double getPercentBufferLow(void) { return param_percent_buffer_low; }
+
 private:
    bool shouldResumePlaying(SEQUENCE_NUMBER_T seq_num);
 

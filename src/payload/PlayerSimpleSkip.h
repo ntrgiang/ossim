@@ -71,6 +71,7 @@ public:
     bool playerStarted(void);
 
     double getContinuityIndex(void);
+    double getPercentBufferLow(void);
 
 private:
     void startPlayer(void);
