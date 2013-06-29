@@ -34,6 +34,10 @@
 
 using namespace std;
 
+#ifndef debugOUT
+#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << " @ " << simTime().dbl() << ": "
+#endif
+
 /**
  * A very straight-forward version of the implementation --> should not expect that it is smart
  */
@@ -41,6 +45,7 @@ void DonetPeer::donetChunkScheduling(void)
 {
     Enter_Method("donetChunkScheduling()");
     EV << "Donet chunk scheduling triggered! " << endl;
+
 
     int count_0 = 0;
     int count_1 = 0;
@@ -67,6 +72,15 @@ void DonetPeer::donetChunkScheduling(void)
 
     long lower_bound = m_sched_window.start;
     long upper_bound = m_sched_window.end;
+
+    if (getNodeAddress() == IPvXAddress("192.168.0.16"))
+    {
+       debugOUT << "----------------------------" << endl;
+       debugOUT << "current playback point: " << m_player->getCurrentPlaybackPoint() << endl;
+       debugOUT << "lower_bound: " << lower_bound << " -- upper_bound: " << upper_bound << endl;
+       debugOUT << "percent fill of the buffer: " << m_videoBuffer->getPercentFill() << endl;
+       debugOUT << "----------------------------" << endl;
+    }
 
     // -- Get current time, for faster query time when it is used repeatedly
     // double current_time = simTime().dbl();
@@ -437,7 +451,8 @@ void DonetPeer::donetChunkScheduling(void)
     refreshListRequestedChunk();
 
     // -- Move the scheduling window forward
-    if (m_player->getState() == PLAYER_STATE_PLAYING)
+    //if (m_player->getState() == PLAYER_STATE_PLAYING)
+    if (m_player->getCurrentPlaybackPoint() - m_sched_window.start > m_player->getPercentBufferLow() * m_bufferMapSize_chunk)
     {
        m_sched_window.start += m_videoStreamChunkRate;
        m_sched_window.end  += m_videoStreamChunkRate;

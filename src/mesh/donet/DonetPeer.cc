@@ -39,7 +39,7 @@
 //using namespace std;
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << " @ " << simTime().dbl() << ": "
 #endif
 
 // ------------------------ Static members -------------------------------------
@@ -309,6 +309,8 @@ void DonetPeer::finish()
    //m_gstat->reportNumberOfPartner(m_partnerList->getSize());
 
    //reportStatus();
+
+   debugOUT << "Peer " << getNodeAddress() << " has " << m_partnerList->getSize() << " partners" << endl;
 }
 
 void DonetPeer::cancelAndDeleteAllTimer()
@@ -664,6 +666,8 @@ void DonetPeer::handleTimerPartnershipRefinement()
 
    EV << endl << "**************************************************************" << endl;
    EV << "Partnership refinement !!!" << endl;
+
+   //debugOUT << "@Node " << getNodeAddress() << " -- Partnership refinement ***************" << endl;
 
    // --------------------------------------------------------------------------
    // --- Update the records
@@ -1194,19 +1198,19 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
       cancelEvent(timer_partnerListCleanup);
       scheduleAt(simTime() + param_interval_partnerlistCleanup, timer_partnerListCleanup);
 
-//      m_trEnabled = par("trEnabled").boolValue();
+      //      m_trEnabled = par("trEnabled").boolValue();
 
-//      if (m_trEnabled)
-//      {
-         // -- Binding to the TracerouteHandler module
-//         cModule* temp = getParentModule()->getParentModule()->getModuleByRelativePath("networkLayer")->getModuleByRelativePath("trHandler");
-//         TracerouteHandler* trHandler = check_and_cast<TracerouteHandler *>(temp);
-//         EV << "Binding to TracerouteHandler is completed successfully" << endl;
-//         assert(trHandler);
+      //      if (m_trEnabled)
+      //      {
+      // -- Binding to the TracerouteHandler module
+      //         cModule* temp = getParentModule()->getParentModule()->getModuleByRelativePath("networkLayer")->getModuleByRelativePath("trHandler");
+      //         TracerouteHandler* trHandler = check_and_cast<TracerouteHandler *>(temp);
+      //         EV << "Binding to TracerouteHandler is completed successfully" << endl;
+      //         assert(trHandler);
 
-         // -- TracerouteHandler to traceroute to the Reference Point
-//         trHandler->triggerTracerouteRefPoint();
-//      }
+      // -- TracerouteHandler to traceroute to the Reference Point
+      //         trHandler->triggerTracerouteRefPoint();
+      //      }
       // -- Debug
       // m_gstat->reportMeshJoin();
 
@@ -1388,6 +1392,7 @@ void DonetPeer::processPeerBufferMap(cPacket *pkt)
 
    IPvXAddress senderAddress = getSender(pkt);
    EV << "-- Received a buffer map from " << senderAddress << endl;
+//   debugOUT << "Peer " << getNodeAddress() << " received buffer map from: " << senderAddress << endl;
 
    if (m_partnerList->hasAddress(senderAddress) == false)
    {
@@ -1451,7 +1456,8 @@ bool DonetPeer::findPartner()
    if (m_partnerList->getSize() >= param_minNOP)
    {
       EV << "Minimum number of partners has been reach --> stop finding more partner for the moment." << endl;
-      return false;
+      //debugOUT << getNodeAddress() << " will find a new partner now. Current NOP: " << m_partnerList->getSize() << endl;
+      //return false;
    }
 
    bool ret = sendPartnershipRequest();
@@ -1470,14 +1476,24 @@ bool DonetPeer::sendPartnershipRequest(void)
       addressRandPeer = m_memManager->getRandomPeer(getNodeAddress());
       if (count > 10)
          return false;
+
+      if (m_partnerList->have(addressRandPeer))
+      {
+         //debugOUT << "already have this address " << addressRandPeer << " in the partnerList, count = " << count << endl;
+      }
    }
    while(m_partnerList->have(addressRandPeer));
 
-   if (m_partnerList->have(addressRandPeer))
-   {
-      EV << "The peer has already been node's partner. No more request will be sent out." << endl;
-      return false;
-   }
+
+   //   if (m_partnerList->have(addressRandPeer))
+   //   {
+   //      EV << "The peer has already been node's partner. No more request will be sent out." << endl;
+   //      return false;
+   //   }
+
+   if (addressRandPeer == getNodeAddress())
+      debugOUT << "Get the IP of itself from the APT --> This should never happen! Count = " << count << endl;
+
 
    EV << "Peer " << addressRandPeer << " will be requested!" << endl;
 
@@ -1502,6 +1518,8 @@ void DonetPeer::updateDataExchangeRecord(double samplingInterval)
 
    RecordCountChunk record;
 
+   debugOUT << "@Peer " << " " << getNodeAddress() << " has: " << m_partnerList->getSize() << " partners: " << endl;
+   int count = 0;
    for(std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
        iter != m_partnerList->m_map.end(); ++iter)
    {
@@ -1517,54 +1535,62 @@ void DonetPeer::updateDataExchangeRecord(double samplingInterval)
       //      prevCount = iter->second->getCountChunkSent();
       //      iter->second->setCountChunkSent(currentCountSent-prevCount);
 
-      IPvXAddress addr = iter->first;
-      //m_forwarder->getRecordChunk(addr, record);
-      record = m_forwarder->getRecordChunk(addr);
+      record = m_forwarder->getRecordChunk((IPvXAddress &)iter->first);
       double duration = simTime().dbl() - record.m_oriTime;
 
-      if (duration > 0)
-      {
-         // -- update the data exchange since joining
-         iter->second.setAverageChunkReceived(record.m_chunkReceived / duration);
-         iter->second.setAverageChunkSent(record.m_chunkSent / duration);
-         iter->second.setAverageChunkExchanged((record.m_chunkSent + record.m_chunkReceived) / duration);
+      //debugOUT << "simTime = " << simTime().dbl() << " -- oriTime = " << record.m_oriTime << endl;
 
-         // -- update the data exchange per interval
-         long int chunkSent_diff = record.m_chunkSent - iter->second.getCountPrevChunkSent();
-         long int chunkReceived_diff = record.m_chunkReceived - iter->second.getCountPrevChunkReceived();
+      if (duration == 0) return;
 
-         iter->second.setAverageChunkSentPerInterval(chunkSent_diff / samplingInterval);
-         iter->second.setAverageChunkReceivedPerInterval(chunkReceived_diff / samplingInterval);
-         iter->second.setAverageChunkExchangedPerInterval((chunkSent_diff + chunkReceived_diff) / samplingInterval);
+      assert(duration > 0);
 
-         // -- Move value the to store it
-         iter->second.setCountPrevChunkSent(iter->second.getCountChunkSent());
-         iter->second.setCountPrevChunkReceived(iter->second.getCountChunkReceived());
+      // -- update the data exchange since joining
+      iter->second.setAverageChunkReceived(record.m_chunkReceived / duration);
+      iter->second.setAverageChunkSent(record.m_chunkSent / duration);
+      iter->second.setAverageChunkExchanged((record.m_chunkSent + record.m_chunkReceived) / duration);
 
-         iter->second.setCountChunkSent(record.m_chunkSent);
-         iter->second.setCountChunkReceived(record.m_chunkReceived);
+      // -- update the data exchange per interval
+      long int chunkSent_diff = record.m_chunkSent - iter->second.getCountPrevChunkSent();
+      long int chunkReceived_diff = record.m_chunkReceived - iter->second.getCountPrevChunkReceived();
 
-         // -- Debug
-         EV << "Previous -- chunk sent: " << iter->second.getCountPrevChunkSent()
-            << " -- chunk received: " << iter->second.getCountPrevChunkReceived() << endl;
-         EV << "Current -- chunk sent: " << iter->second.getCountChunkSent()
-            << " -- chunk received: " << iter->second.getCountChunkReceived() << endl;
-         EV << "Average since joining -- chunk sent: " << iter->second.getAverageChunkSent()
-            << " -- chunk received: " << iter->second.getAverageChunkReceived()
-            << " -- chunk exchanged: " << iter->second.getAverageChunkExchanged() << endl;
-         EV << "Average per interval: -- chunk sent: " << iter->second.getAverageChunkSentPerInterval()
-            << " -- chunk received: " << iter->second.getAverageChunkReceivedPerInterval()
-            << " -- chunk exchanged: " << iter->second.getAverageChunkExchangedPerInterval() << endl;
-      }
-      else if (duration == 0)
-      {
-         EV << "First record to be stored" << endl;
-      }
-      else
-      {
-         throw cException("Interval has to be positive");
-      }
+      iter->second.setAverageChunkSentPerInterval(chunkSent_diff / samplingInterval);
+      iter->second.setAverageChunkReceivedPerInterval(chunkReceived_diff / samplingInterval);
+      iter->second.setAverageChunkExchangedPerInterval((chunkSent_diff + chunkReceived_diff) / samplingInterval);
 
+      // -- Move value the to store it
+      iter->second.setCountPrevChunkSent(iter->second.getCountChunkSent());
+      iter->second.setCountPrevChunkReceived(iter->second.getCountChunkReceived());
+
+      iter->second.setCountChunkSent(record.m_chunkSent);
+      iter->second.setCountChunkReceived(record.m_chunkReceived);
+
+      debugOUT << "  @Partner " << ++count << " - " << iter->first << " - as partner at " << record.m_oriTime << ": " << endl;
+      debugOUT << "\tPrevious numChunk -- sent - received: " << iter->second.getCountPrevChunkSent()
+               << " - " << iter->second.getCountPrevChunkReceived() << endl;
+      debugOUT << "\tCurrent numChunk -- sent - received: " << iter->second.getCountChunkSent()
+               << " - " << iter->second.getCountChunkReceived() << endl;
+      debugOUT << "\tAverage since joining numChunk -- sent - received - exchanged: " << iter->second.getAverageChunkSent()
+               << " - " << iter->second.getAverageChunkReceived()
+               << " - " << iter->second.getAverageChunkExchanged() << endl;
+      debugOUT << "\tAverage per interval: numchunk -- sent - received - exchanged: "
+               << iter->second.getAverageChunkSentPerInterval()
+               << " - " << iter->second.getAverageChunkReceivedPerInterval()
+               << " - " << iter->second.getAverageChunkExchangedPerInterval() << endl;
+
+      iter->second.setCountPrevChunkSent(record.m_chunkSent);
+      iter->second.setCountPrevChunkReceived(record.m_chunkReceived);
+
+      // -- Debug
+      EV << "Previous -- chunk sent: " << iter->second.getCountPrevChunkSent()
+         << " -- chunk received: " << iter->second.getCountPrevChunkReceived() << endl;
+      EV << "Current -- chunk sent: " << iter->second.getCountChunkSent()
+         << " -- chunk received: " << iter->second.getCountChunkReceived() << endl;
+      EV << "Average since joining -- chunk sent: " << iter->second.getAverageChunkSent()
+         << " -- chunk received: " << iter->second.getAverageChunkReceived()
+         << " -- chunk exchanged: " << iter->second.getAverageChunkExchanged() << endl;
+      EV << "Average per interval: -- chunk sent: " << iter->second.getAverageChunkSentPerInterval()
+         << " -- chunk received: " << iter->second.getAverageChunkReceivedPerInterval()
+         << " -- chunk exchanged: " << iter->second.getAverageChunkExchangedPerInterval() << endl;
 
    } // for
 }
@@ -1771,7 +1797,7 @@ void DonetPeer::chunkScheduling()
    //    } // for
    //    EV << "*********************************************************************" << endl;
 
-   // -- Update the range variables (for statistics collection)
+   // -- Update the range variables (for scheduling windows)
    updateRange();
 
    EV << "Partners of " << getNodeAddress() << ": ";
