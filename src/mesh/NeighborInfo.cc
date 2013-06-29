@@ -209,6 +209,29 @@ void NeighborInfo::printRecvBm(void)
     EV << endl;
 }
 
+void NeighborInfo::printRecvBm2(void)
+{
+    std::cout << "%%%"
+              << "recvBm::" << endl;
+
+    std::cout << "  -- Start:\t"    << m_seqNum_recvBmStart
+              << "  -- End:\t"      << m_seqNum_recvBmEnd
+              << "  -- Head:\t"     << m_seqNum_recvBmHead  << endl;
+
+    int k = 1;
+    for (int i = 0; i < m_bufferSize; ++i)
+    {
+        std::cout << m_recvBm[i];
+
+        // -- For better presenting the bit array
+        if (k % 10 == 0) std::cout << "  ";
+        if (k % 100 == 0) std::cout << endl;
+        k++;
+    }
+    std::cout << endl;
+}
+
+
 void NeighborInfo::printSendBm(void)
 {
     if (ev.isGUI() == false)

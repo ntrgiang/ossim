@@ -127,6 +127,7 @@ public:
 
     // -- For debugging --
     void printRecvBm(void);
+    void printRecvBm2(void);
     void printSendBm(void);
     void printVectorAvailableTime(void);
 
