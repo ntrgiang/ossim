@@ -31,6 +31,7 @@
 
 #include "DonetBase.h"
 #include "DpControlInfo_m.h"
+#include "assert.h"
 
 #ifndef debugOUT
 #define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
@@ -147,11 +148,19 @@ bool DonetBase::canAcceptMorePartner(void)
 
 void DonetBase::sendBufferMap(void)
 {
-   if (m_partnerList->size() == 0)
+   debugOUT << "@Peer " << getNodeAddress() << "::" << endl;
+
+   if (m_partnerList->getSize() <= 0)
    {
-      EV << "No destination to send Buffer Map" << endl;
+      debugOUT << "Peer " << getNodeAddress() << " has no partners to send Buffer Map" << endl;
       return;
    }
+
+   assert(m_partnerList->getSize() > 0);
+
+   m_partnerList->print2();
+
+   debugOUT << "@peer " << getNodeAddress() << endl;
 
    MeshBufferMapPacket *bmPkt = new MeshBufferMapPacket("MESH_PEER_BUFFER_MAP");
    bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);
@@ -540,6 +549,8 @@ void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
 void DonetBase::addPartner(IPvXAddress remote, double upbw)
 {
    m_partnerList->addAddress(remote, upbw);
+   m_forwarder->addRecord(remote);
+
    //   m_partnerList->addAddress(remote, upbw, 0);
    m_gstat->writePartnership2File(getNodeAddress(), remote);
 }
