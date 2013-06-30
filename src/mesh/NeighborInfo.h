@@ -60,6 +60,9 @@ public:
     inline void setLastRecvBmTime(double timeStamp) { m_lastRecvBmTime = timeStamp; }
     inline double getLastRecvBmTime(void) { return m_lastRecvBmTime; }
 
+    inline void setTimeInstanceAsPartner(double timeStamp) { m_timeInstanceAsPartner = timeStamp; }
+    inline double getTimeInstanceAsPartner(void) { return m_timeInstanceAsPartner; }
+
     inline void setUpBw(double bw) { m_upBw = bw; }
     inline double getUpBw(void) { return m_upBw; }
 
@@ -134,6 +137,7 @@ public:
 // Data member
 private:
     double m_lastRecvBmTime;
+    double m_timeInstanceAsPartner;
     int m_bufferSize;
 
     // -- Peers information
