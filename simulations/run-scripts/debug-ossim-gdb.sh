@@ -13,4 +13,4 @@ ini_file=$2
 
 rm /tmp/ossim.log
 
-gdb --args ../../src/so -r 0 -u Cmdenv -c $config $ini_file -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src | tee /tmp/ossim.log
+gdb --args ../../src/so -r 0 -u Cmdenv -c $config $ini_file -n ../../src:../../simulations:../../../inet/src | tee /tmp/ossim.log
