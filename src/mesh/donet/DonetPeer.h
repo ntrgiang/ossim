@@ -100,6 +100,7 @@ private:
     bool sendPartnershipRequest(void);
     void processPartnershipAccept(cPacket *pkt);
     void processPartnershipReject(cPacket *pkt);
+    void processPartnershipDisconnect(cPacket* pkt);
     void addPartner(IPvXAddress remote, double bw);
 
     void processTimeoutJoinRequestAccept(cMessage *msg);

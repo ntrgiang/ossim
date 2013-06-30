@@ -39,7 +39,7 @@
 //using namespace std;
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << " @ " << simTime().dbl() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@Peer " << getNodeAddress() << "::" << getFullName() << " @ " << simTime().dbl() << ": "
 #endif
 
 // ------------------------ Static members -------------------------------------
@@ -635,6 +635,14 @@ void DonetPeer::handleTimerFindMorePartner(void)
    {
       // -- Do NOTHING, here!
 
+      bool ret = findPartner();
+
+      if (ret == false)
+         debugOUT << "no potential partners found" << endl;
+
+      debugOUT << "Current number of partners: " << m_partnerList->getSize() << endl;
+      debugOUT << "Waiting for something else" << endl;
+
       EV << "State remains as MESH_JOIN_STATE_ACTIVE_WAITING" << endl;
       m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
       //return;
@@ -688,12 +696,49 @@ void DonetPeer::handleTimerPartnershipRefinement()
       return;
    }
 
+   // -- Clean all the partners who do not have any chunk exchange, and partner time is large enough
+
+
    // Temporarily commented
    //   if (m_player->getContinuityIndex() > 0.9)
    //   {
    //      EV << "CI is good enough, no need for partnership refinement" << endl;
    //      return;
    //   }
+
+   std::vector<IPvXAddress> disconnect_list;
+
+   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+        iter != m_partnerList->m_map.end(); ++iter)
+   {
+      if (iter->second.getAverageChunkExchanged() <= 0.1)
+      {
+         if (simTime().dbl() - iter->second.getTimeInstanceAsPartner() > param_interval_partnershipRefinement)
+         {
+            debugOUT << "This partner should be removed, since no data exchange since "
+                     << iter->second.getTimeInstanceAsPartner() << endl;
+
+            // -- Should definitely remove the partner
+            //
+            debugOUT << "A disconnect message will be sent to the partner " << iter->first << endl;
+
+            MeshPartnershipDisconnectPacket *disPkt = new MeshPartnershipDisconnectPacket("MESH_PEER_JOIN_REQUEST");
+            disPkt->setBitLength(m_appSetting->getPacketSizePartnershipDisconnect());
+
+            sendToDispatcher(disPkt, m_localPort, iter->first, m_destPort);
+            //delete disPkt;
+
+            disconnect_list.push_back(iter->first);
+         }
+      }
+   }
+
+   for (std::vector<IPvXAddress>::iterator iter = disconnect_list.begin(); iter != disconnect_list.end(); ++iter)
+   {
+      debugOUT << "this partner whose address is " << *iter << " will be deleted from the partnerlist" << endl;
+      m_partnerList->deleteAddress(*iter);
+      m_forwarder->removeRecord(*iter);
+   }
 
    // --------------------------------------------------------------------------
    // --- Find the min throughput
@@ -738,10 +783,10 @@ void DonetPeer::handleTimerPartnershipRefinement()
    //      return;
    //   }
 
-   if (address_minThroughput == IPvXAddress("10.0.0.9"))
-   {
-      EV << "Something wrong, partnershipSize = " << m_partnerList->getSize() << endl;
-   }
+//   if (address_minThroughput == IPvXAddress("10.0.0.9"))
+//   {
+//      EV << "Something wrong, partnershipSize = " << m_partnerList->getSize() << endl;
+//   }
 
    // -------------------------- Testing ---------------------------------------
 
@@ -1107,6 +1152,12 @@ void DonetPeer::processPacket(cPacket *pkt)
       processPartnershipLeave(pkt);
       break;
    }
+   case MESH_PARTNERSHIP_DISCONNECT:
+   {
+      debugOUT << "Peer " << getNodeAddress() << " received a disconnect message" << endl;
+      processPartnershipDisconnect(pkt);
+      break;
+   }
    default:
    {
       throw cException("Unrecognized packet types! %d", meshMsg->getPacketType());
@@ -1375,6 +1426,18 @@ void DonetPeer::processPartnershipReject(cPacket *pkt)
    //emit (sig_pRejectReceived, m_nRejectSent);
 }
 
+void DonetPeer::processPartnershipDisconnect(cPacket* pkt)
+{
+   // -- Extract the address of the accepter
+   IPvXAddress remoteAddr;
+   int remotePort;
+   getSender(pkt, remoteAddr, remotePort);
+
+   m_partnerList->deleteAddress(remoteAddr);
+   m_forwarder->removeRecord(remoteAddr);
+
+}
+
 void DonetPeer::processPeerBufferMap(cPacket *pkt)
 {
    EV << endl;
@@ -1564,7 +1627,8 @@ void DonetPeer::updateDataExchangeRecord(double samplingInterval)
       iter->second.setCountChunkSent(record.m_chunkSent);
       iter->second.setCountChunkReceived(record.m_chunkReceived);
 
-      debugOUT << "  @Partner " << ++count << " - " << iter->first << " - as partner at " << record.m_oriTime << ": " << endl;
+      debugOUT << "  @Partner " << ++count << " - " << iter->first << " - as partner at " << record.m_oriTime
+               << " (or at " << iter->second.getTimeInstanceAsPartner() << "): " << endl;
       debugOUT << "\tPrevious numChunk -- sent - received: " << iter->second.getCountPrevChunkSent()
                << " - " << iter->second.getCountPrevChunkReceived() << endl;
       debugOUT << "\tCurrent numChunk -- sent - received: " << iter->second.getCountChunkSent()
