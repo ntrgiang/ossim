@@ -37,6 +37,8 @@ simple VideoBuffer
     parameters:
         @class(VideoBuffer);
         @display("i=block/table");
+
+        bool debug = default(false);
         
         @signal[Signal_ReceivedChunk](type=long);
         

@@ -33,6 +33,7 @@
 //#include "simutil.h"
 #include "AppSettingDonet.h"
 #include "DonetStatistic.h"
+#include "assert.h"
 
 #define _VERSION_1 1
 #define _VERSION_2 2
@@ -43,6 +44,10 @@ using namespace std;
 
 Define_Module(VideoBuffer)
 
+#ifndef debugOUT
+#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << " @ " << simTime().dbl() << ": "
+#endif
+
 VideoBuffer::VideoBuffer() {}
 
 VideoBuffer::~VideoBuffer() {}
@@ -51,6 +56,8 @@ void VideoBuffer::initialize(int stage)
 {
    if (stage == 0)
    {
+      m_debug = (hasPar("debug")) ? par("debug").boolValue() : false;
+
       signal_seqNum_receivedChunk = registerSignal("Signal_RecevedChunk");
       signal_lateChunk            = registerSignal("Signal_Latechunk");
       signal_inrangeChunk         = registerSignal("Signal_InrangeChunk");
@@ -554,6 +561,8 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
    bmPkt->setBmEndSeqNum(m_bufferEnd_seqNum);
    bmPkt->setHeadSeqNum(m_head_received_seqNum);
 
+   debugOUT << "*************** catch:: I am here ****************" << endl;
+
    EV << "-- Buffer Map info: " << endl;
    EV << "  -- m_bufferSize_chunk =\t"        << m_bufferSize_chunk       << endl;
    EV << "  -- Start:\t"   << m_bufferStart_seqNum     << endl;
@@ -626,6 +635,8 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
 
    std::vector<STREAM_BUFFER_ELEMENT_T>::iterator iter;
    iter = m_streamBuffer.begin();
+
+   debugOUT << "head = " << m_head_received_seqNum << " -- start = " << m_bufferStart_seqNum << endl;
    int fillRange = m_head_received_seqNum - m_bufferStart_seqNum + 1;
 
    for (int i = 0; i < fillRange; i++)
@@ -660,6 +671,9 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
 
 
    } // for
+
+   debugOUT << "fillRange = " << fillRange << endl;
+   assert(fillRange >= 0);
 
    for (int i = fillRange; i < m_bufferSize_chunk; i++)
    {

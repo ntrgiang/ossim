@@ -142,6 +142,7 @@ public:
     int getNumberActiveElement(void);
 
 private:
+    bool m_debug;
     // -- Pointers to external modules
 //    AppSettingDonet *m_appSetting;
 
