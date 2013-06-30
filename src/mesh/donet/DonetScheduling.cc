@@ -148,10 +148,10 @@ void DonetPeer::donetChunkScheduling(void)
 
         int nHolder = m_partnerList->getNumberOfHolder(seq_num);
 
-        if (getNodeAddress() == IPvXAddress("192.168.0.16"))
-        {
-           debugOUT << "Chunk " << seq_num << " with " << nHolder << " holders -- " << endl;
-        }
+//        if (getNodeAddress() == IPvXAddress("192.168.0.16"))
+//        {
+//           debugOUT << "Chunk " << seq_num << " with " << nHolder << " holders -- " << endl;
+//        }
 
         if (nHolder == 0)
         {
@@ -455,6 +455,10 @@ void DonetPeer::donetChunkScheduling(void)
 
     // -- Now refreshing the m_list_requestedChunk
     refreshListRequestedChunk();
+
+    // TOTO-Giang: Fix the moving of the buffer / sched. window
+    // - to outside of the scheduling module
+    // - other patterns of moving
 
     // -- Move the scheduling window forward
     //if (m_player->getState() == PLAYER_STATE_PLAYING)
