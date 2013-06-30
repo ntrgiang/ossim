@@ -95,6 +95,19 @@ void PartnerList::print() const
    }
 }
 
+void PartnerList::print2() const
+{
+   Enter_Method("print()");
+
+   std::map<IPvXAddress, NeighborInfo>::iterator iter;
+   int i = 1;
+   for (iter = m_map.begin(); iter != m_map.end(); ++iter)
+   {
+      debugOUT << "Partner " << i++ << ": " << iter->first
+                << " -- upload bw: " << iter->second.getUpBw() << endl;
+   }
+}
+
 void PartnerList::printAllSendBm() const
 {
    Enter_Method("printAllSendBm()");
@@ -283,6 +296,7 @@ void PartnerList::addAddress(const IPvXAddress &addr, double upBw)
    NeighborInfo nbr_info(m_bufferSize);
    nbr_info.setUpBw(upBw);
    nbr_info.setUploadRate_Chunk(0);
+   nbr_info.setTimeInstanceAsPartner(simTime().dbl());
 
    // -- Insert the pair into the map
    m_map.insert(std::pair<IPvXAddress, NeighborInfo>(addr, nbr_info));
@@ -298,6 +312,7 @@ void PartnerList::addAddress(const IPvXAddress &addr, double upBw, int nChunk)
    NeighborInfo nbr_info(m_bufferSize);
    nbr_info.setUpBw(upBw);
    nbr_info.setUploadRate_Chunk(nChunk);
+   nbr_info.setTimeInstanceAsPartner(simTime().dbl());
 
    // Partnership management
    nbr_info.setCountChunkReceived(0L);
@@ -349,12 +364,14 @@ bool PartnerList::deleteAddress(const IPvXAddress &addr)
    if (it != m_map.end())
    {
       debugOUT << "address " << addr << " was found -----> will be deleted" << endl;
+      m_map.erase(it);
+      debugOUT << "m_map size after: " << m_map.size() << endl;
+      return true;
    }
-   m_map.erase(it);
 
-   debugOUT << "m_map size after: " << m_map.size() << endl;
+   debugOUT << "address " << addr << " not found in the parnterList" << endl;
+   return false;
 
-   return true;
 }
 
 
