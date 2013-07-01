@@ -43,6 +43,7 @@ NeighborInfo::NeighborInfo(int bmSize)
 , m_count_chunkSent(0L), m_count_chunkReceived(0L)
 , m_count_prev_chunkSent(0L), m_count_prev_chunkReceived(0L)
 , m_average_chunkSent(0.0), m_average_chunkReceived(0.0)
+, m_average_chunkExchanged(0.0)
 //, m_timeBudget(0.0)
 {
     if (bmSize < 0) throw cException("bmSize = %d is invalid", bmSize);
