@@ -53,6 +53,8 @@ protected:
 
 private:
    void processPeerBufferMap(cPacket *pkt);
+   void processPartnershipRequest(cPacket *pkt);
+   void considerAcceptPartner(PendingPartnershipRequest requester);
 
 	// -- Partnership Management
 //	void processPartnershipRequest(cPacket *pkt);

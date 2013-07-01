@@ -170,6 +170,8 @@ void DonetSource::finish()
    //reportStatus();
 
    debugOUT << "Peer " << getNodeAddress() << " has " << m_partnerList->getSize() << " partners" << endl;
+   debugOUT << "heheeheheheh" << endl;
+   m_partnerList->print2();
 
 }
 
@@ -340,4 +342,137 @@ void DonetSource::processPeerBufferMap(cPacket *pkt)
    //    ++m_nBufferMapRecv;
    //    nbr_info->printRecvBm();
    // m_partnerList->printRecvBm(senderAddress);
+}
+
+void DonetSource::processPartnershipRequest(cPacket *pkt)
+{
+   EV << endl;
+   EV << "-------- Process partnership Request --------------------------------" << endl;
+
+   emit(sig_pRequestRecv, 1);
+
+   // -- Get the identifier (IP:port) and upBw of the requester
+   PendingPartnershipRequest requester;
+   MeshPartnershipRequestPacket *memPkt = check_and_cast<MeshPartnershipRequestPacket *>(pkt);
+   getSender(pkt, requester.address, requester.port);
+   requester.upBW = memPkt->getUpBw();
+
+   EV << "Requester: " << endl
+      << "-- Address:\t\t"         << requester.address << endl
+      << "-- Port:\t\t"            << requester.port << endl
+      << "-- Upload BW:\t"  << requester.upBW << endl;
+
+   switch(m_state)
+   {
+   case MESH_JOIN_STATE_ACTIVE:
+   {
+      considerAcceptPartner(requester);
+      EV << "State remains as MESH_JOIN_STATE_ACTIVE" << endl;
+
+      // -- State remains
+      // m_state = MESH_JOIN_STATE_ACTIVE; // state remains
+      break;
+   }
+//   case MESH_JOIN_STATE_ACTIVE_WAITING:
+//   {
+//      debugOUT << "Peer " << getNodeAddress() << " received a request while waiting for another response" << endl;
+//      EV << "I am waiting for a partnership response. Your request will be stored in a queue." << endl;
+//      if (m_partnerList->size() + 1 < param_maxNOP)
+//      {
+//         //considerAcceptPartner(requester);
+//         EV << "-- Can accept this request" << endl;
+
+//         // -- Add peer directly to Partner List
+//         //m_partnerList->addAddress(requester.address, requester.upBW);
+//         addPartner(requester.address, requester.upBW);
+
+//         // -- Report to Active Peer Table to update the information
+//         EV << "Increment number of partner " << endl;
+//         //m_apTable->incrementNPartner(getNodeAddress());
+//         m_memManager->incrementNPartner(getNodeAddress());
+
+//         MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
+//         sendToDispatcher(acceptPkt, m_localPort, requester.address, requester.port);
+//      }
+//      else
+//      {
+//         //m_list_partnershipRequestingNode.push_back(requester);
+
+//         EV << "-- Enough partners --> cannot accept this request." << endl;
+//         //emit(sig_partnerRequest, 0);
+
+//         // -- Create a Partnership message and send it to the remote peer
+//         MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
+//         sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
+
+//         emit(sig_pRejectSent, 1);
+//      }
+
+//      emit(sig_pRequestRecv_whileWaiting, 1);
+
+//      EV << "State remains as MESH_JOIN_STATE_ACTIVE_WAITING" << endl;
+
+//      // -- State changes
+//      m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
+//      break;
+//   }
+//   case MESH_JOIN_STATE_IDLE:
+//   {
+//      // TODO
+//      //throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE) nodes");
+//      break;
+//   }
+//   case MESH_JOIN_STATE_IDLE_WAITING:
+//   {
+//      // TODO
+//      //throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE_WAITING) nodes");
+//      break;
+//   }
+   default:
+   {
+      throw cException("The source node should never in a state different from ACTIVE!");
+      break;
+   }
+   } // switch()
+
+}
+
+void DonetSource::considerAcceptPartner(PendingPartnershipRequest requester)
+{
+   if (m_partnerList->getSize() < param_maxNOP)
+   {
+      EV << "-- Can accept this request" << endl;
+      // -- Debug
+      //emit(sig_partnerRequest, m_partnerList->getSize());
+
+      // -- Add peer directly to Partner List
+      //m_partnerList->addAddress(requester.address, requester.upBW);
+      addPartner(requester.address, requester.upBW);
+
+      EV << "Accepted pRequest from " << requester.address << endl;
+
+      // -- Report to Active Peer Table to update the information
+      EV << "Increment number of partner " << endl;
+      //m_apTable->incrementNPartner(getNodeAddress());
+      m_memManager->incrementNPartner(getNodeAddress());
+
+      // -- Store the peer as a candidate
+      // m_candidate = requester;
+
+      MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
+      sendToDispatcher(acceptPkt, m_localPort, requester.address, requester.port);
+
+   }
+   else
+   {
+      EV << "-- Enough partners --> cannot accept this request." << endl;
+      //emit(sig_partnerRequest, 0);
+
+      // -- Create a Partnership message and send it to the remote peer
+      MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
+      sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
+
+      emit(sig_pRejectSent, 1);
+   }
+
 }
