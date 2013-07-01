@@ -33,7 +33,7 @@
 
 using namespace std;
 
-void DonetPeer::randomChunkScheduling(void)
+void DonetPeer::randomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUMBER_T upper_bound)
 {
     EV << endl;
     EV << "---------- Random chunk scheduling ----------------------------------" << endl;
@@ -49,8 +49,8 @@ void DonetPeer::randomChunkScheduling(void)
 //    long lower_bound = std::max(0L, m_seqNum_schedWinHead-m_bufferMapSize_chunk+1);
 
     // -- New scheduling windows
-    long lower_bound = m_sched_window.start;
-    long upper_bound = m_sched_window.end;
+//    long lower_bound = m_sched_window.start;
+//    long upper_bound = m_sched_window.end;
 
     // -- New update scheme which takes into account the initialized scheduling window
 //    long lower_bound = std::max(m_seqNum_schedWinStart, m_sched_window.start);
@@ -172,11 +172,11 @@ void DonetPeer::randomChunkScheduling(void)
     refreshListRequestedChunk();
 
     // -- Move the scheduling window forward
-    if (m_player->getState() == PLAYER_STATE_PLAYING)
-    {
-       m_sched_window.start += m_videoStreamChunkRate;
-       m_sched_window.end  += m_videoStreamChunkRate;
-    }
+//    if (m_player->getState() == PLAYER_STATE_PLAYING)
+//    {
+//       m_sched_window.start += m_videoStreamChunkRate;
+//       m_sched_window.end  += m_videoStreamChunkRate;
+//    }
 
     // -- Report statistics
     emit(sig_nChunkRequested, m_nChunkRequested_perSchedulingInterval);

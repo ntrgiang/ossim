@@ -132,8 +132,8 @@ private:
     int initializeSchedulingWindow(void);
     bool shouldStartChunkScheduling();
     void chunkScheduling(void);
-    void randomChunkScheduling(void);
-    void donetChunkScheduling(void);
+    void randomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUMBER_T upper_bound);
+    void donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUMBER_T upper_bound);
     int selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candidate1, IPvXAddress candidate2, IPvXAddress &supplier);
 
     void updateRange(void);

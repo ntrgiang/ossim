@@ -41,7 +41,8 @@ using namespace std;
 /**
  * A very straight-forward version of the implementation --> should not expect that it is smart
  */
-void DonetPeer::donetChunkScheduling(void)
+//void DonetPeer::donetChunkScheduling(void)
+void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUMBER_T upper_bound)
 {
     Enter_Method("donetChunkScheduling()");
     EV << "Donet chunk scheduling triggered! " << endl;
@@ -70,8 +71,8 @@ void DonetPeer::donetChunkScheduling(void)
 //    long upper_bound = m_seqNum_schedWinHead;
 //    long lower_bound = std::max(0L, m_seqNum_schedWinHead-m_bufferMapSize_chunk+1);
 
-    long lower_bound = m_sched_window.start;
-    long upper_bound = m_sched_window.end;
+//    long lower_bound = m_sched_window.start;
+//    long upper_bound = m_sched_window.end;
 
     if (getNodeAddress() == IPvXAddress("192.168.0.16"))
     {
@@ -459,17 +460,6 @@ void DonetPeer::donetChunkScheduling(void)
     // TOTO-Giang: Fix the moving of the buffer / sched. window
     // - to outside of the scheduling module
     // - other patterns of moving
-
-    // -- Move the scheduling window forward
-    //if (m_player->getState() == PLAYER_STATE_PLAYING)
-    if (m_player->getCurrentPlaybackPoint() - m_sched_window.start > m_player->getPercentBufferLow() * m_bufferMapSize_chunk)
-    {
-       m_sched_window.start += m_videoStreamChunkRate;
-       m_sched_window.end  += m_videoStreamChunkRate;
-
-       m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
-       m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
-    }
 
     EV << "m_sched_window.start = " << m_sched_window.start << endl;
     EV << "m_sched_window.end = " << m_sched_window.end << endl;

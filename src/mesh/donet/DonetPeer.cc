@@ -311,6 +311,7 @@ void DonetPeer::finish()
    //reportStatus();
 
    debugOUT << "Peer " << getNodeAddress() << " has " << m_partnerList->getSize() << " partners" << endl;
+   m_partnerList->print2();
 }
 
 void DonetPeer::cancelAndDeleteAllTimer()
@@ -1888,7 +1889,19 @@ void DonetPeer::chunkScheduling()
    m_videoBuffer->printStatus();
 
    //    randomChunkScheduling();
-   donetChunkScheduling();
+   donetChunkScheduling(m_sched_window.start, m_sched_window.end);
+   //donetChunkScheduling(m_sched_window.start, m_sched_window.end);
+
+   // -- Move the scheduling window forward
+   //if (m_player->getState() == PLAYER_STATE_PLAYING)
+   if (m_player->getCurrentPlaybackPoint() - m_sched_window.start > m_player->getPercentBufferLow() * m_bufferMapSize_chunk)
+   {
+      m_sched_window.start += m_videoStreamChunkRate;
+      m_sched_window.end  += m_videoStreamChunkRate;
+
+      m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
+      m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
+   }
 }
 
 void DonetPeer::reportLocalStatistic(void)
