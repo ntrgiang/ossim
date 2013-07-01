@@ -37,17 +37,6 @@
 #include "VideoBuffer.h"
 #include "Dispatcher.h"
 
-//struct RecordCountChunk
-//{
-//   long int m_chunkSent;
-//   long int m_chunkReceived;
-
-//   long int m_prev_chunkSent;
-//   long int m_prev_chunkReceived;
-////   long int m_chunkExchanged;
-//   double m_oriTime; // Time when the record was created for the first time
-//};
-
 class RecordCountChunk
 {
 public:
@@ -56,10 +45,6 @@ public:
 private:
    long int m_chunkSent;
    long int m_chunkReceived;
-
-   long int m_prev_chunkSent;
-   long int m_prev_chunkReceived;
-   //   long int m_chunkExchanged;
    double m_oriTime; // Time when the record was created for the first time
 
    friend class Forwarder;
@@ -71,11 +56,13 @@ public:
    Forwarder();
    virtual ~Forwarder();
 
+protected:
    virtual void handleMessage(cMessage* msg);
    virtual int numInitStages() const { return 4; }
    virtual void initialize(int stage);
    virtual void finish();
 
+public:
    inline long int getCountTotalChunkIncoming(void) { return m_count_totalChunk_incoming; }
 
    virtual void sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort);

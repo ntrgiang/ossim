@@ -35,13 +35,15 @@
 
 Define_Module(Forwarder)
 
+#ifndef debugOUT
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << getNodeAddress() << "::" << getFullName() << ": "
+#endif
+
 void RecordCountChunk::print()
 {
    EV << "Record of count chunk: " << endl;
    EV << "\t m_chunkSent = " << m_chunkSent << endl;
    EV << "\t m_chunkReceived = " << m_chunkReceived << endl;
-   EV << "\t m_prev_chunkSent = " << m_prev_chunkSent << endl;
-   EV << "\t m_prev_chunkReceived = " << m_prev_chunkReceived << endl;
    EV << "\t m_oriTime = " << m_oriTime << endl;
 }
 
@@ -51,6 +53,10 @@ Forwarder::~Forwarder() {}
 
 void Forwarder::initialize(int stage)
 {
+   if (stage == 0)
+   {
+      m_debug = (hasPar("debug")) ? par("debug").boolValue() : false;
+   }
    if (stage != 3)
       return;
 
@@ -108,7 +114,7 @@ void Forwarder::sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int de
 
    sendToDispatcher(chunkPkt, getLocalPort(), destAddress, destPort);
 
-   //updateSentChunkRecord(destAddress);
+   updateSentChunkRecord(destAddress);
 
 }
 
@@ -121,11 +127,10 @@ void Forwarder::updateSentChunkRecord(IPvXAddress& destAddress)
    if (iter == m_record_countChunk.end()) // New entry
    {
       addRecord(destAddress);
+      debugOUT << "A chunk was be sent to a peer " << destAddress << " when there is no record previously added" << endl;
    }
-   else
-   {
-      iter->second.m_chunkSent += 1;
-   }
+
+   iter->second.m_chunkSent += 1;
 }
 
 void Forwarder::updateReceivedChunkRecord(IPvXAddress& senderAddress)
@@ -137,11 +142,10 @@ void Forwarder::updateReceivedChunkRecord(IPvXAddress& senderAddress)
    if (iter == m_record_countChunk.end()) // New entry
    {
       addRecord(senderAddress);
+      debugOUT << "A chunk was received from a peer " << senderAddress << " when there is no record previously added" << endl;
    }
-   else
-   {
-      iter->second.m_chunkReceived += 1;
-   }
+
+   iter->second.m_chunkReceived += 1;
 }
 
 void Forwarder::getRecordChunk(IPvXAddress &addr, RecordCountChunk& record)
@@ -152,6 +156,7 @@ void Forwarder::getRecordChunk(IPvXAddress &addr, RecordCountChunk& record)
    if (iter == m_record_countChunk.end())
    {
       addRecord(addr);
+      debugOUT << "Retrieving record of a peer when there is not record added for this peer " << addr << endl;
       record = m_record_countChunk[addr];
    }
    else
@@ -196,8 +201,6 @@ void Forwarder::addRecord(const IPvXAddress & address)
    RecordCountChunk newRecord;
    newRecord.m_chunkSent = 0L;
    newRecord.m_chunkReceived = 0L;
-   newRecord.m_prev_chunkSent = 0L;
-   newRecord.m_prev_chunkReceived = 0L;
    newRecord.m_oriTime = simTime().dbl();
 
    m_record_countChunk.insert(std::pair<IPvXAddress, RecordCountChunk>(address, newRecord));
