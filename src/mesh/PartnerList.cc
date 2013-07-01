@@ -99,13 +99,20 @@ void PartnerList::print2() const
 {
    Enter_Method("print()");
 
+   debugOUT << "There are " << m_map.size() << " partners:" << endl;
    std::map<IPvXAddress, NeighborInfo>::iterator iter;
    int i = 1;
    for (iter = m_map.begin(); iter != m_map.end(); ++iter)
    {
-      debugOUT << "Partner " << i++ << ": " << iter->first
-                << " -- upload bw: " << iter->second.getUpBw() << endl;
+      debugOUT << i++ << ": " << iter->first
+                  << " - since " << iter->second.getTimeInstanceAsPartner()
+                  << " -- Average chunks: - exchanged: " << iter->second.getAverageChunkExchanged()
+                  << " - sent: " << iter->second.getAverageChunkSent()
+                  << " - received: " << iter->second.getAverageChunkReceived()
+                  << endl;
+                  //<< " - upload bw: " << iter->second.getUpBw() << endl;
    }
+   //debugOUT << endl;
 }
 
 void PartnerList::printAllSendBm() const
@@ -359,13 +366,13 @@ bool PartnerList::deleteAddress(const IPvXAddress &addr)
 
    //m_map.erase(addr);
    std::map<IPvXAddress, NeighborInfo>::iterator it=m_map.find(addr);
-   debugOUT << "m_map size before: " << m_map.size() << endl;
+   //debugOUT << "m_map size before: " << m_map.size() << endl;
 
    if (it != m_map.end())
    {
       debugOUT << "address " << addr << " was found -----> will be deleted" << endl;
       m_map.erase(it);
-      debugOUT << "m_map size after: " << m_map.size() << endl;
+      //debugOUT << "m_map size after: " << m_map.size() << endl;
       return true;
    }
 
