@@ -94,7 +94,7 @@ private:
     void handleTimerFindMorePartner(void);
     void handleTimerTimeoutWaitingAccept();
     void handleTimerPartnershipRefinement(void);
-    void handleTimerPartnerlistCleanup(void);
+    //void handleTimerPartnerlistCleanup(void);
 
     bool findPartner(); // New interface for the FSM
     bool sendPartnershipRequest(void);
@@ -170,8 +170,6 @@ private:
     //cMessage *timer_timeout_waiting_ack;
     cMessage *timer_timeout_waiting_response;
     cMessage *timer_partnershipRefinement;
-
-    //cMessage *timer_partnerListCleanup;
 
 // -----------------------------------------------------------------------------
 //                               Parameters

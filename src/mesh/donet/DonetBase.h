@@ -149,7 +149,6 @@ protected:
    // -- Timer messages
    cMessage *timer_sendBufferMap;
    //    cMessage *timer_sendReport;
-   cMessage *timer_partnerListCleanup;
 
    // -- Pointers to /global/ modules
    AppSettingDonet         *m_appSetting;

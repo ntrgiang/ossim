@@ -84,9 +84,6 @@ void DonetSource::initialize(int stage)
    timer_sendBufferMap = new cMessage("MESH_SOURCE_TIMER_SEND_BUFFERMAP");
    //    timer_sendReport    = new cMessage("MESH_SOURCE_TIMER_SEND_REPORT");
 
-   timer_partnerListCleanup = new cMessage("MESH_SOURCE_TIMER_PARTNERLIST_CLEANUP");
-
-
    // -- Register itself to the Active Peer Table
    //m_apTable->addSourceAddress(getNodeAddress(), param_maxNOP);
    //m_apTable->addSourceAddress(getNodeAddress());
@@ -98,7 +95,6 @@ void DonetSource::initialize(int stage)
    // -------------------------------------------------------------------------
    // -- Schedule events
    scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
-   scheduleAt(simTime() + param_interval_partnerlistCleanup, timer_partnerListCleanup);
 
    // -- Report Logged Statistic to global module
    // scheduleAt(getSimTimeLimit() - uniform(0.05, 0.95), timer_sendReport);
@@ -193,11 +189,6 @@ void DonetSource::handleTimerMessage(cMessage *msg)
       // -- Doing some statistical reporting stuff
       emit(sig_nPartner, m_partnerList->getSize());
 
-   }
-   else if (msg == timer_partnerListCleanup)
-   {
-      handleTimerPartnerlistCleanup();
-      scheduleAt(simTime() + param_interval_partnerlistCleanup, timer_partnerListCleanup);
    }
    //    else if (msg == timer_sendReport)
    //    {

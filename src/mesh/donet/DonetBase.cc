@@ -160,7 +160,7 @@ void DonetBase::sendBufferMap(void)
 
    m_partnerList->print2();
 
-   debugOUT << "@peer " << getNodeAddress() << endl;
+   //debugOUT << "@peer " << getNodeAddress() << endl;
 
    MeshBufferMapPacket *bmPkt = new MeshBufferMapPacket("MESH_PEER_BUFFER_MAP");
    bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);

@@ -126,8 +126,6 @@ void DonetPeer::initialize(int stage)
    //    timer_rejoin            = new cMessage("MESH_PEER_TIMER_REJOIN");
    timer_partnershipRefinement = new cMessage("MESH_PEER_TIMER_PARTNERSHIP_REFINEMENT");
 
-   timer_partnerListCleanup = new cMessage("MESH_PEER_TIMER_PARTNERLIST_CLEANUP");
-
    // Parameters of the module itself
    // param_bufferMapInterval             = par("bufferMapInterval");
    // param_chunkSchedulingInterval       = par("chunkSchedulingInterval");
@@ -370,12 +368,6 @@ void DonetPeer::cancelAndDeleteAllTimer()
       timer_partnershipRefinement = NULL;
    }
 
-   if (timer_partnerListCleanup != NULL)
-   {
-      delete cancelEvent(timer_partnerListCleanup);
-      timer_partnerListCleanup = NULL;
-   }
-
    if (timer_reportStatistic != NULL)
    {
       delete cancelEvent(timer_reportStatistic);
@@ -404,7 +396,6 @@ void DonetPeer::cancelAllTimer()
 
    cancelEvent(timer_findMorePartner);
    cancelEvent(timer_partnershipRefinement);
-   cancelEvent(timer_partnerListCleanup);
 
    cancelEvent(timer_reportStatistic);
    cancelEvent(timer_reportActive);
@@ -445,11 +436,6 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
    {
       handleTimerPartnershipRefinement();
       scheduleAt(simTime() + param_interval_partnershipRefinement, timer_partnershipRefinement);
-   }
-   else if (msg == timer_partnerListCleanup)
-   {
-      handleTimerPartnerlistCleanup();
-      scheduleAt(simTime() + param_interval_partnerlistCleanup, timer_partnerListCleanup);
    }
    else if (msg == timer_timeout_waiting_response)
    {
@@ -676,7 +662,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
    EV << endl << "**************************************************************" << endl;
    EV << "Partnership refinement !!!" << endl;
 
-   //debugOUT << "@Node " << getNodeAddress() << " -- Partnership refinement ***************" << endl;
+   debugOUT << "Partnership refinement ***************" << endl;
 
    // --------------------------------------------------------------------------
    // --- Update the records
@@ -697,9 +683,6 @@ void DonetPeer::handleTimerPartnershipRefinement()
       return;
    }
 
-   // -- Clean all the partners who do not have any chunk exchange, and partner time is large enough
-
-
    // Temporarily commented
    //   if (m_player->getContinuityIndex() > 0.9)
    //   {
@@ -707,6 +690,14 @@ void DonetPeer::handleTimerPartnershipRefinement()
    //      return;
    //   }
 
+   debugOUT << "*************************************************************" << endl;
+   debugOUT << "PartnerList BEFORE cleaning up uncommunicative ones:" << endl;
+   debugOUT << "*************************************************************" << endl;
+   m_partnerList->print2();
+
+
+   // -- Clean all the partners who do not have any chunk exchange, and partner time is large enough
+   //
    std::vector<IPvXAddress> disconnect_list;
 
    for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
@@ -716,12 +707,12 @@ void DonetPeer::handleTimerPartnershipRefinement()
       {
          if (simTime().dbl() - iter->second.getTimeInstanceAsPartner() > param_interval_partnershipRefinement)
          {
-            debugOUT << "This partner should be removed, since no data exchange since "
-                     << iter->second.getTimeInstanceAsPartner() << endl;
+            //debugOUT << "This partner should be removed, since no data exchange since "
+            //<< iter->second.getTimeInstanceAsPartner() << endl;
 
             // -- Should definitely remove the partner
             //
-            debugOUT << "A disconnect message will be sent to the partner " << iter->first << endl;
+            //debugOUT << "A disconnect message will be sent to the partner " << iter->first << endl;
 
             MeshPartnershipDisconnectPacket *disPkt = new MeshPartnershipDisconnectPacket("MESH_PEER_JOIN_REQUEST");
             disPkt->setBitLength(m_appSetting->getPacketSizePartnershipDisconnect());
@@ -740,6 +731,11 @@ void DonetPeer::handleTimerPartnershipRefinement()
       m_partnerList->deleteAddress(*iter);
       m_forwarder->removeRecord(*iter);
    }
+
+   debugOUT << "*************************************************************" << endl;
+   debugOUT << "PartnerList AFTER cleaning up uncommunicative ones:" << endl;
+   debugOUT << "*************************************************************" << endl;
+   m_partnerList->print2();
 
    // --------------------------------------------------------------------------
    // --- Find the min throughput
@@ -937,58 +933,6 @@ void DonetPeer::handleTimerPartnershipRefinement()
    //    {
    //       EV << "First time to inquire the record for address " << address_minThroughput << endl;
    //    }
-}
-
-void DonetPeer::handleTimerPartnerlistCleanup()
-{
-   Enter_Method("handleTimerPartnerlistCleanup()");
-
-   if (m_partnerList->getSize() == 0)
-   {
-      EV << "Empty partner list" << endl;
-      return;
-   }
-
-   std::vector<IPvXAddress> removeAddressList;
-
-   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
-        iter != m_partnerList->m_map.end(); ++iter)
-   {
-      //IPvXAddress address = iter->first;
-
-      double timeDiff = simTime().dbl() - iter->second.getLastRecvBmTime();
-      EV << "Partner to be examined " << iter->first << " with time diff " << timeDiff << endl;
-
-      if (timeDiff > param_threshold_idleDuration_buffermap)
-      {
-         removeAddressList.push_back(iter->first);
-
-         EV << "Partner " << iter->first << " was deleted" << endl;
-      }
-   }
-
-   EV << "Number of partners to be removed " << removeAddressList.size() << endl;
-
-   // Delete the list of addresses
-   for (std::vector<IPvXAddress>::iterator iter = removeAddressList.begin();
-        iter != removeAddressList.end(); ++iter)
-   {
-      m_partnerList->deleteAddress(*iter);
-   }
-
-   if (m_partnerList->getSize() == 0)
-   {
-      EV << "This node has no partner (isolated) --> should rejoin the overlay" << endl;
-      m_apTable->removeAddress(getNodeAddress());
-      m_state = MESH_JOIN_STATE_IDLE;
-      cancelAllTimer();
-      m_player->scheduleStopPlayer();
-
-      double rejoinOffset = dblrand();
-      EV << "Node will rejoin after " << rejoinOffset << " seconds" << endl;
-      scheduleAt(simTime() + rejoinOffset, timer_join);
-   }
-
 }
 
 void DonetPeer::handleTimerTimeoutWaitingAccept()
@@ -1245,10 +1189,6 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
 
       // -- 5. Partnership refinement
       scheduleAt(simTime() + param_interval_partnershipRefinement, timer_partnershipRefinement);
-
-      // -- 6. Partnership cleanup
-      cancelEvent(timer_partnerListCleanup);
-      scheduleAt(simTime() + param_interval_partnerlistCleanup, timer_partnerListCleanup);
 
       //      m_trEnabled = par("trEnabled").boolValue();
 
@@ -1572,8 +1512,6 @@ bool DonetPeer::sendPartnershipRequest(void)
    return true;
 }
 
-
-//void DonetPeer::updateDataExchangeRecord(void)
 void DonetPeer::updateDataExchangeRecord(double samplingInterval)
 {
    Enter_Method("updateDataExchangeRecord()");
@@ -1582,23 +1520,11 @@ void DonetPeer::updateDataExchangeRecord(double samplingInterval)
 
    RecordCountChunk record;
 
-   debugOUT << "@Peer " << " " << getNodeAddress() << " has: " << m_partnerList->getSize() << " partners: " << endl;
-   int count = 0;
+   //debugOUT << "@Peer " << " " << getNodeAddress() << " has: " << m_partnerList->getSize() << " partners: " << endl;
+//   int count = 0;
    for(std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
        iter != m_partnerList->m_map.end(); ++iter)
    {
-      //      IPvXAddress addr = iter->first;
-      //      long int currentCountReceived, currentCountSent;
-      //      m_forwarder->getRecordChunk(addr, currentCountReceived, currentCountSent);
-
-      //      // Update the received chunk count
-      //      long int prevCount = iter->second->getCountChunkReceived();
-      //      iter->second->setCountChunkReceived(currentCountReceived-prevCount);
-
-      //      // Update the sent chunk count
-      //      prevCount = iter->second->getCountChunkSent();
-      //      iter->second->setCountChunkSent(currentCountSent-prevCount);
-
       record = m_forwarder->getRecordChunk((IPvXAddress &)iter->first);
       double duration = simTime().dbl() - record.m_oriTime;
 
@@ -1609,11 +1535,13 @@ void DonetPeer::updateDataExchangeRecord(double samplingInterval)
       assert(duration > 0);
 
       // -- update the data exchange since joining
+      //
       iter->second.setAverageChunkReceived(record.m_chunkReceived / duration);
       iter->second.setAverageChunkSent(record.m_chunkSent / duration);
       iter->second.setAverageChunkExchanged((record.m_chunkSent + record.m_chunkReceived) / duration);
 
       // -- update the data exchange per interval
+      //
       long int chunkSent_diff = record.m_chunkSent - iter->second.getCountPrevChunkSent();
       long int chunkReceived_diff = record.m_chunkReceived - iter->second.getCountPrevChunkReceived();
 
@@ -1628,34 +1556,34 @@ void DonetPeer::updateDataExchangeRecord(double samplingInterval)
       iter->second.setCountChunkSent(record.m_chunkSent);
       iter->second.setCountChunkReceived(record.m_chunkReceived);
 
-      debugOUT << "  @Partner " << ++count << " - " << iter->first << " - as partner at " << record.m_oriTime
-               << " (or at " << iter->second.getTimeInstanceAsPartner() << "): " << endl;
-      debugOUT << "\tPrevious numChunk -- sent - received: " << iter->second.getCountPrevChunkSent()
-               << " - " << iter->second.getCountPrevChunkReceived() << endl;
-      debugOUT << "\tCurrent numChunk -- sent - received: " << iter->second.getCountChunkSent()
-               << " - " << iter->second.getCountChunkReceived() << endl;
-      debugOUT << "\tAverage since joining numChunk -- sent - received - exchanged: " << iter->second.getAverageChunkSent()
-               << " - " << iter->second.getAverageChunkReceived()
-               << " - " << iter->second.getAverageChunkExchanged() << endl;
-      debugOUT << "\tAverage per interval: numchunk -- sent - received - exchanged: "
-               << iter->second.getAverageChunkSentPerInterval()
-               << " - " << iter->second.getAverageChunkReceivedPerInterval()
-               << " - " << iter->second.getAverageChunkExchangedPerInterval() << endl;
+//      debugOUT << "  @Partner " << ++count << " - " << iter->first << " - as partner at " << record.m_oriTime
+//               << " (or at " << iter->second.getTimeInstanceAsPartner() << "): " << endl;
+//      debugOUT << "\tPrevious numChunk -- sent - received: " << iter->second.getCountPrevChunkSent()
+//               << " - " << iter->second.getCountPrevChunkReceived() << endl;
+//      debugOUT << "\tCurrent numChunk -- sent - received: " << iter->second.getCountChunkSent()
+//               << " - " << iter->second.getCountChunkReceived() << endl;
+//      debugOUT << "\tAverage since joining numChunk -- sent - received - exchanged: " << iter->second.getAverageChunkSent()
+//               << " - " << iter->second.getAverageChunkReceived()
+//               << " - " << iter->second.getAverageChunkExchanged() << endl;
+//      debugOUT << "\tAverage per interval: numchunk -- sent - received - exchanged: "
+//               << iter->second.getAverageChunkSentPerInterval()
+//               << " - " << iter->second.getAverageChunkReceivedPerInterval()
+//               << " - " << iter->second.getAverageChunkExchangedPerInterval() << endl;
 
       iter->second.setCountPrevChunkSent(record.m_chunkSent);
       iter->second.setCountPrevChunkReceived(record.m_chunkReceived);
 
       // -- Debug
-      EV << "Previous -- chunk sent: " << iter->second.getCountPrevChunkSent()
-         << " -- chunk received: " << iter->second.getCountPrevChunkReceived() << endl;
-      EV << "Current -- chunk sent: " << iter->second.getCountChunkSent()
-         << " -- chunk received: " << iter->second.getCountChunkReceived() << endl;
-      EV << "Average since joining -- chunk sent: " << iter->second.getAverageChunkSent()
-         << " -- chunk received: " << iter->second.getAverageChunkReceived()
-         << " -- chunk exchanged: " << iter->second.getAverageChunkExchanged() << endl;
-      EV << "Average per interval: -- chunk sent: " << iter->second.getAverageChunkSentPerInterval()
-         << " -- chunk received: " << iter->second.getAverageChunkReceivedPerInterval()
-         << " -- chunk exchanged: " << iter->second.getAverageChunkExchangedPerInterval() << endl;
+//      EV << "Previous -- chunk sent: " << iter->second.getCountPrevChunkSent()
+//         << " -- chunk received: " << iter->second.getCountPrevChunkReceived() << endl;
+//      EV << "Current -- chunk sent: " << iter->second.getCountChunkSent()
+//         << " -- chunk received: " << iter->second.getCountChunkReceived() << endl;
+//      EV << "Average since joining -- chunk sent: " << iter->second.getAverageChunkSent()
+//         << " -- chunk received: " << iter->second.getAverageChunkReceived()
+//         << " -- chunk exchanged: " << iter->second.getAverageChunkExchanged() << endl;
+//      EV << "Average per interval: -- chunk sent: " << iter->second.getAverageChunkSentPerInterval()
+//         << " -- chunk received: " << iter->second.getAverageChunkReceivedPerInterval()
+//         << " -- chunk exchanged: " << iter->second.getAverageChunkExchangedPerInterval() << endl;
 
    } // for
 }
@@ -1888,9 +1816,8 @@ void DonetPeer::chunkScheduling()
 
    m_videoBuffer->printStatus();
 
-   //    randomChunkScheduling();
+//   randomChunkScheduling(m_sched_window.start, m_sched_window.end);
    donetChunkScheduling(m_sched_window.start, m_sched_window.end);
-   //donetChunkScheduling(m_sched_window.start, m_sched_window.end);
 
    // -- Move the scheduling window forward
    //if (m_player->getState() == PLAYER_STATE_PLAYING)
