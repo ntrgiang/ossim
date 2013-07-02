@@ -73,6 +73,7 @@ protected:
     virtual void stopPlayer(void) = 0;
 
 protected:
+    bool m_debug;
     long int m_count_chunkHit, m_count_chunkMiss;
     long int m_count_prev_chunkHit, m_count_prev_chunkMiss;
 

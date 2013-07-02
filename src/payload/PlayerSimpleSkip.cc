@@ -34,101 +34,107 @@
 
 Define_Module(PlayerSimpleSkip)
 
+#ifndef debugOUT
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << getNodeAddress() << "::" << getFullName() << ": "
+#endif
+
 PlayerSimpleSkip::PlayerSimpleSkip() {
-    // TODO Auto-generated constructor stub
+   // TODO Auto-generated constructor stub
 }
 
 PlayerSimpleSkip::~PlayerSimpleSkip()
 {
-    if (timer_nextChunk != NULL)
-    {
-       delete cancelEvent(timer_nextChunk);
-       timer_nextChunk = NULL;
-    }
+   if (timer_nextChunk != NULL)
+   {
+      delete cancelEvent(timer_nextChunk);
+      timer_nextChunk = NULL;
+   }
 
-    if (timer_playerStart)
-    {
-       cancelAndDelete(timer_playerStart);
-    }
+   if (timer_playerStart)
+   {
+      cancelAndDelete(timer_playerStart);
+   }
 
-    if (timer_playerStop)
-    {
-       cancelAndDelete(timer_playerStop);
-    }
+   if (timer_playerStop)
+   {
+      cancelAndDelete(timer_playerStop);
+   }
 
-    //if (timer_reportStatistic) cancelAndDelete(timer_reportStatistic);
+   //if (timer_reportStatistic) cancelAndDelete(timer_reportStatistic);
 }
 
 void PlayerSimpleSkip::initialize(int stage)
 {
-    if (stage == 0)
-    {
-        sig_chunkHit            = registerSignal("Signal_ChunkHit");
-        sig_chunkMiss           = registerSignal("Signal_ChunkMiss");
-        sig_chunkSeek           = registerSignal("Signal_ChunkSeek");
-        sig_rebuffering_local   = registerSignal("rebuffering_Local");
-        sig_rebuffering         = registerSignal("Signal_Rebuffering");
-        sig_stall               = registerSignal("Signal_Stall");
-        return;
-    }
+   if (stage == 0)
+   {
+      m_debug = (hasPar("debug")) ? par("debug").boolValue() : false;
 
-    if (stage != 3)
-        return;
+      sig_chunkHit            = registerSignal("Signal_ChunkHit");
+      sig_chunkMiss           = registerSignal("Signal_ChunkMiss");
+      sig_chunkSeek           = registerSignal("Signal_ChunkSeek");
+      sig_rebuffering_local   = registerSignal("rebuffering_Local");
+      sig_rebuffering         = registerSignal("Signal_Rebuffering");
+      sig_stall               = registerSignal("Signal_Stall");
+      return;
+   }
 
-    // -- pointing to the Video Buffer
-    cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
-    m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
+   if (stage != 3)
+      return;
 
-    temp = simulation.getModuleByPath("appSetting");
-    m_appSetting = check_and_cast<AppSettingDonet *>(temp);
+   // -- pointing to the Video Buffer
+   cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
+   m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
 
-    temp = simulation.getModuleByPath("globalStatistic");
-    //m_stat = check_and_cast<StatisticBase *>(temp);
-    //m_stat = check_and_cast<StreamingStatistic *>(temp);
+   temp = simulation.getModuleByPath("appSetting");
+   m_appSetting = check_and_cast<AppSettingDonet *>(temp);
 
-    timer_nextChunk     = new cMessage("PLAYER_TIMER_NEXT_CHUNK");
-    timer_playerStart   = new cMessage("PLAYER_TIMER_START");
-    timer_playerStop    = new cMessage("PLAYER_TIMER_STOP");
-    //timer_reportStatistic = new cMessage("PLAYER_TIMER_REPORT_STATISTIC");
+   temp = simulation.getModuleByPath("globalStatistic");
+   //m_stat = check_and_cast<StatisticBase *>(temp);
+   //m_stat = check_and_cast<StreamingStatistic *>(temp);
 
-    // -- Reading parameters from module itself
-    param_interval_recheckVideoBuffer = par("interval_recheckVideoBuffer");
-    param_interval_reportStatistic = par("interval_reportStatistic");
+   timer_nextChunk     = new cMessage("PLAYER_TIMER_NEXT_CHUNK");
+   timer_playerStart   = new cMessage("PLAYER_TIMER_START");
+   timer_playerStop    = new cMessage("PLAYER_TIMER_STOP");
+   //timer_reportStatistic = new cMessage("PLAYER_TIMER_REPORT_STATISTIC");
 
-    // -- for the FSM
-    param_percent_buffer_low = par("percent_buffer_low").doubleValue();
-    param_percent_buffer_high = par("percent_buffer_high").doubleValue();
-    param_max_skipped_chunk = (int) par("max_skipped_chunk").doubleValue();
-    param_interval_probe_playerStart = par("interval_probe_playerStart").doubleValue();
-    m_state = PLAYER_STATE_IDLE;
-    m_skip = 0;
+   // -- Reading parameters from module itself
+   param_interval_recheckVideoBuffer = par("interval_recheckVideoBuffer");
+   param_interval_reportStatistic = par("interval_reportStatistic");
 
-    m_interval_newChunk = m_appSetting->getIntervalNewChunk();
-    m_chunkSize  = m_appSetting->getChunkSize();
+   // -- for the FSM
+   param_percent_buffer_low = par("percent_buffer_low").doubleValue();
+   param_percent_buffer_high = par("percent_buffer_high").doubleValue();
+   param_max_skipped_chunk = (int) par("max_skipped_chunk").doubleValue();
+   param_interval_probe_playerStart = par("interval_probe_playerStart").doubleValue();
+   m_state = PLAYER_STATE_IDLE;
+   m_skip = 0;
 
-    // -- State variables
-    m_playerStarted = false;
-    m_id_nextChunk = -1L;
+   m_interval_newChunk = m_appSetting->getIntervalNewChunk();
+   m_chunkSize  = m_appSetting->getChunkSize();
 
-    // -- Continuity Index
-    m_count_chunkHit = 0L;
-    m_count_chunkMiss = 0L;
+   // -- State variables
+   m_playerStarted = false;
+   m_id_nextChunk = -1L;
 
-    m_count_prev_chunkHit = 0L;
-    m_count_prev_chunkMiss = 0L;
+   // -- Continuity Index
+   m_count_chunkHit = 0L;
+   m_count_chunkMiss = 0L;
 
-    // -- Schedule the first event for the first chunk
-//    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);
+   m_count_prev_chunkHit = 0L;
+   m_count_prev_chunkMiss = 0L;
 
-    // -------------------------------------------------------------------------
-    // Signals
-    // -------------------------------------------------------------------------
-    sig_timePlayerStart = registerSignal("Signal_timePlayerStart");
+   // -- Schedule the first event for the first chunk
+   //    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);
 
-    WATCH(m_videoBuffer);
-    WATCH(m_appSetting);
-    WATCH(m_chunkSize);
-    WATCH(m_interval_newChunk);
+   // -------------------------------------------------------------------------
+   // Signals
+   // -------------------------------------------------------------------------
+   sig_timePlayerStart = registerSignal("Signal_timePlayerStart");
+
+   WATCH(m_videoBuffer);
+   WATCH(m_appSetting);
+   WATCH(m_chunkSize);
+   WATCH(m_interval_newChunk);
 
 }
 
@@ -159,13 +165,13 @@ void PlayerSimpleSkip::handleMessage(cMessage *msg)
 {
    Enter_Method("handleTimerMessage()");
 
-    if (!msg->isSelfMessage())
-    {
-        throw cException("This module does NOT process external messages!");
-        return;
-    }
+   if (!msg->isSelfMessage())
+   {
+      throw cException("This module does NOT process external messages!");
+      return;
+   }
 
-    handleTimerMessage(msg);
+   handleTimerMessage(msg);
 }
 
 void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
@@ -174,65 +180,65 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
 
    EV << "Handle Timer Message" << endl;
 
-    if (msg == timer_playerStart)
-    {
-       EV << "Timer_playerStart" << endl;
+   if (msg == timer_playerStart)
+   {
+      EV << "Timer_playerStart" << endl;
 
-        switch (m_state)
-        {
-        case PLAYER_STATE_BUFFERING:
-        {
-            if (m_videoBuffer->getPercentFill() < param_percent_buffer_high)
-            {
-               EV << "Buffer filled not enough, should wait more!" << endl;
+      switch (m_state)
+      {
+      case PLAYER_STATE_BUFFERING:
+      {
+         if (m_videoBuffer->getPercentFill() < param_percent_buffer_high)
+         {
+            EV << "Buffer filled not enough, should wait more!" << endl;
 
-                // Probe the status of the buffer again
-                scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
-            }
-            else
-            {
-                // -- Change state to PLAYING
-                m_state = PLAYER_STATE_PLAYING;
+            // Probe the status of the buffer again
+            scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
+         }
+         else
+         {
+            // -- Change state to PLAYING
+            m_state = PLAYER_STATE_PLAYING;
 
-                m_videoBuffer->printStatus();
+            m_videoBuffer->printStatus();
 
-                EV << "Player starts playing" << endl;
+            EV << "Player starts playing" << endl;
 
-                if (m_id_nextChunk <= m_videoBuffer->getBufferStartSeqNum())
-                    m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
-                else if (m_id_nextChunk > m_videoBuffer->getBufferEndSeqNum())
-                    throw cException("Expected sequence number %ld is out of range [%ld, %ld]",
-                                     m_id_nextChunk,
-                                     m_videoBuffer->getBufferStartSeqNum(),
-                                     m_videoBuffer->getBufferEndSeqNum());
+            if (m_id_nextChunk <= m_videoBuffer->getBufferStartSeqNum())
+               m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
+            else if (m_id_nextChunk > m_videoBuffer->getBufferEndSeqNum())
+               throw cException("Expected sequence number %ld is out of range [%ld, %ld]",
+                                m_id_nextChunk,
+                                m_videoBuffer->getBufferStartSeqNum(),
+                                m_videoBuffer->getBufferEndSeqNum());
 
-                emit(sig_timePlayerStart, simTime().dbl());
+            emit(sig_timePlayerStart, simTime().dbl());
 
-                scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+            scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
 
-                // -- Schedule to report chunkHit, chunkMiss
-                //scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
-            }
-            break;
-        }
-        default:
-        {
-            throw cException("Wrong state %d while expecting %d", m_state, PLAYER_STATE_BUFFERING);
-        }
-        }
-    }
-    else if (msg == timer_nextChunk)
-    {
-        if (m_videoBuffer->inBuffer(m_id_nextChunk))
-        {
-           ++m_id_nextChunk;
-           scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+            // -- Schedule to report chunkHit, chunkMiss
+            //scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
+         }
+         break;
+      }
+      default:
+      {
+         throw cException("Wrong state %d while expecting %d", m_state, PLAYER_STATE_BUFFERING);
+      }
+      }
+   }
+   else if (msg == timer_nextChunk)
+   {
+      if (m_videoBuffer->inBuffer(m_id_nextChunk))
+      {
+         ++m_id_nextChunk;
+         scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
 
-           ++m_count_chunkHit;
+         ++m_count_chunkHit;
 
-           // -- State remains
+         // -- State remains
 
-           /*
+         /*
             switch (m_state)
             {
             case PLAYER_STATE_PLAYING: // Chunk HIT
@@ -281,14 +287,14 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
             }
             }
             */
-        }
-        else // expected chunk is NOT in buffer
-        {
-           ++m_id_nextChunk;
-           scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+      }
+      else // expected chunk is NOT in buffer
+      {
+         ++m_id_nextChunk;
+         scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
 
-           ++m_count_chunkMiss;
-           /*
+         ++m_count_chunkMiss;
+         /*
             switch (m_state)
             {
             case PLAYER_STATE_PLAYING: // Chunk MISS
@@ -361,80 +367,80 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
             }
             }
             */
-        } // else ~ chunk not in buffer
+      } // else ~ chunk not in buffer
 
-    } // timer_nextChunk
-//    else if (msg == timer_reportStatistic)
-//    {
-//       long int delta = m_count_chunkHit - m_count_prev_chunkHit;
-//       m_count_prev_chunkHit = m_count_chunkHit;
-//       //m_stat->increaseChunkHit((int)delta);
+   } // timer_nextChunk
+   //    else if (msg == timer_reportStatistic)
+   //    {
+   //       long int delta = m_count_chunkHit - m_count_prev_chunkHit;
+   //       m_count_prev_chunkHit = m_count_chunkHit;
+   //       //m_stat->increaseChunkHit((int)delta);
 
-//       delta = m_count_chunkMiss - m_count_prev_chunkMiss;
-//       m_count_prev_chunkMiss = m_count_chunkMiss;
-//       //m_stat->increaseChunkMiss((int)delta);
+   //       delta = m_count_chunkMiss - m_count_prev_chunkMiss;
+   //       m_count_prev_chunkMiss = m_count_chunkMiss;
+   //       //m_stat->increaseChunkMiss((int)delta);
 
-//       scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
-//    }
-    else if (msg == timer_playerStop)
-    {
-       stopPlayer();
+   //       scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
+   //    }
+   else if (msg == timer_playerStop)
+   {
+      stopPlayer();
 
-    } // timer_playerStop
+   } // timer_playerStop
 
-//    if (msg == timer_nextChunk)
-//    {
-//        scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
+   //    if (msg == timer_nextChunk)
+   //    {
+   //        scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
 
-//        emit(sig_chunkSeek, m_id_nextChunk);
-//        m_stat->reportChunkSeek(m_id_nextChunk);
+   //        emit(sig_chunkSeek, m_id_nextChunk);
+   //        m_stat->reportChunkSeek(m_id_nextChunk);
 
-//        if (m_videoBuffer->isInBuffer(m_id_nextChunk))
-//        {
-//            EV << "\tChunk " << m_id_nextChunk << " is in the buffer." << endl;
+   //        if (m_videoBuffer->isInBuffer(m_id_nextChunk))
+   //        {
+   //            EV << "\tChunk " << m_id_nextChunk << " is in the buffer." << endl;
 
-//            emit(sig_chunkHit, m_id_nextChunk);
-//            m_stat->reportChunkHit(m_id_nextChunk);
-//        }
-//        else
-//        {
-//            EV << "\tChunk " << m_id_nextChunk << " is NOT in the buffer." << endl;
+   //            emit(sig_chunkHit, m_id_nextChunk);
+   //            m_stat->reportChunkHit(m_id_nextChunk);
+   //        }
+   //        else
+   //        {
+   //            EV << "\tChunk " << m_id_nextChunk << " is NOT in the buffer." << endl;
 
-//            emit(sig_chunkMiss, m_id_nextChunk);
-//            m_stat->reportChunkMiss(m_id_nextChunk);
+   //            emit(sig_chunkMiss, m_id_nextChunk);
+   //            m_stat->reportChunkMiss(m_id_nextChunk);
 
-//            if (m_id_nextChunk >= m_videoBuffer->getBufferEndSeqNum())
-//            {
-//                EV << "\t\tNo more chunk in the buffer to play out --> rebuffering!" << endl;
-//                cancelEvent(timer_nextChunk);
-//                scheduleAt(simTime() + param_interval_recheckVideoBuffer, timer_nextChunk);
+   //            if (m_id_nextChunk >= m_videoBuffer->getBufferEndSeqNum())
+   //            {
+   //                EV << "\t\tNo more chunk in the buffer to play out --> rebuffering!" << endl;
+   //                cancelEvent(timer_nextChunk);
+   //                scheduleAt(simTime() + param_interval_recheckVideoBuffer, timer_nextChunk);
 
-//                // -- recording re-buffering events
-//                emit(sig_rebuffering_local, m_id_nextChunk);
-//                m_stat->reportRebuffering(m_id_nextChunk);
-//            }
-//        }
+   //                // -- recording re-buffering events
+   //                emit(sig_rebuffering_local, m_id_nextChunk);
+   //                m_stat->reportRebuffering(m_id_nextChunk);
+   //            }
+   //        }
 
-//        ++m_id_nextChunk;
+   //        ++m_id_nextChunk;
 
-//    }
-//    else
-//    {
-//        throw cException("Wrong timer at Player module!");
-//    }
+   //    }
+   //    else
+   //    {
+   //        throw cException("Wrong timer at Player module!");
+   //    }
 }
 
 void PlayerSimpleSkip::startPlayer()
 {
-    Enter_Method("startPlayer");
+   Enter_Method("startPlayer");
 
-    scheduleAt(simTime(), timer_nextChunk);
+   scheduleAt(simTime(), timer_nextChunk);
 
-    EV << "Player starts with chunk " << m_id_nextChunk << endl;
+   EV << "Player starts with chunk " << m_id_nextChunk << endl;
 
-    m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
+   m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
 
-    m_playerStarted = true;
+   m_playerStarted = true;
 
 }
 
@@ -463,7 +469,7 @@ void PlayerSimpleSkip::stopPlayer(void)
 
 SEQUENCE_NUMBER_T PlayerSimpleSkip::getCurrentPlaybackPoint(void)
 {
-    return m_id_nextChunk;
+   return m_id_nextChunk;
 }
 
 double PlayerSimpleSkip::getContinuityIndex(void)
@@ -477,17 +483,17 @@ double PlayerSimpleSkip::getContinuityIndex(void)
 
 bool PlayerSimpleSkip::playerStarted(void)
 {
-    return m_playerStarted;
+   return m_playerStarted;
 }
 
 bool PlayerSimpleSkip::shouldResumePlaying(SEQUENCE_NUMBER_T seq_num)
 {
-    // !!! Asuming that the seq_num is a valid value within the range [id_start, id_end]
+   // !!! Asuming that the seq_num is a valid value within the range [id_start, id_end]
 
-    if (m_videoBuffer->getPercentFillAhead(seq_num) >= 0.5)
-        return true;
+   if (m_videoBuffer->getPercentFillAhead(seq_num) >= 0.5)
+      return true;
 
-    return false;
+   return false;
 }
 
 //double PlayerSimpleSkip::getLocalContinuityIndex(void)
