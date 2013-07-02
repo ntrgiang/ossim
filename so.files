@@ -283,3 +283,4 @@ simulations/Network-r20.ned
 simulations/BaseNetworkModule.ned
 src/mesh/donet/DonetNode.ned
 src/common/IGenericApp.ned
+simulations/include/debug-donet.ini
