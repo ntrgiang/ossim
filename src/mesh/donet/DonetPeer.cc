@@ -29,17 +29,34 @@
 // -----------------------------------------------------------------------------
 //
 
+#include <set>       // std::set
+#include <utility>   // std::pair
+#include "IPvXAddress.h"
+
+typedef std::pair<IPvXAddress, double> Ip_Throughput;
+typedef std::set<Ip_Throughput> Throughput_Set;
+
+namespace std
+{
+   template<>
+   bool operator< (const Ip_Throughput& l, const Ip_Throughput& r)
+   {
+      return l.second > r.second;
+   }
+}
+
 #include "DonetPeer.h"
 //#include "TracerouteHandler.h"
 #include "DpControlInfo_m.h"
 #include <algorithm>
 #include <csimulation.h>
 #include <assert.h>
+#include <iomanip> // setw()
 
 //using namespace std;
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "@Peer " << getNodeAddress() << "::" << getFullName() << " @ " << simTime().dbl() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@ " << std::setw(6) << simTime().dbl() << " @Peer " << getNodeAddress() << "::" << getFullName() << ": "
 #endif
 
 // ------------------------ Static members -------------------------------------
@@ -307,8 +324,7 @@ void DonetPeer::finish()
    //m_gstat->reportNumberOfPartner(m_partnerList->getSize());
 
    //reportStatus();
-
-   debugOUT << "Peer " << getNodeAddress() << " has " << m_partnerList->getSize() << " partners" << endl;
+   debugOUT << endl;
    m_partnerList->print2();
 }
 
@@ -604,12 +620,17 @@ void DonetPeer::handleTimerFindMorePartner(void)
    {
    case MESH_JOIN_STATE_ACTIVE:
    {
+
+   }
+   case MESH_JOIN_STATE_ACTIVE_WAITING:
+   {
       bool ret = findPartner();
 
       if (ret == true)
       {
          // -- State changes to waiting mode, since a request has been sent
-         m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
+         //m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
+         m_state = MESH_JOIN_STATE_ACTIVE;
       }
       else
       {
@@ -617,23 +638,20 @@ void DonetPeer::handleTimerFindMorePartner(void)
       }
 
       break;
-   }
-   case MESH_JOIN_STATE_ACTIVE_WAITING:
-   {
-      // -- Do NOTHING, here!
+//      // -- Do NOTHING, here!
 
-      bool ret = findPartner();
+//      bool ret = findPartner();
 
-      if (ret == false)
-         debugOUT << "no potential partners found" << endl;
+//      if (ret == false)
+//         debugOUT << "no potential partners found" << endl;
 
-      debugOUT << "Current number of partners: " << m_partnerList->getSize() << endl;
-      debugOUT << "Waiting for something else" << endl;
+//      debugOUT << "Current number of partners: " << m_partnerList->getSize() << endl;
+//      debugOUT << "Waiting for something else" << endl;
 
-      EV << "State remains as MESH_JOIN_STATE_ACTIVE_WAITING" << endl;
-      m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
-      //return;
-      break;
+//      EV << "State remains as MESH_JOIN_STATE_ACTIVE_WAITING" << endl;
+//      m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
+//      //return;
+//      break;
    }
    case MESH_JOIN_STATE_IDLE:
    {
@@ -714,12 +732,6 @@ void DonetPeer::handleTimerPartnershipRefinement()
             //
             //debugOUT << "A disconnect message will be sent to the partner " << iter->first << endl;
 
-            MeshPartnershipDisconnectPacket *disPkt = new MeshPartnershipDisconnectPacket("MESH_PEER_JOIN_REQUEST");
-            disPkt->setBitLength(m_appSetting->getPacketSizePartnershipDisconnect());
-
-            sendToDispatcher(disPkt, m_localPort, iter->first, m_destPort);
-            //delete disPkt;
-
             disconnect_list.push_back(iter->first);
          }
       }
@@ -728,6 +740,11 @@ void DonetPeer::handleTimerPartnershipRefinement()
    for (std::vector<IPvXAddress>::iterator iter = disconnect_list.begin(); iter != disconnect_list.end(); ++iter)
    {
       debugOUT << "this partner whose address is " << *iter << " will be deleted from the partnerlist" << endl;
+
+      MeshPartnershipDisconnectPacket *disPkt = new MeshPartnershipDisconnectPacket("MESH_PEER_JOIN_REQUEST");
+         disPkt->setBitLength(m_appSetting->getPacketSizePartnershipDisconnect());
+         sendToDispatcher(disPkt, m_localPort, *iter, m_destPort);
+
       m_partnerList->deleteAddress(*iter);
       m_forwarder->removeRecord(*iter);
    }
@@ -737,42 +754,112 @@ void DonetPeer::handleTimerPartnershipRefinement()
    debugOUT << "*************************************************************" << endl;
    m_partnerList->print2();
 
-   // --------------------------------------------------------------------------
-   // --- Find the min throughput
-   // --------------------------------------------------------------------------
-   IPvXAddress address_minThroughput = IPvXAddress("10.0.0.9");
-   IPvXAddress address_min_inThroughput = IPvXAddress("10.0.0.9");
-   double minThroughput = (double)INT_MAX;
-   double min_inThroughput = (double)INT_MAX;
-   //double time_minThroughput = 0.0;
-   // -- Find the mininum value of throughputs
+   // TODO: (Giang) has to find scenarios to test this behavior
+   if (m_partnerList->getSize() == 0) // a lonely peer
+   {
+      debugOUT << "!!!Isolated peer!!!" << endl;
+      cancelAllTimer();
+      m_apTable->removeAddress(getNodeAddress());
+      m_state = MESH_JOIN_STATE_IDLE;
+      m_player->scheduleStopPlayer();
+
+      // TODO: (Giang) report the state to the membership layer
+
+      // -- Schedule to rejoin the system
+      //
+      scheduleAt(simTime() + dblrand(), timer_join);
+      return;
+   }
+
+   if (m_partnerList->getSize() <= param_maxNOP)
+   {
+      debugOUT << "Peer has sufficient number of partners, no more refinement" << endl;
+      return;
+   }
+
+   // -- Sorting the set
+   Throughput_Set sorted_set;
    for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
         iter != m_partnerList->m_map.end(); ++iter)
    {
-      EV << "Address " << iter->first
-         << " -- average chunk sent: " << iter->second.getAverageChunkSent()
-         << " -- average chunk received: " << iter->second.getAverageChunkReceived()
-         << " -- average chunk exchanged: " << iter->second.getAverageChunkExchanged()
-         << endl;
-      if (minThroughput > iter->second.getAverageChunkExchanged())
+      // -- not considering the "new" partner
+      if (iter->second.getTimeInstanceAsPartner() - simTime().dbl() < param_interval_partnershipRefinement)
       {
-         minThroughput = iter->second.getAverageChunkExchanged();
-         address_minThroughput = iter->first;
+         debugOUT << "Not considering the new partner " << iter->first << endl;
+         continue;
       }
 
-      if (min_inThroughput > iter->second.getAverageChunkReceived())
-      {
-         min_inThroughput = iter->second.getAverageChunkReceived();
-         address_min_inThroughput = iter->first;
-      }
+      sorted_set.insert(std::make_pair<IPvXAddress, double>(iter->first, iter->second.getAverageChunkExchanged()));
    }
 
-   EV << "Partner " << address_minThroughput << endl
-      << "\t with min throughput " << minThroughput << endl;
+   if (sorted_set.size() == 0)
+      debugOUT << "sorted set EMPTY!" << endl;
+   for (Throughput_Set::iterator iter = sorted_set.begin(); iter != sorted_set.end(); ++iter)
+   {
+      std::cout << "- address: " << iter->first << " -- throughput: " << iter->second << endl;
+   }
+
+   std::vector<IPvXAddress> remove_set;
+   short count = 0;
+   for (Throughput_Set::iterator iter = sorted_set.begin(); iter != sorted_set.end(); ++iter)
+   {
+      if (count++ < param_maxNOP)
+         continue;
+
+      remove_set.push_back(iter->first);
+   }
+
+   // -- Now remove the IP from the list of partners
+   for (std::vector<IPvXAddress>::iterator iter = remove_set.begin(); iter != remove_set.end(); ++iter)
+   {
+      std::cout << "remove set of IPs: " << *iter << " ";
+
+      MeshPartnershipDisconnectPacket *disPkt = new MeshPartnershipDisconnectPacket("MESH_PEER_JOIN_REQUEST");
+         disPkt->setBitLength(m_appSetting->getPacketSizePartnershipDisconnect());
+         sendToDispatcher(disPkt, m_localPort, *iter, m_destPort);
+
+      m_partnerList->deleteAddress(*iter);
+      m_forwarder->removeRecord(*iter);
+   }
+
+
+
+   // --------------------------------------------------------------------------
+   // --- Find the min throughput
+   // --------------------------------------------------------------------------
+//   IPvXAddress address_minThroughput = IPvXAddress("10.0.0.9");
+//   IPvXAddress address_min_inThroughput = IPvXAddress("10.0.0.9");
+//   double minThroughput = (double)INT_MAX;
+//   double min_inThroughput = (double)INT_MAX;
+//   //double time_minThroughput = 0.0;
+//   // -- Find the mininum value of throughputs
+//   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+//        iter != m_partnerList->m_map.end(); ++iter)
+//   {
+//      EV << "Address " << iter->first
+//         << " -- average chunk sent: " << iter->second.getAverageChunkSent()
+//         << " -- average chunk received: " << iter->second.getAverageChunkReceived()
+//         << " -- average chunk exchanged: " << iter->second.getAverageChunkExchanged()
+//         << endl;
+//      if (minThroughput > iter->second.getAverageChunkExchanged())
+//      {
+//         minThroughput = iter->second.getAverageChunkExchanged();
+//         address_minThroughput = iter->first;
+//      }
+
+//      if (min_inThroughput > iter->second.getAverageChunkReceived())
+//      {
+//         min_inThroughput = iter->second.getAverageChunkReceived();
+//         address_min_inThroughput = iter->first;
+//      }
+//   }
+
+//   EV << "Partner " << address_minThroughput << endl
+//      << "\t with min throughput " << minThroughput << endl;
    //      << "\t from time " << time_minThroughput << endl;
 
-   EV << "Partner " << address_min_inThroughput
-      << " -- with min_inThroughput " << min_inThroughput << endl;
+//   EV << "Partner " << address_min_inThroughput
+//      << " -- with min_inThroughput " << min_inThroughput << endl;
 
    //   if (minThroughput > m_videoStreamChunkRate * 0.1)
    //   {
@@ -1227,8 +1314,8 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
       //        }
       //m_partnerList->addAddress(acceptor.address, acceptor.upBW);
 
-      if (m_partnerList->getSize() >= param_maxNOP)
-         break;
+//      if (m_partnerList->getSize() >= param_maxNOP)
+//         break;
 
       EV << "An accept response from " << acceptor.address << endl;
 
@@ -1285,7 +1372,7 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
 ////    m_activityLog << "--- processRejectResponse --- " << endl;
 ////    m_activityLog << "\t at " << simTime().dbl() << " Got a REJECT from: " << rejectorAddress << endl;
 
-//    // TODO-Giang: has to verify this code, the logic seems not very clear
+//    // TODO: (Giang) has to verify this code, the logic seems not very clear
 //    ++m_nRejectSent;
 //    EV << "-- Number of rejected requests so far: " << m_nRejectSent << endl;
 
@@ -1455,7 +1542,7 @@ bool DonetPeer::findPartner()
    Enter_Method("findPartner()");
 
    // Init
-   address_responseExpected = IPvXAddress("0.0.0.0");
+   //address_responseExpected = IPvXAddress("0.0.0.0");
 
    if (m_partnerList->getSize() >= param_minNOP)
    {
@@ -1797,7 +1884,6 @@ void DonetPeer::chunkScheduling()
 //         debugOUT << iter->first << " with buffer map: " << endl;
 //         iter->second.printRecvBm2();
 //      }
-//      debugOUT << endl;
 //   }
 
    // -------------------------------------------------------------------------

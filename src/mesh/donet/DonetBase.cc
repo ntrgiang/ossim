@@ -34,7 +34,7 @@
 #include "assert.h"
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << simTime().dbl() << "::" << getFullName() << ": "
 #endif
 
 bool DonetBase::m_trEnabled = false;
@@ -138,17 +138,19 @@ bool DonetBase::canAcceptMorePartner(void)
 {
    //Enter_Method("canAcceptMorePartner");
 
-   EV << "Current number of partners: " << m_partnerList->getSize() << endl;
-   EV << "Max number of partners to have: " << param_maxNOP << endl;
-   if (m_partnerList->getSize() < param_maxNOP)
-      return true;
+   return true;
 
-   return false;
+//   EV << "Current number of partners: " << m_partnerList->getSize() << endl;
+//   EV << "Max number of partners to have: " << param_maxNOP << endl;
+//   if (m_partnerList->getSize() < param_maxNOP)
+//      return true;
+
+//   return false;
 }
 
 void DonetBase::sendBufferMap(void)
 {
-   debugOUT << "@Peer " << getNodeAddress() << "::" << endl;
+   //debugOUT << "@Peer " << getNodeAddress() << "::" << endl;
 
    if (m_partnerList->getSize() <= 0)
    {
@@ -158,7 +160,7 @@ void DonetBase::sendBufferMap(void)
 
    assert(m_partnerList->getSize() > 0);
 
-   m_partnerList->print2();
+   //m_partnerList->print2();
 
    //debugOUT << "@peer " << getNodeAddress() << endl;
 
@@ -497,14 +499,13 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
 
 void DonetBase::considerAcceptPartner(PendingPartnershipRequest requester)
 {
-   if (canAcceptMorePartner())
+   if (canAcceptMorePartner()) // always returns true, at the moment
    {
       EV << "-- Can accept this request" << endl;
       // -- Debug
       //emit(sig_partnerRequest, m_partnerList->getSize());
 
       // -- Add peer directly to Partner List
-      //m_partnerList->addAddress(requester.address, requester.upBW);
       addPartner(requester.address, requester.upBW);
 
       EV << "Accepted pRequest from " << requester.address << endl;
