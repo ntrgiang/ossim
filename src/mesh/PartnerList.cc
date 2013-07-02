@@ -35,11 +35,12 @@
 #include <omnetpp.h>
 #include <map>
 #include "assert.h"
+#include <iomanip> // setw()
 
 Define_Module(PartnerList)
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << simTime().dbl() << "::" << getFullName() << ": "
 #endif
 
 PartnerList::PartnerList() {
@@ -105,14 +106,14 @@ void PartnerList::print2() const
    for (iter = m_map.begin(); iter != m_map.end(); ++iter)
    {
       debugOUT << i++ << ": " << iter->first
-                  << " - since " << iter->second.getTimeInstanceAsPartner()
-                  << " -- Average chunks: - exchanged: " << iter->second.getAverageChunkExchanged()
-                  << " - sent: " << iter->second.getAverageChunkSent()
-                  << " - received: " << iter->second.getAverageChunkReceived()
+                  << " - since "       << std::setw(7) << iter->second.getTimeInstanceAsPartner()
+                  //<< " -- Average chunks:"
+                  << " - exchanged: "  << std::setw(7) << iter->second.getAverageChunkExchanged()
+                  << " - sent: "       << std::setw(7) << iter->second.getAverageChunkSent()
+                  << " - received: "   << std::setw(7) << iter->second.getAverageChunkReceived()
                   << endl;
                   //<< " - upload bw: " << iter->second.getUpBw() << endl;
    }
-   //debugOUT << endl;
 }
 
 void PartnerList::printAllSendBm() const
