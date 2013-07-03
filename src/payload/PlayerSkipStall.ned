@@ -35,6 +35,8 @@ simple PlayerSkipStall like PlayerBase
 {
    parameters:
       @class(Player);
+      bool debug = default(false);
+
       double interval_recheckVideoBuffer @unit(s) = default(0.1s);
       double percent_buffer_low = default(0.0);
       double percent_buffer_high = default(1.0);

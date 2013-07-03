@@ -36,8 +36,6 @@ moduleinterface PlayerBase
    parameters:
       @class(PlayerBase);
 
-      bool debug = default(false);
-      
       //double interval_reportStatistic @unit(s) = default(0.1s);
 
       //double interval_recheckVideoBuffer @unit(s) = default(0.1s);

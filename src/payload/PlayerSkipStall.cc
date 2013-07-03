@@ -34,7 +34,7 @@
 Define_Module(PlayerSkipStall)
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << getNodeAddress() << "::" << getFullName() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
 #endif
 
 PlayerSkipStall::PlayerSkipStall() {

@@ -35,6 +35,7 @@ simple PlayerSimpleSkip like PlayerBase
 {
    parameters:
       @class(PlayerSimpleSkip);
+      bool debug = default(false);
 
       double interval_reportStatistic @unit(s) = default(0.1s);
 

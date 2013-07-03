@@ -35,7 +35,7 @@
 Define_Module(PlayerSimpleSkip)
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << getNodeAddress() << "::" << getFullName() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
 #endif
 
 PlayerSimpleSkip::PlayerSimpleSkip() {
@@ -153,6 +153,8 @@ void PlayerSimpleSkip::activate(void)
    m_state = PLAYER_STATE_BUFFERING;
    cancelEvent(timer_playerStart);
    scheduleAt(simTime() + param_interval_probe_playerStart, timer_playerStart);
+
+   debugOUT << "activated" << endl;
 
 }
 
