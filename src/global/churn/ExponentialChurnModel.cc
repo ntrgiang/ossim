@@ -34,68 +34,53 @@
 Define_Module(ExponentialChurnModel)
 
 double ExponentialChurnModel::m_absoluteInterval = 0.0;
-//ExponentialChurnModel::m_absoluteInterval = 0.0;
 
 ExponentialChurnModel::ExponentialChurnModel() {
-    // TODO Auto-generated constructor stub
+   // TODO Auto-generated constructor stub
 }
 
 ExponentialChurnModel::~ExponentialChurnModel() {
-    // TODO Auto-generated destructor stub
+   // TODO Auto-generated destructor stub
 }
 
 //void ExponentialChurnModel::initialize(int stage)
 void ExponentialChurnModel::initialize()
 {
-//    sig_arrivalTime = registerSignal("arrivalTime");
-//    sig_sessionDuration = registerSignal("sessionDuration");
+   // -- Get parameters
+   param_arrivalRate = par("arrivalRate");
+   param_meanDuration = par("meanDuration");
 
-    // get a pointer to the NotificationBoard module and IInterfaceTable
-//    nb = NotificationBoardAccess().get();
-
-//    nb->subscribe(this, NF_INTERFACE_CREATED);
-//    nb->subscribe(this, NF_INTERFACE_DELETED);
-//    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
-//    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
-//    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
-
-    // -- Get parameters
-    param_arrivalRate = par("arrivalRate");
-    param_meanDuration = par("meanDuration");
-
-    WATCH(param_arrivalRate);
-    WATCH(param_meanDuration);
+   WATCH(param_arrivalRate);
+   WATCH(param_meanDuration);
 }
 
 void ExponentialChurnModel::handleMessage(cMessage *)
 {
-    throw cException("ActivePeerTable doesn't process messages!");
+   throw cException("ActivePeerTable doesn't process messages!");
 }
 
 double ExponentialChurnModel::getArrivalTime()
 {
-    // -- Get an interval which follows an exponential distribution with rate param_arrivalRate
-    if (param_arrivalRate <= 0)
-        throw cException("Invalid value of arrivalRate: %6.2f", param_arrivalRate);
+   // -- Get an interval which follows an exponential distribution with rate param_arrivalRate
+   if (param_arrivalRate <= 0)
+      throw cException("Invalid value of arrivalRate: %6.2f", param_arrivalRate);
 
-    m_absoluteInterval = (m_absoluteInterval < 0.0)?simTime().dbl():m_absoluteInterval;
+   m_absoluteInterval = (m_absoluteInterval < 0.0)?simTime().dbl():m_absoluteInterval;
 
-    double meanArrivalTime = 1 / param_arrivalRate;
-    double deltaT = exponential(meanArrivalTime);
+   double meanArrivalTime = 1 / param_arrivalRate;
+   double deltaT = exponential(meanArrivalTime);
 
-    // -- Accumulate the value into the origine
-    m_absoluteInterval += deltaT;
+   // -- Accumulate the value into the origine
+   m_absoluteInterval += deltaT;
 
-    m_joinTime = m_absoluteInterval;
+   m_joinTime = m_absoluteInterval;
 
-//    emit(sig_arrivalTime, m_absoluteInterval);
-
-    return m_absoluteInterval;
+   return m_absoluteInterval;
 }
 
 double ExponentialChurnModel::getSessionDuration()
 {
-    return (exponential(param_meanDuration));
+   return (exponential(param_meanDuration));
 }
 
 double ExponentialChurnModel::getDepartureTime()

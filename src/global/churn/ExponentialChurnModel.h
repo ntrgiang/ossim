@@ -39,29 +39,29 @@
 class ExponentialChurnModel : public IChurnGenerator, public cSimpleModule
 {
 public:
-    ExponentialChurnModel();
-    virtual ~ExponentialChurnModel();
+   ExponentialChurnModel();
+   virtual ~ExponentialChurnModel();
 
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+   virtual void initialize();
+   virtual void handleMessage(cMessage *msg);
 
 public:
-    double getArrivalTime();
-    double getSessionDuration();
-    double getDepartureTime();
+   double getArrivalTime();
+   double getSessionDuration();
+   double getDepartureTime();
 
 private:
-    // -- Parameters
-    int param_rng;
+   // -- Parameters
+   int param_rng;
 
-    // -- For the Exponential distribution of inter-arrival times
-    double param_arrivalRate;
+   // -- For the Exponential distribution of inter-arrival times
+   double param_arrivalRate;
 
-    // -- For the Exponential distribution of session durations
-    double param_meanDuration;
+   // -- For the Exponential distribution of session durations
+   double param_meanDuration;
 
-    // Accumulated value to referback to the origine
-    static double m_absoluteInterval;
+   // Accumulated value to referback to the origine
+   static double m_absoluteInterval;
 };
 
 #endif /* EXPONENTIAL_CHURN_H_ */

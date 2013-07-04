@@ -51,14 +51,6 @@ simple VelosoChurnModel like IChurnModel
         // -- For the Lognornal distribution
         double mu;
         double lambda;
-        
-        // -- Possible signals
-        @signal[arrivalTime](type="double");
-        @signal[sessionDuration](type="double");
-        
-        // -- Statistic collection
-        @statistic[arrivalTime](title="Discrete arrival times"; source=arrivalTime; record=count,vector);
-        @statistic[sessionDuration](title="Separate session durations";source=sessionDuration; record=count,vector);        
 }
 
 
