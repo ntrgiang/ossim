@@ -117,6 +117,7 @@ private:
     // *************************************************************************
     // *************************************************************************
 
+    void sendBufferMap();
     void processPeerBufferMap(cPacket *pkt);
 //    void processChunkRequest(cPacket *pkt);
 
@@ -140,12 +141,12 @@ private:
     void reportLocalStatistic(void);
     void reportHitMiss();
 
-    int numberOfChunkToRequestPerCycle(void);
+    //int numberOfChunkToRequestPerCycle(void); // TODO: (Giang) obsolete?
     double currentRequestGreedyFactor(void);
     bool recentlyRequestedChunk(SEQUENCE_NUMBER_T seq_num);
     void refreshListRequestedChunk(void);
     void printListOfRequestedChunk(void);
-    bool inScarityState(void);
+    //bool inScarityState(void); // TODO: (Giang) obsolete?
 
     MeshPartnershipLeavePacket* generatePartnershipRequestLeavePacket();
 
@@ -192,10 +193,10 @@ private:
 
     //double  param_baseValue_requestGreedyFactor;
     //double  param_aggressiveValue_requestGreedyFactor
-    double  param_requestFactor_moderate;
-    double  param_requestFactor_aggresive;
+    //double  param_requestFactor_moderate;
+    //double  param_requestFactor_aggresive;
     double  param_factor_requestList;
-    double  param_threshold_scarity;
+    //double  param_threshold_scarity;
     double  param_threshold_idleDuration_buffermap;
 
     // -- Partnership size
@@ -203,10 +204,11 @@ private:
     int param_offsetNOP;
 
     // Address of the host whose response is expected
-    IPvXAddress address_responseExpected;
+    // TODO: (Giang) obsoleted?
+//    IPvXAddress address_responseExpected;
 
     // -- To store list of random peers got from APT
-    vector<IPvXAddress> m_list_randPeer;
+    //vector<IPvXAddress> m_list_randPeer;
 
 // -----------------------------------------------------------------------------
 //               Pointers to external modules
@@ -255,7 +257,7 @@ private:
     long int m_count_prev_chunkHit, m_count_prev_chunkMiss;
 
     // --------------------------- Optimization --------------------------------
-    std::vector<IPvXAddress> m_blacklist;
+    //std::vector<IPvXAddress> m_blacklist;
 
     // -------------------------------- Signals --------------------------------
 
