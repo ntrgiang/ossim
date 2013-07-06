@@ -11,6 +11,4 @@
 config=$1
 ini_file=$2
 
-
-
-opp_runall -j1 ../../src/so -r 0 -u Cmdenv -c $config $ini_file -n ../:../../src:../../../inet/src
+opp_runall -j1 ../../src/so -r 0 -u Cmdenv -c $config $ini_file -n ../:../../src:../../../inet/src | tee /tmp/ossim.log
