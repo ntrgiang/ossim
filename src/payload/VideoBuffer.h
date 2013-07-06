@@ -138,6 +138,9 @@ public:
     // @brief prints the current status of the video buffer
     void printStatus();
 
+    // @brief prints the range the video buffer
+    void printRange();
+
     // @brief returns the number of elements which are attached with VideoPackets
     int getNumberActiveElement(void);
 

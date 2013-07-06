@@ -34,6 +34,7 @@
 #include "AppSettingDonet.h"
 #include "DonetStatistic.h"
 #include "assert.h"
+#include <iomanip> // setw()
 
 #define _VERSION_1 1
 #define _VERSION_2 2
@@ -45,7 +46,9 @@ using namespace std;
 Define_Module(VideoBuffer)
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << " @ " << simTime().dbl() << ": "
+//#define debugOUT (!m_debug) ? std::cout : std::cout << "@ " << simTime().dbl() << "::" << getFullName() << ": "
+//#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@ " << simTime().dbl() << "::"
 #endif
 
 VideoBuffer::VideoBuffer() {}
@@ -212,8 +215,10 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
 
       m_head_received_seqNum = seq_num;
       //m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
-      m_bufferStart_seqNum = std::max(m_bufferStart_seqNum, m_head_received_seqNum - m_bufferSize_chunk + 1);
-      m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
+
+      // TODO: (Giang) verify this!!!
+      //m_bufferStart_seqNum = std::max(m_bufferStart_seqNum, m_head_received_seqNum - m_bufferSize_chunk + 1);
+      //m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
 
       EV << "  -- start:\t"   << m_bufferStart_seqNum     << endl;
       EV << "  -- end:\t"     << m_bufferEnd_seqNum       << endl;
@@ -425,7 +430,8 @@ int VideoBuffer::getNumberOfChunkFill()
 {
    // !!! Asuming that the ref_ori is a valid value between seq_num_start & seq_num_end
    int count_fill = 0;
-   for (SEQUENCE_NUMBER_T seq_num = m_bufferStart_seqNum; seq_num <= m_bufferEnd_seqNum; ++seq_num)
+   //for (SEQUENCE_NUMBER_T seq_num = m_bufferStart_seqNum; seq_num <= m_bufferEnd_seqNum; ++seq_num)
+   for (SEQUENCE_NUMBER_T seq_num = m_bufferStart_seqNum; seq_num <= m_head_received_seqNum; ++seq_num)
    {
       if (inBuffer(seq_num))
          ++count_fill;
@@ -547,6 +553,14 @@ void VideoBuffer::printStatus()
 
 }
 
+void VideoBuffer::printRange()
+{
+   debugOUT << "Range of the video buffer: "
+            << " -- Start:" << setw(6) << m_bufferStart_seqNum
+            << " -- End:"   << setw(6) << m_bufferEnd_seqNum
+            << " -- Head:"  << setw(6) << m_head_received_seqNum   << endl;
+}
+
 void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
 {
    EV << endl;
@@ -562,12 +576,7 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
    bmPkt->setHeadSeqNum(m_head_received_seqNum);
 
    debugOUT << "*************** catch:: I am here ****************" << endl;
-
-   EV << "-- Buffer Map info: " << endl;
-   EV << "  -- m_bufferSize_chunk =\t"        << m_bufferSize_chunk       << endl;
-   EV << "  -- Start:\t"   << m_bufferStart_seqNum     << endl;
-   EV << "  -- End:\t"     << m_bufferEnd_seqNum       << endl;
-   EV << "  -- Head:\t"    << m_head_received_seqNum   << endl;
+   printRange();
 
    /*
     // -- Initialize all of the element of the BM to false
@@ -666,13 +675,11 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
          // EV << "Chunk is out-dated! --> set to false" << endl;
          // bmPkt->setBufferMap(offset, false);
       }
-
       bmPkt->setBufferMap(i, true);
-
-
    } // for
 
    debugOUT << "fillRange = " << fillRange << endl;
+   debugOUT << "current fill percentage: " << getPercentFill() << endl;
    assert(fillRange >= 0);
 
    for (int i = fillRange; i < m_bufferSize_chunk; i++)
