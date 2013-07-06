@@ -113,8 +113,9 @@ protected:
    void processChunkRequest(cPacket *pkt);
    void printChunkRequestPacket(MeshChunkRequestPacket *reqPkt);
 
-   MeshPartnershipAcceptPacket *generatePartnershipRequestAcceptPacket();
-   MeshPartnershipRejectPacket *generatePartnershipRequestRejectPacket();
+   MeshPartnershipAcceptPacket* generatePartnershipRequestAcceptPacket();
+   MeshPartnershipRejectPacket* generatePartnershipRequestRejectPacket();
+   MeshPartnershipDisconnectPacket* generatePartnershipDisconnectPacket();
 
    // -- Trace route
    //    void sendTraceRouteMsg(IPvXAddress addr);

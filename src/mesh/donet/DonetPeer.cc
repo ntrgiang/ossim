@@ -717,7 +717,6 @@ void DonetPeer::handleTimerPartnershipRefinement()
    debugOUT << "*************************************************************" << endl;
    m_partnerList->print2();
 
-
    // -- Clean all the partners who do not have any chunk exchange, and partner time is large enough
    //
    std::vector<IPvXAddress> disconnect_list;
@@ -746,8 +745,8 @@ void DonetPeer::handleTimerPartnershipRefinement()
    {
       debugOUT << "this partner whose address is " << *iter << " will be deleted from the partnerlist" << endl;
 
-//      MeshPartnershipDisconnectPacket *disPkt = generatePartnershipRequestDisconnectPacket();
-//      sendToDispatcher(disPkt, m_localPort, *iter, m_destPort);
+      MeshPartnershipDisconnectPacket *disPkt = generatePartnershipDisconnectPacket();
+      sendToDispatcher(disPkt, m_localPort, *iter, m_destPort);
 
       m_partnerList->deleteAddress(*iter);
       m_forwarder->removeRecord(*iter);
@@ -769,7 +768,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
 
       // TODO: (Giang) report the state to the membership layer
 
-      // -- Schedule to rejoin the system
+      // -- Schedule to rejoin the system at a random time (within one second)
       //
       scheduleAt(simTime() + dblrand(), timer_join);
       return;
@@ -801,6 +800,8 @@ void DonetPeer::handleTimerPartnershipRefinement()
       provider_set.insert(std::make_pair<IPvXAddress, double>(iter->first, iter->second.getAverageChunkReceived()));
    }
 
+   // -- Debugging
+   //
    if (sorted_set.size() == 0)
       debugOUT << "sorted set EMPTY!" << endl;
    for (Throughput_Set::iterator iter = sorted_set.begin(); iter != sorted_set.end(); ++iter)
@@ -829,8 +830,8 @@ void DonetPeer::handleTimerPartnershipRefinement()
    {
       debugOUT << *iter << endl;
 
-//      MeshPartnershipDisconnectPacket *disPkt = generatePartnershipRequestDisconnectPacket();
-//      sendToDispatcher(disPkt, m_localPort, *iter, m_destPort);
+      MeshPartnershipDisconnectPacket *disPkt = generatePartnershipDisconnectPacket();
+      sendToDispatcher(disPkt, m_localPort, *iter, m_destPort);
 
       m_partnerList->deleteAddress(*iter);
       m_forwarder->removeRecord(*iter);

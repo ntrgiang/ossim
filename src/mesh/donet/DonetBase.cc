@@ -158,46 +158,23 @@ void DonetBase::sendBufferMap(void)
       return;
    }
 
-   assert(m_partnerList->getSize() > 0);
-
    //m_partnerList->print2();
-
    //debugOUT << "@peer " << getNodeAddress() << endl;
 
+   // -- Debug
+   //m_videoBuffer->printRange();
+
    MeshBufferMapPacket *bmPkt = new MeshBufferMapPacket("MESH_PEER_BUFFER_MAP");
-   bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);
-   bmPkt->setBitLength(m_BufferMapPacketSize_bit);
-   m_videoBuffer->fillBufferMapPacket(bmPkt);
-
-   /*
-    // 2. Get the partner List
-    std::vector<IPvXAddress> nList = m_partnerList->getAddressList();
-
-    // 3. Browse through the local NeighborList
-    //    . Send the BufferMap Packet to all of the neighbors in the list
-    std::vector<IPvXAddress>::iterator iter;
-    for (iter = nList.begin(); iter != nList.end(); ++iter)
-    {
-        // Create copies of the BufferMap packet
-        MeshBufferMapPacket *bmPkt_copy = bmPkt->dup();
-
-        // send the packet to this neighbor
-        sendToDispatcher(bmPkt_copy, m_localPort, *iter, m_destPort);
-
-        EV << "A buffer map has been sent to " << *iter << endl;
-    }
-*/
+      bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);
+      bmPkt->setBitLength(m_BufferMapPacketSize_bit);
+      m_videoBuffer->fillBufferMapPacket(bmPkt);
 
    // 3. Browse through the local NeighborList
    //    & Send the BufferMap Packet to all of the neighbors in the list
-   //map<IPvXAddress, NeighborInfo *>::iterator iter;
-   map<IPvXAddress, NeighborInfo>::iterator iter;
-   for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
+   for (map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+        iter != m_partnerList->m_map.end(); ++iter)
    {
-      // send the packet to this neighbor
-      //sendToDispatcher(bmPkt_copy, m_localPort, iter->first, m_destPort);
       sendToDispatcher(bmPkt->dup(), m_localPort, iter->first, m_destPort);
-
       EV << "A buffer map has been sent to " << iter->first << endl;
    }
 
@@ -346,6 +323,14 @@ MeshPartnershipRejectPacket *DonetBase::generatePartnershipRequestRejectPacket()
    return rejectPkt;
 }
 
+MeshPartnershipDisconnectPacket *DonetBase::generatePartnershipDisconnectPacket()
+{
+   MeshPartnershipDisconnectPacket *disPkt = new MeshPartnershipDisconnectPacket("MESH_PEER_DISCONNECT");
+   disPkt->setBitLength(m_appSetting->getPacketSizePartnershipDisconnect());
+
+   return disPkt;
+}
+
 void DonetBase::reportStatus()
 {
    Partnership p;
@@ -445,8 +430,7 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
         }
 
         //emit(sig_pRequestRecv_whileWaiting, 1);
-
-      EV << "State remains as MESH_JOIN_STATE_ACTIVE_WAITING" << endl;
+      EV << "State remains as MESH_JOIN_STATE_ACTIVE" << endl;
 
       // -- State changes
       m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
