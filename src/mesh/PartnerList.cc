@@ -106,12 +106,14 @@ void PartnerList::print2() const
    for (iter = m_map.begin(); iter != m_map.end(); ++iter)
    {
       debugOUT << i++ << ": " << iter->first
-                  << " - since "       << std::setw(7) << iter->second.getTimeInstanceAsPartner()
-                  //<< " -- Average chunks:"
-                  << " - exchanged: "  << std::setw(7) << iter->second.getAverageChunkExchanged()
-                  << " - sent: "       << std::setw(7) << iter->second.getAverageChunkSent()
-                  << " - received: "   << std::setw(7) << iter->second.getAverageChunkReceived()
-                  << endl;
+      << " - duration "       << setw(5) << setprecision(3) << simTime().dbl() - iter->second.getTimeInstanceAsPartner()
+      << " (overall) Ex: "    << setw(5) << setprecision(3) << iter->second.getAverageChunkExchanged()
+      << ", Tx: "             << setw(5) << setprecision(3) << iter->second.getAverageChunkSent()
+      << ", Rx: "             << setw(5) << setprecision(3) << iter->second.getAverageChunkReceived()
+      << " -- (interval) Ex: "   << setw(5) << setprecision(3) << iter->second.getAverageChunkExchangedPerInterval()
+      << ", Tx: "                << setw(5) << setprecision(3) << iter->second.getAverageChunkSentPerInterval()
+      << ", Rx: "                << setw(5) << setprecision(3) << iter->second.getAverageChunkReceivedPerInterval()
+      << endl;
                   //<< " - upload bw: " << iter->second.getUpBw() << endl;
    }
 }
@@ -371,7 +373,7 @@ bool PartnerList::deleteAddress(const IPvXAddress &addr)
 
    if (it != m_map.end())
    {
-      debugOUT << "address " << addr << " was found -----> will be deleted" << endl;
+      //debugOUT << "address " << addr << " was found -----> will be deleted" << endl;
       m_map.erase(it);
       //debugOUT << "m_map size after: " << m_map.size() << endl;
       return true;

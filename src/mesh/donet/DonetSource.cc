@@ -340,7 +340,7 @@ void DonetSource::processPartnershipRequest(cPacket *pkt)
    EV << endl;
    EV << "-------- Process partnership Request --------------------------------" << endl;
 
-   emit(sig_pRequestRecv, 1);
+   //emit(sig_pRequestRecv, 1);
 
    // -- Get the identifier (IP:port) and upBw of the requester
    PendingPartnershipRequest requester;

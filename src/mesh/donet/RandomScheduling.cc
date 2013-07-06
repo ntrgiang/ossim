@@ -44,20 +44,6 @@ void DonetPeer::randomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NU
     // -- Clear all request windows for all neighbors
     m_partnerList->clearAllSendBm();
 
-    // -- Prepare the scheduling window
-//    long upper_bound = m_seqNum_schedWinHead;
-//    long lower_bound = std::max(0L, m_seqNum_schedWinHead-m_bufferMapSize_chunk+1);
-
-    // -- New scheduling windows
-//    long lower_bound = m_sched_window.start;
-//    long upper_bound = m_sched_window.end;
-
-    // -- New update scheme which takes into account the initialized scheduling window
-//    long lower_bound = std::max(m_seqNum_schedWinStart, m_sched_window.start);
-//    long upper_bound = lower_bound + m_bufferMapSize_chunk - 1;
-    //long lower_bound = std::max(0L, m_seqNum_schedWinHead-m_bufferMapSize_chunk+1);
-
-
     // -- Update bounds of all sendBM
     //m_partnerList->updateBoundSendBm(m_seqNum_schedWinHead, lower_bound, lower_bound+m_bufferMapSize_chunk-1);
     m_partnerList->updateBoundSendBm(lower_bound, lower_bound+m_bufferMapSize_chunk-1);
@@ -76,6 +62,7 @@ void DonetPeer::randomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NU
 
     // -- Looking for chunk to request
     for (SEQUENCE_NUMBER_T seq_num = lower_bound; seq_num <= upper_bound; ++seq_num)
+    //for (SEQUENCE_NUMBER_T seq_num = m_player->getCurrentPlaybackPoint(); seq_num <= upper_bound; ++seq_num)
     {
         EV << "-- Investigating chunk " << seq_num << ": ";
         if (m_videoBuffer->isInBuffer(seq_num) == false)
@@ -83,7 +70,7 @@ void DonetPeer::randomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NU
             EV << "-- This chunk is NOT in the Buffer" << endl;
             // -- Debug -- Counting
 
-            if (should_be_requested(seq_num) == false)
+            if (!should_be_requested(seq_num))
             {
                 EV << "----> This chunk should NOT be requested this time" << endl;
                 continue;
