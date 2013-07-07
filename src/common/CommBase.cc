@@ -34,6 +34,7 @@
 #include "IPv4InterfaceData.h"
 #include "InterfaceTableAccess.h"
 #include "InterfaceTable.h"
+#include "assert.h"
 
 #ifndef debugOUT
 #define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
@@ -106,56 +107,26 @@ void CommBase::sendToDispatcher(cPacket *pkt, int srcPort, const IPvXAddress& de
     send(pkt, "dpOut");
 }
 
-/*
-IPvXAddress CommBase::getNodeAddress(void)
-{
-    IInterfaceTable *inet_ift;
-    inet_ift = InterfaceTableAccess().get();
-
-    // EV << "Number of interfaces: " << inet_ift->getNumInterfaces() << endl;
-    if (inet_ift->getNumInterfaces() < 2) throw cException("Less than 2 interfaces");
-
-    // EV << "Interface 1: " << inet_ift->getInterface(0)->ipv4Data()->getIPAddress() << endl;
-    // EV << "Interface 2: " << inet_ift->getInterface(1)->ipv4Data()->getIPAddress() << endl;
-
-    IPvXAddress myAddress = (IPvXAddress)inet_ift->getInterface(1)->ipv4Data()->getIPAddress();
-    // EV << "My address is: " << myAddress << endl;
-    // IPvXAddress sourceAddress(inet_ift->getInterface(1)->ipv4Data()->getIPAddress());
-
-    return myAddress;
-}
-*/
-
 void CommBase::findNodeAddress(void)
 {
    Enter_Method("findNodeAddress()");
-//    IInterfaceTable *inet_ift;
-//    inet_ift = InterfaceTableAccess().get();
-
-//    EV << "Number of interfaces: " << inet_ift->getNumInterfaces() << endl;
-//    if (inet_ift->getNumInterfaces() < 2) throw cException("Less than 2 interfaces");
-
-//    // EV << "Interface 1: " << inet_ift->getInterface(0)->ipv4Data()->getIPAddress() << endl;
-//    // EV << "Interface 2: " << inet_ift->getInterface(1)->ipv4Data()->getIPAddress() << endl;
-
-//    m_localAddress = (IPvXAddress)inet_ift->getInterface(1)->ipv4Data()->getIPAddress();
-//    EV << "Node's own address is: " << m_localAddress << endl;
 
    cModule* module = getParentModule()->getParentModule();
    InterfaceTable* interface = check_and_cast<InterfaceTable*>(module->getSubmodule("interfaceTable"));
    EV << "Number of interfaces: " << interface->getNumInterfaces() << endl;
 
-   IPvXAddress nodeAddr;
+   assert(interface->getNumInterfaces() > 0);
+
    if (interface->getNumInterfaces() > 1)
    {
-      nodeAddr = IPvXAddress(interface->getInterface(interface->getNumInterfaces()-1)->ipv4Data()->getIPAddress());
+      m_localAddress = IPvXAddress(interface->getInterface(interface->getNumInterfaces()-1)->ipv4Data()->getIPAddress());
    }
    else
    {
-      nodeAddr = IPvXAddress(interface->getInterface(0)->ipv4Data()->getIPAddress());
+      m_localAddress = IPvXAddress(interface->getInterface(0)->ipv4Data()->getIPAddress());
    }
 
-   EV << "Node address found: " << nodeAddr << endl;
+   EV << "Node address found: " << m_localAddress << endl;
 
 }
 
