@@ -37,134 +37,114 @@
 Define_Module(Dispatcher)
 
 Dispatcher::Dispatcher() {
-    // TODO Auto-generated constructor stub
+   // TODO Auto-generated constructor stub
 }
 
 Dispatcher::~Dispatcher() {
-    // TODO Auto-generated destructor stub
+   // TODO Auto-generated destructor stub
 }
 
 void Dispatcher::initialize(int stage)
 {
-    if (stage != 3) return;
+   if (stage != 3) return;
 
-    m_localPort = par("localPort");
-    m_destPort = par("destPort");
+   m_localPort = par("localPort");
+   m_destPort = par("destPort");
 
-    bindToPort(m_localPort);
+   bindToPort(m_localPort);
 
-    WATCH(m_localPort);
-    WATCH(m_destPort);
+   WATCH(m_localPort);
+   WATCH(m_destPort);
 }
 
 void Dispatcher::handleMessage(cMessage* msg)
 {
 
-    if (msg->isSelfMessage() == true)
-    {
-        EV << "Dispatcher uses no timers! Some thing is wrong!" << endl;
-        return;
-    }
+   if (msg->isSelfMessage() == true)
+   {
+      EV << "Dispatcher uses no timers! Some thing is wrong!" << endl;
+      return;
+   }
 
-    // received from underlaying UDP layer
-    if (msg->arrivedOn("udpIn"))
-    {
-        processUdpPacket(msg);
-    }
-    else // received from upper Gossip/Streaming Modules
-    {
-        processMsgFromOverlay(msg);
-    }
+   // received from underlaying UDP layer
+   if (msg->arrivedOn("udpIn"))
+   {
+      processUdpPacket(msg);
+   }
+   else // received from upper Gossip/Streaming Modules
+   {
+      processMsgFromOverlay(msg);
+   }
 }
 
-/*void Dispatcher::forwardToGossipModule(cMessage *msg)
+void Dispatcher::sendToUDP(cPacket *msg, const IPvXAddress& srcAddr, int srcPort, const IPvXAddress& destAddr, int destPort)
 {
-//    UDPControlInfo *controlInfo = check_and_cast<UDPControlInfo *>(msg->removeControlInfo());
-//
-//    PeerStreamingPacket *pkt = dynamic_cast<PeerStreamingPacket *>(msg);
-//
-//    sendToUDP(pkt, controlInfo->getSrcPort(), controlInfo->getDestAddr(), controlInfo->getDestPort());
+   // send message to UDP, with the appropriate control info attached
+   msg->setKind(UDP_C_DATA);
 
+   UDPControlInfo *ctrl = new UDPControlInfo();
+   ctrl->setSrcAddr(srcAddr);
+   ctrl->setSrcPort(srcPort);
+   ctrl->setDestAddr(destAddr);
+   ctrl->setDestPort(destPort);
+   msg->setControlInfo(ctrl);
+
+   //EV << "Sending packet: ";
+   //printPacket(msg);
+
+   send(msg, "udpOut");
 }
-
-void Dispatcher::forwardToMeshStreamingModule(cMessage *msg)
-{
-
-}
-
-void Dispatcher::forwardToTreeStreamingModule(cMessage *msg)
-{
-
-}
-
-void Dispatcher::forwardToBuffer(cMessage *msg)
-{
-
-}
-
-*
- * Dispatch ControlInfo & payload (original message)
- * Change the ControlInfo into UDP ControlInfo, then attach back to the payload message
- * Then, send it to UDP, using sendToUDP()
-
-void Dispatcher::forwardToUdp(cMessage *msg)
-{
-//    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(msg->removeControlInfo());
-//
-//    PeerStreamingPacket *pkt = dynamic_cast<PeerStreamingPacket *>(msg);
-//
-//    sendToUDP(pkt, controlInfo->getSrcPort(), controlInfo->getDestAddr(), controlInfo->getDestPort());
-}*/
-
 
 // ------------- new interface -------------
 void Dispatcher::processMsgFromOverlay(cMessage *overlayData)
 {
-    EV << "Dispatcher received a packet from overlay" << endl;
+   EV << "Dispatcher received a packet from overlay" << endl;
 
-    DpControlInfo *dpCtrl = check_and_cast<DpControlInfo *>(overlayData->removeControlInfo());
+   DpControlInfo *dpCtrl = check_and_cast<DpControlInfo *>(overlayData->removeControlInfo());
 
-    PeerStreamingPacket *pkt = check_and_cast<PeerStreamingPacket *>(overlayData);
+   PeerStreamingPacket *pkt = check_and_cast<PeerStreamingPacket *>(overlayData);
 
-    EV << "-- Payload size: " << pkt->getByteLength() << "(bytes)" << endl;
+   EV << "-- Payload size: " << pkt->getByteLength() << "(bytes)" << endl;
 
-    sendToUDP(pkt, dpCtrl->getSrcPort(),
-            dpCtrl->getDestAddr(),
-            dpCtrl->getDestPort());
+   sendToUDP(pkt,
+             dpCtrl->getSrcAddr(),
+             dpCtrl->getSrcPort(),
+             dpCtrl->getDestAddr(),
+             dpCtrl->getDestPort());
 
-    delete dpCtrl;
+   delete dpCtrl;
 }
 
 void Dispatcher::processUdpPacket(cMessage *udpMsg)
 {
-    UDPControlInfo *udpCtrl = check_and_cast<UDPControlInfo *>(udpMsg->removeControlInfo());
+   UDPControlInfo *udpCtrl = check_and_cast<UDPControlInfo *>(udpMsg->removeControlInfo());
 
-    PeerStreamingPacket *strmPkt = check_and_cast<PeerStreamingPacket *>(udpMsg);
+   PeerStreamingPacket *strmPkt = check_and_cast<PeerStreamingPacket *>(udpMsg);
 
-    DpControlInfo *dpCtrl = new DpControlInfo();
-        dpCtrl->setSrcAddr(udpCtrl->getSrcAddr());
-        dpCtrl->setSrcPort(udpCtrl->getSrcPort());
-        dpCtrl->setDestAddr(udpCtrl->getDestAddr());
-        dpCtrl->setDestPort(udpCtrl->getDestPort());
-    udpMsg->setControlInfo(dpCtrl);
+   DpControlInfo *dpCtrl = new DpControlInfo();
+   dpCtrl->setSrcAddr(udpCtrl->getSrcAddr());
+   dpCtrl->setSrcPort(udpCtrl->getSrcPort());
+   dpCtrl->setDestAddr(udpCtrl->getDestAddr());
+   dpCtrl->setDestPort(udpCtrl->getDestPort());
+   udpMsg->setControlInfo(dpCtrl);
 
-    int packetGroup = strmPkt->getPacketGroup();
+   int packetGroup = strmPkt->getPacketGroup();
 
-    // -- Get the size of the overlayOut array
-    // int nOverlayOut = gateSize("overlayOut");
+   // -- Get the size of the overlayOut array
+   // int nOverlayOut = gateSize("overlayOut");
 
-    // -- "Direct" mapping from packetGroup into gateNumber
-    // (just to avoid switch which produces more computational overhead
-    int gateNumber = getGateNumber(packetGroup);
+   // -- "Direct" mapping from packetGroup into gateNumber
+   // (just to avoid switch which produces more computational overhead
+   int gateNumber = getGateNumber(packetGroup);
 
-    send(udpMsg, "overlayOut", gateNumber);
+   send(udpMsg, "overlayOut", gateNumber);
 
-    delete udpCtrl;
+   delete udpCtrl;
 }
 
 int Dispatcher::getGateNumber(int packetGroup)
 {
-    /*
+   /*
         switch(packetGroup)
         {
         case PACKET_GROUP_GOSSIP_OVERLAY:
@@ -194,5 +174,5 @@ int Dispatcher::getGateNumber(int packetGroup)
         }
         } // end of switch
     */
-    return packetGroup;
+   return packetGroup;
 }
