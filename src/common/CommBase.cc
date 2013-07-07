@@ -126,6 +126,8 @@ void CommBase::findNodeAddress(void)
       m_localAddress = IPvXAddress(interface->getInterface(0)->ipv4Data()->getIPAddress());
    }
 
+   assert(!m_localAddress.isUnspecified());
+
    EV << "Node address found: " << m_localAddress << endl;
 
 }
