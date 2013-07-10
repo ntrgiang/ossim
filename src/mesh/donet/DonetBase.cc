@@ -45,6 +45,12 @@ DonetBase::~DonetBase() {}
 void DonetBase::initialize()
 {
    m_debug = (hasPar("debug")) ? par("debug").boolValue() : false;
+
+   //sig_pRequestSent = registerSignal("Signal_pRequestSent");
+   // TODO: (Giang) remove the following signals?
+   sig_pRequestRecv = registerSignal("Signal_pRequestRecv");
+   sig_pRejectSent = registerSignal("Signal_pRejectSent");
+   sig_pRequestRecv_whileWaiting = registerSignal("Signal_pRequestRecv_whileWaiting");
 }
 
 void DonetBase::handleMessage(cMessage *msg)
@@ -369,7 +375,7 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
     EV << endl;
     EV << "-------- Process partnership Request --------------------------------" << endl;
 
-    emit(sig_pRequestRecv, 1);
+    //emit(sig_pRequestRecv, 1);
 
     // -- Get the identifier (IP:port) and upBw of the requester
     PendingPartnershipRequest requester;
@@ -424,10 +430,10 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
            MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
            sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
 
-           emit(sig_pRejectSent, 1);
+           //emit(sig_pRejectSent, 1);
         }
 
-        emit(sig_pRequestRecv_whileWaiting, 1);
+        //emit(sig_pRequestRecv_whileWaiting, 1);
 
         EV << "State remains as MESH_JOIN_STATE_ACTIVE_WAITING" << endl;
 

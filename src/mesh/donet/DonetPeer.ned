@@ -88,7 +88,7 @@ simple DonetPeer extends DonetBase
         // ---------------------------------------------------------------------
 
         // -- For debug
-        @statistic[localCI](source="Signal_LocalCI"; record=min,max,mean,last,vector);
+        //@statistic[localCI](source="Signal_LocalCI"; record=min,max,mean,last,vector);
 
         // -- Old metrics
         // -- Possible signals to collect

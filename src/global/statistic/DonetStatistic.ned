@@ -80,17 +80,17 @@ simple DonetStatistic like IStreamingStatistic
         // -------------------------- Starting from here -----------------------
         // new stat - periodically
         // @statistic[CI](source="Signal_CI"; record=last,vector);
-        @statistic[globalCI](source="Signal_CI"; record=last,mean,vector);
+        //@statistic[globalCI](source="Signal_CI"; record=last,mean,vector);
 
-        @statistic[globalCI_delta](source="Signal_CI_delta"; record=last,mean,vector);
+        //@statistic[globalCI_delta](source="Signal_CI_delta"; record=last,mean,vector);
 
         // To get the number active peers in the system
-        @statistic[systemSize](source="Signal_SystemSize"; record=last,mean,vector);
+        //@statistic[systemSize](source="Signal_SystemSize"; record=last,mean,vector);
 
         // Delay --->
-        @statistic[delayOneOverlayHop](source="Signal_DelayOneOverlayHop"; record=mean,min,max,vector);
+        //@statistic[delayOneOverlayHop](source="Signal_DelayOneOverlayHop"; record=mean,min,max,vector);
 
-        @statistic[overlayHopCount](source="Signal_OverlayHopCount"; record=mean,min,max,vector);
+        //@statistic[overlayHopCount](source="Signal_OverlayHopCount"; record=mean,min,max,vector);
         // <---- Delay
 
         //@statistic[SkipChunk](source="Signal_SkipChunk"; record=last,vector);
