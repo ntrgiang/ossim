@@ -128,6 +128,7 @@ void Forwarder::updateSentChunkRecord(IPvXAddress& destAddress)
    {
       addRecord(destAddress);
       debugOUT << "A chunk was be sent to a peer " << destAddress << " when there is no record previously added" << endl;
+      return;
    }
 
    iter->second.m_chunkSent += 1;
