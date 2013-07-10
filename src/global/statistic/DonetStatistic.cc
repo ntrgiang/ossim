@@ -53,44 +53,7 @@ void DonetStatistic::finish()
     // -- Close the log file
     m_outFile.close();
 
-//    EV << "Everage size of InView: " << getAverageSizeInView() << endl;
-//    EV << "Everage size of PartialView: " << getAverageSizePartialView() << endl;
-
-    // -- Final Size of InViews & PartialViews
-//    m_finalSizeIV.record();
-//    m_finalSizePV.record();
-
-//    EV << "InView statistics: Max: " << m_finalSizeIV.getMax()
-//            << " -- Min: " << m_finalSizeIV.getMin()
-//            << " -- Mean: " << m_finalSizeIV.getMean() << endl;
-
-//    EV << "PartialView statistics: Max: " << m_finalSizePV.getMax()
-//                << " -- Min: " << m_finalSizePV.getMin()
-//                << " -- Mean: " << m_finalSizePV.getMean() << endl;
-
-//    EV << "Work around with subscriptions: " << endl;
-//    EV << "NEW: " << m_count_NEW << " -- IGN: " << m_count_IGN << " -- ACK: " << m_count_ACK << endl;
-
-    // -- Record a scalar value
-//    EV << "Accumulated PVsize: " << m_accumulatedSizePV << endl;
-//    EV << "Number of reported nodes: " << m_totalNode << endl;
-//    recordScalar("Average PartialView Size", m_accumulatedSizePV/(double)m_totalNode);
-
-    // -- For the histogram of the partial view sizes
-//    m_sizePV.recordAs("histogram of pvSize");
-
-    // -- For the histogram of the partial view sizes
-//    m_sizeIV.recordAs("histogram of ivSize");
-
-    // -- For checking the number of new App messages created and deleted
-    //EV << "The number of App message left: " << m_countAppMsgNew << endl;
-    //EV << "The number of ignored messaged (because of returning to sender: " << m_countSelfAppMsg << endl;
-
-    // -- For calculating and recording reach ratio
-//    EV << "The reach ratio (it should approximate the total number of nodes): "
-//            << 1 + (double)m_countReach / m_countAppMsgNew << endl;
-
-    recordScalar("Reach Ratio", (double)m_countReach / m_countAppMsgNew);
+    //recordScalar("Reach Ratio", (double)m_countReach / m_countAppMsgNew);
 }
 
 //void DonetStatistic::initialize()
@@ -209,10 +172,9 @@ void DonetStatistic::initialize(int stage)
     m_allFinalPVsizes.setName("allFinalPVsizes");
 
     // -- For checking the number of new App messages created and deleted
-    m_countAppMsgNew = 0L;
-    m_countSelfAppMsg = 0L;
-
-    m_countReach = 0L;
+    //m_countAppMsgNew = 0L;
+    //m_countSelfAppMsg = 0L;
+    //m_countReach = 0L;
 
 
 

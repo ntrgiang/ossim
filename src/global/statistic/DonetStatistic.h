@@ -104,12 +104,12 @@ public:
     void collectAllPVsizes(int size);
 
     // -- For checking the number of new App messages created and deleted
-    inline void incrementCountAppMsg(void) { ++m_countAppMsgNew; }
-    inline void decrementCountAppMsg(void) { --m_countAppMsgNew; }
+    //inline void incrementCountAppMsg(void) { ++m_countAppMsgNew; }
+    //inline void decrementCountAppMsg(void) { --; }
     inline void incrementCoundSelfMsg(void) { ++m_countSelfAppMsg; }
 
     // -- "Reach ratio"
-    inline void incrementCountReach(void) { ++m_countReach; }
+    //inline void incrementCountReach(void) { ++m_countReach; }
 
     // -- Interface to emit signal for global statistic collection
     //void reportChunkHit(SEQUENCE_NUMBER_T seq_num);
@@ -189,11 +189,11 @@ private:
     cOutVector m_allFinalPVsizes;
 
     // -- For checking the number of new App messages created and deleted
-    long m_countAppMsgNew;
+    //long m_countAppMsgNew;
     long m_countSelfAppMsg;
 
     // -- Calculate the the "reach ratio"
-    long m_countReach;
+    //long m_countReach;
 
     // -- Temporary variables
     long m_count_chunkHit;
