@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by Qt Creator 2.5.2, 2013-06-25T04:50:13. -->
+<!-- Written by Qt Creator 2.5.2, 2013-07-12T16:08:55. -->
 <qtcreator>
  <data>
   <variable>GenericProjectManager.GenericProject.Toolchain</variable>
@@ -118,7 +118,7 @@
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.DeployConfigurationCount">1</value>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.0">
-    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-u Cmdenv -c Donet_Homo_oneRouter_Network /nix/workspace/omnet422-inet118/so/simulations/Donet.ini -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src</value>
+    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-u Cmdenv -c Donet_Homogeneous_Network /nix/workspace/omnet422-inet118/so/simulations/Donet.ini -n /nix/workspace/omnet422-inet118/so/src:/nix/workspace/omnet422-inet118/so/simulations:/nix/workspace/omnet422-inet118/inet/src</value>
     <value type="int" key="ProjectExplorer.CustomExecutableRunConfiguration.BaseEnvironmentBase">2</value>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Executable">%{buildDir}/src/so</value>
     <value type="bool" key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal">false</value>
@@ -133,7 +133,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.1">
-    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-c Donet_Homo_oneRouter_Network %{buildDir}/simulations/Donet.ini -n %{buildDir}/src:%{buildDir}/simulations:%{buildDir}/../inet/src</value>
+    <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">-c Donet_Homogeneous_Network %{buildDir}/simulations/Donet.ini -n %{buildDir}/src:%{buildDir}/simulations:%{buildDir}/../inet/src</value>
     <value type="int" key="ProjectExplorer.CustomExecutableRunConfiguration.BaseEnvironmentBase">2</value>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Executable">%{buildDir}/src/so</value>
     <value type="bool" key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal">false</value>
