@@ -88,7 +88,10 @@ simple DonetPeer extends DonetBase
         // ---------------------------------------------------------------------
 
         // -- For debug
-        //@statistic[localCI](source="Signal_LocalCI"; record=min,max,mean,last,vector);
+        @statistic[localCI](source="Signal_LocalCI"; record=min,max,mean,last,vector);
+
+        // -- title="Number of partners";
+        @statistic[nPartner](source=Signal_nPartner; record=min,max,mean,last,vector);
 
         // -- Old metrics
         // -- Possible signals to collect
@@ -102,9 +105,6 @@ simple DonetPeer extends DonetBase
         // -- title="Number of requested chunks per cycle";
         //@statistic[nChunkRequested](source=Signal_nChunkRequested; record=mean,vector);
         
-        // -- title="Number of partners";
-        //@statistic[nPartner](source=Signal_nPartner; record=last,vector);
-
         // -- Trying new signals
         //@statistic[joinTime](title="Joining time of a individual peer"; source=Signal_joinTime; record=last,vector?);            
         

@@ -395,59 +395,59 @@ void DonetBase::processPartnershipRequest(cPacket *pkt)
         // m_state = MESH_JOIN_STATE_ACTIVE; // state remains
         break;
     }
-    case MESH_JOIN_STATE_ACTIVE_WAITING:
-    {
-        EV << "I am waiting for a partnership response. Your request will be stored in a queue." << endl;
-        if (m_partnerList->size() + 1 < param_maxNOP)
-        {
-           //considerAcceptPartner(requester);
-           EV << "-- Can accept this request" << endl;
+//    case MESH_JOIN_STATE_ACTIVE_WAITING:
+//    {
+//        EV << "I am waiting for a partnership response. Your request will be stored in a queue." << endl;
+//        if (m_partnerList->size() + 1 < param_maxNOP)
+//        {
+//           //considerAcceptPartner(requester);
+//           EV << "-- Can accept this request" << endl;
 
-           // -- Add peer directly to Partner List
-           //m_partnerList->addAddress(requester.address, requester.upBW);
-           addPartner(requester.address, requester.upBW);
+//           // -- Add peer directly to Partner List
+//           //m_partnerList->addAddress(requester.address, requester.upBW);
+//           addPartner(requester.address, requester.upBW);
 
-           // -- Report to Active Peer Table to update the information
-           EV << "Increment number of partner " << endl;
-           //m_apTable->incrementNPartner(getNodeAddress());
-           m_memManager->incrementNPartner(getNodeAddress());
+//           // -- Report to Active Peer Table to update the information
+//           EV << "Increment number of partner " << endl;
+//           //m_apTable->incrementNPartner(getNodeAddress());
+//           m_memManager->incrementNPartner(getNodeAddress());
 
-           MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
-           sendToDispatcher(acceptPkt, m_localPort, requester.address, requester.port);
-        }
-        else
-        {
-           //m_list_partnershipRequestingNode.push_back(requester);
+//           MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
+//           sendToDispatcher(acceptPkt, m_localPort, requester.address, requester.port);
+//        }
+//        else
+//        {
+//           //m_list_partnershipRequestingNode.push_back(requester);
 
-           EV << "-- Enough partners --> cannot accept this request." << endl;
-           //emit(sig_partnerRequest, 0);
+//           EV << "-- Enough partners --> cannot accept this request." << endl;
+//           //emit(sig_partnerRequest, 0);
 
-           // -- Create a Partnership message and send it to the remote peer
-           MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
-           sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
+//           // -- Create a Partnership message and send it to the remote peer
+//           MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
+//           sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
 
-           //emit(sig_pRejectSent, 1);
-        }
+//           //emit(sig_pRejectSent, 1);
+//        }
 
-        //emit(sig_pRequestRecv_whileWaiting, 1);
-      EV << "State remains as MESH_JOIN_STATE_ACTIVE" << endl;
+//        //emit(sig_pRequestRecv_whileWaiting, 1);
+//      EV << "State remains as MESH_JOIN_STATE_ACTIVE" << endl;
 
-      // -- State changes
-      m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
-      break;
-   }
+//      // -- State changes
+//      m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
+//      break;
+//   }
    case MESH_JOIN_STATE_IDLE:
    {
       // TODO
       //throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE) nodes");
       break;
    }
-   case MESH_JOIN_STATE_IDLE_WAITING:
-   {
-      // TODO
-      //throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE_WAITING) nodes");
-      break;
-   }
+//   case MESH_JOIN_STATE_IDLE_WAITING:
+//   {
+//      // TODO
+//      //throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE_WAITING) nodes");
+//      break;
+//   }
    default:
    {
       throw cException("Uncovered state, check assignment of state variable!");

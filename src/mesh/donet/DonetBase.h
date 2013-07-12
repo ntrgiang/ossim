@@ -53,13 +53,19 @@
 
 //class Logger;
 
+//enum Mesh_Join_State
+//   {
+//   MESH_JOIN_STATE_IDLE            = 0,
+//   MESH_JOIN_STATE_IDLE_WAITING    = 1,
+//   MESH_JOIN_STATE_ACTIVE          = 2,
+//   MESH_JOIN_STATE_ACTIVE_WAITING  = 3
+//   };
+
 enum Mesh_Join_State
-   {
+{
    MESH_JOIN_STATE_IDLE            = 0,
-   MESH_JOIN_STATE_IDLE_WAITING    = 1,
-   MESH_JOIN_STATE_ACTIVE          = 2,
-   MESH_JOIN_STATE_ACTIVE_WAITING  = 3
-   };
+   MESH_JOIN_STATE_ACTIVE          = 1,
+};
 
 class DonetBase : public CommBase
 {
@@ -205,6 +211,8 @@ protected:
    simsignal_t sig_pRejectSent;
    simsignal_t sig_pRequestRecv;
    simsignal_t sig_pRequestRecv_whileWaiting;
+
+   simsignal_t signal_nPartner;
 
 };
 

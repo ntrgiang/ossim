@@ -92,7 +92,7 @@ private:
     void handleTimerJoin(void);
     void handleTimerLeave();
     void handleTimerFindMorePartner(void);
-    void handleTimerTimeoutWaitingAccept();
+    //void handleTimerTimeoutWaitingAccept();
     void handleTimerPartnershipRefinement(void);
     //void handleTimerPartnerlistCleanup(void);
 
@@ -187,7 +187,7 @@ private:
     double  param_interval_timeout_joinReqAck;
     double  param_interval_waitingPartnershipResponse;
     double  param_interval_partnershipRefinement;
-    double  param_interval_partnerlistCleanup;
+    //double  param_interval_partnerlistCleanup;
     double  param_interval_reportStatistic;
     static double  param_interval_reportActive;
 

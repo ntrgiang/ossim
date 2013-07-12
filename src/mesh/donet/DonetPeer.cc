@@ -153,7 +153,7 @@ void DonetPeer::initialize(int stage)
    param_interval_timeout_joinReqAck     = par("interval_timeout_joinReqAck");
    param_interval_starPlayer             = par("interval_startPlayer");
    param_interval_partnershipRefinement  = par("interval_partnershipRefinement");
-   param_interval_partnerlistCleanup     = par("interval_partnerlistCleanup");
+   //param_interval_partnerlistCleanup     = par("interval_partnerlistCleanup");
    param_interval_reportStatistic        = par("interval_reportStatistic");
 
    if (!param_interval_reportActive)
@@ -218,7 +218,7 @@ void DonetPeer::initialize(int stage)
    sig_nChunkRequested       = registerSignal("Signal_nChunkRequested");
 
    // -- Unimportant signals:
-   //signal_nPartner         = registerSignal("Signal_nPartner");
+   signal_nPartner         = registerSignal("Signal_nPartner");
 
    sig_nPartner            = registerSignal("Signal_nPartner");
    sig_joinTime            = registerSignal("Signal_joinTime");
@@ -296,7 +296,7 @@ void DonetPeer::initialize(int stage)
    WATCH(param_minNOP);
    WATCH(param_maxNOP);
    WATCH(param_offsetNOP);
-   WATCH(param_interval_partnerlistCleanup);
+   //WATCH(param_interval_partnerlistCleanup);
    WATCH(param_interval_reportStatistic);
    WATCH(param_interval_reportActive);
    WATCH(param_threshold_idleDuration_buffermap);
@@ -448,9 +448,12 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
    }
    else if (msg == timer_findMorePartner)
    {
-      //findMorePartner();
       handleTimerFindMorePartner();
-      scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
+
+      if (m_partnerList->getSize() < param_maxNOP)
+         scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
+      else
+         scheduleAt(simTime() + 3 * param_interval_findMorePartner, timer_findMorePartner);
    }
    else if (msg == timer_partnershipRefinement)
    {
@@ -518,7 +521,8 @@ void DonetPeer::handleTimerJoin(void)
          //scheduleAt(simTime() + param_interval_waitingPartnershipResponse, timer_timeout_waiting_response);
 
          EV << "State changes to waiting mode" << endl;
-         m_state = MESH_JOIN_STATE_IDLE_WAITING;
+         m_state = MESH_JOIN_STATE_IDLE;
+         //m_state = MESH_JOIN_STATE_IDLE_WAITING;
       }
       else
       {
@@ -527,23 +531,23 @@ void DonetPeer::handleTimerJoin(void)
 
       break;
    }
-   case MESH_JOIN_STATE_ACTIVE_WAITING:
-   {
-      throw cException("Join action cannot be done in JOINED_WAITING state");
-      break;
-   }
+//   case MESH_JOIN_STATE_ACTIVE_WAITING:
+//   {
+//      throw cException("Join action cannot be done in JOINED_WAITING state");
+//      break;
+//   }
    case MESH_JOIN_STATE_ACTIVE:
    {
       //EV << "Join action cannot be done in JOINED state" << endl;
       throw cException("Join action cannot be done in JOINED state");
       break;
    }
-   case MESH_JOIN_STATE_IDLE_WAITING:
-   {
-      //EV << "Join action cannot be done in IDLE_WAITING state" << endl;
-      throw cException("Join action cannot be done in JOINED state");
-      break;
-   }
+//   case MESH_JOIN_STATE_IDLE_WAITING:
+//   {
+//      //EV << "Join action cannot be done in IDLE_WAITING state" << endl;
+//      throw cException("Join action cannot be done in JOINED state");
+//      break;
+//   }
    default:
    {
       throw cException("Not in an expected state");
@@ -624,47 +628,21 @@ void DonetPeer::handleTimerFindMorePartner(void)
    {
    case MESH_JOIN_STATE_ACTIVE:
    {
-
-   }
-   case MESH_JOIN_STATE_ACTIVE_WAITING:
-   {
       bool ret = findPartner();
 
       if (ret == true)
       {
-         // -- State changes to waiting mode, since a request has been sent
-         //m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
          m_state = MESH_JOIN_STATE_ACTIVE;
       }
       else
       {
          // State remains ACTIVE
       }
-
       break;
-//      // -- Do NOTHING, here!
-
-//      bool ret = findPartner();
-
-//      if (ret == false)
-//         debugOUT << "no potential partners found" << endl;
-
-//      debugOUT << "Current number of partners: " << m_partnerList->getSize() << endl;
-//      debugOUT << "Waiting for something else" << endl;
-
-//      EV << "State remains as MESH_JOIN_STATE_ACTIVE_WAITING" << endl;
-//      m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
-//      //return;
-//      break;
    }
    case MESH_JOIN_STATE_IDLE:
    {
       EV << "Cannot find new partner when state is IDLE" << endl;
-      break;
-   }
-   case MESH_JOIN_STATE_IDLE_WAITING:
-   {
-      EV << "Cannot start finding new partner when state is IDLE_WAITING" << endl;
       break;
    }
    default:
@@ -673,8 +651,6 @@ void DonetPeer::handleTimerFindMorePartner(void)
       break;
    }
    } // switch()
-
-   //    scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
 }
 
 void DonetPeer::handleTimerPartnershipRefinement()
@@ -839,61 +815,61 @@ void DonetPeer::handleTimerPartnershipRefinement()
 
 }
 
-void DonetPeer::handleTimerTimeoutWaitingAccept()
-{
-   EV << endl;
-   EV << "------------------------- Handle timeout_waitingAccept --------------" << endl;
+//void DonetPeer::handleTimerTimeoutWaitingAccept()
+//{
+//   EV << endl;
+//   EV << "------------------------- Handle timeout_waitingAccept --------------" << endl;
 
-   emit(sig_timeout, 1);
+//   emit(sig_timeout, 1);
 
-   switch(m_state)
-   {
-   case MESH_JOIN_STATE_IDLE_WAITING:
-   {
-      // -- Update the state
-      EV << "State changes from MESH_JOIN_STATE_IDLE_WAITING to MESH_JOIN_STATE_IDLE" << endl;
-      m_state = MESH_JOIN_STATE_IDLE;
+//   switch(m_state)
+//   {
+//   case MESH_JOIN_STATE_IDLE_WAITING:
+//   {
+//      // -- Update the state
+//      EV << "State changes from MESH_JOIN_STATE_IDLE_WAITING to MESH_JOIN_STATE_IDLE" << endl;
+//      m_state = MESH_JOIN_STATE_IDLE;
 
-      // -- Schedule for new JOIN
-      // this event, in turn, triggers findPartner()
-      scheduleAt(simTime() + uniform(0.0, 2.0), timer_join);
-      //scheduleAt(simTime(), timer_join);
-      break;
-   }
-   case MESH_JOIN_STATE_ACTIVE_WAITING:
-   {
-      // -- Process pending requests
-      // There should not be any pending request at this time
-      //        vector<PendingPartnershipRequest>::iterator iter = m_list_partnershipRequestingNode.begin();
-      //        for (; iter != m_list_partnershipRequestingNode.end(); ++iter)
-      //        {
-      //            considerAcceptPartner(*iter);
-      //        }
-      //        m_list_partnershipRequestingNode.clear();
+//      // -- Schedule for new JOIN
+//      // this event, in turn, triggers findPartner()
+//      scheduleAt(simTime() + uniform(0.0, 2.0), timer_join);
+//      //scheduleAt(simTime(), timer_join);
+//      break;
+//   }
+//   case MESH_JOIN_STATE_ACTIVE_WAITING:
+//   {
+//      // -- Process pending requests
+//      // There should not be any pending request at this time
+//      //        vector<PendingPartnershipRequest>::iterator iter = m_list_partnershipRequestingNode.begin();
+//      //        for (; iter != m_list_partnershipRequestingNode.end(); ++iter)
+//      //        {
+//      //            considerAcceptPartner(*iter);
+//      //        }
+//      //        m_list_partnershipRequestingNode.clear();
 
-      EV << "State changes to MESH_JOIN_STATE_ACTIVEG" << endl;
-      m_state = MESH_JOIN_STATE_ACTIVE;
-      break;
-   }
-   case MESH_JOIN_STATE_ACTIVE:
-   {
-      //EV << "Timeout happens when the peer is in JOINED state" << endl;
-      throw cException("Timeout happens when the peer is in JOINED state");
-      break;
-   }
-   case MESH_JOIN_STATE_IDLE:
-   {
-      //EV << "Timeout happens when the peer is in IDLE state" << endl;
-      throw cException("Timeout happens when the peer is in IDLE state");
-      break;
-   }
-   default:
-   {
-      throw cException("Uncovered state");
-      break;
-   }
-   } // switch()
-}
+//      EV << "State changes to MESH_JOIN_STATE_ACTIVEG" << endl;
+//      m_state = MESH_JOIN_STATE_ACTIVE;
+//      break;
+//   }
+//   case MESH_JOIN_STATE_ACTIVE:
+//   {
+//      //EV << "Timeout happens when the peer is in JOINED state" << endl;
+//      throw cException("Timeout happens when the peer is in JOINED state");
+//      break;
+//   }
+//   case MESH_JOIN_STATE_IDLE:
+//   {
+//      //EV << "Timeout happens when the peer is in IDLE state" << endl;
+//      throw cException("Timeout happens when the peer is in IDLE state");
+//      break;
+//   }
+//   default:
+//   {
+//      throw cException("Uncovered state");
+//      break;
+//   }
+//   } // switch()
+//}
 
 //void DonetPeer::handleTimerReport()
 //{
@@ -1039,9 +1015,6 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
    {
    case MESH_JOIN_STATE_IDLE:
    {
-   }
-   case MESH_JOIN_STATE_IDLE_WAITING:
-   {
       // -- Store the address of acceptor into its partner list
 //      if (acceptor.address != address_responseExpected)
 //      {
@@ -1112,9 +1085,6 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
       break;
    }
    case MESH_JOIN_STATE_ACTIVE:
-   {
-   }
-   case MESH_JOIN_STATE_ACTIVE_WAITING:
    {
       // -- Store the address of acceptor into its partner list
       //        if (acceptor.address != address_responseExpected)
@@ -1198,7 +1168,7 @@ void DonetPeer::processPartnershipReject(cPacket *pkt)
 
    switch(m_state)
    {
-   case MESH_JOIN_STATE_IDLE_WAITING:
+   case MESH_JOIN_STATE_IDLE:
    {
       EV << "Should find another partner NOW ..." << endl;
       // -- Cancel timer
@@ -1210,16 +1180,16 @@ void DonetPeer::processPartnershipReject(cPacket *pkt)
       scheduleAt(simTime() + uniform(0, 2.0), timer_join);
       break;
    }
-   case MESH_JOIN_STATE_ACTIVE_WAITING:
-   {
-      EV << "Try to contact another peer, later on ..." << endl;
-      // -- Cancel timer
-      //cancelEvent(timer_timeout_waiting_response);
+//   case MESH_JOIN_STATE_ACTIVE_WAITING:
+//   {
+//      EV << "Try to contact another peer, later on ..." << endl;
+//      // -- Cancel timer
+//      //cancelEvent(timer_timeout_waiting_response);
 
-      EV << "State changes from MESH_JOIN_STATE_ACTIVE_WAITING to MESH_JOIN_STATE_ACTIVE" << endl;
-      m_state = MESH_JOIN_STATE_ACTIVE;
-      break;
-   }
+//      EV << "State changes from MESH_JOIN_STATE_ACTIVE_WAITING to MESH_JOIN_STATE_ACTIVE" << endl;
+//      m_state = MESH_JOIN_STATE_ACTIVE;
+//      break;
+//   }
    case MESH_JOIN_STATE_ACTIVE:
    {
       EV << "REJECT message arrived too late, but no problem because of timeout, will be ignored!" << endl;
@@ -1227,13 +1197,13 @@ void DonetPeer::processPartnershipReject(cPacket *pkt)
       // -- State remains
       break;
    }
-   case MESH_JOIN_STATE_IDLE:
-   {
-      EV << "REJECT message arrived too late, but no problem because of timeout, will be ignored!" << endl;
+//   case MESH_JOIN_STATE_IDLE:
+//   {
+//      EV << "REJECT message arrived too late, but no problem because of timeout, will be ignored!" << endl;
 
-      // -- State remains
-      break;
-   }
+//      // -- State remains
+//      break;
+//   }
    default:
    {
       throw cException("Uncovered state, check assignment of state variable!");
@@ -1350,17 +1320,15 @@ bool DonetPeer::findPartner()
    // Init
    //address_responseExpected = IPvXAddress("0.0.0.0");
 
-   if (m_partnerList->getSize() >= param_minNOP)
-   {
-      EV << "Minimum number of partners has been reach --> stop finding more partner for the moment." << endl;
-      //debugOUT << getNodeAddress() << " will find a new partner now. Current NOP: " << m_partnerList->getSize() << endl;
-      //return false;
-   }
+//   if (m_partnerList->getSize() >= param_minNOP)
+//   {
+//      EV << "Minimum number of partners has been reach --> stop finding more partner for the moment." << endl;
+//      debugOUT << getNodeAddress() << " will find a new partner now. Current NOP: " << m_partnerList->getSize() << endl;
+//      return false;
+//   }
 
    bool ret = sendPartnershipRequest();
    return ret;
-
-   //    return true;
 }
 
 bool DonetPeer::sendPartnershipRequest(void)
@@ -1381,27 +1349,15 @@ bool DonetPeer::sendPartnershipRequest(void)
    }
    while(m_partnerList->have(addressRandPeer));
 
-
-   //   if (m_partnerList->have(addressRandPeer))
-   //   {
-   //      EV << "The peer has already been node's partner. No more request will be sent out." << endl;
-   //      return false;
-   //   }
-
    if (addressRandPeer == getNodeAddress())
       debugOUT << "Get the IP of itself from the APT --> This should never happen! Count = " << count << endl;
-
-
-   EV << "Peer " << addressRandPeer << " will be requested!" << endl;
 
    MeshPartnershipRequestPacket *reqPkt = new MeshPartnershipRequestPacket("MESH_PEER_JOIN_REQUEST");
    reqPkt->setUpBw(param_upBw);
    reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
 
    sendToDispatcher(reqPkt, m_localPort, addressRandPeer, m_destPort);
-//   address_responseExpected = addressRandPeer;
 
-   emit(sig_pRequestSent, 1);
    return true;
 }
 
@@ -1707,13 +1663,13 @@ void DonetPeer::chunkScheduling()
 void DonetPeer::reportLocalStatistic(void)
 {
    // -- Report ranges
-   emit(sig_minStart, m_minStart);
-   emit(sig_maxStart, m_maxStart);
-   emit(sig_minHead, m_minHead);
-   emit(sig_maxHead, m_maxHead);
-   emit(sig_currentPlaybackPoint, m_player->getCurrentPlaybackPoint());
-   emit(sig_bufferStart, m_videoBuffer->getBufferStartSeqNum());
-   emit(sig_bufferHead, m_videoBuffer->getHeadReceivedSeqNum());
+//   emit(sig_minStart, m_minStart);
+//   emit(sig_maxStart, m_maxStart);
+//   emit(sig_minHead, m_minHead);
+//   emit(sig_maxHead, m_maxHead);
+//   emit(sig_currentPlaybackPoint, m_player->getCurrentPlaybackPoint());
+//   emit(sig_bufferStart, m_videoBuffer->getBufferStartSeqNum());
+//   emit(sig_bufferHead, m_videoBuffer->getHeadReceivedSeqNum());
 
 
    // -- Statistics from Player
@@ -1730,6 +1686,8 @@ void DonetPeer::reportLocalStatistic(void)
    {
       emit(sig_localCI, (long double)nHit / (nHit + nMiss));
    }
+
+   emit(sig_nPartner, m_partnerList->getSize());
 }
 
 // Update range for statistics
