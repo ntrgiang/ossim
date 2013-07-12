@@ -60,12 +60,18 @@ private:
 //	void processPartnershipRequest(cPacket *pkt);
 	void acceptJoinRequestFromPeer(IPvXAddress &reqPeerAddress, double bw);
 
+   // -- Handling timer
+   void handleTimerReportStatistic();
+
 	//bool canHaveMorePartner(void);
 
 private:
     // -- Timer
     cMessage *timer_startVideo;
     cMessage *timer_newChunk;
+    cMessage *timer_reportStatistic;
+
+    double  param_interval_reportStatistic;
 
     int totalBytesUploaded;
     int totalBytesDownloaded;

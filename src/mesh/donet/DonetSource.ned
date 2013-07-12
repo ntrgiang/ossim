@@ -39,6 +39,7 @@ simple DonetSource extends DonetBase
         @class(DonetSource); 
         
         // Timer
+        double interval_reportStatistic @unit(s) = default(1.0s);
         //double bufferMapInterval  @unit(s) = default(0.5s);
         
         // Partnership
@@ -46,7 +47,7 @@ simple DonetSource extends DonetBase
         double interval_partnerlistCleanup      @unit(s) = default(0.5s);
 
         // Statistics
-        //@statistic[nPartner](source=Signal_nPartner; record=last,vector);
+        @statistic[nPartner](source=Signal_nPartner; record=min,max,mean,last,vector);
 
 
 }

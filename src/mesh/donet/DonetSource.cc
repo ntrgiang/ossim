@@ -52,10 +52,10 @@ DonetSource::~DonetSource()
       delete cancelEvent(timer_sendBufferMap);    timer_sendBufferMap = NULL;
    }
 
-   //    if (timer_sendReport != NULL)
-   //    {
-   //       delete cancelEvent(timer_sendReport);       timer_sendReport = NULL;
-   //    }
+   if (timer_reportStatistic != NULL)
+   {
+      delete cancelEvent(timer_reportStatistic);
+   }
 }
 
 void DonetSource::initialize(int stage)
@@ -80,8 +80,10 @@ void DonetSource::initialize(int stage)
    param_maxNOP = par("maxNOP");
    param_interval_partnerlistCleanup = par("interval_partnerlistCleanup");
    param_threshold_idleDuration_buffermap = par("threshold_idleDuration_buffermap");
+   param_interval_reportStatistic = par("interval_reportStatistic");
 
-   timer_sendBufferMap = new cMessage("MESH_SOURCE_TIMER_SEND_BUFFERMAP");
+   timer_sendBufferMap     = new cMessage("MESH_SOURCE_TIMER_SEND_BUFFERMAP");
+   timer_reportStatistic   = new cMessage("MESH_SOURCE_TIMER_REPORT_STATISTIC");
    //    timer_sendReport    = new cMessage("MESH_SOURCE_TIMER_SEND_REPORT");
 
    // -- Register itself to the Active Peer Table
@@ -127,6 +129,7 @@ void DonetSource::initialize(int stage)
    WATCH(m_destPort);
 
    WATCH(param_interval_bufferMap);
+   WATCH(param_interval_reportStatistic);
    WATCH(param_threshold_idleDuration_buffermap);
    WATCH(param_upBw);
    WATCH(param_downBw);
@@ -190,10 +193,10 @@ void DonetSource::handleTimerMessage(cMessage *msg)
       emit(sig_nPartner, m_partnerList->getSize());
 
    }
-   //    else if (msg == timer_sendReport)
-   //    {
-   //       handleTimerReport();
-   //    }
+   else if (msg == timer_reportStatistic)
+   {
+      void handleTimerReportStatistic();
+   }
 }
 
 void DonetSource::handleTimerPartnerlistCleanup()
@@ -466,4 +469,10 @@ void DonetSource::considerAcceptPartner(PendingPartnershipRequest requester)
       emit(sig_pRejectSent, 1);
    }
 
+}
+
+void DonetSource::handleTimerReportStatistic()
+{
+   // -- Number of partners
+   emit(sig_nPartner, m_partnerList->getSize());
 }
