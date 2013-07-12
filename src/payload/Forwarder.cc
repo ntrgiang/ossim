@@ -144,6 +144,7 @@ void Forwarder::updateReceivedChunkRecord(IPvXAddress& senderAddress)
    {
       addRecord(senderAddress);
       debugOUT << "A chunk was received from a peer " << senderAddress << " when there is no record previously added" << endl;
+      return;
    }
 
    iter->second.m_chunkReceived += 1;
