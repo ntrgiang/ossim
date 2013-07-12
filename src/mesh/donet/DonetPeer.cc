@@ -139,7 +139,7 @@ void DonetPeer::initialize(int stage)
    timer_reportActive      = new cMessage("MESH_PEER_TIMER_REPORT_ACTIVE");
 
    //timer_timeout_waiting_accept = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
-   timer_timeout_waiting_response  = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
+   //timer_timeout_waiting_response  = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
    //    timer_rejoin            = new cMessage("MESH_PEER_TIMER_REJOIN");
    timer_partnershipRefinement = new cMessage("MESH_PEER_TIMER_PARTNERSHIP_REFINEMENT");
 
@@ -376,11 +376,11 @@ void DonetPeer::cancelAndDeleteAllTimer()
    //       timer_sendReport       = NULL;
    //    }
 
-   if (timer_timeout_waiting_response != NULL)
-   {
-      delete cancelEvent(timer_timeout_waiting_response);
-      timer_timeout_waiting_response       = NULL;
-   }
+//   if (timer_timeout_waiting_response != NULL)
+//   {
+//      delete cancelEvent(timer_timeout_waiting_response);
+//      timer_timeout_waiting_response       = NULL;
+//   }
 
    if (timer_partnershipRefinement != NULL)
    {
@@ -457,10 +457,10 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
       handleTimerPartnershipRefinement();
       scheduleAt(simTime() + param_interval_partnershipRefinement, timer_partnershipRefinement);
    }
-   else if (msg == timer_timeout_waiting_response)
-   {
-      handleTimerTimeoutWaitingAccept();
-   }
+//   else if (msg == timer_timeout_waiting_response)
+//   {
+//      handleTimerTimeoutWaitingAccept();
+//   }
    else if (msg == timer_getJoinTime)
    {
       double arrivalTime = m_churn->getArrivalTime();
@@ -515,7 +515,7 @@ void DonetPeer::handleTimerJoin(void)
       if (findPartner() == true)
       {
          // -- State changes to waiting mode, since a request has been sent
-         scheduleAt(simTime() + param_interval_waitingPartnershipResponse, timer_timeout_waiting_response);
+         //scheduleAt(simTime() + param_interval_waitingPartnershipResponse, timer_timeout_waiting_response);
 
          EV << "State changes to waiting mode" << endl;
          m_state = MESH_JOIN_STATE_IDLE_WAITING;
@@ -806,7 +806,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
       debugOUT << "sorted set EMPTY!" << endl;
    for (Throughput_Set::iterator iter = sorted_set.begin(); iter != sorted_set.end(); ++iter)
    {
-      std::cout << "- address: " << iter->first << " -- throughput: " << iter->second << endl;
+      debugOUT << "- address: " << iter->first << " -- throughput: " << iter->second << endl;
    }
 
    std::vector<IPvXAddress> remove_set;
@@ -1071,7 +1071,7 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
       // -- Cancel timer
       //        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
       //        timer_timeout_waiting_accept = NULL;
-      cancelEvent(timer_timeout_waiting_response);
+      //cancelEvent(timer_timeout_waiting_response);
 
       double rand_value;
       // -- Start several timers
@@ -1138,7 +1138,7 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
       // -- Cancel timer
       //        if (timer_timeout_waiting_accept) cancelAndDelete(timer_timeout_waiting_accept);
       //        timer_timeout_waiting_accept = NULL;
-      cancelEvent(timer_timeout_waiting_response);
+      //cancelEvent(timer_timeout_waiting_response);
 
       EV << "State changes from MESH_JOIN_STATE_ACTIVE_WAITING to MESH_JOIN_STATE_ACTIVE_WAITING" << endl;
       m_state = MESH_JOIN_STATE_ACTIVE;
@@ -1202,7 +1202,7 @@ void DonetPeer::processPartnershipReject(cPacket *pkt)
    {
       EV << "Should find another partner NOW ..." << endl;
       // -- Cancel timer
-      cancelEvent(timer_timeout_waiting_response);
+      //cancelEvent(timer_timeout_waiting_response);
 
       EV << "State changes from IDLE_WAITING to IDLE" << endl;
       m_state = MESH_JOIN_STATE_IDLE;
@@ -1214,7 +1214,7 @@ void DonetPeer::processPartnershipReject(cPacket *pkt)
    {
       EV << "Try to contact another peer, later on ..." << endl;
       // -- Cancel timer
-      cancelEvent(timer_timeout_waiting_response);
+      //cancelEvent(timer_timeout_waiting_response);
 
       EV << "State changes from MESH_JOIN_STATE_ACTIVE_WAITING to MESH_JOIN_STATE_ACTIVE" << endl;
       m_state = MESH_JOIN_STATE_ACTIVE;
@@ -1719,6 +1719,8 @@ void DonetPeer::reportLocalStatistic(void)
    // -- Statistics from Player
    long int nHit = m_player->getCountChunkHit();
    long int nMiss = m_player->getCountChunkMiss();
+
+   debugOUT << "Hit = " << nHit << " -- Miss = " << nMiss << endl;
 
    if ((nHit + nMiss) == 0)
    {
