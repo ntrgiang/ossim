@@ -100,7 +100,6 @@ protected:
    // *************************************************************************
    // *************************************************************************
    // -- Partner Management
-   void processPartnershipRequest(cPacket *pkt);
    //    void processPartnerLeave(cPacket *pkt);
    void considerAcceptPartner(PendingPartnershipRequest requester);
    bool canAcceptMorePartner(void);

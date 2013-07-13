@@ -53,17 +53,13 @@ protected:
 
 private:
    void processPeerBufferMap(cPacket *pkt);
-   void processPartnershipRequest(cPacket *pkt);
-   void considerAcceptPartner(PendingPartnershipRequest requester);
 
 	// -- Partnership Management
-//	void processPartnershipRequest(cPacket *pkt);
+   void processPartnershipRequest(cPacket *pkt);
 	void acceptJoinRequestFromPeer(IPvXAddress &reqPeerAddress, double bw);
 
    // -- Handling timer
    void handleTimerReportStatistic();
-
-	//bool canHaveMorePartner(void);
 
 private:
     // -- Timer

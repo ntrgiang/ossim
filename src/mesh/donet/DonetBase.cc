@@ -1,4 +1,4 @@
-//  
+//
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -140,12 +140,12 @@ bool DonetBase::canAcceptMorePartner(void)
 
    return true;
 
-//   EV << "Current number of partners: " << m_partnerList->getSize() << endl;
-//   EV << "Max number of partners to have: " << param_maxNOP << endl;
-//   if (m_partnerList->getSize() < param_maxNOP)
-//      return true;
+   //   EV << "Current number of partners: " << m_partnerList->getSize() << endl;
+   //   EV << "Max number of partners to have: " << param_maxNOP << endl;
+   //   if (m_partnerList->getSize() < param_maxNOP)
+   //      return true;
 
-//   return false;
+   //   return false;
 }
 
 void DonetBase::sendBufferMap(void)
@@ -165,9 +165,9 @@ void DonetBase::sendBufferMap(void)
    //m_videoBuffer->printRange();
 
    MeshBufferMapPacket *bmPkt = new MeshBufferMapPacket("MESH_PEER_BUFFER_MAP");
-      bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);
-      bmPkt->setBitLength(m_BufferMapPacketSize_bit);
-      m_videoBuffer->fillBufferMapPacket(bmPkt);
+   bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);
+   bmPkt->setBitLength(m_BufferMapPacketSize_bit);
+   m_videoBuffer->fillBufferMapPacket(bmPkt);
 
    // 3. Browse through the local NeighborList
    //    & Send the BufferMap Packet to all of the neighbors in the list
@@ -366,96 +366,6 @@ void DonetBase::printChunkRequestPacket(MeshChunkRequestPacket *reqPkt)
 }
 
 
-void DonetBase::processPartnershipRequest(cPacket *pkt)
-{
-   EV << endl;
-   EV << "-------- Process partnership Request --------------------------------" << endl;
-
-    //emit(sig_pRequestRecv, 1);
-
-    // -- Get the identifier (IP:port) and upBw of the requester
-    PendingPartnershipRequest requester;
-    MeshPartnershipRequestPacket *memPkt = check_and_cast<MeshPartnershipRequestPacket *>(pkt);
-        getSender(pkt, requester.address, requester.port);
-        requester.upBW = memPkt->getUpBw();
-
-    EV << "Requester: " << endl
-       << "-- Address:\t\t"         << requester.address << endl
-       << "-- Port:\t\t"            << requester.port << endl
-       << "-- Upload BW:\t"  << requester.upBW << endl;
-
-    switch(m_state)
-    {
-    case MESH_JOIN_STATE_ACTIVE:
-    {
-        considerAcceptPartner(requester);
-        EV << "State remains as MESH_JOIN_STATE_ACTIVE" << endl;
-
-        // -- State remains
-        // m_state = MESH_JOIN_STATE_ACTIVE; // state remains
-        break;
-    }
-//    case MESH_JOIN_STATE_ACTIVE_WAITING:
-//    {
-//        EV << "I am waiting for a partnership response. Your request will be stored in a queue." << endl;
-//        if (m_partnerList->size() + 1 < param_maxNOP)
-//        {
-//           //considerAcceptPartner(requester);
-//           EV << "-- Can accept this request" << endl;
-
-//           // -- Add peer directly to Partner List
-//           //m_partnerList->addAddress(requester.address, requester.upBW);
-//           addPartner(requester.address, requester.upBW);
-
-//           // -- Report to Active Peer Table to update the information
-//           EV << "Increment number of partner " << endl;
-//           //m_apTable->incrementNPartner(getNodeAddress());
-//           m_memManager->incrementNPartner(getNodeAddress());
-
-//           MeshPartnershipAcceptPacket *acceptPkt = generatePartnershipRequestAcceptPacket();
-//           sendToDispatcher(acceptPkt, m_localPort, requester.address, requester.port);
-//        }
-//        else
-//        {
-//           //m_list_partnershipRequestingNode.push_back(requester);
-
-//           EV << "-- Enough partners --> cannot accept this request." << endl;
-//           //emit(sig_partnerRequest, 0);
-
-//           // -- Create a Partnership message and send it to the remote peer
-//           MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
-//           sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
-
-//           //emit(sig_pRejectSent, 1);
-//        }
-
-//        //emit(sig_pRequestRecv_whileWaiting, 1);
-//      EV << "State remains as MESH_JOIN_STATE_ACTIVE" << endl;
-
-//      // -- State changes
-//      m_state = MESH_JOIN_STATE_ACTIVE_WAITING;
-//      break;
-//   }
-   case MESH_JOIN_STATE_IDLE:
-   {
-      // TODO
-      //throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE) nodes");
-      break;
-   }
-//   case MESH_JOIN_STATE_IDLE_WAITING:
-//   {
-//      // TODO
-//      //throw cException("JOIN_REQUEST is not expected for unjoined (MESH_JOIN_STATE_IDLE_WAITING) nodes");
-//      break;
-//   }
-   default:
-   {
-      throw cException("Uncovered state, check assignment of state variable!");
-      break;
-   }
-   } // switch()
-
-}
 
 //void DonetBase::processPartnerLeave(cPacket *pkt)
 //{

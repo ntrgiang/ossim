@@ -96,8 +96,9 @@ private:
     void handleTimerPartnershipRefinement(void);
     //void handleTimerPartnerlistCleanup(void);
 
-    bool findPartner(); // New interface for the FSM
-    bool sendPartnershipRequest(void);
+    void findPartner(); // New interface for the FSM
+    void sendPartnershipRequest(void);
+    void processPartnershipRequest(cPacket *pkt);
     void processPartnershipAccept(cPacket *pkt);
     void processPartnershipReject(cPacket *pkt);
     void processPartnershipDisconnect(cPacket* pkt);
