@@ -1567,7 +1567,10 @@ void DonetPeer::chunkScheduling()
       }
       else
       {
-         debugOUT << "Window stays" << endl;
+         if (m_player->getCurrentPlaybackPoint() == -1)
+            debugOUT << "Player hasn't started yet" << endl;
+         else
+            debugOUT << "Window stays" << endl;
       }
    }
    else

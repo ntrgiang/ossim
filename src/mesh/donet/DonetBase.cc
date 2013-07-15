@@ -150,7 +150,7 @@ bool DonetBase::canAcceptMorePartner(void)
 
 void DonetBase::sendBufferMap(void)
 {
-   //debugOUT << "@Peer " << getNodeAddress() << "::" << endl;
+   debugOUT << "@Peer " << getNodeAddress() << "::" << endl;
 
    if (m_partnerList->getSize() <= 0)
    {
@@ -158,11 +158,11 @@ void DonetBase::sendBufferMap(void)
       return;
    }
 
-   //m_partnerList->print2();
-   //debugOUT << "@peer " << getNodeAddress() << endl;
+   m_partnerList->print2();
+   debugOUT << "@peer " << getNodeAddress() << endl;
 
    // -- Debug
-   //m_videoBuffer->printRange();
+   m_videoBuffer->printRange();
 
    MeshBufferMapPacket *bmPkt = new MeshBufferMapPacket("MESH_PEER_BUFFER_MAP");
    bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);
