@@ -97,6 +97,7 @@ void DonetSource::initialize(int stage)
    // -------------------------------------------------------------------------
    // -- Schedule events
    scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
+   scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
 
    // -- Report Logged Statistic to global module
    // scheduleAt(getSimTimeLimit() - uniform(0.05, 0.95), timer_sendReport);
@@ -195,7 +196,8 @@ void DonetSource::handleTimerMessage(cMessage *msg)
    }
    else if (msg == timer_reportStatistic)
    {
-      void handleTimerReportStatistic();
+      handleTimerReportStatistic();
+      scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
    }
 }
 
@@ -392,4 +394,6 @@ void DonetSource::handleTimerReportStatistic()
 {
    // -- Number of partners
    emit(sig_nPartner, m_partnerList->getSize());
+
+   debugOUT << "Source node has: " << m_partnerList->getSize() << " partners" << endl;
 }
