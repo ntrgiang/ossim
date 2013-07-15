@@ -96,7 +96,7 @@ void DonetSource::initialize(int stage)
    // -------------------------------- Timers ---------------------------------
    // -------------------------------------------------------------------------
    // -- Schedule events
-   scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
+   scheduleAt(simTime() + uniform(0.0, 1.0), timer_sendBufferMap);
    scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
 
    // -- Report Logged Statistic to global module
@@ -362,8 +362,10 @@ void DonetSource::processPartnershipRequest(cPacket *pkt)
    {
    case MESH_JOIN_STATE_ACTIVE:
    {
-      if (m_partnerList->size() < param_maxNOP)
+      if (m_partnerList->getSize() < param_maxNOP)
       {
+         debugOUT << "list size: " << m_partnerList->getSize() << " -- max: " << param_maxNOP << endl;
+
          // -- Add peer directly to Partner List
          addPartner(requester.address, requester.upBW);
 
