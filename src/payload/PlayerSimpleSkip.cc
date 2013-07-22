@@ -304,10 +304,10 @@ double PlayerSimpleSkip::getContinuityIndex(void)
    return 0.0;
 }
 
-double PlayerSimpleSkip::getPercentBufferLow(void)
-{
-   return param_percent_buffer_low;
-}
+//double PlayerSimpleSkip::getPercentBufferLow(void)
+//{
+//   return param_percent_buffer_low;
+//}
 
 bool PlayerSimpleSkip::playerStarted(void)
 {
