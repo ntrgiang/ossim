@@ -69,6 +69,9 @@ public:
 
     inline int getState(void) { return m_state; }
 
+    inline double getTimePlayerStarted() { return m_timePlayerStarted; }
+    inline SEQUENCE_NUMBER_T getSeqNumPlayerStarted() { return m_seqPlayerStarted; }
+
 protected:
     virtual void startPlayer(void) = 0;
     virtual void stopPlayer(void) = 0;
@@ -85,6 +88,9 @@ protected:
     // -- State variable
     bool m_playerStarted;
     int m_state;
+
+    double m_timePlayerStarted;
+    SEQUENCE_NUMBER_T m_seqPlayerStarted;
 };
 
 #endif /* PLAYERBASE_H_ */
