@@ -60,8 +60,8 @@ module DonetSourceApp like GenericApp
         mesh: DonetSource {
             @display("p=133,179;i=block/network2");
         }
-        //forwarder: Forwarder {
-        forwarder: ForwarderTopo {
+        forwarder: Forwarder {
+        //forwarder: ForwarderTopo {
             @display("p=212,179;i=block/rxtx");
         }
         mCache: MCache {

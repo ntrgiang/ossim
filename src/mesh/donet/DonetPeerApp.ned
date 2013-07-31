@@ -63,8 +63,8 @@ module DonetPeerApp like GenericApp
         partnerList: PartnerList {
             @display("p=132,104;i=block/network2");
         }
-        //forwarder: Forwarder {
-        forwarder: ForwarderTopo {
+        forwarder: Forwarder {
+        //forwarder: ForwarderTopo {
             @display("p=211,173;i=block/rxtx");
         }
         videoBuffer: VideoBuffer {
