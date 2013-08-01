@@ -484,6 +484,10 @@ void VideoBuffer::captureVideoBuffer(BufferMap *bm)
       int idx = iter->m_chunk->getSeqNumber() - m_bufferStart_seqNum;
       bm->setElementByOffset(idx, true); // TODO: find out the problem of this line
    }
+
+   bm->setBmStartSeqNum(m_bufferStart_seqNum);
+   bm->setBmEndSeqNum(m_bufferEnd_seqNum);
+   bm->setHeadSeqNum(m_head_received_seqNum);
 }
 
 void VideoBuffer::printStatus()
