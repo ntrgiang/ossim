@@ -79,6 +79,9 @@ protected:
    virtual void processPacket(cPacket *pkt) = 0;
    virtual void handleTimerMessage(cMessage *msg) = 0;
 
+public:
+   inline int getState(void) { return m_state; }
+
 protected:
    // -- utility functions
    void getAppSetting(void);
