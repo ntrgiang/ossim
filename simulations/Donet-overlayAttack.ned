@@ -36,7 +36,7 @@ network Donet_oneRouter_overlayAttack
         }
         channel Channel_peer_up extends ned.DatarateChannel
         {
-            datarate = 300kbps;
+            datarate = 1100kbps;
         }
         channel Channel_peer_down extends ned.DatarateChannel
         {
