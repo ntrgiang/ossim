@@ -222,6 +222,10 @@ private:
 //    StreamingStatistic *m_gstat;
 
 
+    // -- Features
+    //
+    bool m_pRefinementEnabled;
+
     // State variables
     bool m_scheduling_started;
 

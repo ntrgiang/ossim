@@ -148,6 +148,7 @@ void DonetPeer::initialize(int stage)
    // param_chunkSchedulingInterval       = par("chunkSchedulingInterval");
    //    param_interval_rejoin               = par("interval_rejoin");
 
+   m_pRefinementEnabled                  = par("pRefinementEnabled");
    param_interval_chunkScheduling        = par("interval_chunkScheduling");
    param_interval_findMorePartner        = par("interval_findMorePartner");
    param_interval_timeout_joinReqAck     = par("interval_timeout_joinReqAck");
@@ -623,9 +624,6 @@ void DonetPeer::handleTimerPartnershipRefinement()
 {
    Enter_Method("handleTimerPartnershipRefinement");
 
-   EV << endl << "**************************************************************" << endl;
-   EV << "Partnership refinement !!!" << endl;
-
    debugOUT << "Partnership refinement ***************" << endl;
 
    // --------------------------------------------------------------------------
@@ -1075,7 +1073,8 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
       //scheduleAt(simTime() + param_interval_starPlayer, timer_startPlayer);
 
       // -- 5. Partnership refinement
-      scheduleAt(simTime() + param_interval_partnershipRefinement, timer_partnershipRefinement);
+      if (m_pRefinementEnabled)
+         scheduleAt(simTime() + param_interval_partnershipRefinement, timer_partnershipRefinement);
 
       // -- Debug
       // m_gstat->reportMeshJoin();

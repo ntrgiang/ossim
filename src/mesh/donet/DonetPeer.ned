@@ -44,6 +44,7 @@ simple DonetPeer extends DonetBase
         // --- Features
         //
         bool trEnabled = default(false); // Traceroute module
+        bool pRefinementEnabled = default(false); // Partnership refinement
         
         // Timer
         volatile double startTime @unit(s);
