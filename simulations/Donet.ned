@@ -52,6 +52,7 @@ network Donet_Homo_oneRouter_Network extends BasicNetwork
         }
 
         peerNode[nNodePerRouter]: DonetPeerNode;
+
         router: Router {
             @display("p=329,136");
         }
@@ -70,33 +71,17 @@ network Donet_Homo_oneRouter_Network extends BasicNetwork
             @display("p=77,171");
         }
 
-        //globalStatistic: GlobalStatistic {
-        //globalStatistic: <statisticModule> like IStatisticBase {
         globalStatistic: <statisticModule> like IStreamingStatistic {
             @display("p=77,248;i=device/disk");
         }
-        //        globalStatisic: Statistic {
-        //            @display("p=179,328");
-        //        }
+
         appSetting: AppSettingDonet {
             @display("p=77,328;i=block/wheelbarrow");
         }
-        meshObserver: MeshOverlayObserver {
-            @display("p=184,29");
-        }
-        logger: Logger {
-        }
     connections:
-        // -- old set-up
-//        sourceNode.pppg$o++ --> Channel0_up --> router.pppg$i++;
-//        sourceNode.pppg$i++ <-- Channel0_down <-- router.pppg$o++;
-//        for i=0..nNodePerRouter-1 {
-//            peerNode[i].pppg++ <--> ethernetline <--> router.pppg++;
-//        }
-
-        // -- new set-up
         sourceNode.pppg$o++ --> Channel_9M_up --> router.pppg$i++;
         sourceNode.pppg$i++ <-- Channel_9M_down <-- router.pppg$o++;
+
         for i=0..nNodePerRouter-1 {
             peerNode[i].pppg$o++ --> Channel_homo_up --> router.pppg$i++;
             peerNode[i].pppg$i++ <-- Channel_homo_down <-- router.pppg$o++;

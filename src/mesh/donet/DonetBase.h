@@ -41,25 +41,10 @@
 #include "ActivePeerTable.h"
 #include "AppSettingDonet.h"
 #include "IChurnGenerator.h"
-#include "MeshOverlayObserver.h"
-#include "Logger.h"
 #include "DonetStatistic.h"
-
-//#include "Traceroute.h"
-//#include "TracerouteHandler.h"
 
 #include "IPvXAddress.h"
 #include <fstream>
-
-//class Logger;
-
-//enum Mesh_Join_State
-//   {
-//   MESH_JOIN_STATE_IDLE            = 0,
-//   MESH_JOIN_STATE_IDLE_WAITING    = 1,
-//   MESH_JOIN_STATE_ACTIVE          = 2,
-//   MESH_JOIN_STATE_ACTIVE_WAITING  = 3
-//   };
 
 enum Mesh_Join_State
 {
@@ -162,8 +147,6 @@ protected:
    // -- Pointers to /global/ modules
    AppSettingDonet         *m_appSetting;
    IChurnGenerator         *m_churn;
-   MeshOverlayObserver     *m_meshOverlayObserver;
-   Logger                  *m_logger;
    DonetStatistic          *m_gstat;
 
    // -- Pointers to /local/ modules
@@ -181,8 +164,6 @@ protected:
    //TracerouteHandler* m_trHandler;
 
    // --- Additional variables for debugging purposes
-   //    double m_arrivalTime;
-   //    double m_departureTime;
    double m_joinTime;
    double m_video_startTime;
    SEQUENCE_NUMBER_T m_head_videoStart;
@@ -197,11 +178,6 @@ protected:
    double      m_upBw_candidate;
 
    // -- For join request & response
-   // IP addresses of nodes to send JOIN_REQ to will be stored here
-   //vector<IPvXAddress> m_list_joinRequestedNode;
-   // IP addresses of nodes to send JOIN_ACCEPT to will be stored here
-   //vector<IPvXAddress> m_list_joinAcceptedNode;
-   // IP addresses of nodes which sent JOIN_REQ to this node
    vector<PendingPartnershipRequest> m_list_partnershipRequestingNode;
    PendingPartnershipRequest m_candidate;
 

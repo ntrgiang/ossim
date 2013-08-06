@@ -209,15 +209,6 @@ void DonetBase::bindToGlobalModule(void)
    cModule *temp = simulation.getModuleByPath("appSetting");
    m_appSetting = check_and_cast<AppSettingDonet *>(temp);
    EV << "Binding to AppSettingDonet is completed successfully" << endl;
-
-   temp = simulation.getModuleByPath("meshObserver");
-   m_meshOverlayObserver = check_and_cast<MeshOverlayObserver *>(temp);
-   EV << "Binding to MeshOverlayObserver is completed successfully" << endl;
-
-   temp = simulation.getModuleByPath("logger");
-   m_logger = check_and_cast<Logger *>(temp);
-   EV << "Binding to Logger is completed successfully" << endl;
-
 }
 
 void DonetBase::bindToExternalModule()
@@ -346,7 +337,6 @@ void DonetBase::reportStatus()
    p.nChunkSent = m_nChunkSent;
    p.nBMrecv = m_nBufferMapRecv;
    p.partnerList = m_partnerList->getAddressList();
-   m_meshOverlayObserver->writeToFile(p);
 }
 
 void DonetBase::printChunkRequestPacket(MeshChunkRequestPacket *reqPkt)
