@@ -23,7 +23,7 @@ import inet.networklayer.autorouting.FlatNetworkConfigurator;
 network Donet_Homo_oneRouter_Network extends BasicNetwork
 {
     parameters:
-        int nNodePerRouter = default(1);
+        int nPeers = default(1);
         @display("bgb=488,389");
         string churnModel = default("StaticChurn");
         string statisticModule = default("DonetStatistic");
