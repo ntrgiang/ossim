@@ -2,6 +2,10 @@ package so.simulations;
 
 import ned.DatarateChannel;
 
+import inet.nodes.inet.Router;
+import inet.nodes.ethernet.EtherSwitch;
+import inet.networklayer.autorouting.FlatNetworkConfigurator;
+
 import so.global.ActivePeerTable;
 import so.global.churn.IChurnModel;
 import so.global.churn.StaticChurn;
@@ -11,14 +15,8 @@ import so.global.statistic.Statistic;
 import so.global.observer.MeshOverlayObserver;
 import so.global.logger.Logger;
 
-
-
 import so.mesh.donet.DonetPeerNode;
 import so.mesh.donet.DonetSourceNode;
-
-import inet.nodes.inet.Router;
-import inet.nodes.ethernet.EtherSwitch;
-import inet.networklayer.autorouting.FlatNetworkConfigurator;
 
 network Donet_Homo_oneRouter_Network extends BasicNetwork
 {
@@ -28,30 +26,19 @@ network Donet_Homo_oneRouter_Network extends BasicNetwork
         string churnModel = default("StaticChurn");
         string statisticModule = default("DonetStatistic");
 
-
     types:
-        channel Channel_9M_up extends ned.DatarateChannel
-        {
-            datarate = 9Mbps;
-        }
-        channel Channel_9M_down extends ned.DatarateChannel
-        {
-            datarate = 40Mbps;
-        }
-        channel Channel_homo_up extends ned.DatarateChannel
-        {
-            datarate = 1100kbps;
-        }
-        channel Channel_homo_down extends ned.DatarateChannel
-        {
-            datarate = 2Mbps;
-        }
+        channel Channel_source_up extends ned.DatarateChannel       { datarate = 9Mbps; }
+        channel Channel_source_down extends ned.DatarateChannel     { datarate = 40Mbps; }
+
+        channel Channel_peer_up extends ned.DatarateChannel     { datarate = 1100kbps; }
+        channel Channel_peer_down extends ned.DatarateChannel   { datarate = 2Mbps; }
+
     submodules:
         sourceNode: DonetSourceNode {
             @display("p=388,50;i=device/server");
         }
 
-        peerNode[nNodePerRouter]: DonetPeerNode;
+        peerNode[nPeers]: DonetPeerNode;
 
         router: Router {
             @display("p=329,136");
@@ -78,13 +65,14 @@ network Donet_Homo_oneRouter_Network extends BasicNetwork
         appSetting: AppSettingDonet {
             @display("p=77,328;i=block/wheelbarrow");
         }
-    connections:
-        sourceNode.pppg$o++ --> Channel_9M_up --> router.pppg$i++;
-        sourceNode.pppg$i++ <-- Channel_9M_down <-- router.pppg$o++;
 
-        for i=0..nNodePerRouter-1 {
-            peerNode[i].pppg$o++ --> Channel_homo_up --> router.pppg$i++;
-            peerNode[i].pppg$i++ <-- Channel_homo_down <-- router.pppg$o++;
+    connections:
+        sourceNode.pppg$o++ --> Channel_source_up --> router.pppg$i++;
+        sourceNode.pppg$i++ <-- Channel_source_down <-- router.pppg$o++;
+
+        for i=0..nPeers-1 {
+            peerNode[i].pppg$o++ --> Channel_peer_up --> router.pppg$i++;
+            peerNode[i].pppg$i++ <-- Channel_peer_down <-- router.pppg$o++;
         }
 }
 
