@@ -75,9 +75,6 @@ public:
 
    double getContinuityIndex(void) { return 0.0; } // TODO
 
-    // TODO-Giang: move this function (and one at SimpleSkip up to the base)!!!
-    double getPercentBufferLow(void) { return param_percent_buffer_low; }
-
 private:
    bool shouldResumePlaying(SEQUENCE_NUMBER_T seq_num);
 
@@ -97,8 +94,6 @@ protected:
    int m_chunkSize; // Bytes
 
    // -- Some new parameters for the Finite State Machine
-   int m_state;
-   double param_percent_buffer_low, param_percent_buffer_high;
    int param_max_skipped_chunk;
    double param_interval_probe_playerStart;
 

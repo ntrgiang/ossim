@@ -72,9 +72,6 @@ public:
 
     double getContinuityIndex(void);
 
-    inline double getPercentBufferLow() { return param_percent_buffer_low; }
-    inline double getPercentBufferHigh() { return param_percent_buffer_high; }
-
 private:
     void startPlayer(void);
     void stopPlayer(void);
@@ -96,7 +93,6 @@ protected:
     int     m_chunkSize; // Bytes
 
     // -- Some new parameters for the Finite State Machine
-    double  param_percent_buffer_low, param_percent_buffer_high;
     int     param_max_skipped_chunk;
     double  param_interval_probe_playerStart;
 
@@ -109,9 +105,6 @@ protected:
     // -- Pointers to external modules
     VideoBuffer *m_videoBuffer;
     AppSettingDonet *m_appSetting;
-    //GlobalStatistic *m_stat;
-    //StatisticBase *m_stat;
-    //StreamingStatistic *m_stat;
 
     // -- Signal for data collection
     simsignal_t sig_chunkHit;

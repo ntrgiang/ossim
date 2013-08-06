@@ -62,8 +62,9 @@ public:
 
     // virtual int getPlayerState(void) = 0;
     virtual double getContinuityIndex(void) = 0;
-    virtual double getPercentBufferLow(void) = 0;
-    virtual double getPercentBufferHigh(void) = 0;
+
+    inline double getPercentBufferLow() { return param_percent_buffer_low; }
+    inline double getPercentBufferHigh() { return param_percent_buffer_high; }
 
     inline long int getCountChunkHit(void) { return m_count_chunkHit; }
     inline long int getCountChunkMiss(void) { return m_count_chunkMiss; }
@@ -83,6 +84,7 @@ protected:
     long int m_count_prev_chunkHit, m_count_prev_chunkMiss;
 
     double param_interval_reportStatistic;
+    double  param_percent_buffer_low, param_percent_buffer_high;
 
     //cMessage *timer_reportStatistic;
 
