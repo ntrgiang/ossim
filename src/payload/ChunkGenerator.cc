@@ -34,7 +34,7 @@
 #include <iomanip> // setw()
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "@ " << setprecision(6) << simTime().dbl() << getFullName() << ":: "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@ " << setprecision(6) << simTime().dbl() << " " << getFullName() << ":: "
 #endif
 
 Define_Module(ChunkGenerator)

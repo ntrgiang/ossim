@@ -39,7 +39,7 @@ simple ChunkGenerator
         bool debug = default(false);
         
         // Timer
-		double videoStartTime     @unit(s) = default(5.0s);
+        double videoStartTime     @unit(s) = default(1.0s);
 		
 		// -- Possible signals to collect
 		@signal[chunkSeqNum](type=long);
