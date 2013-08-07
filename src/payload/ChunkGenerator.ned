@@ -35,6 +35,8 @@ simple ChunkGenerator
 {
     parameters:
         @class(ChunkGenerator); 
+
+        bool debug = default(false);
         
         // Timer
 		double videoStartTime     @unit(s) = default(5.0s);

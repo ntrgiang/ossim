@@ -31,15 +31,20 @@
 
 
 #include "ChunkGenerator.h"
+#include <iomanip> // setw()
+
+#ifndef debugOUT
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@ " << setprecision(6) << simTime().dbl() << getFullName() << ":: "
+#endif
 
 Define_Module(ChunkGenerator)
 
 ChunkGenerator::ChunkGenerator() {
-    // TODO Auto-generated constructor stub
+   // TODO Auto-generated constructor stub
 }
 
 ChunkGenerator::~ChunkGenerator() {
-    // TODO Auto-generated destructor stub
+   // TODO Auto-generated destructor stub
 }
 
 //simsignal_t ChunkGenerator::sig_chunkSeqNum;
@@ -47,92 +52,77 @@ ChunkGenerator::~ChunkGenerator() {
 
 void ChunkGenerator::initialize(int stage)
 {
-    if (stage == 0)
-    {
-        sig_chunkSeqNum = registerSignal("chunkSeqNum");
-        return;
-    }
+   if (stage == 0)
+   {
+      m_debug = (hasPar("debug")) ? par("debug").boolValue() : false;
 
-    if (stage != 3)
-        return;
+      sig_chunkSeqNum = registerSignal("chunkSeqNum");
+      return;
+   }
 
-    // -- pointing to the Video Buffer
-    cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
-    m_videoBuffer = dynamic_cast<VideoBuffer *>(temp);
-    if (m_videoBuffer == NULL) throw cException("m_videoBuffer == NULL is invalid");
+   if (stage != 3)
+      return;
 
-    m_id_newChunk = 0L;
-    timer_newChunk      = new cMessage("MESH_SOURCE_TIMER_NEW_CHUNK");
+   // -- pointing to the Video Buffer
+   cModule *temp = getParentModule()->getModuleByRelativePath("videoBuffer");
+   m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
 
-    temp = simulation.getModuleByPath("appSetting");
-    m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
-    if (m_appSetting == NULL) throw cException("m_appSetting == NULL is invalid");
+   m_id_newChunk = 0L;
+   timer_newChunk      = new cMessage("MESH_SOURCE_TIMER_NEW_CHUNK");
 
-    m_interval_newChunk = m_appSetting->getIntervalNewChunk();
-    m_size_chunkPacket  = m_appSetting->getPacketSizeVideoChunk();
+   temp = simulation.getModuleByPath("appSetting");
+   m_appSetting = dynamic_cast<AppSettingDonet *>(temp);
+   if (m_appSetting == NULL) throw cException("m_appSetting == NULL is invalid");
 
-    // -- Schedule the first event for the first chunk
-    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);
+   m_interval_newChunk = m_appSetting->getIntervalNewChunk();
+   m_size_chunkPacket  = m_appSetting->getPacketSizeVideoChunk();
 
-    WATCH(m_appSetting);
-    WATCH(m_videoBuffer);
-    WATCH(m_size_chunkPacket);
-    WATCH(m_interval_newChunk);
+   // -- Schedule the first event for the first chunk
+   scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);
+
+   WATCH(m_appSetting);
+   WATCH(m_videoBuffer);
+   WATCH(m_size_chunkPacket);
+   WATCH(m_interval_newChunk);
 }
 
 void ChunkGenerator::finish()
 {
-    if (timer_newChunk) delete cancelEvent(timer_newChunk);
+   if (timer_newChunk) delete cancelEvent(timer_newChunk);
 }
 
 void ChunkGenerator::handleMessage(cMessage *msg)
 {
-    if (!msg->isSelfMessage())
-    {
-        throw cException("This module does NOT process external messages!");
-        return;
-    }
+   if (!msg->isSelfMessage())
+   {
+      throw cException("This module does NOT process external messages!");
+      return;
+   }
 
-    handleTimerMessage(msg);
+   handleTimerMessage(msg);
 }
 
 void ChunkGenerator::handleTimerMessage(cMessage *msg)
 {
-    if (msg == timer_newChunk)
-    {
-        scheduleAt(simTime() + m_interval_newChunk, timer_newChunk);
+   if (msg != timer_newChunk) throw cException("Wrong timer!");
 
-        // -- Signal generation
-        m_tsValue.set(simTime(), m_id_newChunk);
-        emit(sig_chunkSeqNum, &m_tsValue);
-//        emit(sig_chunkSeqNum, m_id_newChunk);
+   scheduleAt(simTime() + m_interval_newChunk, timer_newChunk);
 
-        VideoChunkPacket *chunk = new VideoChunkPacket("VIDEO_CHUNK_PACKET");
-            chunk->setSeqNumber(m_id_newChunk);
-            chunk->setOriginalTimeStamp(simTime().dbl());           // Set the time-stamp of the chunk to current time
-            chunk->setOverlayHopCount(0);                          // Initialize the hopCount variable
-            chunk->setBitLength(m_size_chunkPacket * 8);    // convert the chunk size from Bytes --> bits
+   // -- Signal generation
+   m_tsValue.set(simTime(), m_id_newChunk);
+   emit(sig_chunkSeqNum, &m_tsValue);
+   //        emit(sig_chunkSeqNum, m_id_newChunk);
 
-        //VideoChunkPacket *chunk = generateNewVideoChunk(m_id_newChunk);
-        ++m_id_newChunk;
+   VideoChunkPacket *chunk = new VideoChunkPacket("VIDEO_CHUNK_PACKET");
+      chunk->setSeqNumber(m_id_newChunk);
+      chunk->setOriginalTimeStamp(simTime().dbl());           // Set the time-stamp of the chunk to current time
+      chunk->setOverlayHopCount(0);                          // Initialize the hopCount variable
+      chunk->setBitLength(m_size_chunkPacket * 8);    // convert the chunk size from Bytes --> bits
 
-        //m_videoBuffer->insertPacket(chunk);
-        m_videoBuffer->insertPacketDirect(chunk);
-//        m_videoBuffer->printStatus();
-    }
-    else
-    {
-        throw cException("Wrong timer!");
-    }
+   m_videoBuffer->insertPacketDirect(chunk);
+   //        m_videoBuffer->printStatus();
+
+   debugOUT << "Chunk " << m_id_newChunk << " was inserted into the Buffer" << endl;
+
+   ++m_id_newChunk;
 }
-
-//VideoChunkPacket *ChunkGenerator::generateNewVideoChunk(SEQUENCE_NUMBER_T seq_num)
-//{
-//    VideoChunkPacket *chunk = new VideoChunkPacket("VIDEO_CHUNK_PACKET");
-//        chunk->setSeqNumber(seq_num);
-//        chunk->setTimeStamp(simTime().dbl());           // Set the time-stamp of the chunk to current time
-//        chunk->setBitLength(m_size_chunkPacket * 8);    // convert the chunk size from Bytes --> bits
-
-//    return chunk;
-//}
-

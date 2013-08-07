@@ -38,37 +38,36 @@
 
 class ChunkGenerator : public cSimpleModule {
 public:
-    ChunkGenerator();
-    virtual ~ChunkGenerator();
+   ChunkGenerator();
+   virtual ~ChunkGenerator();
 
 protected:
-    virtual int numInitStages() const { return 4; }
-    virtual void initialize(int stage);
-    virtual void finish();
+   virtual int numInitStages() const { return 4; }
+   virtual void initialize(int stage);
+   virtual void finish();
 
-    virtual void handleMessage(cMessage *msg);
-    void handleTimerMessage(cMessage *msg);
-
-protected:
-    //VideoChunkPacket *generateNewVideoChunk(SEQUENCE_NUMBER_T seq_num);
+   virtual void handleMessage(cMessage *msg);
+   void handleTimerMessage(cMessage *msg);
 
 protected:
-    cMessage *timer_newChunk;
-    SEQUENCE_NUMBER_T m_id_newChunk;
+   bool m_debug;
 
-    // -- Module (secondary) parameters
-    double m_interval_newChunk;
-    int m_size_chunkPacket;
+   cMessage *timer_newChunk;
+   SEQUENCE_NUMBER_T m_id_newChunk;
 
-    // -- Pointers to external modules
-    VideoBuffer *m_videoBuffer;
-    AppSettingDonet *m_appSetting;
+   // -- Module (secondary) parameters
+   double m_interval_newChunk;
+   int m_size_chunkPacket;
 
-    // -- Signal for data collection
-    simsignal_t sig_chunkSeqNum;
+   // -- Pointers to external modules
+   VideoBuffer *m_videoBuffer;
+   AppSettingDonet *m_appSetting;
 
-    // -- Objects for aggregated data
-    cTimestampedValue m_tsValue;
+   // -- Signal for data collection
+   simsignal_t sig_chunkSeqNum;
+
+   // -- Objects for aggregated data
+   cTimestampedValue m_tsValue;
 
 };
 
