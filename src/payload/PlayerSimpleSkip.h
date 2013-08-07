@@ -88,7 +88,7 @@ protected:
     SEQUENCE_NUMBER_T m_id_nextChunk;
 
     // -- Module (secondary) parameters
-    double param_interval_recheckVideoBuffer;
+    double  param_interval_recheckVideoBuffer;
     double  m_interval_newChunk;
     int     m_chunkSize; // Bytes
 

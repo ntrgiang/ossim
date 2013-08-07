@@ -83,7 +83,7 @@ protected:
     long int m_count_chunkHit, m_count_chunkMiss;
     long int m_count_prev_chunkHit, m_count_prev_chunkMiss;
 
-    double param_interval_reportStatistic;
+    double  param_interval_reportStatistic;
     double  param_percent_buffer_low, param_percent_buffer_high;
 
     //cMessage *timer_reportStatistic;

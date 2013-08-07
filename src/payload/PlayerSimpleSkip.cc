@@ -202,6 +202,9 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
             m_state = PLAYER_STATE_PLAYING;
             m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
 
+            m_seqPlayerStarted = m_id_nextChunk;
+            m_timePlayerStarted = simTime().dbl();
+
             m_videoBuffer->printRange();
 
             debugOUT << "Player starts from chunk " << m_id_nextChunk << endl;
