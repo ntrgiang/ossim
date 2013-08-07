@@ -1357,43 +1357,61 @@ void DonetPeer::updateDataExchangeRecord(double samplingInterval)
 int DonetPeer::initializeSchedulingWindow()
 {
    // Browse through all partners and find an optimal scheduling window
-   SEQUENCE_NUMBER_T min_head = 0L, max_start = 0L;
+   SEQUENCE_NUMBER_T max_start = 0L, min_head = 0L;
+
+   debugOUT << "Initializing with " << m_partnerList->m_map.size() << " partners" << endl;
 
    std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
-   min_head = iter->second.getSeqNumRecvBmHead();
    max_start  = iter->second.getSeqNumRecvBmStart();
-
-   EV << "number of partners = " << m_partnerList->m_map.size() << endl;
+   min_head = iter->second.getSeqNumRecvBmHead();
+   debugOUT << "Partner " << iter->first << " with start: " << max_start << " -- head: " << min_head << endl;
+   //debugOUT << "\t temp_start = " << max_start << " -- temp_head = " << min_head << endl;
 
    for (++iter; iter != m_partnerList->m_map.end(); ++iter)
    {
-      SEQUENCE_NUMBER_T temp = 0L;
-      temp = iter->second.getSeqNumRecvBmHead();
-      EV << "head_tempt = " << temp << endl;
-      if (min_head != 0L && temp != 0L)
-         min_head=(min_head > temp) ? temp : min_head;
-      else
-         min_head = std::max(temp, min_head);
+      SEQUENCE_NUMBER_T temp_head = iter->second.getSeqNumRecvBmHead();
+      SEQUENCE_NUMBER_T temp_start = iter->second.getSeqNumRecvBmStart();
 
-      temp = iter->second.getSeqNumRecvBmStart();
-      EV << "start_temp = " << temp << endl;
-      max_start=(max_start < temp)?temp:max_start;
+      debugOUT << "Partner " << iter->first << " with start: " << temp_start << " -- head: " << temp_head << endl;
+      //debugOUT << "\t temp_start = " << temp_start << " -- temp_head = " << temp_head << endl;
+
+      if (temp_head != -1L && temp_head != 0L)
+      {
+         if (min_head == -1L || min_head == 0L)
+         {
+            min_head = (temp_head == -1L) ? min_head : temp_head;
+         }
+         else
+         {
+            min_head = (min_head > temp_head) ? temp_head : min_head;
+         }
+      }
+
+      //debugOUT << "min_head = " << min_head << endl;
+      max_start = (max_start < temp_start) ? temp_start : max_start;
+      //debugOUT << "max_start = " << max_start << endl;
    }
+   debugOUT << "------> max_start = " << max_start << " -- min_head = " << min_head <<  endl;
 
-   EV << "min_head = " << min_head << " -- max_start = " << max_start << endl;
+   int playout_offset = (int)(m_player->getPercentBufferHigh() * m_videoBuffer->getSize());
 
-   //if (min_head > 0L && max_start != 0L)
+   // -- Finding the start of the scheduling window
+   //
    if (min_head > 0L)
    {
-      m_sched_window.start = (max_start + min_head) / 2;
+      if (max_start + playout_offset > min_head)
+         m_sched_window.start = (max_start + min_head) / 2;
+      else
+         m_sched_window.start = max_start + playout_offset;
       m_sched_window.end   = m_sched_window.start + m_bufferMapSize_chunk - 1;
-      EV << "Scheduling window [start, end] = " << m_sched_window.start << " - " << m_sched_window.end << endl;
+      debugOUT << "Scheduling window [start, end] = " << m_sched_window.start << " - " << m_sched_window.end << endl;
 
       m_videoBuffer->initializeRangeVideoBuffer(m_sched_window.start);
 
       return INIT_SCHED_WIN_GOOD;
    }
 
+   debugOUT << "max_start = " << max_start << " -- min_head = " << min_head << " --> not initialized!" << endl;
    return INIT_SCHED_WIN_BAD;
 }
 
