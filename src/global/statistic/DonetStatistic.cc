@@ -92,6 +92,8 @@ void DonetStatistic::initialize(int stage)
         sig_nPartner    = registerSignal("Signal_NumberOfPartner");
         sig_nJoin       = registerSignal("Signal_nJoin");
 
+        sig_playback    = registerSignal("Signal_Playback");
+
         timer_reportCI = new cMessage("GLOBAL_STATISTIC_REPORT_CI");
         timer_reportSystemSize = new cMessage("GLOBAL_STATISTIC_REPORT_SYSTEM_SIZE");
 
@@ -619,4 +621,9 @@ void DonetStatistic::collectDeltaOverlayHopCount(const long &delta)
 void DonetStatistic::collectDeltaNumberOfReceivedChunk(const long &delta)
 {
    m_totalNumberOfReceivedChunk += delta;
+}
+
+void DonetStatistic::collectPlaybackPoint(SEQUENCE_NUMBER_T seq)
+{
+   emit(sig_playback, seq);
 }

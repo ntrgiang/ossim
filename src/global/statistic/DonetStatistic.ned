@@ -99,5 +99,9 @@ simple DonetStatistic like IStreamingStatistic
 
         //@statistic[Rebuffering](source="Signal_Rebuffering"; record=last,vector);
 
+        // -- For playback lags
+        @statistic[playback](source="Signal_Playback"; record=min,max,mean);
+
+
 
 }

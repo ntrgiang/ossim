@@ -159,6 +159,8 @@ public:
     void collectDeltaNumberOfReceivedChunk(const long &);
     // <--- Currently used
 
+    void collectPlaybackPoint(SEQUENCE_NUMBER_T seq);
+
 private:
     void printActivePeerList(void);
 
@@ -243,6 +245,9 @@ private:
     simsignal_t sig_nJoin;
 
     simsignal_t sig_requestedChunk, sig_receivedChunk, sig_duplicatedChunk, sig_lateChunk, sig_inrangeChunk;
+
+    // -- Playback lags
+    simsignal_t sig_playback;
 };
 
 #endif /* DONET_STATISTIC_H_ */
