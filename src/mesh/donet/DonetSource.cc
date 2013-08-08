@@ -170,7 +170,6 @@ void DonetSource::finish()
    //reportStatus();
 
    debugOUT << "Peer " << getNodeAddress() << " has " << m_partnerList->getSize() << " partners" << endl;
-   debugOUT << "heheeheheheh" << endl;
    m_partnerList->print2();
 
 }

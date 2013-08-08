@@ -331,6 +331,8 @@ void DonetPeer::finish()
    //reportStatus();
    debugOUT << "Print Partner List:" << endl;
    m_partnerList->print2();
+
+   m_gstat->collectPlaybackPoint(m_player->getCurrentPlaybackPoint());
 }
 
 void DonetPeer::cancelAndDeleteAllTimer()
