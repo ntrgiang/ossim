@@ -82,10 +82,8 @@ void PartnerList::print() const
 {
    Enter_Method("print()");
 
-   if (ev.isGUI() == false)
-      return;
-
-   EV << "Partner list: " << endl;
+//   if (ev.isGUI() == false)
+//      return;
 
    std::map<IPvXAddress, NeighborInfo>::iterator iter;
    int i = 1;
