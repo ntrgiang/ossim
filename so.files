@@ -281,3 +281,4 @@ simulations/BaseNetworkModule.ned
 src/mesh/donet/DonetNode.ned
 src/common/IGenericApp.ned
 simulations/include/debug-donet.ini
+src/mesh/donet/RF_RandomScheduling.cc
