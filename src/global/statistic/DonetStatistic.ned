@@ -100,7 +100,8 @@ simple DonetStatistic like IStreamingStatistic
         //@statistic[Rebuffering](source="Signal_Rebuffering"; record=last,vector);
 
         // -- For playback lags
-        @statistic[playback](source="Signal_Playback"; record=min,max,mean);
+        @statistic[playback](source="Signal_Playback"; record=min,max,mean,count);
+           // count: to see how many active peers are there till the end of the simulation
 
 
 
