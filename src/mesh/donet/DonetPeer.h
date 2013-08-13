@@ -230,9 +230,6 @@ private:
     // State variables
     bool m_scheduling_started;
 
-    int m_schedulingWindowSize;     /* in [chunks] */
-    SchedulingWindow m_sched_window;
-
     // Variables to store history
     double m_firstJoinTime;
 
@@ -245,6 +242,15 @@ private:
     int m_nChunkRequested_perSchedulingInterval;
     //int m_nChunk_perSchedulingInterval;
     int m_nChunk_toRequest_perCycle;
+    int m_schedulingWindowSize;     /* in [chunks] */
+    SchedulingWindow m_sched_window;
+
+    typedef std::vector<IPvXAddress> IpAddresses_t;
+    typedef std::map<SEQUENCE_NUMBER_T, IpAddresses_t> ChunkProviders_t;
+    typedef std::map<int, ChunkProviders_t> DupSet_t;
+
+    DupSet_t m_dupSet;
+    std::map<SEQUENCE_NUMBER_T, IPvXAddress> m_rareSet;
 
     // -- Easy version with a vector
     vector<SEQUENCE_NUMBER_T> m_list_requestedChunk;

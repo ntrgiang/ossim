@@ -1,4 +1,4 @@
-//  
+
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -35,8 +35,10 @@
 
 using namespace std;
 
+//#define 	ev   (*cSimulation::getActiveEnvir())
 #ifndef debugOUT
 #define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << " @ " << simTime().dbl() << ": "
+//#define debugOUT (!m_debug) ? ev : ev << "::" << getFullName() << " @ " << simTime().dbl() << ": "
 #endif
 
 #define anIP "192.168.0.2"
@@ -49,7 +51,7 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 {
    Enter_Method("donetChunkScheduling()");
 
-   if (getNodeAddress() == IPvXAddress(anIP)) debugOUT << "Donet scheduling" << endl;
+   //if (getNodeAddress() == IPvXAddress(anIP)) debugOUT << "Donet scheduling" << endl;
 
    int count_0 = 0;
    int count_1 = 0;
@@ -63,22 +65,13 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    // -- testing
    std::map<int, std::vector<SEQUENCE_NUMBER_T> > dupSet;
 
-   // -- Clear all request windows for all neighbors
+   // -- Reset
+   //
    m_nChunkRequested_perSchedulingInterval = 0;
    int nNewChunkForRequest_perSchedulingCycle = 0;
 
-   // -- For Donet scheduling
-   // m_partnerList->clearAllTimeBudget();
-
-   // -- Prepare the scheduling window
-   //    long lower_bound = m_sched_window.start;
-   //    long upper_bound = m_sched_window.end;
-
-   // -- Get current time, for faster query time when it is used repeatedly
-   // double current_time = simTime().dbl();
-
    // -- Calculate the available time for _all_ chunk, for _all_ partners
-   // -- (expect redundancy, but for simplicity of implementation),
+   // (expect redundancy, but for simplicity of implementation),
    m_partnerList->resetAllAvailableTime(m_player->getCurrentPlaybackPoint(),
                                         lower_bound,
                                         m_videoBuffer->getChunkInterval());
@@ -109,21 +102,21 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    int sizeExpectedSet = expected_set.size();
    std::vector<SEQUENCE_NUMBER_T> copied_expected_set = expected_set;
 
-   // -- Print out the expected set
-   debugOUT << "List of " << sizeExpectedSet << " expected chunks to request: " << endl;
+//   debugOUT << "List of " << sizeExpectedSet << " expected chunks to request: " << endl;
 
-   if (getNodeAddress() == IPvXAddress(anIP))
-   {
-      short i = 0;
-      for(std::vector<SEQUENCE_NUMBER_T>::iterator iter = expected_set.begin();
-          iter != expected_set.end(); ++iter)
-      {
-         std::cout << *iter << " ";
-         ++i;
-         if (i % 10 == 0) std::cout << endl;
-      }
-      std::cout << endl;
-   }
+//   if (getNodeAddress() == IPvXAddress(anIP))
+//   {
+//      short i = 0;
+//      for(std::vector<SEQUENCE_NUMBER_T>::iterator iter = expected_set.begin();
+//          iter != expected_set.end(); ++iter)
+//      {
+//         std::cout << *iter << " ";
+//         ++i;
+//         if (i % 10 == 0) std::cout << endl;
+//      }
+//      std::cout << endl;
+//   }
+
    // -- Have a copy of the expected_set, so that chunks which has been found a supplier will be deleted from this copy
 
    //std::map<SEQUENCE_NUMBER_T, std::vector<IPvXAddress> > holder;
@@ -133,21 +126,38 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    for (int i = 0; i < sizeExpectedSet; ++i)
    {
       SEQUENCE_NUMBER_T seq_num = expected_set[i];
-      std::vector<IPvXAddress> holderList;
+      IpAddresses_t holderList;
       m_partnerList->getHolderList(seq_num, holderList);
-      //int nHolder = holderList.size();
 
-      int nHolder = m_partnerList->getNumberOfHolder(seq_num);
+      int numHolders = holderList.size();
+      assert(numHolders > 0);
+      if (numHolders == 1)
+         m_rareSet[seq_num] = holderList[0];
+      else if (numHolders > 1)
+      {
+         DupSet_t::iterator it= m_dupSet.find(numHolders);
+         if (it == m_dupSet.end())
+         {
+            ChunkProviders_t chunkHolderEntry;
+            chunkHolderEntry.insert(std::pair<SEQUENCE_NUMBER_T, IpAddresses_t>(seq_num, holderList));
+            DupSet_t dupSetEntry;
+            dupSetEntry.insert(std::pair<int, ChunkProviders_t>(numHolders, chunkHolderEntry));
+         }
+         else
+         {
+            it->second.insert(std::pair<SEQUENCE_NUMBER_T, IpAddresses_t>(seq_num, holderList));
+         }
+      }
 
-      if (nHolder == 0)
+      if (numHolders == 0)
       {
          ++count_0;
          continue;
       }
 
-      ++nNewChunkForRequest_perSchedulingCycle;
+      //++nNewChunkForRequest_perSchedulingCycle;
 
-      if (nHolder == 1)
+      if (numHolders == 1)
       {
          ++count_1;
 
@@ -161,23 +171,15 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 
          // -- Get peer's upload bandwidth
 
-         //double peerUpBw = nbr_info->getUpBw(); // get obsolete?
-         double peerUpBw = m_partnerList->getUpBw(holderList[0]);
-
          bool ret = true;
          // -- Browse through the expected_set
          int currentSize = copied_expected_set.size();
          for (int k = 0; k < currentSize; ++k)
          {
-            // EV << "nHolder = 1; k = " << k << endl;
             ret = m_partnerList->updateChunkAvailTime(holderList[0],
                                                       copied_expected_set[k],
-                                                      (param_chunkSize*8)/peerUpBw);
-            if (ret == false)
-            {
-               EV << "updateChunkAvailTime == false" << endl;
-               break;
-            }
+                                                      (param_chunkSize*8)/m_partnerList->getUpBw(holderList[0]));
+            if (ret == false) break;
          } // for
 
          if (ret == true)
@@ -197,14 +199,14 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
       {
          // -- Add the chunk's sequence number into a suitable dup_set
          ++count_2;
-         dup_set[nHolder-2].push_back(seq_num);
+         dup_set[numHolders-2].push_back(seq_num);
 
-         std::map<int, std::vector<SEQUENCE_NUMBER_T> >::iterator iter = dupSet.find(nHolder);
+         std::map<int, std::vector<SEQUENCE_NUMBER_T> >::iterator iter = dupSet.find(numHolders);
          if (iter == dupSet.end())
          {
             std::vector<SEQUENCE_NUMBER_T> tempList;
             tempList.push_back(seq_num);
-            dupSet.insert(std::pair<int, std::vector<SEQUENCE_NUMBER_T> >(nHolder, tempList));
+            dupSet.insert(std::pair<int, std::vector<SEQUENCE_NUMBER_T> >(numHolders, tempList));
          }
          else
          {
@@ -213,34 +215,34 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
       }
    } // for (i)
 
-   EV << " -- Summary: " << endl
-      << " -- 0 partner(s): " << count_0 << endl
-      << " -- 1 partner(s): " << count_1 << endl
-      << " -- >1 partner(s): " << count_2 << endl
-      << " -- total: " << count_0 + count_1 + count_2 << endl
-      << " -- double check: " << sizeExpectedSet << endl;
+//   EV << " -- Summary: " << endl
+//      << " -- 0 partner(s): " << count_0 << endl
+//      << " -- 1 partner(s): " << count_1 << endl
+//      << " -- >1 partner(s): " << count_2 << endl
+//      << " -- total: " << count_0 + count_1 + count_2 << endl
+//      << " -- double check: " << sizeExpectedSet << endl;
 
    // --------------------------------------------------------------------------
    // -- Browse through the new map for debug purpose
    // --------------------------------------------------------------------------
-   if (getNodeAddress() == IPvXAddress(anIP))
-   {
-      debugOUT << "::Number of chunks which have >1 providers:: " << dupSet.size() << endl;
-      if (dupSet.size() > 0)
-      {
-         for (std::map<int, std::vector<SEQUENCE_NUMBER_T> >::iterator iter = dupSet.begin();
-              iter != dupSet.end(); ++iter)
-         {
-            debugOUT << "List of chunks whose have " << iter->first << " partners: " << endl;
-            for (std::vector<SEQUENCE_NUMBER_T>::iterator it = iter->second.begin();
-                 it != iter->second.end(); ++it)
-            {
-               std::cout << *it << " ";
-            }
-            std::cout << endl;
-         }
-      }
-   }
+//   if (getNodeAddress() == IPvXAddress(anIP))
+//   {
+//      debugOUT << "::Number of chunks which have >1 providers:: " << dupSet.size() << endl;
+//      if (dupSet.size() > 0)
+//      {
+//         for (std::map<int, std::vector<SEQUENCE_NUMBER_T> >::iterator iter = dupSet.begin();
+//              iter != dupSet.end(); ++iter)
+//         {
+//            debugOUT << "List of chunks whose have " << iter->first << " partners: " << endl;
+//            for (std::vector<SEQUENCE_NUMBER_T>::iterator it = iter->second.begin();
+//                 it != iter->second.end(); ++it)
+//            {
+//               std::cout << *it << " ";
+//            }
+//            std::cout << endl;
+//         }
+//      }
+//   }
 
    // -- Selecting partner for chunks of different groups
    for (std::map<int, std::vector<SEQUENCE_NUMBER_T> >::iterator iter = dupSet.begin();
