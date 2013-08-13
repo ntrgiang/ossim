@@ -12,10 +12,7 @@ r-script/validation-arrival-poisson.R
 r-script/validation-arrival-uniform.R
 r-script/validation-arrival-veloso.R
 simulations/run-scripts/donet-sim.sh
-simulations/run-scripts/gdb-donet.sh
 simulations/run-scripts/get-runs-number.sh
-simulations/run-scripts/run.sh
-simulations/run-scripts/so-sim.sh
 simulations/run-scripts/submit.sh
 simulations/run-scripts/valgrind-donet.sh
 simulations/run-scripts/valgrind-memcheck.sh
