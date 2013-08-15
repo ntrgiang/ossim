@@ -119,6 +119,7 @@ void VideoBuffer::handleMessage(cMessage *)
 void VideoBuffer::initializeRangeVideoBuffer(SEQUENCE_NUMBER_T seq)
 {
    m_bufferStart_seqNum = seq;
+   debugOUT << "set value for head " << seq << endl;
    m_head_received_seqNum = seq;
    m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
 }
@@ -212,7 +213,7 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
    if (seq_num > m_head_received_seqNum)
    {
       EV << "-- Update the range of the Video Buffer:" << endl;
-
+      debugOUT << "received this chunk " << seq_num << endl;
       m_head_received_seqNum = seq_num;
       //m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
 
@@ -309,6 +310,7 @@ void VideoBuffer::insertPacketDirect(VideoChunkPacket *packet)
    {
       EV << "-- Update the range of the Video Buffer:" << endl;
 
+      debugOUT << "received this chunk " << seq_num << endl;
       m_head_received_seqNum = seq_num;
       m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
       m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
