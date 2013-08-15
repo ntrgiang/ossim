@@ -32,16 +32,18 @@
 #include "DonetPeer.h"
 #include <algorithm>
 #include <assert.h>
+#include <iomanip> // setw()
 
 using namespace std;
 
-//#define 	ev   (*cSimulation::getActiveEnvir())
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << " @ " << simTime().dbl() << ": "
-//#define debugOUT (!m_debug) ? ev : ev << "::" << getFullName() << " @ " << simTime().dbl() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << simTime().dbl() << " DonetScheduling:: "
 #endif
 
 #define anIP "192.168.0.2"
+
+typedef std::map<SEQUENCE_NUMBER_T, double> AllTimeBudget_t;
+typedef std::map<IPvXAddress, AllTimeBudget_t> AllPartnerTimeBudget_t;
 
 /**
  * A very straight-forward version of the implementation --> should not expect that it is smart
@@ -67,6 +69,9 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 
    // -- Reset
    //
+   m_dupSet.clear();
+   m_rareSet.clear();
+
    m_nChunkRequested_perSchedulingInterval = 0;
    int nNewChunkForRequest_perSchedulingCycle = 0;
 
@@ -85,6 +90,7 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    // -- Finding the expected set (set of chunks which should be requested)
    // -------------------------------------------------------------------------
    std::vector<SEQUENCE_NUMBER_T> expected_set;
+   debugOUT << "lower bound: " << lower_bound << " -- upper bound: " << upper_bound << endl;
    for (SEQUENCE_NUMBER_T seq_num = lower_bound; seq_num <= upper_bound; ++seq_num)
    {
       if (should_be_requested(seq_num) == false)
@@ -96,8 +102,47 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
       if (m_videoBuffer->isInBuffer(seq_num) == false)
       {
          expected_set.push_back(seq_num);
+         cout << seq_num << " ";
       }
    } // end of for
+
+   SEQUENCE_NUMBER_T currentPlaybackPoint = m_player->getCurrentPlaybackPoint();
+   AllTimeBudget_t chunkAvailableTime;
+   for (std::vector<SEQUENCE_NUMBER_T>::iterator iter = expected_set.begin(); iter != expected_set.end(); ++iter)
+   {
+      // All chunks in this list are further behind the playback point
+      double availableTime = (*iter - currentPlaybackPoint) / m_videoStreamChunkRate;
+      chunkAvailableTime.insert(std::pair<SEQUENCE_NUMBER_T, double>(*iter, availableTime));
+   }
+
+   // --- Debug
+//   debugOUT << "Time budget (compared to PB point " << currentPlaybackPoint << ", video stream " << m_videoStreamChunkRate << " (chunk/s)): " << endl;
+//   for (AllTimeBudget_t::iterator iter = chunkAvailableTime.begin(); iter != chunkAvailableTime.end(); ++iter)
+//   {
+//      debugOUT << "*** chunk " << iter->first << " -- time " << iter->second << " seconds" << endl;
+//   }
+
+   AllPartnerTimeBudget_t allTimeBudget;
+
+   std::vector<IPvXAddress> allPartner = m_partnerList->getAddressList();
+   assert(allPartner.size() != 0);
+
+   for(std::vector<IPvXAddress>::iterator iter = allPartner.begin(); iter != allPartner.end(); ++iter)
+   {
+      allTimeBudget.insert(std::pair<IPvXAddress, AllTimeBudget_t>(*iter, chunkAvailableTime));
+   }
+
+   // --- Debug
+//   debugOUT << "All time budget: " << endl;
+//   for (AllPartnerTimeBudget_t::iterator iter = allTimeBudget.begin(); iter != allTimeBudget.end(); ++iter)
+//   {
+//      debugOUT << "\t Of Partner " << iter->first << endl;
+
+//      for (AllTimeBudget_t::iterator it = iter->second.begin(); it != iter->second.end(); ++it)
+//      {
+//         debugOUT << "\t*** chunk " << it->first << " -- time " << it->second << " seconds" << endl;
+//      }
+//   }
 
    int sizeExpectedSet = expected_set.size();
    std::vector<SEQUENCE_NUMBER_T> copied_expected_set = expected_set;
@@ -126,71 +171,72 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    for (int i = 0; i < sizeExpectedSet; ++i)
    {
       SEQUENCE_NUMBER_T seq_num = expected_set[i];
+      //debugOUT << "seq = " << seq_num << endl;
       IpAddresses_t holderList;
       m_partnerList->getHolderList(seq_num, holderList);
 
       int numHolders = holderList.size();
-      assert(numHolders > 0);
-      if (numHolders == 1)
-         m_rareSet[seq_num] = holderList[0];
-      else if (numHolders > 1)
-      {
-         DupSet_t::iterator it= m_dupSet.find(numHolders);
-         if (it == m_dupSet.end())
-         {
-            ChunkProviders_t chunkHolderEntry;
-            chunkHolderEntry.insert(std::pair<SEQUENCE_NUMBER_T, IpAddresses_t>(seq_num, holderList));
-            DupSet_t dupSetEntry;
-            dupSetEntry.insert(std::pair<int, ChunkProviders_t>(numHolders, chunkHolderEntry));
-         }
-         else
-         {
-            it->second.insert(std::pair<SEQUENCE_NUMBER_T, IpAddresses_t>(seq_num, holderList));
-         }
-      }
+      assert(numHolders >= 0);
 
+      // --- New --->
       if (numHolders == 0)
       {
          ++count_0;
          continue;
       }
+      else
+      {
+         if (numHolders == 1) m_rareSet[seq_num] = holderList[0];
+
+         DupSet_t::iterator it= m_dupSet.find(numHolders);
+         if (it == m_dupSet.end())
+         {
+            ChunkProviders_t chunkHolderEntry;
+            chunkHolderEntry.insert(std::pair<SEQUENCE_NUMBER_T, IpAddresses_t>(seq_num, holderList));
+            m_dupSet.insert(std::pair<int, ChunkProviders_t>(numHolders, chunkHolderEntry));
+         }
+         else
+         {
+            it->second.insert(std::pair<SEQUENCE_NUMBER_T, IpAddresses_t>(seq_num, holderList));
+         }
+
+         //debugOUT << "seq = " << seq_num << " -- holder = " << holderList[0] << endl;
+      }
+
+      // <--- New ---
 
       //++nNewChunkForRequest_perSchedulingCycle;
 
       if (numHolders == 1)
       {
-         ++count_1;
+//         ++count_1;
 
-         // -- Get pointer to the respective NeighborInfo
+//         // -- Set the respective element in the SendBm to say that this chunk should be requested
+//         m_partnerList->setElementSendBm(holderList[0], seq_num, true);
 
-         // -- Set the respective element in the SendBm to say that this chunk should be requested
-         m_partnerList->setElementSendBm(holderList[0], seq_num, true);
+//         m_list_requestedChunk.push_back(seq_num);
+//         ++m_nChunkRequested_perSchedulingInterval;
 
-         m_list_requestedChunk.push_back(seq_num);
-         ++m_nChunkRequested_perSchedulingInterval;
+//         bool ret = true;
+//         // -- Browse through the expected_set
+//         int currentSize = copied_expected_set.size();
+//         for (int k = 0; k < currentSize; ++k)
+//         {
+//            ret = m_partnerList->updateChunkAvailTime(holderList[0],
+//                                                      copied_expected_set[k],
+//                                                      (param_chunkSize*8)/m_partnerList->getUpBw(holderList[0]));
+//            if (ret == false) break;
+//         } // for
 
-         // -- Get peer's upload bandwidth
+//         if (ret == true)
+//         {
+//            //EV << "ret == true --> erase ... " << endl;
+//            // -- Delete the chunk whose supplier had been found
+//            std::vector<SEQUENCE_NUMBER_T>::iterator iter;
 
-         bool ret = true;
-         // -- Browse through the expected_set
-         int currentSize = copied_expected_set.size();
-         for (int k = 0; k < currentSize; ++k)
-         {
-            ret = m_partnerList->updateChunkAvailTime(holderList[0],
-                                                      copied_expected_set[k],
-                                                      (param_chunkSize*8)/m_partnerList->getUpBw(holderList[0]));
-            if (ret == false) break;
-         } // for
-
-         if (ret == true)
-         {
-            //EV << "ret == true --> erase ... " << endl;
-            // -- Delete the chunk whose supplier had been found
-            std::vector<SEQUENCE_NUMBER_T>::iterator iter;
-
-            iter = std::find(copied_expected_set.begin(), copied_expected_set.end(), seq_num);
-            copied_expected_set.erase(iter);
-         }
+//            iter = std::find(copied_expected_set.begin(), copied_expected_set.end(), seq_num);
+//            copied_expected_set.erase(iter);
+//         }
 
          // -- Recording results
          // m_reqChunkId.record(seq_num);
@@ -215,6 +261,23 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
       }
    } // for (i)
 
+   // --- DEBUG: Browse through the created map
+   //
+//   debugOUT << "Map has " << m_dupSet.size() << " types of chunks:" << endl;
+//   for(DupSet_t::iterator iter = m_dupSet.begin(); iter != m_dupSet.end(); ++iter)
+//   {
+//      debugOUT << "Chunks with " << iter->first << " providers:" << endl;
+//      for(ChunkProviders_t::iterator it = iter->second.begin(); it != iter->second.end(); ++it)
+//      {
+//         debugOUT << "\tChunk " << it->first << " with provider(s): " << endl;
+//         for (IpAddresses_t::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+//         {
+//            debugOUT << "\t\t " << *it2 << endl;
+//         }
+//      }
+//   }
+
+   // --- debug
 //   EV << " -- Summary: " << endl
 //      << " -- 0 partner(s): " << count_0 << endl
 //      << " -- 1 partner(s): " << count_1 << endl
@@ -244,137 +307,127 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 //      }
 //   }
 
-   // -- Selecting partner for chunks of different groups
-   for (std::map<int, std::vector<SEQUENCE_NUMBER_T> >::iterator iter = dupSet.begin();
-        iter != dupSet.end(); ++iter)
+// -----------------------------------------------------------------------------
+//                               Chunk request
+// -----------------------------------------------------------------------------
+
+   // --- Request rarest chunk first
+   //
+   ChunkProviders_t rarestChunks = m_dupSet[1]; // map: (seq_num, IP)
+   // --- debug
+   //debugOUT << rarestChunks.size() << " rarest chunks " << endl;
+   for (ChunkProviders_t::iterator iter = rarestChunks.begin(); iter != rarestChunks.end(); ++iter)
    {
-      for (std::vector<SEQUENCE_NUMBER_T>::iterator it = iter->second.begin();
-           it != iter->second.end(); ++it)
+      assert(iter->second.size() == 1);
+      SEQUENCE_NUMBER_T seq_num = iter->first;
+      IPvXAddress provider = iter->second[0];
+      double time_to_send_Chunk = param_chunkSize * 8 / m_partnerList->getUpBw(iter->second[0]);
+
+      debugOUT << "\t *** Chunk " << iter->first << " --- provider " << provider << endl;
+
+      ++count_1;
+
+      // -- Check time budget
+      debugOUT << "time budget for chunk " << seq_num << ": " << allTimeBudget[provider][seq_num]
+                  << " -- time to send chunk: " << time_to_send_Chunk << endl;
+
+      if (allTimeBudget[provider][seq_num] < time_to_send_Chunk)
+         continue;
+
+      m_list_requestedChunk.push_back(seq_num);
+      ++m_nChunkRequested_perSchedulingInterval;
+
+      // -- Set the respective element in the SendBm to say that this chunk should be requested
+      m_partnerList->setElementSendBm(provider, seq_num, true);
+
+      // --- Debug
+//      debugOUT << "Time budget before adjustment: " << endl;
+//      for (AllTimeBudget_t::iterator it = allTimeBudget[provider].begin(); it != allTimeBudget[provider].end(); ++it)
+//      {
+//         cout << "chunk " << it->first << " -- time " << setprecision(6) << it->second << " (s)" << endl;
+//      }
+
+      for (AllTimeBudget_t::iterator it = allTimeBudget[provider].find(seq_num); it != allTimeBudget[provider].end(); ++it)
       {
-         //SEQUENCE_NUMBER_T seq_num = dup_set[n-2][k];
-         SEQUENCE_NUMBER_T seq_num = *it;
-         EV << "Finding all holders for chunk " << seq_num << endl;
+         it->second -= time_to_send_Chunk;
+      }
 
-         // TODO: optimize this piece of code with map<seq_num, vector<ipvxaddress>> inside the first for loop
-         std::vector<IPvXAddress> holderList;
-         IPvXAddress candidate1, candidate2, supplier;
-         int nHolder_check = 0;
-         //m_partnerList->getHolderList(seq_num, holderList);
+      // --- Debug
+//      debugOUT << "Time budget after adjustment: " << endl;
+//      for (AllTimeBudget_t::iterator it = allTimeBudget[provider].begin(); it != allTimeBudget[provider].end(); ++it)
+//      {
+//         cout << "chunk " << it->first << " -- time " << setprecision(6) << it->second << " (s)" << endl;
+//      }
+   }
 
-         for (std::map<IPvXAddress, NeighborInfo>::iterator i = m_partnerList->m_map.begin();
-              i != m_partnerList->m_map.end(); ++i)
+   // -- Sending chunk request packets
+   //
+   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+        iter != m_partnerList->m_map.end(); ++iter)
+   {
+      if (iter->second.isSendBmModified() == false)
+         continue;
+
+      MeshChunkRequestPacket *chunkReqPkt = new MeshChunkRequestPacket;
+         chunkReqPkt->setBitLength(m_appSetting->getPacketSizeChunkRequest());
+         // -- Map the sendBM into ChunkRequestPacket
+         iter->second.copyTo(chunkReqPkt);
+         sendToDispatcher(chunkReqPkt, m_localPort, iter->first, m_destPort);
+   }
+
+   // -- Prepare for the next requests
+   //
+   m_partnerList->clearAllSendBm();
+   m_partnerList->updateBoundSendBm(lower_bound, lower_bound+m_bufferMapSize_chunk-1);
+
+   for(DupSet_t::iterator iter = m_dupSet.begin(); iter != m_dupSet.end(); ++iter)
+   {
+      if (iter->first == 1) continue;
+
+      // -------------
+      // numHoders > 1
+      // -------------
+
+      int nHolder = iter->first;
+      for(ChunkProviders_t::iterator it = iter->second.begin(); it != iter->second.end(); ++it)
+      {
+         //assert(it->second.size() == 2);
+
+         SEQUENCE_NUMBER_T seq_num = it->first;
+         IPvXAddress candidate1, candidate2, provider;
+
+         candidate1 = it->second[0];
+         candidate2 = it->second[1];
+
+         int ret = selectOneCandidate(seq_num, candidate1, candidate2, provider);
+
+         for (int j = 2; j < nHolder; ++j)
          {
-            if (i->second.getLastRecvBmTime() != -1)
-            {
-               //EV << "  -- At peer " << iter->first << ": ";
-               if (i->second.isInRecvBufferMap(seq_num))
-               {
-                  if (i->second.getNChunkScheduled() < i->second.getUploadRate_Chunk())
-                  {
-                     EV << "\tPartner " << i->first << " holds this chunk" << endl;
-                     holderList.push_back(i->first);
-                     ++nHolder_check;
-                     // EV << "\tPartner " << iter->first << " HAS the chunk " << seq_num << endl;
-                  }
-               }
-               else
-               {
-                  // EV << "\tPartner " << iter->first << " does NOT have chunk " << seq_num << endl;
-               }
-            }
-            else
-            {
-               // EV << "\tBufferMap from " << iter->first << " is too old!" << endl;
-            }
-         } // for -- browse through partnerList
+            candidate1 = provider;
+            candidate2 = it->second[j];
 
-         int nHolder = holderList.size();
-         int ret = 0;
-
-         if (nHolder_check == 0)
-         {
-            // -- Inconsistence with the result found before,
-            // since some partners has already been assigned enough chunk that it could send
-            continue;
+            ret = selectOneCandidate(seq_num, candidate1, candidate2, provider);
          }
-         else if (nHolder == 1)
-         {
-            supplier = holderList[0];
-            ret = 0;
-         }
-         else // nHolder >= 2
-         {
-            candidate1 = holderList[0];
-            candidate2 = holderList[1];
+         if (ret == -1) continue;
 
-            assert(!candidate1.isUnspecified());
-            assert(!candidate2.isUnspecified());
-
-            ret = selectOneCandidate(seq_num, candidate1, candidate2, supplier);
-
-            for (int j = 2; j < nHolder; ++j)
-            {
-               // -- User result from the previous calculation
-               candidate1 = supplier;
-
-               // -- Update the second candidate with another partner
-               candidate2 = holderList[j];
-
-               ret = selectOneCandidate(seq_num, candidate1, candidate2, supplier);
-            }
-         } // if (nHolder)
-
-         // -- Loops through all holders should be completed at this point
-         if (ret == -1)
-         {
-            // -- Meaning that no suitable supplier has been found
-            // Consider the next chunk for finding supplier
-            continue;
-         }
-
-         // -- Set the respective element in the SendBm to say that this chunk should be requested
-         m_partnerList->setElementSendBm(supplier, seq_num, true);
-
+         m_partnerList->setElementSendBm(provider, seq_num, true);
          m_list_requestedChunk.push_back(seq_num);
          ++m_nChunkRequested_perSchedulingInterval;
 
-         // -- Get peer's upload bandwidth
-         double peerUpBw = m_partnerList->getUpBw(supplier);
-
-         // -- Browse through the expected_set
-         int currentSize = copied_expected_set.size();
-         for (int k = 0; k < currentSize; ++k)
+         // -- Update the time budget for other chunks
+         //
+         double time_to_send_Chunk = param_chunkSize * 8 / m_partnerList->getUpBw(provider);
+         for (AllTimeBudget_t::iterator it2 = allTimeBudget[provider].find(seq_num); it2 != allTimeBudget[provider].end(); ++it2)
          {
-            //EV << "nHolder > 1; k = " << k << endl;
-            m_partnerList->updateChunkAvailTime(supplier,
-                                                copied_expected_set[k],
-                                                (param_chunkSize*8)/peerUpBw);
+            it2->second -= time_to_send_Chunk;
          }
-
-         // -- Delete the chunk whose supplier had been found
-         // copied_expected_set.erase(expected_set[i]);
-         std::vector<SEQUENCE_NUMBER_T>::iterator iter;
-         iter = std::find(copied_expected_set.begin(), copied_expected_set.end(), seq_num);
-         copied_expected_set.erase(iter);
-
-         // -- Recording results
-         // m_reqChunkId.record(seq_num);
-
-      } // for (k) -- Browse through all dup_set
-   } // for (n) -- Browse through all partners
+      }
+   }
 
    emit(sig_newchunkForRequest, nNewChunkForRequest_perSchedulingCycle);
 
-   // -- Debug
-   // EV << "Scheduling window: [" << lower_bound << " - " << upper_bound << "]" << endl;
-   // m_partnerList->printAllSendBm();
-
-   //EV << "My partners: ";
-   //m_partnerList->print();
-
    // -- Browse through the list of partners to see which one have been set the sendBm
    // -- For each of those one, prepare a suitable ChunkRequestPacket and send to that one
-
    // -- Chunk request
    std::map<IPvXAddress, NeighborInfo>::iterator iter;
    for (iter = m_partnerList->m_map.begin(); iter != m_partnerList->m_map.end(); ++iter)
@@ -396,13 +449,6 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 
    // -- Now refreshing the m_list_requestedChunk
    refreshListRequestedChunk();
-
-   // TOTO-Giang: Fix the moving of the buffer / sched. window
-   // - to outside of the scheduling module
-   // - other patterns of moving
-
-   EV << "m_sched_window.start = " << m_sched_window.start << endl;
-   EV << "m_sched_window.end = " << m_sched_window.end << endl;
 
    // -- Report statistics
    emit(sig_nChunkRequested, m_nChunkRequested_perSchedulingInterval);
