@@ -27,10 +27,10 @@ network Donet_Homo_oneRouter_Network extends BasicNetwork
         string statisticModule = default("DonetStatistic");
 
     types:
-        channel Channel_source_up extends ned.DatarateChannel       { datarate = 9Mbps; }
+        channel Channel_source_up extends ned.DatarateChannel       { datarate = 10Mbps; }
         channel Channel_source_down extends ned.DatarateChannel     { datarate = 40Mbps; }
 
-        channel Channel_peer_up extends ned.DatarateChannel     { datarate = 1100kbps; }
+        channel Channel_peer_up extends ned.DatarateChannel     { datarate = 1000kbps; }
         channel Channel_peer_down extends ned.DatarateChannel   { datarate = 2Mbps; }
 
     submodules:
