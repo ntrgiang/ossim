@@ -56,7 +56,7 @@ namespace std
 //using namespace std;
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "@ " << setprecision(6) << simTime().dbl() << " @Peer " << getNodeAddress() << "::" << getFullName() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << setprecision(6) << simTime().dbl() << " @Peer " << getNodeAddress() << "::" << getFullName() << ": "
 #endif
 
 // ------------------------ Static members -------------------------------------
@@ -1169,6 +1169,7 @@ void DonetPeer::processPartnershipDisconnect(cPacket* pkt)
 
 void DonetPeer::sendBufferMap(void)
 {
+   debugOUT << "Going to send Buffer Maps ..." << endl;
    debugOUT << "Current playback point: " << m_player->getCurrentPlaybackPoint() << endl;
    debugOUT << "Video Buffer start: " << m_videoBuffer->getBufferStartSeqNum() << endl;
    debugOUT << "Video buffer head: " << m_videoBuffer->getHeadReceivedSeqNum() << endl;
@@ -1395,7 +1396,7 @@ int DonetPeer::initializeSchedulingWindow()
    }
    debugOUT << "------> max_start = " << max_start << " -- min_head = " << min_head <<  endl;
 
-   int playout_offset = (int)(m_player->getPercentBufferHigh() * m_videoBuffer->getSize());
+   int playout_offset = (int)(m_player->getPercentBufferHigh() * m_videoBuffer->getSize() - 0.5 * m_videoStreamChunkRate);
 
    // -- Finding the start of the scheduling window
    //
@@ -1454,17 +1455,17 @@ bool DonetPeer::should_be_requested(SEQUENCE_NUMBER_T seq_num)
       return false;
    }
 
-//   SEQUENCE_NUMBER_T current_playbackPoint = m_player->getCurrentPlaybackPoint();
-//   if (seq_num < current_playbackPoint)
-//   {
-//      EV << "-- Chunk " << seq_num << " is behind play-back point " << current_playbackPoint << endl;
-//      return false;
-//   }
-
-   if (m_nChunkRequested_perSchedulingInterval > m_downloadRate_chunk)
+   SEQUENCE_NUMBER_T current_playbackPoint = m_player->getCurrentPlaybackPoint();
+   if (seq_num < current_playbackPoint)
    {
+      EV << "-- Chunk " << seq_num << " is behind play-back point " << current_playbackPoint << endl;
       return false;
    }
+
+//   if (m_nChunkRequested_perSchedulingInterval > m_downloadRate_chunk)
+//   {
+//      return false;
+//   }
 
    return true;
 }
