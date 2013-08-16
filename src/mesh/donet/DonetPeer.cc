@@ -207,6 +207,7 @@ void DonetPeer::initialize(int stage)
 
    // -- For scheduling
    m_seqNum_schedWinHead = 0L;
+   m_sched_window_moved = false;
 
    m_prevNChunkReceived = 0L;
 
@@ -1169,10 +1170,17 @@ void DonetPeer::processPartnershipDisconnect(cPacket* pkt)
 
 void DonetPeer::sendBufferMap(void)
 {
-   debugOUT << "Going to send Buffer Maps ..." << endl;
-   debugOUT << "Current playback point: " << m_player->getCurrentPlaybackPoint() << endl;
-   debugOUT << "Video Buffer start: " << m_videoBuffer->getBufferStartSeqNum() << endl;
-   debugOUT << "Video buffer head: " << m_videoBuffer->getHeadReceivedSeqNum() << endl;
+   if (getNodeAddress() == IPvXAddress("192.168.2.162"))
+   {
+      std::cout << "crashed node: " << getNodeAddress() << endl;
+      debugOUT << "Going to send Buffer Maps ..." << endl;
+      std::cout << "Current playback point: " << m_player->getCurrentPlaybackPoint() << endl;
+      std::cout << "Video Buffer start: " << m_videoBuffer->getBufferStartSeqNum() << endl;
+      std::cout << "Video buffer head: " << m_videoBuffer->getHeadReceivedSeqNum() << endl;
+      std::cout << "Number of received chunks: " << m_videoBuffer->getNumberOfReceivedChunk() << endl;
+      std::cout << "Number of filled chunks: " << m_videoBuffer->getNumberOfChunkFill() << endl;
+      std::cout << "Percent buffer filled: " << m_videoBuffer->getPercentFill() << endl;
+   }
    DonetBase::sendBufferMap();
 }
 
@@ -1575,9 +1583,22 @@ void DonetPeer::chunkScheduling()
 
    // -- Move the scheduling window forward
    //
-   if (m_player->getState() != PLAYER_STATE_PLAYING)
+   if (m_player->getState() == PLAYER_STATE_PLAYING)
    {
-      if (m_player->getCurrentPlaybackPoint() - m_sched_window.start > m_player->getPercentBufferLow() * m_bufferMapSize_chunk)
+      if (m_sched_window_moved == false)
+      {
+         if (m_player->getCurrentPlaybackPoint() - m_sched_window.start > m_player->getPercentBufferLow() * m_bufferMapSize_chunk)
+         {
+            m_sched_window.start += m_videoStreamChunkRate;
+            m_sched_window.end  += m_videoStreamChunkRate;
+
+            m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
+            m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
+
+            m_sched_window_moved = true;
+         }
+      }
+      else
       {
          m_sched_window.start += m_videoStreamChunkRate;
          m_sched_window.end  += m_videoStreamChunkRate;
@@ -1585,21 +1606,6 @@ void DonetPeer::chunkScheduling()
          m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
          m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
       }
-      else
-      {
-         if (m_player->getCurrentPlaybackPoint() == -1)
-            debugOUT << "Player hasn't started yet" << endl;
-         else
-            debugOUT << "Window stays" << endl;
-      }
-   }
-   else
-   {
-      m_sched_window.start += m_videoStreamChunkRate;
-      m_sched_window.end  += m_videoStreamChunkRate;
-
-      m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
-      m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
    }
 }
 

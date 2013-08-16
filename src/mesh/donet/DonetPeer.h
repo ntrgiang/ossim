@@ -229,6 +229,7 @@ private:
 
     // State variables
     bool m_scheduling_started;
+    bool m_sched_window_moved;
 
     // Variables to store history
     double m_firstJoinTime;
