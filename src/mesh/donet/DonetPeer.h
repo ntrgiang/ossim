@@ -138,6 +138,8 @@ private:
     void donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUMBER_T upper_bound);
     void RF_RandomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUMBER_T upper_bound);
     int selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candidate1, IPvXAddress candidate2, IPvXAddress &supplier);
+    void findExpectedSet(SEQUENCE_NUMBER_T, SEQUENCE_NUMBER_T, SEQUENCE_NUMBER_T);
+    void printExpectedSet(void);
 
     void updateRange(void);
     void reportLocalStatistic(void);
@@ -151,7 +153,8 @@ private:
     //bool inScarityState(void); // TODO: (Giang) obsolete?
 
     MeshPartnershipLeavePacket* generatePartnershipRequestLeavePacket();
-
+    void rejoin(void);
+    void checkVideoBuffer(void);
 //    bool shouldStartPlayer(void);
 //    void startPlayer(void);
 
@@ -173,6 +176,7 @@ private:
     //cMessage *timer_timeout_waiting_ack;
     cMessage *timer_timeout_waiting_response;
     cMessage *timer_partnershipRefinement;
+    cMessage *timer_checkVideoBuffer;
 
 // -----------------------------------------------------------------------------
 //                               Parameters
@@ -252,6 +256,7 @@ private:
 
     DupSet_t m_dupSet;
     std::map<SEQUENCE_NUMBER_T, IPvXAddress> m_rareSet;
+    std::vector<SEQUENCE_NUMBER_T> m_expected_set;
 
     // -- Easy version with a vector
     vector<SEQUENCE_NUMBER_T> m_list_requestedChunk;
@@ -268,6 +273,7 @@ private:
 
     // -- For reporting statistics
     long int m_count_prev_chunkHit, m_count_prev_chunkMiss;
+    int m_count_rejoin;
 
     // --------------------------- Optimization --------------------------------
     //std::vector<IPvXAddress> m_blacklist;

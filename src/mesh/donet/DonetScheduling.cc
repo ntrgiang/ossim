@@ -56,6 +56,7 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 
    // -- Reset
    //
+   m_expected_set.clear();
    m_dupSet.clear();
    m_rareSet.clear();
 
@@ -76,24 +77,13 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    // -------------------------------------------------------------------------
    // -- Finding the expected set (set of chunks which should be requested)
    // -------------------------------------------------------------------------
-   std::vector<SEQUENCE_NUMBER_T> expected_set;
    debugOUT << "lower bound: " << lower_bound << " -- upper bound: " << upper_bound << endl;
-   for (SEQUENCE_NUMBER_T seq_num = lower_bound; seq_num <= upper_bound; ++seq_num)
-   {
-      if (should_be_requested(seq_num) == false)
-      {
-         continue;
-      }
-
-      if (m_videoBuffer->isInBuffer(seq_num) == false)
-      {
-         expected_set.push_back(seq_num);
-      }
-   } // end of for
-
    SEQUENCE_NUMBER_T currentPlaybackPoint = m_player->getCurrentPlaybackPoint();
+   findExpectedSet(currentPlaybackPoint, lower_bound, upper_bound);
+   printExpectedSet();
+
    AllTimeBudget_t chunkAvailableTime;
-   for (std::vector<SEQUENCE_NUMBER_T>::iterator iter = expected_set.begin(); iter != expected_set.end(); ++iter)
+   for (std::vector<SEQUENCE_NUMBER_T>::iterator iter = m_expected_set.begin(); iter != m_expected_set.end(); ++iter)
    {
       // All chunks in this list are further behind the playback point
       double availableTime = (*iter - currentPlaybackPoint) / m_videoStreamChunkRate;
@@ -149,10 +139,10 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    // -------------------------------------------------------------------------
    // -- Browse through the expected_set
    // -------------------------------------------------------------------------
-   int sizeExpectedSet = expected_set.size();
+   int sizeExpectedSet = m_expected_set.size();
    for (int i = 0; i < sizeExpectedSet; ++i)
    {
-      SEQUENCE_NUMBER_T seq_num = expected_set[i];
+      SEQUENCE_NUMBER_T seq_num = m_expected_set[i];
       IpAddresses_t holderList;
       m_partnerList->getHolderList(seq_num, holderList);
 
@@ -373,7 +363,7 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 
    if (getNodeAddress() == IPvXAddress("192.168.2.162"))
    {
-       std::cout << "\t Number of chunks to request: " << expected_set.size() << endl;
+       std::cout << "\t Number of chunks to request: " << m_expected_set.size() << endl;
        std::cout << "\t Number of requested chunks: " << m_nChunkRequested_perSchedulingInterval << endl;
    }
 
@@ -454,4 +444,3 @@ int DonetPeer::selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candida
 
    return ret;
 }
-

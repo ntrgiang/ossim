@@ -138,10 +138,9 @@ void DonetPeer::initialize(int stage)
    timer_reportStatistic   = new cMessage("MESH_PEER_TIMER_REPORT_STATISTIC");
    timer_reportActive      = new cMessage("MESH_PEER_TIMER_REPORT_ACTIVE");
 
-   //timer_timeout_waiting_accept = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
-   //timer_timeout_waiting_response  = new cMessage("MESH_PEER_TIMER_WAITING_ACCEPT");
    //    timer_rejoin            = new cMessage("MESH_PEER_TIMER_REJOIN");
    timer_partnershipRefinement = new cMessage("MESH_PEER_TIMER_PARTNERSHIP_REFINEMENT");
+   timer_checkVideoBuffer = new cMessage("MESH_PEER_TIMER_CHECK_VIDEOBUFFER");
 
    // Parameters of the module itself
    // param_bufferMapInterval             = par("bufferMapInterval");
@@ -195,6 +194,7 @@ void DonetPeer::initialize(int stage)
 
    // --------- Debug ------------
    m_joinTime = -1.0;
+   m_count_rejoin = 0;
    // -- Init for activity logging:
    //    string path = "..//results//";
    //    string filename = path + getNodeAddress().str();
@@ -409,6 +409,12 @@ void DonetPeer::cancelAndDeleteAllTimer()
       delete cancelEvent(timer_reportActive);
       timer_reportActive = NULL;
    }
+
+   if (timer_checkVideoBuffer != NULL)
+   {
+      delete cancelEvent(timer_checkVideoBuffer);
+      timer_checkVideoBuffer = NULL;
+   }
    //    if (timer_reportStatistic != NULL) cancelAndDelete(timer_reportStatistic);
 
 }
@@ -423,6 +429,8 @@ void DonetPeer::cancelAllTimer()
 
    cancelEvent(timer_reportStatistic);
    cancelEvent(timer_reportActive);
+
+   cancelEvent(timer_checkVideoBuffer);
 }
 
 void DonetPeer::handleTimerMessage(cMessage *msg)
@@ -432,6 +440,7 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
    if (msg == timer_sendBufferMap)
    {
       sendBufferMap();
+      if (m_sched_window_moved == true) checkVideoBuffer();
       scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
    }
    else if (msg == timer_chunkScheduling)
@@ -704,16 +713,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
    if (m_partnerList->getSize() == 0) // a lonely peer
    {
       debugOUT << "!!!Isolated peer!!!" << endl;
-      cancelAllTimer();
-      m_apTable->removeAddress(getNodeAddress());
-      m_state = MESH_JOIN_STATE_IDLE;
-      m_player->scheduleStopPlayer();
-
-      // TODO: (Giang) report the state to the membership layer
-
-      // -- Schedule to rejoin the system at a random time (within one second)
-      //
-      scheduleAt(simTime() + dblrand(), timer_join);
+      rejoin();
       return;
    }
 
@@ -1463,12 +1463,12 @@ bool DonetPeer::should_be_requested(SEQUENCE_NUMBER_T seq_num)
       return false;
    }
 
-   SEQUENCE_NUMBER_T current_playbackPoint = m_player->getCurrentPlaybackPoint();
-   if (seq_num < current_playbackPoint)
-   {
-      EV << "-- Chunk " << seq_num << " is behind play-back point " << current_playbackPoint << endl;
-      return false;
-   }
+//   SEQUENCE_NUMBER_T current_playbackPoint = m_player->getCurrentPlaybackPoint();
+//   if (seq_num < current_playbackPoint)
+//   {
+//      EV << "-- Chunk " << seq_num << " is behind play-back point " << current_playbackPoint << endl;
+//      return false;
+//   }
 
 //   if (m_nChunkRequested_perSchedulingInterval > m_downloadRate_chunk)
 //   {
@@ -1578,6 +1578,7 @@ void DonetPeer::chunkScheduling()
 
    m_videoBuffer->printStatus();
 
+   debugOUT << "sched_win:: start " << m_sched_window.start << " -- end " << m_sched_window.end << endl;
 //   randomChunkScheduling(m_sched_window.start, m_sched_window.end);
    donetChunkScheduling(m_sched_window.start, m_sched_window.end);
 
@@ -1826,5 +1827,57 @@ MeshPartnershipLeavePacket* DonetPeer::generatePartnershipRequestLeavePacket()
    leavePkt->setBitLength(m_appSetting->getPacketSizePartnershipLeave());
 
    return leavePkt;
+}
+
+void DonetPeer::rejoin()
+{
+   cancelAllTimer();
+   m_apTable->removeAddress(getNodeAddress());
+   m_state = MESH_JOIN_STATE_IDLE;
+   m_player->scheduleStopPlayer();
+
+   // TODO: (Giang) report the state to the membership layer
+
+   scheduleAt(simTime() + dblrand(), timer_join);
+   ++m_count_rejoin;
+}
+
+void DonetPeer::checkVideoBuffer()
+{
+   if (m_videoBuffer->getPercentFill() < m_player->getPercentBufferLow())
+   {
+      debugOUT << "Buffer status not sufficient --> rejoin" << endl;
+      rejoin();
+   }
+}
+
+void DonetPeer::findExpectedSet(SEQUENCE_NUMBER_T currentPlaybackPoint,
+                                SEQUENCE_NUMBER_T lower_bound,
+                                SEQUENCE_NUMBER_T upper_bound)
+{
+   for (SEQUENCE_NUMBER_T seq_num = std::max(lower_bound, currentPlaybackPoint);
+        seq_num <= upper_bound; ++seq_num)
+   {
+      if (!should_be_requested(seq_num))
+      {
+         continue;
+      }
+
+      if (m_videoBuffer->isInBuffer(seq_num) == false)
+      {
+         m_expected_set.push_back(seq_num);
+      }
+   }
+}
+
+void DonetPeer::printExpectedSet()
+{
+   cout << "Expected set: " << endl;
+   for (std::vector<SEQUENCE_NUMBER_T>::iterator iter = m_expected_set.begin();
+        iter != m_expected_set.end(); ++iter)
+   {
+      std::cout << *iter << " ";
+   }
+   std::cout << endl;
 }
 
