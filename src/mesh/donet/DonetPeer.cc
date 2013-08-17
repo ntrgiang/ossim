@@ -440,7 +440,7 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
    if (msg == timer_sendBufferMap)
    {
       sendBufferMap();
-      if (m_sched_window_moved == true) checkVideoBuffer();
+      //if (m_sched_window_moved == true) checkVideoBuffer();
       scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
    }
    else if (msg == timer_chunkScheduling)
@@ -1404,20 +1404,25 @@ int DonetPeer::initializeSchedulingWindow()
    }
    debugOUT << "------> max_start = " << max_start << " -- min_head = " << min_head <<  endl;
 
-   int playout_offset = (int)(m_player->getPercentBufferHigh() * m_videoBuffer->getSize() - 0.5 * m_videoStreamChunkRate);
+   //int playout_offset = (int)(m_player->getPercentBufferHigh() * m_videoBuffer->getSize() - 0.5 * m_videoStreamChunkRate);
 
    // -- Finding the start of the scheduling window
    //
    if (min_head > 0L)
    {
-      if (max_start + playout_offset > min_head)
-         m_sched_window.start = (max_start + min_head) / 2;
-      else
-         m_sched_window.start = max_start + playout_offset;
+      m_sched_window.start = (max_start + min_head) / 2;
+
+//      if (max_start + playout_offset > min_head)
+//         m_sched_window.start = (max_start + min_head) / 2;
+//      else
+//         m_sched_window.start = max_start + playout_offset;
       m_sched_window.end   = m_sched_window.start + m_bufferMapSize_chunk - 1;
       debugOUT << "Scheduling window [start, end] = " << m_sched_window.start << " - " << m_sched_window.end << endl;
 
       m_videoBuffer->initializeRangeVideoBuffer(m_sched_window.start);
+
+      cout << "@ " << simTime().dbl() << " -- max_start = " << max_start
+           << " -- min_head = " << min_head << " --> start = " << m_sched_window.start << endl;
 
       return INIT_SCHED_WIN_GOOD;
    }
@@ -1443,18 +1448,6 @@ bool DonetPeer::shouldStartChunkScheduling(void)
    return false;
 }
 
-/*
-bool DonetPeer::should_be_requested(void)
-{
-    EV << "Number of chunks requested so far per cycle: " \
-            << m_nChunkRequested_perSchedulingInterval << endl;
-    if (m_nChunkRequested_perSchedulingInterval >= numberOfChunkToRequestPerCycle())
-        return false;
-
-    return true;
-}
-*/
-
 bool DonetPeer::should_be_requested(SEQUENCE_NUMBER_T seq_num)
 {
    // -- Check if the chunk has been recently requested
@@ -1463,13 +1456,6 @@ bool DonetPeer::should_be_requested(SEQUENCE_NUMBER_T seq_num)
       return false;
    }
 
-//   SEQUENCE_NUMBER_T current_playbackPoint = m_player->getCurrentPlaybackPoint();
-//   if (seq_num < current_playbackPoint)
-//   {
-//      EV << "-- Chunk " << seq_num << " is behind play-back point " << current_playbackPoint << endl;
-//      return false;
-//   }
-
 //   if (m_nChunkRequested_perSchedulingInterval > m_downloadRate_chunk)
 //   {
 //      return false;
@@ -1477,54 +1463,6 @@ bool DonetPeer::should_be_requested(SEQUENCE_NUMBER_T seq_num)
 
    return true;
 }
-
-/*
-bool DonetPeer::should_be_requested(SEQUENCE_NUMBER_T seq_num)
-{
-    EV << endl;
-    EV << "%%%" << endl;
-    EV << "Number of chunks requested in this cycle: " \
-       << m_nChunkRequested_perSchedulingInterval << endl;
-
-    // -- Check if already requested too many chunks
-//    if (m_nChunkRequested_perSchedulingInterval >= numberOfChunkToRequestPerCycle())
-//        return false;
-
-    int nChunkPerCycle = numberOfChunkToRequestPerCycle();
-    EV << "numberOfChunkToRequestPerCycle(): " << nChunkPerCycle << endl;
-
-    if (numberOfChunkToRequestPerCycle() > 0)
-    {
-        // -- Case of limited requests
-        EV << "-- Limited number of chunks to request" << endl;
-        if (m_nChunkRequested_perSchedulingInterval >= nChunkPerCycle)
-        {
-            EV << "-- Limit was exceeded" << endl;
-            return false;
-        }
-    }
-    else
-    {
-        EV << "-- Unlimited number of chunks to request" << endl;
-    }
-
-    // -- Check if the chunk has been recently requested
-    if (recentlyRequestedChunk(seq_num) == true)
-    {
-        return false;
-    }
-
-    SEQUENCE_NUMBER_T current_playbackPoint = m_player->getCurrentPlaybackPoint();
-    if (seq_num < current_playbackPoint)
-    {
-        EV << "-- Chunk " << seq_num << " is behind play-back point " << current_playbackPoint << endl;
-        return false;
-    }
-
-    return true;
-}
-*/
-
 
 /*
  * This function is a _wrapper_ for the specific chunk scheduling algorithm
@@ -1579,9 +1517,11 @@ void DonetPeer::chunkScheduling()
    m_videoBuffer->printStatus();
 
    debugOUT << "sched_win:: start " << m_sched_window.start << " -- end " << m_sched_window.end << endl;
-//   randomChunkScheduling(m_sched_window.start, m_sched_window.end);
-   donetChunkScheduling(m_sched_window.start, m_sched_window.end);
+   randomChunkScheduling(m_sched_window.start, m_sched_window.end);
+//   donetChunkScheduling(m_sched_window.start, m_sched_window.end);
 
+   int adjustment = intrand(2);
+   int offset = m_videoStreamChunkRate - adjustment;
    // -- Move the scheduling window forward
    //
    if (m_player->getState() == PLAYER_STATE_PLAYING)
@@ -1590,8 +1530,8 @@ void DonetPeer::chunkScheduling()
       {
          if (m_player->getCurrentPlaybackPoint() - m_sched_window.start > m_player->getPercentBufferLow() * m_bufferMapSize_chunk)
          {
-            m_sched_window.start += m_videoStreamChunkRate;
-            m_sched_window.end  += m_videoStreamChunkRate;
+            m_sched_window.start += offset;
+            m_sched_window.end  += offset;
 
             m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
             m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
@@ -1601,8 +1541,8 @@ void DonetPeer::chunkScheduling()
       }
       else
       {
-         m_sched_window.start += m_videoStreamChunkRate;
-         m_sched_window.end  += m_videoStreamChunkRate;
+         m_sched_window.start += offset;
+         m_sched_window.end  += offset;
 
          m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
          m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
