@@ -46,9 +46,9 @@ using namespace std;
 Define_Module(VideoBuffer)
 
 #ifndef debugOUT
-//#define debugOUT (!m_debug) ? std::cout : std::cout << "@ " << simTime().dbl() << "::" << getFullName() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << simTime().dbl() << " " << getFullName() << ":: "
 //#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
-#define debugOUT (!m_debug) ? std::cout : std::cout << "@ " << simTime().dbl() << "::"
+//#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << simTime().dbl() << ":: "
 #endif
 
 VideoBuffer::VideoBuffer() {}
@@ -118,6 +118,8 @@ void VideoBuffer::handleMessage(cMessage *)
 
 void VideoBuffer::initializeRangeVideoBuffer(SEQUENCE_NUMBER_T seq)
 {
+   assert(seq > m_bufferStart_seqNum);
+
    m_bufferStart_seqNum = seq;
    debugOUT << "set value for head " << seq << endl;
    m_head_received_seqNum = seq;
@@ -134,9 +136,10 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
    EV << "---------- Insert a packet into video buffer ------------------------" << endl;
 
    long seq_num = packet->getSeqNumber();
-   EV << "-- Sequence number of chunk: " << seq_num << " --> element: " << seq_num % m_bufferSize_chunk << endl;
-   EV << "\t-- Buffer_start:\t" << m_bufferStart_seqNum << endl;
-   EV << "\t-- Buffer_end:\t" << m_bufferEnd_seqNum << endl;
+   debugOUT << "-- Sequence number of chunk: " << seq_num << " --> element: " << seq_num % m_bufferSize_chunk << endl;
+   debugOUT << "\t-- Buffer_start:\t" << m_bufferStart_seqNum << endl;
+   debugOUT << "\t-- Buffer_end:\t" << m_bufferEnd_seqNum << endl;
+
 
    // ------------- Out of range ------------------
    if (seq_num < m_bufferStart_seqNum)
@@ -180,69 +183,33 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
    elem.m_chunk = packet;
 
    if (__VIDEOBUFFER_CROSSCHECK__) ++m_nActiveElement;
-   /*
-#if (BUFFER_IMPL_VERSION == _VERSION_1)
-    if (seq_num > m_id_bufferEnd)
-    {
-        // because of modification in class implementation
-        m_id_bufferEnd = seq_num;
-        m_id_bufferStart = std::max(0L, m_id_bufferEnd - m_bufferSize + 1);
-    }
-#elif (BUFFER_IMPL_VERSION == _VERSION_2)
-    if (seq_num > m_bufferEnd_seqNum)
-    {
-        m_bufferEnd_seqNum = seq_num;
-        m_bufferStart_seqNum = std::max(0L, m_bufferEnd_seqNum - m_bufferSize + 1);
-    }
-#elif (BUFFER_IMPL_VERSION == _VERSION_3)
-    if (seq_num > m_head_received_seqNum)
-    {
-        EV << "-- Update the range of the Video Buffer:" << endl;
-
-        m_head_received_seqNum = seq_num;
-        m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
-        m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
-        EV << "  -- start:\t"   << m_bufferStart_seqNum     << endl;
-        EV << "  -- end:\t"     << m_bufferEnd_seqNum       << endl;
-        EV << "  -- head:\t"    << m_head_received_seqNum   << endl;
-    }
-#endif
-*/
 
    // ------------- Adjust the window ------------------
    if (seq_num > m_head_received_seqNum)
    {
+      m_head_received_seqNum = seq_num;
+   }
+
+   if (seq_num > m_bufferEnd_seqNum)
+   {
       EV << "-- Update the range of the Video Buffer:" << endl;
       debugOUT << "received this chunk " << seq_num << endl;
-      m_head_received_seqNum = seq_num;
-      //m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
+      //m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
+      m_bufferEnd_seqNum = seq_num;
+      debugOUT << "old start: " << m_bufferStart_seqNum << endl;
+
+      if (m_bufferStart_seqNum == 777)
+         assert(m_bufferEnd_seqNum - m_bufferSize_chunk + 1 > 727);
+
+      m_bufferStart_seqNum = m_bufferEnd_seqNum - m_bufferSize_chunk + 1;
+      debugOUT << "new start: " << m_bufferStart_seqNum << endl;
 
       // TODO: (Giang) verify this!!!
-      //m_bufferStart_seqNum = std::max(m_bufferStart_seqNum, m_head_received_seqNum - m_bufferSize_chunk + 1);
-      //m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
-
       EV << "  -- start:\t"   << m_bufferStart_seqNum     << endl;
       EV << "  -- end:\t"     << m_bufferEnd_seqNum       << endl;
       EV << "  -- head:\t"    << m_head_received_seqNum   << endl;
-   }
 
-   //
-   // TODO: Might be obsolete (Giang)
-   //
-   //    // -- To know the status
-   //    if (m_time_firstChunk < 0)
-   //    {
-   //        // This received chunk is the first one received so far
-   //        m_time_firstChunk = simTime().dbl();
-   //    }
-   //    else
-   //    {
-   //        double delta_time = simTime().dbl() - m_time_firstChunk;
-   //        if (delta_time > 0)
-   //            EV << "Average received chunk rate: " << (double)m_nChunkReceived / delta_time << endl;
-   //        else
-   //            throw cException("delta_time is invalid");
-   //    }
+   }
 
    // -- Update the hop count variable
    packet->setOverlayHopCount(packet->getOverlayHopCount() + 1);
@@ -310,30 +277,20 @@ void VideoBuffer::insertPacketDirect(VideoChunkPacket *packet)
    {
       EV << "-- Update the range of the Video Buffer:" << endl;
 
-      debugOUT << "received this chunk " << seq_num << endl;
+      //debugOUT << "received this chunk " << seq_num << endl;
+      //m_bufferStart_seqNum += (seq_num - _head_received_seqNum);
+      //m_head_received_seqNum = seq_num;
+      //m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
       m_head_received_seqNum = seq_num;
       m_bufferStart_seqNum = std::max(0L, m_head_received_seqNum - m_bufferSize_chunk + 1);
       m_bufferEnd_seqNum = m_bufferStart_seqNum + m_bufferSize_chunk - 1;
-      EV << "  -- start:\t"   << m_bufferStart_seqNum     << endl;
-      EV << "  -- end:\t"     << m_bufferEnd_seqNum       << endl;
-      EV << "  -- head:\t"    << m_head_received_seqNum   << endl;
-   }
+      debugOUT << "seq_num: " << seq_num
+               << " -- start: " << m_bufferStart_seqNum
+               << " -- head: " << m_head_received_seqNum
+               << " -- end: " << m_bufferEnd_seqNum
+               << endl;
 
-   //    // -- To know the status
-   //    ++m_nChunkReceived;
-   //    if (m_time_firstChunk < 0)
-   //    {
-   //        // This received chunk is the first one received so far
-   //        m_time_firstChunk = simTime().dbl();
-   //    }
-   //    else
-   //    {
-   //        double delta_time = simTime().dbl() - m_time_firstChunk;
-   //        if (delta_time > 0)
-   //            EV << "Average received chunk rate: " << (double)m_nChunkReceived / delta_time << endl;
-   //        else
-   //            throw cException("delta_time is invalid");
-   //    }
+   }
 
    packet->setOverlayHopCount(0);
 
@@ -564,11 +521,15 @@ void VideoBuffer::printRange()
    debugOUT << "Range of the video buffer: "
             << " -- Start:" << setw(6) << m_bufferStart_seqNum
             << " -- End:"   << setw(6) << m_bufferEnd_seqNum
-            << " -- Head:"  << setw(6) << m_head_received_seqNum   << endl;
+            << " -- Head:"  << setw(6) << m_head_received_seqNum
+            << " -- Size: " << setw(6) << m_bufferSize_chunk << endl;
 }
 
 void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
 {
+   //if (m_bufferStart_seqNum != 0L)
+   //   assert((m_bufferEnd_seqNum-m_bufferStart_seqNum+1) == m_bufferSize_chunk);
+
    EV << endl;
    EV << "%%%" << endl;
    EV << "Copy set bits from Buffer Map into BM packet: " << endl;
@@ -675,6 +636,9 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
 
       if (iter->m_chunk->getSeqNumber() != videoChunk_seq)
       {
+         cout << "start " << m_bufferStart_seqNum
+              << " -- end " << m_bufferEnd_seqNum
+              << " -- head: " << m_head_received_seqNum << endl;
          throw cException("Expected chunk %ld, but actual chunk %ld",
                           videoChunk_seq,
                           iter->m_chunk->getSeqNumber());
