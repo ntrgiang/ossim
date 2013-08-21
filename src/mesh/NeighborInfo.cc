@@ -104,8 +104,10 @@ void NeighborInfo::setElementSendBm(SEQUENCE_NUMBER_T seq_num, bool val)
 //    long int offset = 0L;
     if (offset > m_bufferSize)
     {
-       throw cException("Out of range! seq_num = %ld -- m_seqNum_sendBmStart = ",
-                        seq_num,  m_seqNum_sendBmStart);
+       //throw cException("Out of range! seq_num = %ld -- m_seqNum_sendBmStart = %ld",
+       //                 seq_num,  m_seqNum_sendBmStart);
+
+       return;
     }
 //    EV << " -- NeighborInfo::setElementSendBm:: offset: " << offset << endl;
 
