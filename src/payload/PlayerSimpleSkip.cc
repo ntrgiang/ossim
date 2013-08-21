@@ -1,4 +1,4 @@
-//  
+//
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -31,6 +31,7 @@
 
 
 #include "PlayerSimpleSkip.h"
+#include "assert.h"
 
 Define_Module(PlayerSimpleSkip)
 
@@ -144,11 +145,12 @@ void PlayerSimpleSkip::activate(void)
 
    EV << "Player (Simple skip) activated!" << endl;
 
-   if (m_state != PLAYER_STATE_IDLE)
-   {
-      throw cException("Wrong Player state %d (PLAYER_STATE_BUFFERING) while expecting %d (PLAYER_STATE_IDLE)",
-                       m_state, PLAYER_STATE_IDLE);
-   }
+   assert(m_state == PLAYER_STATE_IDLE);
+//   if (m_state != PLAYER_STATE_IDLE)
+//   {
+//      throw cException("Wrong Player state %d (PLAYER_STATE_BUFFERING) while expecting %d (PLAYER_STATE_IDLE)",
+//                       m_state, PLAYER_STATE_IDLE);
+//   }
 
    m_state = PLAYER_STATE_BUFFERING;
    cancelEvent(timer_playerStart);
@@ -189,7 +191,8 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
       {
       case PLAYER_STATE_BUFFERING:
       {
-         if (m_videoBuffer->getPercentFill() < param_percent_buffer_high)
+         //if (m_videoBuffer->getPercentFill() < param_percent_buffer_high)
+         if (readyToStart() == false)
          {
             EV << "Buffer filled not enough, should wait more!" << endl;
 
@@ -335,3 +338,30 @@ bool PlayerSimpleSkip::shouldResumePlaying(SEQUENCE_NUMBER_T seq_num)
 
 //   return 0.0;
 //}
+
+bool PlayerSimpleSkip::readyToStart(void)
+{
+   SEQUENCE_NUMBER_T head = m_videoBuffer->getHeadReceivedSeqNum();
+   int offset = param_percent_buffer_high * m_videoBuffer->getSize();
+
+   SEQUENCE_NUMBER_T expected_playback_point = m_videoBuffer->getHeadReceivedSeqNum() - offset;
+   if (expected_playback_point < m_videoBuffer->getBufferStartSeqNum())
+   {
+      return false;
+   }
+
+   int nIn = 0, nTotal = 0;
+   for (SEQUENCE_NUMBER_T i = expected_playback_point; i <= head; ++i)
+   {
+      if (m_videoBuffer->isInBuffer(i) == true) ++nIn;
+
+      ++nTotal;
+   }
+
+   double ratio = (double)nIn / nTotal;
+   debugOUT << "ratio = " << ratio << endl;
+   if (ratio < 0.6)
+      return false;
+
+   return true;
+}

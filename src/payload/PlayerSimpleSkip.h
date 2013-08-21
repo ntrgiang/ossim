@@ -1,4 +1,4 @@
-//  
+//
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -71,6 +71,7 @@ public:
     bool playerStarted(void);
 
     double getContinuityIndex(void);
+    bool readyToStart(void);
 
 private:
     void startPlayer(void);
