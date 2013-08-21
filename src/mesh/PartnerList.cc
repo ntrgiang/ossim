@@ -555,3 +555,16 @@ void PartnerList::resetAllAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUM
 
 }
 
+SEQUENCE_NUMBER_T PartnerList::getMaxHeadSequenceNumber(void)
+{
+   SEQUENCE_NUMBER_T maxSequence = -1L;
+
+   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_map.begin();
+        iter != m_map.end(); ++iter)
+   {
+      SEQUENCE_NUMBER_T currentHead = iter->second.getSeqNumRecvBmHead();
+      maxSequence = (maxSequence >= currentHead) ? maxSequence : currentHead;
+   }
+
+   return maxSequence;
+}

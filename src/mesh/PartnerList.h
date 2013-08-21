@@ -1,4 +1,4 @@
-//  
+//
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -131,6 +131,8 @@ public:
 
    bool updateChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, double time);
    double getChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num);
+
+   SEQUENCE_NUMBER_T getMaxHeadSequenceNumber(void);
 
     //@}
 
