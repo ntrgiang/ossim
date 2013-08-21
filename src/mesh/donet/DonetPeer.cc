@@ -56,7 +56,7 @@ namespace std
 //using namespace std;
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << setprecision(6) << simTime().dbl() << " @Peer " << getNodeAddress() << "::" << getFullName() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << setprecision(12) << simTime().dbl() << " @Peer " << getNodeAddress() << "::" << getFullName() << ": "
 #endif
 
 // ------------------------ Static members -------------------------------------
@@ -145,7 +145,6 @@ void DonetPeer::initialize(int stage)
    // Parameters of the module itself
    // param_bufferMapInterval             = par("bufferMapInterval");
    // param_chunkSchedulingInterval       = par("chunkSchedulingInterval");
-   //    param_interval_rejoin               = par("interval_rejoin");
 
    m_pRefinementEnabled                  = par("pRefinementEnabled");
    param_interval_chunkScheduling        = par("interval_chunkScheduling");
@@ -466,7 +465,7 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
       if (m_partnerList->getSize() < param_maxNOP)
          scheduleAt(simTime() + param_interval_findMorePartner, timer_findMorePartner);
       else
-         scheduleAt(simTime() + 3 * param_interval_findMorePartner, timer_findMorePartner);
+         scheduleAt(simTime() + 5 * param_interval_findMorePartner, timer_findMorePartner);
    }
    else if (msg == timer_partnershipRefinement)
    {
@@ -497,11 +496,7 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
    }
    else if (msg == timer_join)
    {
-      //join();
       handleTimerJoin();
-
-      // -- Schedule for a rejoin (if any)
-      // scheduleAt(simTime() + param_interval_rejoin, timer_join);
    }
    else if (msg == timer_leave)
    {
@@ -1072,12 +1067,16 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
 
       // -- 4. Active Player?
       EV << "-- Player will be actived now" << endl;
+      debugOUT << "current state of the player " << m_player->getState() << endl;
       m_player->activate();
       //scheduleAt(simTime() + param_interval_starPlayer, timer_startPlayer);
 
       // -- 5. Partnership refinement
       if (m_pRefinementEnabled)
+      {
+         //if (timer_partnershipRefinement->isScheduled()) cancelEvent(timer_partnershipRefinement);
          scheduleAt(simTime() + param_interval_partnershipRefinement, timer_partnershipRefinement);
+      }
 
       // -- Debug
       // m_gstat->reportMeshJoin();
@@ -1159,29 +1158,34 @@ void DonetPeer::processPartnershipDisconnect(cPacket* pkt)
    // -- check if peer is lonely, in that case, rejoin!
    if (m_partnerList->getSize() == 0)
    {
-      m_state = MESH_JOIN_STATE_IDLE;
-      cancelAllTimer();
-      // TODO: (Giang) should also reset the flag of the scheduling window?
-      // TODO: (Giang) should stop the player?
-
-      scheduleAt(simTime() + uniform(0,1.0), timer_join);
+      rejoin();
    }
 }
 
 void DonetPeer::sendBufferMap(void)
 {
-   if (getNodeAddress() == IPvXAddress("192.168.2.162"))
-   {
-      std::cout << "crashed node: " << getNodeAddress() << endl;
-      debugOUT << "Going to send Buffer Maps ..." << endl;
-      std::cout << "Current playback point: " << m_player->getCurrentPlaybackPoint() << endl;
-      std::cout << "Video Buffer start: " << m_videoBuffer->getBufferStartSeqNum() << endl;
-      std::cout << "Video buffer head: " << m_videoBuffer->getHeadReceivedSeqNum() << endl;
-      std::cout << "Number of received chunks: " << m_videoBuffer->getNumberOfReceivedChunk() << endl;
-      std::cout << "Number of filled chunks: " << m_videoBuffer->getNumberOfChunkFill() << endl;
-      std::cout << "Percent buffer filled: " << m_videoBuffer->getPercentFill() << endl;
-   }
+//   if (getNodeAddress() == IPvXAddress("192.168.0.45"))
+//   {
+//      std::cout << endl << "crashed node: " << getNodeAddress() << endl;
+//      std::cout << "Current playback point: " << m_player->getCurrentPlaybackPoint() << endl;
+
+//      cout << "Video buffer: "
+//           << " -- start " << m_videoBuffer->getBufferStartSeqNum()
+//           << " -- head " << m_videoBuffer->getHeadReceivedSeqNum()
+//           << " -- end " << m_videoBuffer->getBufferEndSeqNum()
+//           << endl;
+//   }
+
    DonetBase::sendBufferMap();
+
+//   try
+//   {
+//      DonetBase::sendBufferMap();
+//   }
+//   catch (cException e)
+//   {
+//      cout << "exeption @peer " << getNodeAddress() << endl;
+//   }
 }
 
 void DonetPeer::processPeerBufferMap(cPacket *pkt)
@@ -1215,10 +1219,11 @@ void DonetPeer::processPeerBufferMap(cPacket *pkt)
    // -- Cast to the BufferMap packet
    MeshBufferMapPacket *bmPkt = check_and_cast<MeshBufferMapPacket *>(pkt);
 
-   EV << "-- Buffer Map information: " << endl;
-   EV << "  -- Start:\t"   << bmPkt->getBmStartSeqNum()    << endl;
-   EV << "  -- End:\t"     << bmPkt->getBmEndSeqNum()      << endl;
-   EV << "  -- Head:\t"    << bmPkt->getHeadSeqNum()       << endl;
+   debugOUT << "-- recv BM: "
+            << "  -- Start: "   << bmPkt->getBmStartSeqNum()
+            << "  -- End: "     << bmPkt->getBmEndSeqNum()
+            << "  -- Head: "    << bmPkt->getHeadSeqNum()
+            << endl;
 
    // -- Copy the BufferMap content to the current record
    nbr_info->copyFrom(bmPkt);
@@ -1421,7 +1426,7 @@ int DonetPeer::initializeSchedulingWindow()
 
       m_videoBuffer->initializeRangeVideoBuffer(m_sched_window.start);
 
-      cout << "@ " << simTime().dbl() << " -- max_start = " << max_start
+      cout << "@ " << simTime().dbl() << " @peer " << getNodeAddress() << " -- max_start = " << max_start
            << " -- min_head = " << min_head << " --> start = " << m_sched_window.start << endl;
 
       return INIT_SCHED_WIN_GOOD;
@@ -1486,7 +1491,7 @@ void DonetPeer::chunkScheduling()
       m_scheduling_started = true;
    }
 
-   updateRange();
+   //updateRange();
 
 //   if (getNodeAddress() == IPvXAddress("192.168.0.16"))
 //   {
@@ -1517,10 +1522,19 @@ void DonetPeer::chunkScheduling()
    m_videoBuffer->printStatus();
 
    debugOUT << "sched_win:: start " << m_sched_window.start << " -- end " << m_sched_window.end << endl;
-   randomChunkScheduling(m_sched_window.start, m_sched_window.end);
-//   donetChunkScheduling(m_sched_window.start, m_sched_window.end);
+   debugOUT << "current pb point: " << m_player->getCurrentPlaybackPoint() << endl;
+   debugOUT << "video buffer:: start " << m_videoBuffer->getBufferStartSeqNum() << " -- end " << m_videoBuffer->getBufferEndSeqNum() << endl;
+//   randomChunkScheduling(m_sched_window.start, m_sched_window.end);
 
-   int adjustment = intrand(2);
+//   if (m_player->getState() == PLAYER_STATE_PLAYING)
+//      m_sched_window.start = m_player->getCurrentPlaybackPoint();
+//   m_sched_window.head = m_partnerList->getMaxHeadSequenceNumber();
+//   m_sched_window.start = m_sched_window.head
+
+   donetChunkScheduling(m_sched_window.start, m_sched_window.end);
+
+   //int adjustment = intrand(2);
+   int adjustment = 0;
    int offset = m_videoStreamChunkRate - adjustment;
    // -- Move the scheduling window forward
    //
@@ -1533,8 +1547,8 @@ void DonetPeer::chunkScheduling()
             m_sched_window.start += offset;
             m_sched_window.end  += offset;
 
-            m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
-            m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
+//            m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
+//            m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
 
             m_sched_window_moved = true;
          }
@@ -1544,8 +1558,8 @@ void DonetPeer::chunkScheduling()
          m_sched_window.start += offset;
          m_sched_window.end  += offset;
 
-         m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
-         m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
+//         m_videoBuffer->setBufferStartSeqNum(m_sched_window.start);
+//         m_videoBuffer->setBufferEndSeqNum(m_sched_window.end);
       }
    }
 }
@@ -1771,14 +1785,22 @@ MeshPartnershipLeavePacket* DonetPeer::generatePartnershipRequestLeavePacket()
 
 void DonetPeer::rejoin()
 {
+   debugOUT << "rejoin!!!!" << endl;
+
    cancelAllTimer();
    m_apTable->removeAddress(getNodeAddress());
    m_state = MESH_JOIN_STATE_IDLE;
    m_player->scheduleStopPlayer();
 
+   if (timer_partnershipRefinement->isScheduled())
+   {
+      cout << "strange behavior " << getNodeAddress() << endl;
+      cancelEvent(timer_partnershipRefinement);
+   }
    // TODO: (Giang) report the state to the membership layer
 
-   scheduleAt(simTime() + dblrand(), timer_join);
+   cout << "crashed node: " << getNodeAddress() << endl;
+   scheduleAt(simTime() + 1+dblrand(), timer_join);
    ++m_count_rejoin;
 }
 
@@ -1798,10 +1820,10 @@ void DonetPeer::findExpectedSet(SEQUENCE_NUMBER_T currentPlaybackPoint,
    for (SEQUENCE_NUMBER_T seq_num = std::max(lower_bound, currentPlaybackPoint);
         seq_num <= upper_bound; ++seq_num)
    {
-      if (!should_be_requested(seq_num))
-      {
-         continue;
-      }
+//      if (!should_be_requested(seq_num))
+//      {
+//         continue;
+//      }
 
       if (m_videoBuffer->isInBuffer(seq_num) == false)
       {
