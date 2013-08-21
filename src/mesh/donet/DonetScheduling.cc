@@ -54,6 +54,20 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 
    //if (getNodeAddress() == IPvXAddress(anIP)) debugOUT << "Donet scheduling" << endl;
 
+   SEQUENCE_NUMBER_T new_lower_bound, new_upper_bound, max_head;
+   max_head = m_partnerList->getMaxHeadSequenceNumber();
+   if (m_player->getCurrentPlaybackPoint() == -1)
+   {
+      new_lower_bound = m_videoBuffer->getBufferStartSeqNum();
+   }
+   else
+   {
+      new_lower_bound = m_player->getCurrentPlaybackPoint();
+   }
+   new_upper_bound = max_head;
+   //new_lower_bound = max(0L, max_head - m_bufferMapSize_chunk + 1);
+   //new_upper_bound = new_lower_bound + m_bufferMapSize_chunk - 1;
+
    // -- Reset
    //
    m_expected_set.clear();
@@ -66,20 +80,22 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    // -- Calculate the available time for _all_ chunk, for _all_ partners
    // (expect redundancy, but for simplicity of implementation),
    m_partnerList->resetAllAvailableTime(m_player->getCurrentPlaybackPoint(),
-                                        lower_bound,
+                                        new_lower_bound,
                                         m_videoBuffer->getChunkInterval());
 
    // -- Update bounds of all sendBM
    m_partnerList->clearAllSendBm();
-   m_partnerList->updateBoundSendBm(lower_bound, lower_bound+m_bufferMapSize_chunk-1);
+   m_partnerList->updateBoundSendBm(new_lower_bound, new_lower_bound+m_bufferMapSize_chunk-1);
    m_partnerList->resetNChunkScheduled();
 
    // -------------------------------------------------------------------------
    // -- Finding the expected set (set of chunks which should be requested)
    // -------------------------------------------------------------------------
-   debugOUT << "lower bound: " << lower_bound << " -- upper bound: " << upper_bound << endl;
+   debugOUT << "lower bound: " << new_lower_bound << " -- upper bound: " << new_upper_bound << endl;
    SEQUENCE_NUMBER_T currentPlaybackPoint = m_player->getCurrentPlaybackPoint();
-   findExpectedSet(currentPlaybackPoint, lower_bound, upper_bound);
+   findExpectedSet(currentPlaybackPoint, new_lower_bound, new_upper_bound);
+
+   debugOUT << "expected set size: " << m_expected_set.size() << endl;
    //printExpectedSet();
 
    AllTimeBudget_t chunkAvailableTime;
@@ -272,7 +288,7 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    // -- Prepare for the next requests
    //
    m_partnerList->clearAllSendBm();
-   m_partnerList->updateBoundSendBm(lower_bound, lower_bound+m_bufferMapSize_chunk-1);
+   m_partnerList->updateBoundSendBm(new_lower_bound, new_lower_bound+m_bufferMapSize_chunk-1);
 
    // -- Request chunks with more than one providers
    //
@@ -351,11 +367,11 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    //emit(sig_schedWin_start, m_sched_window.start);
    //emit(sig_schedWin_end, m_sched_window.end);
 
-   if (getNodeAddress() == IPvXAddress("192.168.2.162"))
-   {
-       std::cout << "\t Number of chunks to request: " << m_expected_set.size() << endl;
-       std::cout << "\t Number of requested chunks: " << m_nChunkRequested_perSchedulingInterval << endl;
-   }
+//   if (getNodeAddress() == IPvXAddress("192.168.2.162"))
+//   {
+//       std::cout << "\t Number of chunks to request: " << m_expected_set.size() << endl;
+//       std::cout << "\t Number of requested chunks: " << m_nChunkRequested_perSchedulingInterval << endl;
+//   }
 
 } // Donet Chunk Scheduling
 
