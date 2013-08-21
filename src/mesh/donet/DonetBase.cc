@@ -34,7 +34,7 @@
 #include "assert.h"
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << simTime().dbl() << "::" << getFullName() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << simTime().dbl() << " @Peer " << getNodeAddress() << "::" << getFullName() << ": "
 #endif
 
 bool DonetBase::m_trEnabled = false;
@@ -150,7 +150,7 @@ bool DonetBase::canAcceptMorePartner(void)
 
 void DonetBase::sendBufferMap(void)
 {
-   debugOUT << "@Peer " << getNodeAddress() << "::" << endl;
+   debugOUT << "Sending buffer maps::" << endl;
 
    if (m_partnerList->getSize() <= 0)
    {
@@ -159,10 +159,10 @@ void DonetBase::sendBufferMap(void)
    }
 
    m_partnerList->print2();
-   debugOUT << "@peer " << getNodeAddress() << endl;
+   //debugOUT << "@peer " << getNodeAddress() << endl;
 
    // -- Debug
-   m_videoBuffer->printRange();
+   //m_videoBuffer->printRange();
 
    MeshBufferMapPacket *bmPkt = new MeshBufferMapPacket("MESH_PEER_BUFFER_MAP");
    bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);
@@ -263,8 +263,11 @@ void DonetBase::processChunkRequest(cPacket *pkt)
    getSender(pkt, senderAddress, senderPort);
    MeshChunkRequestPacket *reqPkt = check_and_cast<MeshChunkRequestPacket *>(pkt);
 
-   EV << "Chunk request received from " << senderAddress << ": " << endl;
-   printChunkRequestPacket(reqPkt);
+   //EV << "Chunk request received from " << senderAddress << ": " << endl;
+   //printChunkRequestPacket(reqPkt);
+
+   debugOUT << "A request for " << countNumRequestedChunks(reqPkt)
+            << " packets from " << senderAddress << endl;
 
    // -- TODO: Need reply to chunk request here
    // -- Find the id of the requested chunk
@@ -355,7 +358,30 @@ void DonetBase::printChunkRequestPacket(MeshChunkRequestPacket *reqPkt)
    EV << endl;
 }
 
+void DonetBase::printChunkRequestPacket2(MeshChunkRequestPacket *reqPkt)
+{
+   debugOUT << "-- Start: " << reqPkt->getSeqNumMapStart()
+            << "-- End: "   << reqPkt->getSeqNumMapEnd()
+            << "-- Head: "  << reqPkt->getSeqNumMapHead()
+            << endl;
 
+   for (int i = 0; i < m_bufferMapSize_chunk; ++i)
+   {
+      debugOUT << "chunk " << reqPkt->getSeqNumMapStart() + i << " -- value " << reqPkt->getRequestMap(i) << endl;
+   }
+   //EV << endl;
+}
+
+int DonetBase::countNumRequestedChunks(MeshChunkRequestPacket *reqPkt)
+{
+   int count = 0;
+   for (int i = 0; i < m_bufferMapSize_chunk; ++i)
+   {
+      if (reqPkt->getRequestMap(i) == true) ++count;
+   }
+
+   return count;
+}
 
 //void DonetBase::processPartnerLeave(cPacket *pkt)
 //{

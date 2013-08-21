@@ -105,6 +105,8 @@ protected:
 
    void processChunkRequest(cPacket *pkt);
    void printChunkRequestPacket(MeshChunkRequestPacket *reqPkt);
+   void printChunkRequestPacket2(MeshChunkRequestPacket *reqPkt);
+   int countNumRequestedChunks(MeshChunkRequestPacket *reqPkt);
 
    MeshPartnershipAcceptPacket* generatePartnershipRequestAcceptPacket();
    MeshPartnershipRejectPacket* generatePartnershipRequestRejectPacket();
