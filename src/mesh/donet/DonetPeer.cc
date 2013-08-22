@@ -325,6 +325,7 @@ void DonetPeer::finish()
    //
    m_list_requestedChunk.clear();
 
+   // -- Clear the two queues
    std::queue<SEQUENCE_NUMBER_T> empty;
    std::swap(m_requestedChunks, empty);
    while(!m_numRequestedChunks.empty()) m_numRequestedChunks.pop();
@@ -1385,7 +1386,6 @@ int DonetPeer::initializeSchedulingWindow()
    max_start  = iter->second.getSeqNumRecvBmStart();
    min_head = iter->second.getSeqNumRecvBmHead();
    debugOUT << "Partner " << iter->first << " with start: " << max_start << " -- head: " << min_head << endl;
-   //debugOUT << "\t temp_start = " << max_start << " -- temp_head = " << min_head << endl;
 
    for (++iter; iter != m_partnerList->m_map.end(); ++iter)
    {
@@ -1393,7 +1393,6 @@ int DonetPeer::initializeSchedulingWindow()
       SEQUENCE_NUMBER_T temp_start = iter->second.getSeqNumRecvBmStart();
 
       debugOUT << "Partner " << iter->first << " with start: " << temp_start << " -- head: " << temp_head << endl;
-      //debugOUT << "\t temp_start = " << temp_start << " -- temp_head = " << temp_head << endl;
 
       if (temp_head != -1L && temp_head != 0L)
       {
@@ -1411,7 +1410,9 @@ int DonetPeer::initializeSchedulingWindow()
       max_start = (max_start < temp_start) ? temp_start : max_start;
       //debugOUT << "max_start = " << max_start << endl;
    }
-   debugOUT << "------> max_start = " << max_start << " -- min_head = " << min_head <<  endl;
+   debugOUT << "Peer has " << m_partnerList->getSize() << " partners"
+            << " ------> max_start = " << max_start
+            << " -- min_head = " << min_head <<  endl;
 
    //int playout_offset = (int)(m_player->getPercentBufferHigh() * m_videoBuffer->getSize() - 0.5 * m_videoStreamChunkRate);
 
@@ -1430,8 +1431,11 @@ int DonetPeer::initializeSchedulingWindow()
 
       m_videoBuffer->initializeRangeVideoBuffer(m_sched_window.start);
 
-      cout << "@ " << simTime().dbl() << " @peer " << getNodeAddress() << " -- max_start = " << max_start
-           << " -- min_head = " << min_head << " --> start = " << m_sched_window.start << endl;
+      cout << "@ " << simTime().dbl() << " @peer " << getNodeAddress()
+           << " has " << m_partnerList->getSize() << " partners"
+           << " -- max_start = " << max_start
+           << " -- min_head = " << min_head
+           << " --> start = " << m_sched_window.start << endl;
 
       return INIT_SCHED_WIN_GOOD;
    }
@@ -1478,9 +1482,9 @@ bool DonetPeer::should_be_requested(SEQUENCE_NUMBER_T seq_num)
  */
 void DonetPeer::chunkScheduling()
 {
-   if (m_partnerList->getSize() <= 0)
+   if (m_partnerList->getSize() < param_minNOP)
    {
-      EV << "No partner just yet, exiting from chunk scheduling" << endl;
+      EV << "Not enough partners just yet, exiting from chunk scheduling" << endl;
       return;
    }
 
