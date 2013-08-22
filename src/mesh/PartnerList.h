@@ -37,93 +37,94 @@
 #include "NeighborInfo.h"
 
 class PartnerList : public cSimpleModule {
-//class PartnerList {
+   //class PartnerList {
 public:
-    PartnerList();
-    virtual ~PartnerList();
+   PartnerList();
+   virtual ~PartnerList();
 
 protected:
-  virtual int numInitStages() const  {return 4;}
-  virtual void initialize(int stage);
-  virtual void finish();
+   virtual int numInitStages() const  {return 4;}
+   virtual void initialize(int stage);
+   virtual void finish();
 
-  // Raises an error.
-  virtual void handleMessage(cMessage *);
+   // Raises an error.
+   virtual void handleMessage(cMessage *);
 
 public:
-    /**
+   /**
      * For debugging
      */
-    void print() const;
+   void print() const;
 
-    void print2() const;
+   void print2() const;
 
-    void printAllSendBm() const;
+   void printAllSendBm() const;
 
-    /** @name Neighbor List manipulation */
-    //@{
+   /** @name Neighbor List manipulation */
+   //@{
 
-    /**
+   /**
      * Checks if a peer, given its address, is a neighbor.
      */
-    virtual bool isPartner(const IPvXAddress& dest) const; //FIXME: could be obsolete
-    bool have(const IPvXAddress& addr) const;
+   virtual bool isPartner(const IPvXAddress& dest) const; //FIXME: could be obsolete
+   bool have(const IPvXAddress& addr) const;
 
-    /**
+   /**
      * Returns the total number of Neighbors in the list
      */
-    virtual int getSize() const;
+   virtual int getSize() const;
 
-    /**
+   /**
      * Adds a Neighbor's address to the table. Note that once added, addresses
      * cannot be modified; you must delete and re-add them instead.
      */
-    virtual void addAddress(const IPvXAddress &address);
+   virtual void addAddress(const IPvXAddress &address);
 
-    void addAddress(const IPvXAddress &addr, double upBw, int nChunk);
+   void addAddress(const IPvXAddress &addr, double upBw, int nChunk);
 
-    /**
+   /**
      * Adds a Neighbor's address to the table. Note that once added, addresses
      * cannot be modified; you must delete and re-add them instead.
      * This version is an addition to the previous one, with extra information about peer's upload bandwidth
      */
-    virtual void addAddress(const IPvXAddress &addr, double upBw);
+   virtual void addAddress(const IPvXAddress &addr, double upBw);
 
-    /**
+   /**
      * Deletes the given Neighbor's address from the table.
      * Returns true if the address was deleted correctly, false if it was
      * not in the table.
      */
-    virtual bool deleteAddress(const IPvXAddress &address);
+   virtual bool deleteAddress(const IPvXAddress &address);
 
-    /**
+   /**
      * Utility function: Returns a vector of /N/ addresses of the active nodes.
      */
-    virtual std::vector<IPvXAddress> getAddressList() const;
+   virtual std::vector<IPvXAddress> getAddressList() const;
 
-    //virtual void updateNeighborInfo(NeighborInfo *);
+   //virtual void updateNeighborInfo(NeighborInfo *);
 
    bool hasAddress(const IPvXAddress & address) const;
    NeighborInfo * getNeighborInfo(const IPvXAddress &address) const;
 
-    /*
+   /*
      *
      */
-    virtual int updateStoredBufferMap(IPvXAddress, BufferMap *);
+   virtual int updateStoredBufferMap(IPvXAddress, BufferMap *);
 
-//    virtual void updateKeepAliveTimestamp(IPvXAddress addr, long timestamp);
+   //    virtual void updateKeepAliveTimestamp(IPvXAddress addr, long timestamp);
 
-    void getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddress> &holderList);
-    int getNumberOfHolder(SEQUENCE_NUMBER_T seq_num);
+   void getHolderList(SEQUENCE_NUMBER_T seq_num, std::vector<IPvXAddress> &holderList);
+   int getNumberOfHolder(SEQUENCE_NUMBER_T seq_num);
 
-    void clearAllSendBm(void);
-    void updateBoundSendBm(SEQUENCE_NUMBER_T head, SEQUENCE_NUMBER_T start, SEQUENCE_NUMBER_T end) const;
-    void updateBoundSendBm(SEQUENCE_NUMBER_T start, SEQUENCE_NUMBER_T end) const;
-    void resetNChunkScheduled();
+   void clearAllSendBm(void);
+   //void updateBoundSendBm(SEQUENCE_NUMBER_T head, SEQUENCE_NUMBER_T start, SEQUENCE_NUMBER_T end) const;
+   void updateBoundSendBm(SEQUENCE_NUMBER_T start, SEQUENCE_NUMBER_T end) const;
+   void resetNChunkScheduled();
 
-    void clearAllTimeBudget(void);
+   void clearAllTimeBudget(void);
 
-    void resetAllAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUMBER_T win_start, double chunkInterval);
+   void resetAllAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUMBER_T win_start, double chunkInterval);
+   void resetAllAvailableTime2(SEQUENCE_NUMBER_T win_start, double chunkPlaybackInterval);
 
    void setElementSendBm(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, bool val);
 
@@ -134,21 +135,21 @@ public:
 
    SEQUENCE_NUMBER_T getMaxHeadSequenceNumber(void);
 
-    //@}
+   //@}
 
-    // -- For debugging --
-    void printRecvBm(const IPvXAddress &address);
-    void printSendBm(const IPvXAddress &address);
+   // -- For debugging --
+   void printRecvBm(const IPvXAddress &address);
+   void printSendBm(const IPvXAddress &address);
 
 private:
-    bool m_debug;
-    typedef std::map<IPvXAddress, NeighborInfo> AddressList;
-    mutable AddressList m_map;
-    int m_bufferSize;
+   bool m_debug;
+   typedef std::map<IPvXAddress, NeighborInfo> AddressList;
+   mutable AddressList m_map;
+   int m_bufferSize;
 
-    friend class DonetPeer;
-    friend class DonetBase;
-    friend class DonetSource;
+   friend class DonetPeer;
+   friend class DonetBase;
+   friend class DonetSource;
 };
 
 #endif /* PARTNERLIST_H_ */

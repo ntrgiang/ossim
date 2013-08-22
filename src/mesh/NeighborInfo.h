@@ -124,7 +124,8 @@ public:
     bool isSendBmModified(void);
 
     void resetVectorAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUMBER_T win_start, double chunkInterval);
-    //void updateChunkAvailTime(SEQUENCE_NUMBER_T seq_num, double time);
+    void resetVectorAvailableTime2(SEQUENCE_NUMBER_T win_start, double chunkPlaybackInterval);
+
     bool updateChunkAvailTime(SEQUENCE_NUMBER_T seq_num, double time);
     double getChunkAvailTime(SEQUENCE_NUMBER_T seq_num);
 

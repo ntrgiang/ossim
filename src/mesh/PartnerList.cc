@@ -136,28 +136,30 @@ void PartnerList::printAllSendBm() const
 
 }
 
-void PartnerList::updateBoundSendBm(SEQUENCE_NUMBER_T head,
-                                    SEQUENCE_NUMBER_T start,
-                                    SEQUENCE_NUMBER_T end) const
-{
-   Enter_Method("updateBoundSendBm()");
+// -- Obsolete
+// ???
+//void PartnerList::updateBoundSendBm(SEQUENCE_NUMBER_T head,
+//                                    SEQUENCE_NUMBER_T start,
+//                                    SEQUENCE_NUMBER_T end) const
+//{
+//   Enter_Method("updateBoundSendBm()");
 
-   std::map<IPvXAddress, NeighborInfo>::iterator iter;
-   for(iter = m_map.begin(); iter != m_map.end(); ++iter)
-   {
-      iter->second.setSeqNumSendBmHead(head);
-      iter->second.setSeqNumSendBmStart(start);
-      iter->second.setSeqNumSendBmEnd(end);
-   }
-}
+//   std::map<IPvXAddress, NeighborInfo>::iterator iter;
+//   for(iter = m_map.begin(); iter != m_map.end(); ++iter)
+//   {
+//      iter->second.setSeqNumSendBmHead(head);
+//      iter->second.setSeqNumSendBmStart(start);
+//      iter->second.setSeqNumSendBmEnd(end);
+//   }
+//}
 
 void PartnerList::updateBoundSendBm(SEQUENCE_NUMBER_T start,
                                     SEQUENCE_NUMBER_T end) const
 {
    Enter_Method("updateBoundSendBm()");
+   assert((end - start + 1) == m_bufferSize);
 
-   std::map<IPvXAddress, NeighborInfo>::iterator iter;
-   for(iter = m_map.begin(); iter != m_map.end(); ++iter)
+   for(std::map<IPvXAddress, NeighborInfo>::iterator iter = m_map.begin(); iter != m_map.end(); ++iter)
    {
       iter->second.setSeqNumSendBmHead(-1L);
       iter->second.setSeqNumSendBmStart(start);
@@ -545,6 +547,8 @@ void PartnerList::clearAllTimeBudget(void)
 
 }
 
+// -- Obsolete
+//????
 void PartnerList::resetAllAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUMBER_T win_start, double chunkInterval)
 {
    std::map<IPvXAddress, NeighborInfo>::iterator iter;
@@ -552,7 +556,16 @@ void PartnerList::resetAllAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUM
    {
       iter->second.resetVectorAvailableTime(vb_start, win_start, chunkInterval);
    }
+}
 
+
+void PartnerList::resetAllAvailableTime2(SEQUENCE_NUMBER_T win_start, double chunkPlaybackInterval)
+{
+   std::map<IPvXAddress, NeighborInfo>::iterator iter;
+   for (iter=m_map.begin(); iter != m_map.end(); ++iter)
+   {
+      iter->second.resetVectorAvailableTime2(win_start, chunkPlaybackInterval);
+   }
 }
 
 SEQUENCE_NUMBER_T PartnerList::getMaxHeadSequenceNumber(void)

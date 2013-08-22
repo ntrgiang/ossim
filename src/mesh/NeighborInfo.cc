@@ -106,7 +106,8 @@ void NeighborInfo::setElementSendBm(SEQUENCE_NUMBER_T seq_num, bool val)
     {
        //throw cException("Out of range! seq_num = %ld -- m_seqNum_sendBmStart = %ld",
        //                 seq_num,  m_seqNum_sendBmStart);
-
+       cout << "requested chunk " << seq_num << " is out of range!!!" << endl
+            << "\toffset = " << offset << " while buffer size = " << m_bufferSize << endl;
        return;
     }
 //    EV << " -- NeighborInfo::setElementSendBm:: offset: " << offset << endl;
@@ -290,7 +291,8 @@ bool NeighborInfo::isSendBmModified(void)
     return m_sendBmModified;
 }
 
-//void NeighborInfo::resetVectorAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUMBER_T win_start, double chunkInterval)
+// -- Obsolete
+// ???
 void NeighborInfo::resetVectorAvailableTime(SEQUENCE_NUMBER_T pb_point, SEQUENCE_NUMBER_T win_start, double chunkInterval)
 {
    // debug
@@ -328,6 +330,18 @@ void NeighborInfo::resetVectorAvailableTime(SEQUENCE_NUMBER_T pb_point, SEQUENCE
     }
 
     //printVectorAvailableTime();
+}
+
+void NeighborInfo::resetVectorAvailableTime2(SEQUENCE_NUMBER_T win_start, double chunkPlaybackInterval)
+{
+   m_winStart = win_start;
+
+   for (int i = 0; i < m_bufferSize; ++i)
+   {
+      m_availTime[i] = (i + m_winStart) * chunkPlaybackInterval;
+   }
+
+   //printVectorAvailableTime();
 }
 
 //void NeighborInfo::updateChunkAvailTime(SEQUENCE_NUMBER_T seq_num, double txTime)
