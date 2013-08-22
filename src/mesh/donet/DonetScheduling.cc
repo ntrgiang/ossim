@@ -52,21 +52,10 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 {
    Enter_Method("donetChunkScheduling()");
 
-   //if (getNodeAddress() == IPvXAddress(anIP)) debugOUT << "Donet scheduling" << endl;
-
-   SEQUENCE_NUMBER_T new_lower_bound, new_upper_bound, max_head;
-   max_head = m_partnerList->getMaxHeadSequenceNumber();
-   if (m_player->getCurrentPlaybackPoint() == -1)
-   {
-      new_lower_bound = m_videoBuffer->getBufferStartSeqNum();
-   }
-   else
-   {
-      new_lower_bound = m_player->getCurrentPlaybackPoint();
-   }
-   new_upper_bound = max_head;
-   //new_lower_bound = max(0L, max_head - m_bufferMapSize_chunk + 1);
-   //new_upper_bound = new_lower_bound + m_bufferMapSize_chunk - 1;
+   SEQUENCE_NUMBER_T new_lower_bound, new_upper_bound;
+   new_lower_bound = (m_player->getCurrentPlaybackPoint() == -1) ? m_videoBuffer->getBufferStartSeqNum()
+                                                                 : m_player->getCurrentPlaybackPoint() + 1;
+   new_upper_bound = m_partnerList->getMaxHeadSequenceNumber();
 
    // -- Reset
    //
@@ -79,13 +68,15 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 
    // -- Calculate the available time for _all_ chunk, for _all_ partners
    // (expect redundancy, but for simplicity of implementation),
-   m_partnerList->resetAllAvailableTime(m_player->getCurrentPlaybackPoint(),
-                                        new_lower_bound,
-                                        m_videoBuffer->getChunkInterval());
+   //m_partnerList->resetAllAvailableTime(m_player->getCurrentPlaybackPoint(),
+   //                                     new_lower_bound,
+   //                                     m_videoBuffer->getChunkInterval());
+
+   m_partnerList->resetAllAvailableTime2(new_lower_bound, m_videoBuffer->getChunkInterval());
 
    // -- Update bounds of all sendBM
    m_partnerList->clearAllSendBm();
-   m_partnerList->updateBoundSendBm(new_lower_bound, new_lower_bound+m_bufferMapSize_chunk-1);
+   m_partnerList->updateBoundSendBm(new_lower_bound, new_lower_bound + m_bufferMapSize_chunk - 1);
    m_partnerList->resetNChunkScheduled();
 
    // -------------------------------------------------------------------------
@@ -288,7 +279,7 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    // -- Prepare for the next requests
    //
    m_partnerList->clearAllSendBm();
-   m_partnerList->updateBoundSendBm(new_lower_bound, new_lower_bound+m_bufferMapSize_chunk-1);
+   m_partnerList->updateBoundSendBm(new_lower_bound, new_lower_bound + m_bufferMapSize_chunk - 1);
 
    // -- Request chunks with more than one providers
    //

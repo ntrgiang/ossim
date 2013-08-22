@@ -37,6 +37,7 @@
 #include "DonetBase.h"
 #include "IChurnGenerator.h"
 #include "PlayerBase.h"
+#include <queue> // for std::queue
 //#include "Player.h"
 
 #define INIT_SCHED_WIN_GOOD   1
@@ -260,6 +261,9 @@ private:
 
     // -- Easy version with a vector
     vector<SEQUENCE_NUMBER_T> m_list_requestedChunk;
+
+    std::queue<SEQUENCE_NUMBER_T> m_requestedChunks;
+    std::queue<int> m_numRequestedChunks;
 
     // Ranges of received buffer maps
     SEQUENCE_NUMBER_T m_minStart, m_maxStart, m_minHead, m_maxHead;

@@ -325,6 +325,10 @@ void DonetPeer::finish()
    //
    m_list_requestedChunk.clear();
 
+   std::queue<SEQUENCE_NUMBER_T> empty;
+   std::swap(m_requestedChunks, empty);
+   while(!m_numRequestedChunks.empty()) m_numRequestedChunks.pop();
+
    // -- Debug
    //m_gstat->reportNumberOfPartner(m_partnerList->getSize());
 
