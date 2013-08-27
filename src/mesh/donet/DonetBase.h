@@ -183,8 +183,8 @@ protected:
    vector<PendingPartnershipRequest> m_list_partnershipRequestingNode;
    PendingPartnershipRequest m_candidate;
 
-   bool m_state_joined;
-   short m_joinState;
+//   bool m_state_joined;
+//   short m_joinState;
 
    Mesh_Join_State m_state;
 

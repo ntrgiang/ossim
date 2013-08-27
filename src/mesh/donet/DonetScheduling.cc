@@ -52,18 +52,13 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 {
    Enter_Method("donetChunkScheduling()");
 
-   SEQUENCE_NUMBER_T new_lower_bound, new_upper_bound;
-   new_lower_bound = (m_player->getCurrentPlaybackPoint() == -1) ? m_videoBuffer->getBufferStartSeqNum()
-                                                                 : m_player->getCurrentPlaybackPoint() + 1;
-   new_upper_bound = m_partnerList->getMaxHeadSequenceNumber();
-
    // -- Reset
    //
    m_expected_set.clear();
    m_dupSet.clear();
    m_rareSet.clear();
 
-   //m_nChunkRequested_perSchedulingInterval = 0;
+   m_nChunkRequested_perSchedulingInterval = 0;
    //int nNewChunkForRequest_perSchedulingCycle = 0;
 
    // -- Calculate the available time for _all_ chunk, for _all_ partners
@@ -72,21 +67,21 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    //                                     new_lower_bound,
    //                                     m_videoBuffer->getChunkInterval());
 
-   m_partnerList->resetAllAvailableTime2(new_lower_bound, m_videoBuffer->getChunkInterval());
+   m_partnerList->resetAllAvailableTime2(lower_bound, m_videoBuffer->getChunkInterval());
 
    // -- Update bounds of all sendBM
    m_partnerList->clearAllSendBm();
-   m_partnerList->updateBoundSendBm(new_lower_bound, new_lower_bound + m_bufferMapSize_chunk - 1);
+   m_partnerList->updateBoundSendBm(lower_bound, lower_bound + m_bufferMapSize_chunk - 1);
    m_partnerList->resetNChunkScheduled();
 
    // -------------------------------------------------------------------------
    // -- Finding the expected set (set of chunks which should be requested)
    // -------------------------------------------------------------------------
-   debugOUT << "lower bound: " << new_lower_bound << " -- upper bound: " << new_upper_bound << endl;
+//   debugOUT << "lower bound: " << lower_bound << " -- upper bound: " << upper_bound << endl;
    SEQUENCE_NUMBER_T currentPlaybackPoint = m_player->getCurrentPlaybackPoint();
-   findExpectedSet(currentPlaybackPoint, new_lower_bound, new_upper_bound);
+   findExpectedSet(currentPlaybackPoint, lower_bound, upper_bound);
 
-   debugOUT << "expected set size: " << m_expected_set.size() << endl;
+//   debugOUT << "expected set size: " << m_expected_set.size() << endl;
    //printExpectedSet();
 
    AllTimeBudget_t chunkAvailableTime;
@@ -222,14 +217,17 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    for (std::map<SEQUENCE_NUMBER_T, IPvXAddress>::iterator iter = m_rareSet.begin(); iter != m_rareSet.end(); ++iter)
    {
       SEQUENCE_NUMBER_T seq_num = iter->first;
+
+      if (seq_num > lower_bound + m_bufferMapSize_chunk - 1) continue;
+
       IPvXAddress provider = iter->second;
       double time_to_send_Chunk = param_chunkSize * 8 / m_partnerList->getUpBw(provider);
 
-      debugOUT << "\t *** Chunk " << iter->first << " --- provider " << provider << endl;
+//      debugOUT << "\t *** Chunk " << iter->first << " --- provider " << provider << endl;
 
       // -- Check time budget
-      debugOUT << "time budget for chunk " << seq_num << ": " << allTimeBudget[provider][seq_num]
-                  << " -- time to send chunk: " << time_to_send_Chunk << endl;
+//      debugOUT << "time budget for chunk " << seq_num << ": " << allTimeBudget[provider][seq_num]
+//                  << " -- time to send chunk: " << time_to_send_Chunk << endl;
 
       if (allTimeBudget[provider][seq_num] < time_to_send_Chunk)
          continue;
@@ -273,13 +271,13 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
          iter->second.copyTo(chunkReqPkt);
          sendToDispatcher(chunkReqPkt, m_localPort, iter->first, m_destPort);
 
-         debugOUT << "chunk request sent!" << endl;
+         //debugOUT << "chunk request sent!" << endl;
    }
 
    // -- Prepare for the next requests
    //
    m_partnerList->clearAllSendBm();
-   m_partnerList->updateBoundSendBm(new_lower_bound, new_lower_bound + m_bufferMapSize_chunk - 1);
+   m_partnerList->updateBoundSendBm(lower_bound, lower_bound + m_bufferMapSize_chunk - 1);
 
    // -- Request chunks with more than one providers
    //
@@ -297,6 +295,9 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
          //assert(it->second.size() == 2);
 
          SEQUENCE_NUMBER_T seq_num = it->first;
+
+         if (seq_num > lower_bound + m_bufferMapSize_chunk - 1) continue;
+
          IPvXAddress candidate1, candidate2, provider;
 
          candidate1 = it->second[0];
@@ -324,8 +325,8 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
          {
             it2->second -= time_to_send_Chunk;
          }
-      }
-   }
+      } // for each chunk
+   } // for each group
 
    //emit(sig_newchunkForRequest, nNewChunkForRequest_perSchedulingCycle);
 
@@ -337,7 +338,6 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    {
       if (iter->second.isSendBmModified() == true)
       {
-         EV << "-------Destination of the ChunkRequestPacket " << iter->first << " :" << endl;
          //iter->second.printSendBm();
 
          MeshChunkRequestPacket *chunkReqPkt = new MeshChunkRequestPacket;
@@ -350,8 +350,20 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
       }
    } // end of for
 
+   m_numRequestedChunks.push(m_nChunkRequested_perSchedulingInterval);
    // -- Now refreshing the m_list_requestedChunk
    refreshListRequestedChunk();
+
+//   if (upper_bound > lower_bound + m_bufferMapSize_chunk - 1)
+//   {
+//      cout << "@ " << simTime().dbl() << " " << getNodeAddress() << endl
+//           << "\t -- request range " << lower_bound << " - " << lower_bound + m_bufferMapSize_chunk - 1 << endl
+//           << "\t -- head received " << m_videoBuffer->getHeadReceivedSeqNum() << endl
+//           << "\t -- max head " << upper_bound << endl
+//           << "\t -- numReqChunks " << m_nChunkRequested_perSchedulingInterval << endl
+//           << "\t -- player:: missed " << m_player->getCountChunkMiss()
+//           << endl;
+//   }
 
    // -- Report statistics
    //emit(sig_nChunkRequested, m_nChunkRequested_perSchedulingInterval);
@@ -374,42 +386,42 @@ int DonetPeer::selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candida
    int ret = 0;
 
    //std::cout << endl;
-   debugOUT << "--------------------- seq_num = " << seq_num
-      << " -- candidate1 = " << candidate1
-      << " -- candidate2 = " << candidate2
-      << endl;
+//   debugOUT << "--------------------- seq_num = " << seq_num
+//      << " -- candidate1 = " << candidate1
+//      << " -- candidate2 = " << candidate2
+//      << endl;
 
-   debugOUT << "\t available time of candidate1: " << m_partnerList->getChunkAvailTime(candidate1, seq_num) << endl;
-   debugOUT << "\t Time to send the chunk with candidate1: " << (param_chunkSize*8)/m_partnerList->getUpBw(candidate1) << endl;
-   debugOUT << "\t chunk size (Bytes): " << param_chunkSize << endl;
-   debugOUT << "\t upBW: " << m_partnerList->getUpBw(candidate1) << endl;
+//   debugOUT << "\t available time of candidate1: " << m_partnerList->getChunkAvailTime(candidate1, seq_num) << endl;
+//   debugOUT << "\t Time to send the chunk with candidate1: " << (param_chunkSize*8)/m_partnerList->getUpBw(candidate1) << endl;
+//   debugOUT << "\t chunk size (Bytes): " << param_chunkSize << endl;
+//   debugOUT << "\t upBW: " << m_partnerList->getUpBw(candidate1) << endl;
    if (m_partnerList->getChunkAvailTime(candidate1, seq_num) > (param_chunkSize*8)/m_partnerList->getUpBw(candidate1))
    {
-      debugOUT << "--> candidate1 is qualified" << endl;
+//      debugOUT << "--> candidate1 is qualified" << endl;
 
-      debugOUT << "\t available time of candidate2: " << m_partnerList->getChunkAvailTime(candidate2, seq_num) << endl;
-      debugOUT << "\t Time to send the chunk with candidate2: " << (param_chunkSize*8)/m_partnerList->getUpBw(candidate2) << endl;
-      debugOUT << "\t chunk size (Bytes): " << param_chunkSize << endl;
-      debugOUT << "\t upBW: " << m_partnerList->getUpBw(candidate2) << endl;
+//      debugOUT << "\t available time of candidate2: " << m_partnerList->getChunkAvailTime(candidate2, seq_num) << endl;
+//      debugOUT << "\t Time to send the chunk with candidate2: " << (param_chunkSize*8)/m_partnerList->getUpBw(candidate2) << endl;
+//      debugOUT << "\t chunk size (Bytes): " << param_chunkSize << endl;
+//      debugOUT << "\t upBW: " << m_partnerList->getUpBw(candidate2) << endl;
       if (m_partnerList->getChunkAvailTime(candidate2, seq_num) > (param_chunkSize*8)/m_partnerList->getUpBw(candidate2))
       {
-         debugOUT << "--> candidate2 is ALSO qualified" << endl;
+//         debugOUT << "--> candidate2 is ALSO qualified" << endl;
 
-         debugOUT << "UpBW of candidate1: " << m_partnerList->getUpBw(candidate1) << endl;
-         debugOUT << "UpBW of candidate2: " << m_partnerList->getUpBw(candidate2) << endl;
+//         debugOUT << "UpBW of candidate1: " << m_partnerList->getUpBw(candidate1) << endl;
+//         debugOUT << "UpBW of candidate2: " << m_partnerList->getUpBw(candidate2) << endl;
          if (m_partnerList->getUpBw(candidate1) > m_partnerList->getUpBw(candidate2))
          {
-            debugOUT << "Candidate1 is better!" << endl;
+//            debugOUT << "Candidate1 is better!" << endl;
             supplier = candidate1;
          }
          else if (m_partnerList->getUpBw(candidate1) < m_partnerList->getUpBw(candidate2))
          {
-            debugOUT << "Candidate2 is better!" << endl;
+//            debugOUT << "Candidate2 is better!" << endl;
             supplier = candidate2;
          }
          else
          {
-            debugOUT << "Both candidates are equally good, select a any of them" << endl;
+//            debugOUT << "Both candidates are equally good, select a any of them" << endl;
             if (intrand(10) % 2 == 0)
                supplier = candidate2;
             else
@@ -418,21 +430,21 @@ int DonetPeer::selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candida
       }
       else
       {
-         debugOUT << "--> candidate1 is qualified" << endl;
+//         debugOUT << "--> candidate1 is qualified" << endl;
          supplier = candidate1;
       }
    }
    else
    {
-      debugOUT << "--> candidate1 is NOT qualified" << endl;
+//      debugOUT << "--> candidate1 is NOT qualified" << endl;
       if (m_partnerList->getChunkAvailTime(candidate2, seq_num) > (param_chunkSize*8)/m_partnerList->getUpBw(candidate2))
       {
-         debugOUT << "--> candidate2 is qualified --> it will be selected" << endl;
+//         debugOUT << "--> candidate2 is qualified --> it will be selected" << endl;
          supplier = candidate2;
       }
       else
       {
-         debugOUT << "Both candidates were /fully/ booked with requested chunks!" << endl;
+//         debugOUT << "Both candidates were /fully/ booked with requested chunks!" << endl;
          ret = -1;
          // -- Just a /Padding code/
          supplier = candidate1;

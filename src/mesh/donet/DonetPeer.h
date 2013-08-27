@@ -261,8 +261,6 @@ private:
 
     // -- Easy version with a vector
     vector<SEQUENCE_NUMBER_T> m_list_requestedChunk;
-
-    std::queue<SEQUENCE_NUMBER_T> m_requestedChunks;
     std::queue<int> m_numRequestedChunks;
 
     // Ranges of received buffer maps

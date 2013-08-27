@@ -150,11 +150,11 @@ bool DonetBase::canAcceptMorePartner(void)
 
 void DonetBase::sendBufferMap(void)
 {
-   debugOUT << "Sending buffer maps::" << endl;
+   //debugOUT << "Sending buffer maps::" << endl;
 
    if (m_partnerList->getSize() <= 0)
    {
-      debugOUT << "Peer " << getNodeAddress() << " has no partners to send Buffer Map" << endl;
+      //debugOUT << "Peer " << getNodeAddress() << " has no partners to send Buffer Map" << endl;
       return;
    }
 
