@@ -331,8 +331,8 @@ void DonetPeer::finish()
    // -- Debug
    //m_gstat->reportNumberOfPartner(m_partnerList->getSize());
 
-   //reportStatus();
-   m_partnerList->print2();
+   debugOUT << "Partner list: " << endl;
+   m_partnerList->printAddress();
 
    m_gstat->collectPlaybackPoint(m_player->getCurrentPlaybackPoint());
 }
@@ -444,7 +444,6 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
    {
       scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
       sendBufferMap();
-      //if (m_sched_window_moved == true) checkVideoBuffer();
    }
    else if (msg == timer_chunkScheduling)
    {
@@ -454,7 +453,6 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
    else if (msg == timer_reportStatistic)
    {
       scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
-      EV << "hehehehe" << endl;
       handleTimerReportStatistic();
    }
    else if (msg == timer_reportActive)
@@ -475,27 +473,9 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
       scheduleAt(simTime() + param_interval_partnershipRefinement, timer_partnershipRefinement);
       handleTimerPartnershipRefinement();
    }
-//   else if (msg == timer_timeout_waiting_response)
-//   {
-//      handleTimerTimeoutWaitingAccept();
-//   }
    else if (msg == timer_getJoinTime)
    {
-      double arrivalTime = m_churn->getArrivalTime();
-
-      EV << "Scheduled arrival time: " << simTime().dbl() + arrivalTime << endl;
-      scheduleAt(simTime() + arrivalTime, timer_join);
-
-      double departureTime = m_churn->getDepartureTime();
-      if (departureTime > 0.0)
-      {
-         EV << "Scheduled departure time: " << simTime().dbl() + departureTime << endl;
-         scheduleAt(simTime() + departureTime, timer_leave);
-      }
-      else
-      {
-         EV << "DepartureTime = " << departureTime << " --> peer won't leave" << endl;
-      }
+      handleTimerGetJoinTime();
    }
    else if (msg == timer_join)
    {
@@ -511,12 +491,35 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
    //    }
 }
 
+void DonetPeer::handleTimerGetJoinTime(void)
+{
+   double arrivalTime = m_churn->getArrivalTime();
+
+   debugOUT << "Scheduled arrival time: " << simTime().dbl() + arrivalTime << endl;
+   scheduleAt(simTime() + arrivalTime, timer_join);
+
+   double departureTime = m_churn->getDepartureTime();
+   if (departureTime > 0.0)
+   {
+      EV << "Scheduled departure time: " << simTime().dbl() + departureTime << endl;
+      scheduleAt(simTime() + departureTime, timer_leave);
+   }
+   else
+   {
+      EV << "DepartureTime = " << departureTime << " --> peer won't leave" << endl;
+   }
+}
+
 void DonetPeer::handleTimerJoin(void)
 {
    Enter_Method("handleTimerJoin()");
+   debugOUT << "Joining ..." << endl;
 
-   EV << endl;
-   EV << "----------------------- Handle timer JOIN ---------------------------" << endl;
+   if (m_state == MESH_JOIN_STATE_ACTIVE)
+   {
+      debugOUT << "already joined the network" << endl;
+      return;
+   }
 
    emit(sig_nJoin, 1);
 
@@ -525,12 +528,6 @@ void DonetPeer::handleTimerJoin(void)
    case MESH_JOIN_STATE_IDLE:
    {
       findPartner();
-
-      break;
-   }
-   case MESH_JOIN_STATE_ACTIVE:
-   {
-      throw cException("Join action cannot be done in JOINED state for node %s", getNodeAddress().str().c_str());
       break;
    }
    default:
@@ -539,6 +536,7 @@ void DonetPeer::handleTimerJoin(void)
       break;
    }
    } // switch()
+
 }
 
 void DonetPeer::handleTimerLeave()
@@ -609,6 +607,16 @@ void DonetPeer::gracefulLeave(void)
 
 void DonetPeer::handleTimerFindMorePartner(void)
 {
+   debugOUT << "find more partner" << endl;
+   if (!m_pRefinementEnabled)
+   {
+      if (m_partnerList->getSize() >= param_maxNOP)
+      {
+         debugOUT << "has enough partners, don't find more new one" << endl;
+         return;
+      }
+   }
+
    switch(m_state)
    {
    case MESH_JOIN_STATE_ACTIVE:
@@ -961,16 +969,30 @@ void DonetPeer::processPartnershipRequest(cPacket *pkt)
    EV << endl;
    EV << "-------- Process partnership Request --------------------------------" << endl;
 
+
    // -- Get the identifier (IP:port) and upBw of the requester
    PendingPartnershipRequest requester;
    MeshPartnershipRequestPacket *memPkt = check_and_cast<MeshPartnershipRequestPacket *>(pkt);
    getSender(pkt, requester.address, requester.port);
    requester.upBW = memPkt->getUpBw();
 
-   EV << "Requester: " << endl
-      << "-- Address:\t\t"         << requester.address << endl
-      << "-- Port:\t\t"            << requester.port << endl
-      << "-- Upload BW:\t"  << requester.upBW << endl;
+   debugOUT << "Requester: " << endl
+            << "\t -- Address:\t\t"         << requester.address << endl
+            << "\t -- Port:\t\t"            << requester.port << endl
+            << "\t -- Upload BW:\t"  << requester.upBW << endl;
+
+   if (!m_pRefinementEnabled)
+   {
+      if (m_partnerList->getSize() >= param_maxNOP)
+      {
+         debugOUT << "has enough " << param_maxNOP << " partners" << endl;
+
+         MeshPartnershipRejectPacket *rejectPkt = generatePartnershipRequestRejectPacket();
+         sendToDispatcher(rejectPkt, m_localPort, requester.address, requester.port);
+
+         return;
+      }
+   }
 
    switch(m_state)
    {
@@ -1012,22 +1034,23 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
    EV << endl;
    EV << "---------- Processing a partnership ACCEPT packet -------------------" << endl;
 
-   if (timer_join->isScheduled())
-   {
-      debugOUT << "A join event was already scheduled for this peer" << endl;
-      return;
-   }
-
    // -- Extract the address of the accepter
    PendingPartnershipRequest acceptor;
    getSender(pkt, acceptor.address, acceptor.port);
    MeshPartnershipAcceptPacket *acceptPkt = check_and_cast<MeshPartnershipAcceptPacket *>(pkt);
    acceptor.upBW = acceptPkt->getUpBw();
 
-   EV << "Acceptor: " << endl
-      << "-- Address:\t\t"         << acceptor.address
-      << "-- Port:\t\t"            << acceptor.port << endl
-      << "-- Upload bandwidth:\t"  << acceptor.upBW << endl;
+   debugOUT << "Acceptor: " << endl
+            << "\t -- Address:\t\t"         << acceptor.address << endl
+            << "\t -- Port:\t\t"            << acceptor.port << endl
+            << "\t -- Upload bandwidth:\t"  << acceptor.upBW << endl;
+
+   if (timer_join->isScheduled())
+   {
+      debugOUT << "A join event was already scheduled for this peer" << endl;
+      cancelEvent(timer_join);
+      //return;
+   }
 
    debugOUT << "received an ACCEPT message from " << acceptor.address << endl;
 
@@ -1122,9 +1145,11 @@ void DonetPeer::processPartnershipAccept(cPacket *pkt)
 
 void DonetPeer::processPartnershipReject(cPacket *pkt)
 {
-   EV << endl;
-   EV << "-------- Process partnership Reject ---------------------------------" << endl;
+   IPvXAddress remoteAddr;
+   int remotePort;
+   getSender(pkt, remoteAddr, remotePort);
 
+   debugOUT << "received a reject packet from " << remoteAddr << endl;
    emit(sig_pRejectRecv, 1);
 
    switch(m_state)
@@ -1273,32 +1298,35 @@ void DonetPeer::addPartner(IPvXAddress remote, double upbw)
 void DonetPeer::findPartner()
 {
    Enter_Method("findPartner()");
+   debugOUT << "find a partner" << endl;
 
    sendPartnershipRequest();
-
 }
 
 void DonetPeer::sendPartnershipRequest(void)
 {
-   IPvXAddress addressRandPeer = getNodeAddress();
+   IPvXAddress addressRandPeer("0.0.0.0");
    short count = 0;
    do
    {
       count++;
       addressRandPeer = m_memManager->getRandomPeer(getNodeAddress());
-      if (count > 10)
-         return;
-
+      debugOUT << "potential partner " << addressRandPeer << endl;
+      if (count > 10) break;
       if (m_partnerList->have(addressRandPeer))
       {
-         //debugOUT << "already have this address " << addressRandPeer << " in the partnerList, count = " << count << endl;
+         debugOUT << "already have this address " << addressRandPeer << " count = " << count << endl;
       }
    }
    while(m_partnerList->have(addressRandPeer));
 
-   if (addressRandPeer == getNodeAddress())
-      debugOUT << "Get the IP of itself from the APT --> This should never happen! Count = " << count << endl;
+   if (count > 10)
+   {
+      debugOUT << "enough attempts to get a partner who is not a partner" << endl;
+      return;
+   }
 
+   assert(addressRandPeer != IPvXAddress("0.0.0.0"));
    MeshPartnershipRequestPacket *reqPkt = new MeshPartnershipRequestPacket("MESH_PEER_JOIN_REQUEST");
    reqPkt->setUpBw(param_upBw);
    reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());

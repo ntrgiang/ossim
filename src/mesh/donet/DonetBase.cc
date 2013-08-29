@@ -158,7 +158,7 @@ void DonetBase::sendBufferMap(void)
       return;
    }
 
-   m_partnerList->print2();
+   //m_partnerList->print2();
    //debugOUT << "@peer " << getNodeAddress() << endl;
 
    // -- Debug

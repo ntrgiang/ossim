@@ -90,6 +90,7 @@ private:
     // *************************************************************************
     // *************************************************************************
     // -- Partnership
+    void handleTimerGetJoinTime(void);
     void handleTimerJoin(void);
     void handleTimerLeave();
     void handleTimerFindMorePartner(void);
