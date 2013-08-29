@@ -55,8 +55,8 @@ public:
      * For debugging
      */
    void print() const;
-
    void print2() const;
+   void printAddress() const;
 
    void printAllSendBm() const;
 

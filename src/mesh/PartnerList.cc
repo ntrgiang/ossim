@@ -116,6 +116,19 @@ void PartnerList::print2() const
    }
 }
 
+void PartnerList::printAddress() const
+{
+   Enter_Method("print()");
+
+   int i = 1;
+   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_map.begin();
+        iter != m_map.end(); ++iter)
+   {
+      debugOUT << "\t Partner " << i++ << ": " << iter->first << endl;
+   }
+}
+
+
 void PartnerList::printAllSendBm() const
 {
    Enter_Method("printAllSendBm()");
