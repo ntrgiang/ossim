@@ -44,3 +44,4 @@ src/common/PeerStreamingPacket_m.h
 src/common/PeerStreamingPacket_m.cc
 src/membership/newscast/NewscastPacket_m.h
 src/membership/newscast/NewscastPacket_m.cc
+simulations/run-scripts/callgrind.out.*
