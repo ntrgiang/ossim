@@ -52,6 +52,7 @@ public:
      * This returned address should be different from the address in the parameter list
      */
     virtual IPvXAddress getRandomPeer(IPvXAddress address) = 0;
+    virtual IPvXAddress getRandomPeer2(IPvXAddress address) { return address; }
 
     /**
      * @brief addSourceAddress

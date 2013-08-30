@@ -96,6 +96,46 @@ IPvXAddress DummyMembership::getRandomPeer(IPvXAddress address)
    return m_tempList[(int)intrand(m_tempList.size())];
 }
 
+// -- To select a peer among one who still can accept a partner
+//
+IPvXAddress DummyMembership::getRandomPeer2(IPvXAddress address)
+{
+   Enter_Method("getARandPeer()");
+
+   IPvXAddress ret_address;
+
+   if (m_activePeerList.size() == 1)
+   {
+      ret_address = m_activePeerList.begin()->first;
+      return ret_address;
+   }
+
+   // -- Clear ALL content of the the tempList
+   m_tempList.clear();
+
+   for (map<IPvXAddress, ActivePeerItem>::iterator iter = m_activePeerList.begin();
+        iter != m_activePeerList.end(); ++iter)
+   {
+      if (iter->first == address)
+         continue;
+
+      for (int i = iter->second.m_current_nPartner; i < iter->second.m_maxNOP; ++i)
+      {
+         m_tempList.push_back(iter->first);
+      }
+   }
+
+   for (std::vector<IPvXAddress>::iterator iter = m_tempList.begin(); iter != m_tempList.end(); ++iter)
+   {
+      debugOUT << *iter << endl;
+   }
+
+   //debugOUT << "current list size: " << m_tempList.size() << endl;
+   assert(m_tempList.size() > 0);
+   return m_tempList[(int)intrand(m_tempList.size())];
+}
+
+
 void DummyMembership::addPeerAddress(const IPvXAddress &address, int maxNOP)
 {
    ActivePeerItem item;
