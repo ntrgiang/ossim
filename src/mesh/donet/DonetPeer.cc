@@ -1310,7 +1310,8 @@ void DonetPeer::sendPartnershipRequest(void)
    do
    {
       count++;
-      addressRandPeer = m_memManager->getRandomPeer(getNodeAddress());
+      //addressRandPeer = m_memManager->getRandomPeer(getNodeAddress());
+      addressRandPeer = m_memManager->getRandomPeer2(getNodeAddress());
       debugOUT << "potential partner " << addressRandPeer << endl;
       if (count > 10) break;
       if (m_partnerList->have(addressRandPeer))
@@ -1494,6 +1495,124 @@ int DonetPeer::initializeSchedulingWindow()
    return INIT_SCHED_WIN_BAD;
 }
 
+void DonetPeer::initializeSchedulingWindow2()
+{
+   // Browse through all partners and find an optimal scheduling window
+//   SEQUENCE_NUMBER_T max_start = 0L, min_head = 0L;
+
+   debugOUT << "Initializing with " << m_partnerList->m_map.size() << " partners" << endl;
+
+   std::vector<SEQUENCE_NUMBER_T> startList, headList;
+//   max_start  = iter->second.getSeqNumRecvBmStart();
+//   min_head = iter->second.getSeqNumRecvBmHead();
+//   debugOUT << "Partner " << iter->first << " with start: " << max_start << " -- head: " << min_head << endl;
+
+   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+        iter != m_partnerList->m_map.end(); ++iter)
+   {
+      SEQUENCE_NUMBER_T head = iter->second.getSeqNumRecvBmHead();
+      SEQUENCE_NUMBER_T start = iter->second.getSeqNumRecvBmStart();
+
+      debugOUT << "range of partner " << iter->first << ": "
+               << "start " << start
+               << " head " << head << endl;
+
+      //if (head != -1L && head != 0L)
+      if (head != -1)
+      {
+         headList.push_back(head);
+      }
+
+      //if (start != -1L && start != 0L)
+      if (start != -1L)
+      {
+         startList.push_back(start);
+      }
+   }
+
+   if (startList.size() == 0 || headList.size() == 0)
+   {
+      debugOUT << "when no partners has started downloading video packet" << endl;
+      m_sched_window.start = -1L;
+      m_sched_window.head = -1L;
+      m_sched_window.end = -1L;
+      return;
+   }
+
+   SEQUENCE_NUMBER_T maxStart = -1L, minHead = LONG_MAX;
+   for (std::vector<SEQUENCE_NUMBER_T>::iterator iter = startList.begin();
+        iter != startList.end(); ++iter)
+   {
+      maxStart = (maxStart < *iter) ? *iter : maxStart;
+   }
+
+   for (std::vector<SEQUENCE_NUMBER_T>::iterator iter = headList.begin();
+        iter != headList.end(); ++iter)
+   {
+      minHead = (minHead > *iter) ? *iter : minHead;
+   }
+
+   debugOUT << "Before overlap checking ------> max_start = " << maxStart
+            << " -- min_head = " << minHead <<  endl;
+
+   if (minHead < maxStart) // -- non overlaping ranges
+   {
+      for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+        iter != m_partnerList->m_map.end(); ++iter)
+      {
+         SEQUENCE_NUMBER_T head = iter->second.getSeqNumRecvBmHead();
+         SEQUENCE_NUMBER_T start = iter->second.getSeqNumRecvBmStart();
+
+         if (start == maxStart)
+         {
+            minHead = head;
+            break;
+         }
+      }
+   }
+
+   debugOUT << "After overlap checking ------> max_start = " << maxStart
+            << " -- min_head = " << minHead <<  endl;
+
+   //int playout_offset = (int)(m_player->getPercentBufferHigh() * m_videoBuffer->getSize() - 0.5 * m_videoStreamChunkRate);
+
+   // -- Finding the start of the scheduling window
+   //
+
+   assert(minHead > 0L);
+
+   m_sched_window.start = (maxStart + minHead) / 2;
+
+   m_sched_window.end   = m_sched_window.start + m_bufferMapSize_chunk - 1;
+   debugOUT << "Scheduling window [start, end] = " << m_sched_window.start << " - " << m_sched_window.end << endl;
+
+   m_videoBuffer->initializeRangeVideoBuffer(m_sched_window.start);
+
+      // -- Debug
+      //
+//      cout << "@ " << simTime().dbl() << " @peer " << getNodeAddress()
+//           << " has " << m_partnerList->getSize() << " partners"
+//           << " -- max_start = " << max_start
+//           << " -- min_head = " << min_head
+//           << " --> start = " << m_sched_window.start << endl;
+
+//      cout << "---------- Partners: " << endl;
+//      for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+//           iter != m_partnerList->m_map.end(); ++iter)
+//      {
+//         SEQUENCE_NUMBER_T temp_head = iter->second.getSeqNumRecvBmHead();
+//         SEQUENCE_NUMBER_T temp_start = iter->second.getSeqNumRecvBmStart();
+
+//         cout << "\t " << iter->first
+//              << " -- start " << temp_start
+//              << " - head " << temp_head
+//              << endl;
+//      }
+
+//      cout << endl << endl;
+
+}
+
 bool DonetPeer::shouldStartChunkScheduling(void)
 {
    //if (simTime().dbl() - m_firstJoinTime >= param_waitingTime_SchedulingStart
@@ -1534,20 +1653,35 @@ void DonetPeer::chunkScheduling()
 {
    if (m_partnerList->getSize() < param_minNOP)
    {
-      EV << "Not enough partners just yet, exiting from chunk scheduling" << endl;
+      debugOUT << "Not enough partners just yet, exiting from chunk scheduling" << endl;
       return;
    }
 
    if (m_scheduling_started == false)
    {
-      int ret = initializeSchedulingWindow();
-      if (ret == INIT_SCHED_WIN_BAD)
-      {
-         EV << "Failed to initialize the scheduling window" << endl;
-         return;
-      }
+      initializeSchedulingWindow2();
+   }
+
+   if (m_sched_window.start == -1L || m_sched_window.head == -1L)
+   {
+      debugOUT << "The scheduling has NOT been initialized" << endl;
+      return;
+   }
+   else
+   {
       m_scheduling_started = true;
    }
+
+//   if (m_scheduling_started == false)
+//   {
+//      int ret = initializeSchedulingWindow();
+//      if (ret == INIT_SCHED_WIN_BAD)
+//      {
+//         EV << "Failed to initialize the scheduling window" << endl;
+//         return;
+//      }
+//      m_scheduling_started = true;
+//   }
 
    //updateRange();
 

@@ -134,6 +134,7 @@ private:
     bool should_be_requested(SEQUENCE_NUMBER_T seq_num);
     //void initializeSchedulingWindow(void);
     int initializeSchedulingWindow(void);
+    void initializeSchedulingWindow2(void);
     bool shouldStartChunkScheduling();
     void chunkScheduling(void);
     void randomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUMBER_T upper_bound);
