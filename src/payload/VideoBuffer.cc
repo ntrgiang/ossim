@@ -94,7 +94,7 @@ void VideoBuffer::initialize(int stage)
    }
 
    // ---------------------- Initialization -----------------------------------
-   m_bufferStart_seqNum = m_bufferEnd_seqNum = m_head_received_seqNum = 0L;
+   m_bufferStart_seqNum = m_bufferEnd_seqNum = m_head_received_seqNum = -1L;
 
    m_time_firstChunk = -1.0;
 
@@ -118,6 +118,7 @@ void VideoBuffer::handleMessage(cMessage *)
 
 void VideoBuffer::initializeRangeVideoBuffer(SEQUENCE_NUMBER_T seq)
 {
+   debugOUT << "seq = " << seq << endl;
    assert(seq > m_bufferStart_seqNum);
 
    m_bufferStart_seqNum = seq;
