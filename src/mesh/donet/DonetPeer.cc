@@ -1,4 +1,4 @@
-//
+
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -51,7 +51,7 @@ namespace std
 #include <algorithm>
 #include <csimulation.h>
 #include <assert.h>
-#include <iomanip> // setw()
+#include <iomanip> // setprecision
 
 //using namespace std;
 
@@ -1307,19 +1307,26 @@ void DonetPeer::sendPartnershipRequest(void)
 {
    IPvXAddress addressRandPeer("0.0.0.0");
    short count = 0;
-   do
+   for (;;)
    {
-      count++;
+      if (count > 10)
+         break;
+
       //addressRandPeer = m_memManager->getRandomPeer(getNodeAddress());
       addressRandPeer = m_memManager->getRandomPeer2(getNodeAddress());
       debugOUT << "potential partner " << addressRandPeer << endl;
-      if (count > 10) break;
+
       if (m_partnerList->have(addressRandPeer))
       {
          debugOUT << "already have this address " << addressRandPeer << " count = " << count << endl;
       }
+      else
+      {
+         break;
+      }
+
+      count++;
    }
-   while(m_partnerList->have(addressRandPeer));
 
    if (count > 10)
    {
@@ -1534,7 +1541,6 @@ void DonetPeer::initializeSchedulingWindow2()
    {
       debugOUT << "when no partners has started downloading video packet" << endl;
       m_sched_window.start = -1L;
-      m_sched_window.head = -1L;
       m_sched_window.end = -1L;
       return;
    }
@@ -1583,9 +1589,10 @@ void DonetPeer::initializeSchedulingWindow2()
 
    m_sched_window.start = (maxStart + minHead) / 2;
 
-   m_sched_window.end   = m_sched_window.start + m_bufferMapSize_chunk - 1;
+   m_sched_window.end = m_sched_window.start + m_bufferMapSize_chunk - 1;
    debugOUT << "Scheduling window [start, end] = " << m_sched_window.start << " - " << m_sched_window.end << endl;
 
+   m_videoBuffer->printRange();
    m_videoBuffer->initializeRangeVideoBuffer(m_sched_window.start);
 
       // -- Debug
@@ -1651,7 +1658,21 @@ bool DonetPeer::should_be_requested(SEQUENCE_NUMBER_T seq_num)
  */
 void DonetPeer::chunkScheduling()
 {
-   if (m_partnerList->getSize() < param_minNOP)
+   debugOUT << "chunk scheduling ..." << endl;
+
+//   if (m_partnerList->getSize() < param_minNOP)
+//   {
+//      if (simTime().dbl() - m_joinTime > 3.0)
+//      {
+//         if (m_partnerList->getSize() < 1)
+//         {
+//            debugOUT << "Not enough partners just yet, exiting from chunk scheduling" << endl;
+//            return;
+//         }
+//      }
+//   }
+
+   if (m_partnerList->getSize() < 1)
    {
       debugOUT << "Not enough partners just yet, exiting from chunk scheduling" << endl;
       return;
@@ -1662,26 +1683,15 @@ void DonetPeer::chunkScheduling()
       initializeSchedulingWindow2();
    }
 
-   if (m_sched_window.start == -1L || m_sched_window.head == -1L)
+   if (m_sched_window.start == -1L)
    {
+      debugOUT << "start = " << m_sched_window.start << " -- end = " << m_sched_window.end << endl;
       debugOUT << "The scheduling has NOT been initialized" << endl;
       return;
    }
-   else
-   {
-      m_scheduling_started = true;
-   }
 
-//   if (m_scheduling_started == false)
-//   {
-//      int ret = initializeSchedulingWindow();
-//      if (ret == INIT_SCHED_WIN_BAD)
-//      {
-//         EV << "Failed to initialize the scheduling window" << endl;
-//         return;
-//      }
-//      m_scheduling_started = true;
-//   }
+   debugOUT << "scheduling window is already initialized" << endl;
+   m_scheduling_started = true;
 
    //updateRange();
 
@@ -1718,14 +1728,26 @@ void DonetPeer::chunkScheduling()
    //debugOUT << "\t current pb point: " << m_player->getCurrentPlaybackPoint() << endl;
    //debugOUT << "\t video buffer:: start " << m_videoBuffer->getBufferStartSeqNum() << " -- end " << m_videoBuffer->getBufferEndSeqNum() << endl;
 
+   // -- Update bounds for scheduling
+   //
    SEQUENCE_NUMBER_T lower_bound, upper_bound;
    lower_bound = (m_player->getCurrentPlaybackPoint() == -1) ? m_videoBuffer->getBufferStartSeqNum()
                                                              : m_player->getCurrentPlaybackPoint() + 1;
    upper_bound = m_partnerList->getMaxHeadSequenceNumber();
+   lower_bound = std::max(lower_bound, upper_bound - m_videoBuffer->getSize() + 1);
 
-//   randomChunkScheduling(m_sched_window.start, m_sched_window.end);
+   debugOUT << "lower_bound " << lower_bound << " -- uppper bound: " << upper_bound << endl;
+   debugOUT << "current playback point: " << m_player->getCurrentPlaybackPoint() << endl;
+   assert(upper_bound - lower_bound + 1 <= m_videoBuffer->getSize());
+
+   debugOUT << "size of sched_win: " << upper_bound - lower_bound + 1
+            << " -- range: start " << lower_bound << " -- end: " << upper_bound << endl;
+   debugOUT << "size of buffer : " << m_videoBuffer->getBufferEndSeqNum() - m_videoBuffer->getBufferStartSeqNum() + 1
+            << " -- range: start " << m_videoBuffer->getBufferStartSeqNum() << " -- end " << m_videoBuffer->getBufferEndSeqNum()
+            << endl;
 
    donetChunkScheduling(lower_bound, upper_bound);
+   //   randomChunkScheduling(m_sched_window.start, m_sched_window.end);
 
 }
 
@@ -1911,7 +1933,7 @@ void DonetPeer::refreshListRequestedChunk(void)
 
    // -- new attempt to minimize the request redundancy
    //
-   if (m_numRequestedChunks.size() < param_factor_requestList)
+   if (m_numRequestedChunks.size() <= param_factor_requestList)
       return;
 
    int nRedundantElement = m_numRequestedChunks.front();
@@ -1936,20 +1958,17 @@ void DonetPeer::refreshListRequestedChunk(void)
 
 void DonetPeer::printListOfRequestedChunk(void)
 {
-   if (ev.isGUI() == false)
-      return;
-
-   EV << "Recently requested chunks: " << endl;
+   debugOUT << "Recently requested chunks: " << m_list_requestedChunk.size() << endl;
    int count = 1;
    vector<SEQUENCE_NUMBER_T>::iterator iter;
    for (iter = m_list_requestedChunk.begin(); iter != m_list_requestedChunk.end(); ++iter)
    {
-      EV << *iter << " ";
-      if (count % 10 == 0) EV << "\t";
-      if (count % 30 == 0) EV << endl;
+      cout << *iter << " ";
+      if (count % 10 == 0) cout << endl;
+      //if (count % 30 == 0) cout << endl;
       count++;
    }
-   EV << endl;
+   cout << endl;
 }
 
 MeshPartnershipLeavePacket* DonetPeer::generatePartnershipRequestLeavePacket()
@@ -1994,10 +2013,10 @@ void DonetPeer::findExpectedSet(SEQUENCE_NUMBER_T currentPlaybackPoint,
    for (SEQUENCE_NUMBER_T seq_num = std::max(lower_bound, currentPlaybackPoint);
         seq_num <= upper_bound; ++seq_num)
    {
-//      if (!should_be_requested(seq_num))
-//      {
-//         continue;
-//      }
+      if (!should_be_requested(seq_num))
+      {
+         continue;
+      }
 
       if (m_videoBuffer->isInBuffer(seq_num) == false)
       {

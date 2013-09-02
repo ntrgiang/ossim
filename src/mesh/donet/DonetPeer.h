@@ -50,7 +50,7 @@
  */
 struct SchedulingWindow
 {
-   SEQUENCE_NUMBER_T end, head, start;
+   SEQUENCE_NUMBER_T end, start;
 };
 
 struct DataExchange
@@ -59,6 +59,9 @@ struct DataExchange
    double m_throughput; // overall throughput since partnership establishment
    double m_throughput_interval; // throughput between the two most recent sampling
 };
+
+typedef std::map<SEQUENCE_NUMBER_T, double> AllTimeBudget_t;
+typedef std::map<IPvXAddress, AllTimeBudget_t> AllPartnerTimeBudget_t;
 
 class DonetPeer : public DonetBase
 {
@@ -140,7 +143,7 @@ private:
     void randomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUMBER_T upper_bound);
     void donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUMBER_T upper_bound);
     void RF_RandomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUMBER_T upper_bound);
-    int selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candidate1, IPvXAddress candidate2, IPvXAddress &supplier);
+    int selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candidate1, IPvXAddress candidate2, IPvXAddress &supplier, AllPartnerTimeBudget_t &);
     void findExpectedSet(SEQUENCE_NUMBER_T, SEQUENCE_NUMBER_T, SEQUENCE_NUMBER_T);
     void printExpectedSet(void);
 

@@ -162,7 +162,7 @@ void DonetBase::sendBufferMap(void)
    //debugOUT << "@peer " << getNodeAddress() << endl;
 
    // -- Debug
-   //m_videoBuffer->printRange();
+   m_videoBuffer->printRange();
 
    MeshBufferMapPacket *bmPkt = new MeshBufferMapPacket("MESH_PEER_BUFFER_MAP");
    bmPkt->setBufferMapArraySize(m_bufferMapSize_chunk);
