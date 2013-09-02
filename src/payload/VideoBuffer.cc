@@ -119,7 +119,7 @@ void VideoBuffer::handleMessage(cMessage *)
 void VideoBuffer::initializeRangeVideoBuffer(SEQUENCE_NUMBER_T seq)
 {
    debugOUT << "seq = " << seq << endl;
-   assert(seq > m_bufferStart_seqNum);
+   assert(seq >= m_bufferStart_seqNum);
 
    m_bufferStart_seqNum = seq;
    debugOUT << "set value for head " << seq << endl;
@@ -528,87 +528,24 @@ void VideoBuffer::printRange()
 
 void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
 {
+   debugOUT << "fillBufferMapPacket::" << endl;
+
    //if (m_bufferStart_seqNum != 0L)
    //   assert((m_bufferEnd_seqNum-m_bufferStart_seqNum+1) == m_bufferSize_chunk);
 
-   EV << endl;
-   EV << "%%%" << endl;
    EV << "Copy set bits from Buffer Map into BM packet: " << endl;
 
-   // bmPkt->setBufferMapArraySize(m_bufferSize_chunk);
-   // bmPkt->setIdStart(m_id_bufferStart);
-   // bmPkt->setIdEnd(m_id_bufferEnd);
    // -- Synchronize the ranges of the two buffer maps
    bmPkt->setBmStartSeqNum(m_bufferStart_seqNum);
    bmPkt->setBmEndSeqNum(m_bufferEnd_seqNum);
    bmPkt->setHeadSeqNum(m_head_received_seqNum);
 
-   debugOUT << "*************** catch:: I am here ****************" << endl;
-   printRange();
+   //printRange();
 
-   /*
-    // -- Initialize all of the element of the BM to false
-    for (int i = 0; i < m_bufferSize_chunk; i++)
-    {
-        bmPkt->setBufferMap(i, false);
-    }
-
-    // this block has problem?
-    int offset = 0;
-    std::vector<STREAM_BUFFER_ELEMENT_T>::iterator iter;
-    for (iter = m_streamBuffer.begin(); iter != m_streamBuffer.end(); ++iter)
-    {
-        EV << "Slot with offset = " << offset << " :: ";
-
-        // if the element stores no chunk
-        if (iter->m_chunk == NULL)
-        {
-            EV << "No chunk!" << endl;
-            continue;
-        }
-
-        // if the id of the packet at that element is too "old"
-        if (iter->m_chunk->getSeqNumber() < m_bufferStart_seqNum)
-        {
-            EV << "Chunk is out-dated!" << endl;
-            continue;
-        }
-
-        EV << "with seq_num " << iter->m_chunk->getSeqNumber() << " is set to true!" << endl;
-        bmPkt->setBufferMap(offset, true);
-        offset++;
-    }
-*/
-   /*
-    // -- New version of the code to optimize the speed
-    int offset = -1;
-    std::vector<STREAM_BUFFER_ELEMENT_T>::iterator iter;
-    for (iter = m_streamBuffer.begin(); iter != m_streamBuffer.end(); ++iter)
-    {
-        ++offset;
-        //EV << "BM slot with offset = " << offset << " :: ";
-
-        // if the element stores no chunk
-        if (iter->m_chunk == NULL)
-        {
-            //EV << "No chunk! --> set to false" << endl;
-            bmPkt->setBufferMap(offset, false);
-            continue;
-        }
-
-        // if the id of the packet at that element is too "old"
-        if (iter->m_chunk->getSeqNumber() < m_bufferStart_seqNum)
-        {
-            //EV << "Chunk is out-dated! --> set to false" << endl;
-            bmPkt->setBufferMap(offset, false);
-            continue;
-        }
-
-        //EV << "has chunk with seq_num " << iter->m_chunk->getSeqNumber() << " in range --> is set to true!" << endl;
-        bmPkt->setBufferMap(offset, true);
-    } // end of for
-*/
-   // Even more optimized codes
+   if (m_bufferStart_seqNum == -1L || m_head_received_seqNum == -1L)
+   {
+      return;
+   }
 
    std::vector<STREAM_BUFFER_ELEMENT_T>::iterator iter;
    iter = m_streamBuffer.begin();
@@ -621,23 +558,25 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
       long int videoChunk_seq = i + m_bufferStart_seqNum;
       iter = m_streamBuffer.begin() + (videoChunk_seq % m_bufferSize_chunk);
 
+      debugOUT << "i = " << i << " -- " << "videoChunk_seq = " << videoChunk_seq << " -- ";
+
       if (iter->m_chunk == NULL)
       {
-         //EV << "No chunk! --> set to false" << endl;
+         debugOUT << "No chunk! --> set to false" << endl;
          bmPkt->setBufferMap(i, false);
          continue;
       }
 
       if (iter->m_chunk->getSeqNumber() < m_bufferStart_seqNum)
       {
-         //EV << "Chunk is out-dated! --> set to false" << endl;
+         debugOUT << "Chunk is out-dated! --> set to false" << endl;
          bmPkt->setBufferMap(i, false);
          continue;
       }
 
       if (iter->m_chunk->getSeqNumber() != videoChunk_seq)
       {
-         cout << "start " << m_bufferStart_seqNum
+         debugOUT << "start " << m_bufferStart_seqNum
               << " -- end " << m_bufferEnd_seqNum
               << " -- head: " << m_head_received_seqNum << endl;
          throw cException("Expected chunk %ld, but actual chunk %ld",
@@ -646,6 +585,8 @@ void VideoBuffer::fillBufferMapPacket(MeshBufferMapPacket *bmPkt)
          // EV << "Chunk is out-dated! --> set to false" << endl;
          // bmPkt->setBufferMap(offset, false);
       }
+
+      debugOUT << " chunk available" << endl;
       bmPkt->setBufferMap(i, true);
    } // for
 
