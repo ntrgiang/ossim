@@ -103,10 +103,12 @@ void PlayerSimpleSkip::initialize(int stage)
    param_interval_reportStatistic = par("interval_reportStatistic");
 
    // -- for the FSM
-   param_percent_buffer_low = par("percent_buffer_low").doubleValue();
-   param_percent_buffer_high = par("percent_buffer_high").doubleValue();
-   param_max_skipped_chunk = (int) par("max_skipped_chunk").doubleValue();
-   param_interval_probe_playerStart = par("interval_probe_playerStart").doubleValue();
+   param_percent_buffer_low      = par("percent_buffer_low").doubleValue();
+   param_percent_buffer_high     = par("percent_buffer_high").doubleValue();
+   param_percent_offset_to_head  = par("percent_offset_to_head").doubleValue();
+   param_percent_fill_to_head    = par("percent_fill_to_head").doubleValue();
+   param_max_skipped_chunk             = (int) par("max_skipped_chunk").doubleValue();
+   param_interval_probe_playerStart    = par("interval_probe_playerStart").doubleValue();
    m_state = PLAYER_STATE_IDLE;
    m_skip = 0;
 
@@ -192,7 +194,14 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
       case PLAYER_STATE_BUFFERING:
       {
          //if (m_videoBuffer->getPercentFill() < param_percent_buffer_high)
-         if (readyToStart() == false)
+         SEQUENCE_NUMBER_T head = m_videoBuffer->getHeadReceivedSeqNum();
+         int offset_to_head = (int)(param_percent_offset_to_head * m_videoBuffer->getSize());
+         SEQUENCE_NUMBER_T expected_playback_point = head - offset_to_head;
+         debugOUT << "head = " << head
+                  << " -- offset = " << offset_to_head
+                  << " -- expected pb = " << expected_playback_point << endl;
+
+         if (readyToStart2(expected_playback_point) == false)
          {
             EV << "Buffer filled not enough, should wait more!" << endl;
 
@@ -203,7 +212,8 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
          {
             // -- Change state to PLAYING
             m_state = PLAYER_STATE_PLAYING;
-            m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
+            //m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
+            m_id_nextChunk = expected_playback_point;
 
             m_seqPlayerStarted = m_id_nextChunk;
             m_timePlayerStarted = simTime().dbl();
@@ -363,5 +373,49 @@ bool PlayerSimpleSkip::readyToStart(void)
    if (ratio < 0.6)
       return false;
 
+   return true;
+}
+
+bool PlayerSimpleSkip::readyToStart2(SEQUENCE_NUMBER_T expected_playback_point)
+{
+   debugOUT << "check ReadyToStart2" << endl;
+
+   debugOUT << "percent_offset_to_head " << param_percent_offset_to_head
+            << " -- percent_fill_to_head " << param_percent_fill_to_head << endl;
+
+   SEQUENCE_NUMBER_T head = m_videoBuffer->getHeadReceivedSeqNum();
+   if (expected_playback_point < m_videoBuffer->getBufferStartSeqNum())
+   {
+      debugOUT << "playback point " << expected_playback_point
+               << " is behind the buffer start " << m_videoBuffer->getBufferStartSeqNum()
+               << " --> not ready to start yet" << endl;
+      return false;
+   }
+
+   int nIn = 0, nTotal = 0;
+   for (SEQUENCE_NUMBER_T i = expected_playback_point; i <= head; ++i)
+   {
+      if (m_videoBuffer->isInBuffer(i) == true) ++nIn;
+
+      ++nTotal;
+   }
+
+   if (nTotal == 0)
+   {
+      debugOUT << "no chunk between the expected_playback_point and the head --> player won't start" << endl;
+      return false;
+   }
+
+   double ratio = (double)nIn / nTotal;
+   debugOUT << "ratio = " << ratio << endl;
+   if (ratio < param_percent_fill_to_head)
+   {
+      debugOUT << "actual ratio " << ratio
+               << " is smaller than expected ratio " << param_percent_fill_to_head
+               << " --> player won't start now" << endl;
+      return false;
+   }
+
+   debugOUT << "every thing is fine, player is starting now" << endl;
    return true;
 }

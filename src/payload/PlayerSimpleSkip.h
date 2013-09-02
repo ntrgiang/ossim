@@ -72,6 +72,7 @@ public:
 
     double getContinuityIndex(void);
     bool readyToStart(void);
+    bool readyToStart2(SEQUENCE_NUMBER_T);
 
 private:
     void startPlayer(void);

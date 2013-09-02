@@ -69,6 +69,9 @@ public:
     inline long int getCountChunkHit(void) { return m_count_chunkHit; }
     inline long int getCountChunkMiss(void) { return m_count_chunkMiss; }
 
+    inline double getPercentOffsetToHead() { return param_percent_offset_to_head; }
+    inline double getPercentFillToHead() { return param_percent_fill_to_head; }
+
     inline int getState(void) { return m_state; }
 
     inline double getTimePlayerStarted() { return m_timePlayerStarted; }
@@ -85,6 +88,8 @@ protected:
 
     double  param_interval_reportStatistic;
     double  param_percent_buffer_low, param_percent_buffer_high;
+    double  param_percent_offset_to_head;
+    double  param_percent_fill_to_head;
 
     //cMessage *timer_reportStatistic;
 

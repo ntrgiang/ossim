@@ -42,6 +42,8 @@ simple PlayerSimpleSkip like PlayerBase
       double interval_recheckVideoBuffer @unit(s) = default(0.1s);
       double percent_buffer_low = default(0.0);
       double percent_buffer_high = default(1.0);
+      double percent_offset_to_head = default(0.5);
+      double percent_fill_to_head = default(0.8);
       int max_skipped_chunk = default(3);
       double interval_probe_playerStart @unit(s) = default(1s);
         
