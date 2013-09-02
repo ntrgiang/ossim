@@ -180,5 +180,4 @@ void DummyMembership::decrementNPartner(const IPvXAddress &address)
 int DummyMembership::getActivePeerNumber(void)
 {
    return m_activePeerList.size();
-   //   return -9;
 }
