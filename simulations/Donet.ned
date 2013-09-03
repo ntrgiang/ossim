@@ -78,6 +78,96 @@ network Donet_Homo_oneRouter_Network extends BasicNetwork
         }
 }
 
+network Donet_Heter_oneRouter_Network extends BasicNetwork
+{
+    parameters:
+        int nPeers = default(1);
+        @display("bgb=488,389");
+        string churnModel = default("StaticChurn");
+        string statisticModule = default("DonetStatistic");
+
+        int percent1 = default(1);
+        int percent2 = default(0);
+        int percent3 = default(0);
+
+    types:
+        channel Channel_source_up extends ned.DatarateChannel       { datarate = 10Mbps; }
+        channel Channel_source_down extends ned.DatarateChannel     { datarate = 40Mbps; }
+
+        channel Channel_peer1_up extends ned.DatarateChannel     { datarate = 384kbps; }
+        channel Channel_peer1_down extends ned.DatarateChannel   { datarate = 1Mbps; }
+
+        channel Channel_peer2_up extends ned.DatarateChannel     { datarate = 1Mbps; }
+        channel Channel_peer2_down extends ned.DatarateChannel   { datarate = 6Mbps; }
+
+        channel Channel_peer3_up extends ned.DatarateChannel     { datarate = 10Mbps; }
+        channel Channel_peer3_down extends ned.DatarateChannel   { datarate = 10Mbps; }
+
+    submodules:
+        sourceNode: DonetSourceNode {
+            @display("p=388,50;i=device/server");
+        }
+
+        peerNode[nPeers]: DonetPeerNode;
+
+        router: Router {
+            @display("p=329,136");
+        }
+
+        flatNetConfig: FlatNetworkConfigurator {
+            @display("p=77,29;i=block/cogwheel");
+            networkAddress = "192.168.0.0";
+            netmask = "255.255.0.0";
+        }
+
+        activePeerTable: ActivePeerTable {
+            @display("p=77,96");
+        }
+
+        churnModerator: <churnModel> like IChurnModel {
+            @display("p=77,171");
+        }
+
+        globalStatistic: <statisticModule> like IStreamingStatistic {
+            @display("p=77,248;i=device/disk");
+        }
+
+        appSetting: AppSettingDonet {
+            @display("p=77,328;i=block/wheelbarrow");
+        }
+
+    connections:
+        // -- Source
+        sourceNode.pppg$o++ --> Channel_source_up --> router.pppg$i++;
+        sourceNode.pppg$i++ <-- Channel_source_down <-- router.pppg$o++;
+
+//        for i=0..nPeers-1 {
+//            peerNode[i].pppg$o++ --> Channel_peer_up --> router.pppg$i++;
+//            peerNode[i].pppg$i++ <-- Channel_peer_down <-- router.pppg$o++;
+//        }
+
+        // -- Group 1
+        //
+        for j=0..(nPeers-1), if j < nPeers * percent1 {
+            peerNode[j].pppg$o++ --> Channel_peer1_up --> router.pppg$i++;
+            peerNode[j].pppg$i++ <-- Channel_peer1_down <-- router.pppg$o++;
+        }
+
+        // -- Group 2
+        //
+        for j=0..(nPeers-1), if j >= nPeers * percent1, if j < nPeers * (percent1 + percent2) {
+            peerNode[j].pppg$o++ --> Channel_peer2_up --> router.pppg$i++;
+            peerNode[j].pppg$i++ <-- Channel_peer2_down <-- router.pppg$o++;
+        }
+
+        // -- Group 3
+        //
+        for j=0..(nPeers-1), if j >= nPeers * (percent1 + percent2), if j < nPeers {
+            peerNode[j].pppg$o++ --> Channel_peer3_up --> router.pppg$i++;
+            peerNode[j].pppg$i++ <-- Channel_peer3_down <-- router.pppg$o++;
+        }
+}
+
 
 network Donet_Heter_RouterLine_Network extends BasicNetwork
 {
