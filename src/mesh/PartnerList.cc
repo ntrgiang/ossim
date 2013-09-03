@@ -230,35 +230,35 @@ double PartnerList::getUpBw(IPvXAddress addr)
    }
 }
 
-bool PartnerList::updateChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, double time)
-{
-   std::map<IPvXAddress, NeighborInfo>::iterator iter;
-   iter = m_map.find(addr);
+//bool PartnerList::updateChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, double time)
+//{
+//   std::map<IPvXAddress, NeighborInfo>::iterator iter;
+//   iter = m_map.find(addr);
 
-   if (iter != m_map.end())
-   {
-      return iter->second.updateChunkAvailTime(seq_num, time);
-   }
-   else
-   {
-      throw cException("Address not found from the partnerList to updateChunkAvailTime");
-   }
-}
+//   if (iter != m_map.end())
+//   {
+//      return iter->second.updateChunkAvailTime(seq_num, time);
+//   }
+//   else
+//   {
+//      throw cException("Address not found from the partnerList to updateChunkAvailTime");
+//   }
+//}
 
-double PartnerList::getChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num)
-{
-   std::map<IPvXAddress, NeighborInfo>::iterator iter;
-   iter = m_map.find(addr);
+//double PartnerList::getChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num)
+//{
+//   std::map<IPvXAddress, NeighborInfo>::iterator iter;
+//   iter = m_map.find(addr);
 
-   if (iter != m_map.end())
-   {
-      return iter->second.getChunkAvailTime(seq_num);
-   }
-   else
-   {
-      throw cException("Address %s not found from the partnerList to getChunkAvailTime", addr.str().c_str());
-   }
-}
+//   if (iter != m_map.end())
+//   {
+//      return iter->second.getChunkAvailTime(seq_num);
+//   }
+//   else
+//   {
+//      throw cException("Address %s not found from the partnerList to getChunkAvailTime", addr.str().c_str());
+//   }
+//}
 
 /**
  * Could also be obsolete
@@ -562,24 +562,24 @@ void PartnerList::clearAllTimeBudget(void)
 
 // -- Obsolete
 //????
-void PartnerList::resetAllAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUMBER_T win_start, double chunkInterval)
-{
-   std::map<IPvXAddress, NeighborInfo>::iterator iter;
-   for (iter=m_map.begin(); iter != m_map.end(); ++iter)
-   {
-      iter->second.resetVectorAvailableTime(vb_start, win_start, chunkInterval);
-   }
-}
+//void PartnerList::resetAllAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUMBER_T win_start, double chunkInterval)
+//{
+//   std::map<IPvXAddress, NeighborInfo>::iterator iter;
+//   for (iter=m_map.begin(); iter != m_map.end(); ++iter)
+//   {
+//      iter->second.resetVectorAvailableTime(vb_start, win_start, chunkInterval);
+//   }
+//}
 
 
-void PartnerList::resetAllAvailableTime2(SEQUENCE_NUMBER_T win_start, double chunkPlaybackInterval)
-{
-   std::map<IPvXAddress, NeighborInfo>::iterator iter;
-   for (iter=m_map.begin(); iter != m_map.end(); ++iter)
-   {
-      iter->second.resetVectorAvailableTime2(win_start, chunkPlaybackInterval);
-   }
-}
+//void PartnerList::resetAllAvailableTime2(SEQUENCE_NUMBER_T win_start, double chunkPlaybackInterval)
+//{
+//   std::map<IPvXAddress, NeighborInfo>::iterator iter;
+//   for (iter=m_map.begin(); iter != m_map.end(); ++iter)
+//   {
+//      iter->second.resetVectorAvailableTime2(win_start, chunkPlaybackInterval);
+//   }
+//}
 
 SEQUENCE_NUMBER_T PartnerList::getMaxHeadSequenceNumber(void)
 {

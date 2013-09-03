@@ -123,15 +123,15 @@ public:
 
    void clearAllTimeBudget(void);
 
-   void resetAllAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUMBER_T win_start, double chunkInterval);
-   void resetAllAvailableTime2(SEQUENCE_NUMBER_T win_start, double chunkPlaybackInterval);
+   //void resetAllAvailableTime(SEQUENCE_NUMBER_T vb_start, SEQUENCE_NUMBER_T win_start, double chunkInterval);
+   //void resetAllAvailableTime2(SEQUENCE_NUMBER_T win_start, double chunkPlaybackInterval);
 
    void setElementSendBm(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, bool val);
 
    double getUpBw(IPvXAddress addr);
 
-   bool updateChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, double time);
-   double getChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num);
+   //bool updateChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num, double time);
+   //double getChunkAvailTime(IPvXAddress addr, SEQUENCE_NUMBER_T seq_num);
 
    SEQUENCE_NUMBER_T getMaxHeadSequenceNumber(void);
 
