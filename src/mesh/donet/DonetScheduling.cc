@@ -32,12 +32,12 @@
 #include "DonetPeer.h"
 #include <algorithm>
 #include <assert.h>
-#include <iomanip> // setw()
+#include <iomanip> // setprecision
 
 using namespace std;
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "@" << simTime().dbl() << " DonetScheduling:: "
+#define debugOUT (!m_debug_scheduling) ? std::cout : std::cout << "@" << simTime().dbl() << " DonetScheduling:: "
 #endif
 
 #define anIP "192.168.0.2"
@@ -71,20 +71,14 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
    // -- Update bounds of all sendBM
    m_partnerList->clearAllSendBm();
    m_partnerList->updateBoundSendBm(lower_bound, lower_bound + m_bufferMapSize_chunk - 1);
-   //m_partnerList->updateBoundSendBm(lower_bound, upper_bound);
    m_partnerList->resetNChunkScheduled();
 
    // -------------------------------------------------------------------------
    // -- Finding the expected set (set of chunks which should be requested)
    // -------------------------------------------------------------------------
-//   debugOUT << "lower bound: " << lower_bound << " -- upper bound: " << upper_bound << endl;
-
    findExpectedSet(currentPlaybackPoint, lower_bound, upper_bound);
 
-   debugOUT << "Number of cycles " << m_numRequestedChunks.size() << endl;
    //printListOfRequestedChunk();
-
-   debugOUT << "expected set size: " << m_expected_set.size() << endl;
    //printExpectedSet();
 
    AllTimeBudget_t chunkAvailableTime;
@@ -126,9 +120,9 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
 
    // -- Have a copy of the expected_set, so that chunks which has been found a supplier will be deleted from this copy
 
-   // -------------------------------------------------------------------------
-   // -- Browse through the expected_set
-   // -------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+//                   Browse through the expected_set
+// -----------------------------------------------------------------------------
    int sizeExpectedSet = m_expected_set.size();
    for (int i = 0; i < sizeExpectedSet; ++i)
    {
@@ -257,6 +251,8 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
       //         cout << "chunk " << it->first << " -- time " << setprecision(6) << it->second << " (s)" << endl;
       //      }
 
+      // -- Adjust the available time
+      //
       for (AllTimeBudget_t::iterator it = allTimeBudget[provider].find(seq_num); it != allTimeBudget[provider].end(); ++it)
       {
          it->second -= time_to_send_Chunk;
@@ -285,7 +281,7 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
          iter->second.copyTo(chunkReqPkt);
          sendToDispatcher(chunkReqPkt, m_localPort, iter->first, m_destPort);
 
-         debugOUT << "chunk request sent!" << endl;
+      debugOUT << "chunk request sent!" << endl;
    }
 
    // -- Prepare for the next requests
@@ -338,12 +334,10 @@ void DonetPeer::donetChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUM
          double time_to_send_Chunk = (double)param_chunkSize * 8 / m_partnerList->getUpBw(provider);
          for (AllTimeBudget_t::iterator it2 = allTimeBudget[provider].find(seq_num); it2 != allTimeBudget[provider].end(); ++it2)
          {
-            //debugOUT << "available time of chunk " << it2->first << endl;
-            //debugOUT << "\t before update: " << it2->second << endl;
+            debugOUT << "available time of chunk " << it2->first << endl;
+            debugOUT << "\t before update: " << it2->second << endl;
             it2->second -= time_to_send_Chunk;
-            //debugOUT << "\t after update: " << it2->second << endl;
-            //debugOUT << "Using another way to get result: " << m_partnerList->getChunkAvailTime(provider, seq_num) << endl;
-
+            debugOUT << "\t after update: " << it2->second << endl;
          }
       } // for each chunk
    } // for each group
@@ -405,8 +399,6 @@ int DonetPeer::selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candida
 {
    int ret = 0;
 
-    //double availableTime1 = m_partnerList->getChunkAvailTime(candidate1, seq_num); // obsolete
-    //double availableTime2 = m_partnerList->getChunkAvailTime(candidate2, seq_num); // obsolete
    double availableTime1 = allTimeBudget[candidate1][seq_num];
    double availableTime2 = allTimeBudget[candidate2][seq_num];
 
@@ -464,15 +456,15 @@ int DonetPeer::selectOneCandidate(SEQUENCE_NUMBER_T seq_num, IPvXAddress candida
    }
    else
    {
-//      debugOUT << "--> candidate1 is NOT qualified" << endl;
+      //debugOUT << "--> candidate1 is NOT qualified" << endl;
       if (availableTime2 > chunkSendingTime2)
       {
-//         debugOUT << "--> candidate2 is qualified --> it will be selected" << endl;
+         //debugOUT << "--> candidate2 is qualified --> it will be selected" << endl;
          supplier = candidate2;
       }
       else
       {
-//         debugOUT << "Both candidates were /fully/ booked with requested chunks!" << endl;
+         //debugOUT << "Both candidates were /fully/ booked with requested chunks!" << endl;
          ret = -1;
          // -- Just a /Padding code/
          supplier = candidate1;

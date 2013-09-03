@@ -187,7 +187,7 @@ private:
 // -----------------------------------------------------------------------------
 //                               Parameters
 // -----------------------------------------------------------------------------
-    bool    param_moduleDebug;
+    bool    m_debug_scheduling;
     double  param_chunkSchedulingInterval;
     double  param_interval_chunkScheduling;     // as a potential replacement for the above
     double  param_waitingTime_SchedulingStart;

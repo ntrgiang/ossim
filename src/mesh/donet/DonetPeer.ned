@@ -39,7 +39,7 @@ simple DonetPeer extends DonetBase
         @class(DonetPeer);
         
         // Debug
-        // bool moduleDebug = default(false);
+        bool debug_scheduling = default(false);
 
         // --- Features
         //

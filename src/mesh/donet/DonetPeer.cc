@@ -76,6 +76,9 @@ void DonetPeer::initialize(int stage)
    {
       DonetBase::initialize();
 
+      // -- Debugging
+      m_debug_scheduling = par("debug_scheduling");
+
       sig_chunkRequestSeqNum  = registerSignal("Signal_chunkRequest");
       //sig_partnerRequest      = registerSignal("Signal_PartnerRequest");
 
@@ -1958,6 +1961,7 @@ void DonetPeer::refreshListRequestedChunk(void)
 
 void DonetPeer::printListOfRequestedChunk(void)
 {
+   debugOUT << "Number of cycles " << m_numRequestedChunks.size() << endl;
    debugOUT << "Recently requested chunks: " << m_list_requestedChunk.size() << endl;
    int count = 1;
    vector<SEQUENCE_NUMBER_T>::iterator iter;
@@ -2027,7 +2031,7 @@ void DonetPeer::findExpectedSet(SEQUENCE_NUMBER_T currentPlaybackPoint,
 
 void DonetPeer::printExpectedSet()
 {
-   cout << "Expected set: " << endl;
+   debugOUT << "Expected set: " << m_expected_set.size() << endl;
    for (std::vector<SEQUENCE_NUMBER_T>::iterator iter = m_expected_set.begin();
         iter != m_expected_set.end(); ++iter)
    {
