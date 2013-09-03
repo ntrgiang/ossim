@@ -68,9 +68,9 @@ void DonetPeer::RF_RandomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE
 
     // -- Calculate the available time for _all_ chunk, for _all_ partners
     // -- (expect redundancy, but for simplicity of implementation),
-    m_partnerList->resetAllAvailableTime(m_player->getCurrentPlaybackPoint(),
-                                         lower_bound,
-                                         m_videoBuffer->getChunkInterval());
+//    m_partnerList->resetAllAvailableTime(m_player->getCurrentPlaybackPoint(),
+//                                         lower_bound,
+//                                         m_videoBuffer->getChunkInterval());
 
     // -- Update bounds of all sendBM
     m_partnerList->clearAllSendBm();
@@ -147,9 +147,9 @@ void DonetPeer::RF_RandomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE
            for (int k = 0; k < currentSize; ++k)
            {
               // EV << "nHolder = 1; k = " << k << endl;
-              ret = m_partnerList->updateChunkAvailTime(holderList[0],
-                                                        copied_expected_set[k],
-                                                        (param_chunkSize*8)/peerUpBw);
+//              ret = m_partnerList->updateChunkAvailTime(holderList[0],
+//                                                        copied_expected_set[k],
+//                                                        (param_chunkSize*8)/peerUpBw);
               if (ret == false)
               {
                  EV << "updateChunkAvailTime == false" << endl;
@@ -295,9 +295,9 @@ void DonetPeer::RF_RandomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE
             for (int k = 0; k < currentSize; ++k)
             {
                //EV << "nHolder > 1; k = " << k << endl;
-               m_partnerList->updateChunkAvailTime(holderList[0],
-                                                   copied_expected_set[k],
-                                                   (param_chunkSize*8)/peerUpBw);
+//               m_partnerList->updateChunkAvailTime(holderList[0],
+//                                                   copied_expected_set[k],
+//                                                   (param_chunkSize*8)/peerUpBw);
             }
 
             // -- Delete the chunk whose supplier had been found
