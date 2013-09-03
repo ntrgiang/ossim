@@ -643,8 +643,7 @@ void DonetPeer::handleTimerFindMorePartner(void)
 void DonetPeer::handleTimerPartnershipRefinement()
 {
    Enter_Method("handleTimerPartnershipRefinement");
-
-//   debugOUT << "Partnership refinement ***************" << endl;
+   debugOUT << "Partnership refinement ***************" << endl;
 
    // --------------------------------------------------------------------------
    // --- Update the records
@@ -653,14 +652,13 @@ void DonetPeer::handleTimerPartnershipRefinement()
 
    if (m_partnerList->getSize() < param_minNOP)
    {
-      //debugOUT << "Not enough minimum number of partners, should not cleanup now" << endl;
+      debugOUT << "Not enough minimum number of partners, should not cleanup now" << endl;
       return;
    }
 
-   //if (m_player->playerStarted() == false)
    if (m_player->getState() != PLAYER_STATE_PLAYING)
    {
-      //debugOUT << "Player has not started yet --> no refinement!" << endl;
+      debugOUT << "Player has not started yet --> no refinement!" << endl;
       return;
    }
 
@@ -687,13 +685,10 @@ void DonetPeer::handleTimerPartnershipRefinement()
       {
          if (simTime().dbl() - iter->second.getTimeInstanceAsPartner() > param_interval_partnershipRefinement)
          {
-            //debugOUT << "This partner should be removed, since no data exchange since "
-            //<< iter->second.getTimeInstanceAsPartner() << endl;
+            debugOUT << "This partner should be removed, since no data exchange since "
+                     << iter->second.getTimeInstanceAsPartner() << endl;
 
             // -- Should definitely remove the partner
-            //
-            //debugOUT << "A disconnect message will be sent to the partner " << iter->first << endl;
-
             disconnect_list.push_back(iter->first);
          }
       }
@@ -702,12 +697,13 @@ void DonetPeer::handleTimerPartnershipRefinement()
    //debugOUT << "remove set of " << disconnect_list.size() << " silent peers: " << endl;
    for (std::vector<IPvXAddress>::iterator iter = disconnect_list.begin(); iter != disconnect_list.end(); ++iter)
    {
-      debugOUT << "Idle partner whose address is " << *iter << " will be deleted from the partnerlist" << endl;
-
       MeshPartnershipDisconnectPacket *disPkt = generatePartnershipDisconnectPacket();
-      sendToDispatcher(disPkt, m_localPort, *iter, m_destPort);
+         sendToDispatcher(disPkt, m_localPort, *iter, m_destPort);
+
+      debugOUT << "A disconnection message has been sent to " << *iter << endl;
 
       m_partnerList->deleteAddress(*iter);
+      m_memManager->decrementNPartner(getNodeAddress());
       m_forwarder->removeRecord(*iter);
    }
 
@@ -726,7 +722,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
 
    if (m_partnerList->getSize() < param_minNOP)
    {
-      debugOUT << "Peer has sufficient number of partners, no more refinement" << endl;
+      debugOUT << "After removing idle partners, peer doesn't have sufficient number of partners --> no more refinement" << endl;
       return;
    }
 
@@ -739,7 +735,7 @@ void DonetPeer::handleTimerPartnershipRefinement()
       // -- not considering the "new" partner
       if (simTime().dbl() - iter->second.getTimeInstanceAsPartner() < param_interval_partnershipRefinement)
       {
-//         debugOUT << "Not considering the new partner " << iter->first << endl;
+         debugOUT << "Not considering this new partner " << iter->first << endl;
          continue;
       }
 
@@ -747,47 +743,78 @@ void DonetPeer::handleTimerPartnershipRefinement()
       double max = std::max(iter->second.getAverageChunkSent(), iter->second.getAverageChunkReceived());
       sorted_set.insert(std::make_pair<IPvXAddress, double>(iter->first, max));
 
-      provider_set.insert(std::make_pair<IPvXAddress, double>(iter->first, iter->second.getAverageChunkReceived()));
+      if (iter->second.getAverageChunkReceived() != 0.0)
+         provider_set.insert(std::make_pair<IPvXAddress, double>(iter->first, iter->second.getAverageChunkReceived()));
    }
 
    // -- Debugging
    //
    if (sorted_set.size() == 0)
-      debugOUT << "sorted set EMPTY!" << endl;
-   for (Throughput_Set::iterator iter = sorted_set.begin(); iter != sorted_set.end(); ++iter)
    {
-      debugOUT << "- address: " << iter->first << " -- throughput: " << iter->second << endl;
+      debugOUT << "sorted set EMPTY!" << endl;
+   }
+   else
+   {
+      debugOUT << "Sorted set: " << endl;
+      for (Throughput_Set::iterator iter = sorted_set.begin(); iter != sorted_set.end(); ++iter)
+      {
+         debugOUT << "\t address: " << iter->first << " -- throughput: " << iter->second << endl;
+      }
+   }
+
+   if (provider_set.size() == 0)
+   {
+      debugOUT << "the provider set is empty" << endl;
+   }
+   else
+   {
+      debugOUT << "Provider set: " << endl;
+      for (Throughput_Set::iterator iter = provider_set.begin(); iter != provider_set.end(); ++iter)
+      {
+         debugOUT << "\t provider " << iter->first
+                  << " -- incoming throughput " << iter->second << endl;
+      }
    }
 
    std::vector<IPvXAddress> remove_set;
    IPvXAddress my_provider = provider_set.begin()->first; // keep the best provider
-//   debugOUT << "my provider: " << my_provider << endl;
-   short count = 1;
-   for (Throughput_Set::iterator iter = sorted_set.end(); iter != sorted_set.begin(); --iter)
+   debugOUT << "my provider: " << my_provider << endl;
+   if ((int)sorted_set.size() <= param_maxNOP)
    {
-      if (iter->first == my_provider)
-         continue;
+      debugOUT << "less than maximum number of partners --> no need to remove" << endl;
+   }
+   else
+   {
+      debugOUT << "Number of partners to remove " << sorted_set.size() - param_maxNOP << endl;
+      Throughput_Set::iterator iter = sorted_set.begin();
+      for (int i = 0; i < param_maxNOP; i++)
+         iter++;
+      for (; iter != sorted_set.end(); ++iter)
+      {
+         debugOUT << "\t considering " << iter->first << endl;
+         if (iter->first == my_provider)
+            continue;
 
-      if (count++ < param_maxNOP)
-         continue;
-
-      remove_set.push_back(iter->first);
-      debugOUT << "To be removed: " << iter->first << endl;
+         remove_set.push_back(iter->first);
+         debugOUT << "Partner to be removed: " << iter->first << endl;
+      }
    }
 
    // -- Now remove the IP from the list of partners
-//   debugOUT << "remove set of " << remove_set.size() << " inactive peers: " << endl;
+   //
+   debugOUT << "remove set of " << remove_set.size() << " inactive peers: " << endl;
    for (std::vector<IPvXAddress>::iterator iter = remove_set.begin(); iter != remove_set.end(); ++iter)
    {
-//      debugOUT << *iter << endl;
-
       MeshPartnershipDisconnectPacket *disPkt = generatePartnershipDisconnectPacket();
-      sendToDispatcher(disPkt, m_localPort, *iter, m_destPort);
+         sendToDispatcher(disPkt, m_localPort, *iter, m_destPort);
+
+      debugOUT << "A disconnect message has been sent to partner " << *iter << endl;
 
       m_partnerList->deleteAddress(*iter);
+      m_memManager->decrementNPartner(getNodeAddress());
       m_forwarder->removeRecord(*iter);
    }
-
+   debugOUT << "****************************" << endl;
 }
 
 //void DonetPeer::handleTimerTimeoutWaitingAccept()
@@ -1339,10 +1366,9 @@ void DonetPeer::sendPartnershipRequest(void)
 
    assert(addressRandPeer != IPvXAddress("0.0.0.0"));
    MeshPartnershipRequestPacket *reqPkt = new MeshPartnershipRequestPacket("MESH_PEER_JOIN_REQUEST");
-   reqPkt->setUpBw(param_upBw);
-   reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
-
-   sendToDispatcher(reqPkt, m_localPort, addressRandPeer, m_destPort);
+     reqPkt->setUpBw(param_upBw);
+     reqPkt->setBitLength(m_appSetting->getPacketSizePartnershipRequest());
+     sendToDispatcher(reqPkt, m_localPort, addressRandPeer, m_destPort);
 }
 
 void DonetPeer::updateDataExchangeRecord(double samplingInterval)
