@@ -40,7 +40,7 @@ using boost::lexical_cast;
 Define_Module(OverlayTopology);
 
 #ifndef debugOUT
-#define debugOUT (!m_debug) ? std::cout : std::cout << "::" << getFullName() << ": "
+#define debugOUT (!m_debug) ? std::cout : std::cout << getFullName() << ": "
 #endif
 
 void OverlayTopology::initialize()
@@ -109,12 +109,12 @@ void OverlayTopology::setRoot(const IPvXAddress & root, const int sequence) {
    Enter_Method_Silent();
 
    assert(!root.isUnspecified());
-   //debugOUT << "current seq = " << sequence << " - while barrier is " << m_observedChunk << endl;
+   debugOUT << "current seq = " << sequence << " - while barrier is " << m_observedChunk << endl;
    if(sequence >= m_observedChunk && topo.find(sequence) == topo.end()) {
-      //debugOUT <<" root " << root << " for sequence " << sequence << " topo.size() " << topo.size() << endl;
+      debugOUT <<" root " << root << " for sequence " << sequence << " topo.size() " << topo.size() << endl;
       topo[sequence].setRoot(root,sequence);
 
-      //debugOUT << "topo.size(after) " << topo.size() << endl;
+      debugOUT << "topo.size(after) " << topo.size() << endl;
    }
 }
 
@@ -142,7 +142,7 @@ void OverlayTopology::addNode(const IPvXAddress& ip, const int sequence) {
    assert(!ip.isUnspecified());
    if(sequence < m_observedChunk) return;
 
-   //debugOUT<< "add Vertex " << ip << " for sequence " << sequence << endl;
+   debugOUT<< "add Vertex " << ip << " for sequence " << sequence << endl;
    assert(topo.find(sequence) != topo.end());
    topo[sequence].addVertex(ip, sequence);
 }
@@ -168,7 +168,7 @@ void OverlayTopology::addEdge(const int sequence, const IPvXAddress& from, const
    assert(!from.isUnspecified() && !to.isUnspecified());
    assert(topo.find(sequence) != topo.end());
    topo[sequence].addEdge(sequence, from, to);
-   //debugOUT<< "add Edge from " << from << " to " << to << " for sequence " << sequence << endl;
+   debugOUT<< "add Edge from " << from << " to " << to << " for sequence " << sequence << endl;
 }
 
 
@@ -194,7 +194,7 @@ void OverlayTopology::setJoinTime(const int sequence, IPvXAddress node, double j
 PPEdgeList OverlayTopology::getEdges(const int sequence) {
    Enter_Method_Silent();
 
-   //debugOUT << "topo has: " << topo.size() << " topologyModel" << endl;
+   debugOUT << "topo has: " << topo.size() << " topologyModel" << endl;
    assert(topo.find(sequence) != topo.end());
    return topo[sequence].getEdges(sequence);
 }
@@ -234,24 +234,27 @@ TopologyModel& OverlayTopology::getMostRecentTopologyRef(){
    return getTopologyRef(topoNum);
 }
 
-TopologyModel OverlayTopology::getTopology(const int sequence) {
+TopologyModel OverlayTopology::getTopology(const int sequence)
+{
    Enter_Method_Silent();
-   EV << "sequence: " << sequence << endl;
+
+   debugOUT << "sequence: " << sequence << endl;
    if (topo.find(sequence) == topo.end())
    {
-      EV << "no topology found!" << endl;
-      //debugOUT<< " topology " << sequence << " not found " <<endl;
+      debugOUT << "no topology found!" << endl;
+      debugOUT<< " topology " << sequence << " not found " <<endl;
    }
    else
    {
-      EV << "topology is present!" << endl;
-      EV << "number of elements: " << topo.size() << endl;
+      debugOUT << "topology is present!" << endl;
+      debugOUT << "number of elements: " << topo.size() << endl;
    }
    assert(topo.find(sequence) != topo.end());
    return topo[sequence];
 }
 
-TopologyModel& OverlayTopology::getTopologyRef(const int sequence) {
+TopologyModel& OverlayTopology::getTopologyRef(const int sequence)
+{
    Enter_Method_Silent();
 
    assert(topo.find(sequence) != topo.end());
@@ -259,13 +262,14 @@ TopologyModel& OverlayTopology::getTopologyRef(const int sequence) {
 }
 
 
-int OverlayTopology::attackRecursive(const int num) {
+int OverlayTopology::attackRecursive(const int num)
+{
    Enter_Method("attackRecursive");
 
    // get most recent sequence number
    int sequence = getMaxRecentSeq();
-   EV << "sequence = " << sequence << endl; // OK!
-   EV << "num = " << num << endl;
+   debugOUT << "sequence = " << sequence << endl; // OK!
+   debugOUT << "num = " << num << endl;
 
    return attackRecursive(sequence, num);
 }
