@@ -135,6 +135,8 @@ public:
 
    SEQUENCE_NUMBER_T getMaxHeadSequenceNumber(void);
 
+   std::vector<IPvXAddress> getPartnerAddresses(void);
+
    //@}
 
    // -- For debugging --

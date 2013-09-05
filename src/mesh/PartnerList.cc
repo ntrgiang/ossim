@@ -594,3 +594,13 @@ SEQUENCE_NUMBER_T PartnerList::getMaxHeadSequenceNumber(void)
 
    return maxSequence;
 }
+
+std::vector<IPvXAddress> PartnerList::getPartnerAddresses(void)
+{
+   std::vector<IPvXAddress> list;
+   for (AddressList::iterator iter = m_map.begin(); iter != m_map.end(); ++iter)
+   {
+      list.push_back(iter->first);
+   }
+   return list;
+}
