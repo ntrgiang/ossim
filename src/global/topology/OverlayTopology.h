@@ -90,8 +90,10 @@ public:
 
    int attackRecursive(const int num);
    int attackRecursive(const int sequence, const int num);
+   int attackRecursiveTopoSet(const int num);
 
    // -- Giang
+   TopologyModel getTopologySet();
    std::vector<long> getObserveChunkList(void);
    inline long getObservedChunk() { return m_observedChunk; }
    void collectEdge(const int sequence, const IPvXAddress& from, const IPvXAddress& to);
@@ -99,9 +101,22 @@ public:
    void writeEdgesToFile(void);
    void writeEdgesToFile(const char* filename);
 
+   void storeOverlayTopology(void);
+   void getSignalingOverlayEdges(void);
+   IPvXAddress getIpAddress(cModule* module);
+
 protected:
    // -- result recording
    std::ofstream m_outFile;
+
+   // -- overlay visualization
+   //
+   std::ofstream m_overlayTopologyFile;
+   int m_numPeers;
+   //std::map<IPvXAddress, IPvXAddress> m_edges;
+   typedef std::pair<IPvXAddress, IPvXAddress> Edge_Type;
+   std::vector<Edge_Type> m_edges;
+
 };
 
 #endif // OVERLAYTOPOLOGY_H

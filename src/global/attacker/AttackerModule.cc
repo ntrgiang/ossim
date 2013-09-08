@@ -140,26 +140,27 @@ void AttackerModule::handleMessage(cMessage* msg) {
    if (msg == timer_attack)
    {
       // -- print topology to file
-      oT->writeEdgesToFile();
+      //oT->writeEdgesToFile();
 
-      debugOUT << "get topology" << endl;
-      TopologyModel topo = oT->getTopology();
+      //debugOUT << "get topology" << endl;
+      //TopologyModel topo = oT->getTopology();
+      //TopologyModel topoSet = oT->getTopologySet();
 
-      int numNodes = topo.getNumRootSuccessors();
-      debugOUT << "topo has " << numNodes << " nodes " << endl;
+      //int numNodes = topo.getNumRootSuccessors();
+      //debugOUT << "topo has " << numNodes << " nodes " << endl;
 
-      PPStringSet stripeSet = topo.getStripes();
-      debugOUT << "the number of stripes: " << stripeSet.size() << endl;
+      //PPStringSet stripeSet = topo.getStripes();
+      //debugOUT << "the number of stripes: " << stripeSet.size() << endl;
 
-      for (PPStringSet::iterator iter = stripeSet.begin(); iter != stripeSet.end(); ++iter)
-      {
-         PPEdgeList eList = topo.getEdges(*iter);
-         debugOUT << "this topo has " << eList.size() << " edges" << endl;
-      }
+//      for (PPStringSet::iterator iter = stripeSet.begin(); iter != stripeSet.end(); ++iter)
+//      {
+//         PPEdgeList eList = topo.getEdges(*iter);
+//         debugOUT << "this topo has " << eList.size() << " edges" << endl;
+//      }
 
-      //attackGlobal();
+      attackGlobal();
 
-      nodeShutdown();
+      //nodeShutdown();
 
       //debugOUT << "topo size after shuting down nodes: " << oT->getNumTopologies() << endl;
    }
@@ -187,15 +188,17 @@ void AttackerModule::handleMessage(cMessage* msg) {
 }
 
 
-void AttackerModule::attackGlobal() {
+void AttackerModule::attackGlobal()
+{
    Enter_Method("attackGlobal()");
-
-   debugOUT << "Attack Global!" << endl;
+   debugOUT << "Attack Global! Calculating potential damage ..." << endl;
 
    // put stats here
    int damage = oT->attackRecursive(numAttack);
+   debugOUT << "damage1 = " << damage << endl;
 
-   debugOUT << "damage = " << damage << endl;
+   //int damage2 = oT->attackRecursiveTopoSet(numAttack);
+   //debugOUT << "damage2 = " << damage2 << endl;
 
    emit(sig_damage, damage);
 
@@ -205,7 +208,7 @@ void AttackerModule::attackGlobal() {
 
 void AttackerModule::nodeShutdown()
 {
-   debugOUT << "Attack Global!" << endl;
+   debugOUT << "Node shutdown!" << endl;
 
    int sequence = oT->getMaxRecentSeq();
    TopologyModel topoM = oT->getTopology(sequence);

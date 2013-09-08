@@ -34,6 +34,11 @@
 #include "AppSetting.h"
 #include "AppSettingDonet.h"
 
+#include "PartnerList.h"
+#include "InterfaceTable.h"
+#include "IPv4InterfaceData.h"
+#include <string>
+
 using namespace std;
 using boost::lexical_cast;
 
@@ -54,8 +59,8 @@ void OverlayTopology::initialize()
    EV << "Binding to AppSetting was completed!" << endl;
 
    param_observeTime    = par("observeTime").longValue();
-//   param_observeTimeEnd    = par("observeTimeEnd").longValue();
-//   param_observeTimeStep     = par("observeTimeStep").longValue();
+   //   param_observeTimeEnd    = par("observeTimeEnd").longValue();
+   //   param_observeTimeStep     = par("observeTimeStep").longValue();
 
    //assert(param_observeTimeEnd >= param_observeTime);
 
@@ -78,6 +83,11 @@ void OverlayTopology::initialize()
    m_outFile.open(par("outputFilename").stringValue(), fstream::out);
    //m_outFile << "test" << endl;
 
+   // -- file for the visualization of the topology
+   //
+   m_overlayTopologyFile.open(par("overlayTopologyFile").stringValue(), fstream::out);
+   m_numPeers = par("numPeers").longValue();
+
    streamStripes = par("streamStripes");
 
    WATCH(m_observedChunk);
@@ -86,12 +96,14 @@ void OverlayTopology::initialize()
 void OverlayTopology::finish() {
    topo.clear();
 
-//   std::list<PPEdge> edgeList = getEdges(m_observedChunk % INT_MAX);
-//   for(std::list<PPEdge>::iterator iter = edgeList.begin(); iter != edgeList.end(); ++iter)
-//   {
-//      m_outFile << iter->begin() << ";" << iter->end() << endl;
-//   }
+   //   std::list<PPEdge> edgeList = getEdges(m_observedChunk % INT_MAX);
+   //   for(std::list<PPEdge>::iterator iter = edgeList.begin(); iter != edgeList.end(); ++iter)
+   //   {
+   //      m_outFile << iter->begin() << ";" << iter->end() << endl;
+   //   }
    m_outFile.close();
+
+   storeOverlayTopology();
 }
 
 void OverlayTopology::handleMessage(cMessage* msg) {
@@ -109,12 +121,18 @@ void OverlayTopology::setRoot(const IPvXAddress & root, const int sequence) {
    Enter_Method_Silent();
 
    assert(!root.isUnspecified());
-   debugOUT << "current seq = " << sequence << " - while barrier is " << m_observedChunk << endl;
-   if(sequence >= m_observedChunk && topo.find(sequence) == topo.end()) {
-      debugOUT <<" root " << root << " for sequence " << sequence << " topo.size() " << topo.size() << endl;
+   //debugOUT << "current seq = " << sequence << " - while barrier is " << m_observedChunk << endl;
+   if(sequence >= m_observedChunk && topo.find(sequence) == topo.end())
+   {
+      //debugOUT <<" root " << root << " for sequence " << sequence << " topo.size() " << topo.size() << endl;
       topo[sequence].setRoot(root,sequence);
 
-      debugOUT << "topo.size(after) " << topo.size() << endl;
+      //debugOUT << "topo.size(after) " << topo.size() << endl;
+
+      if (sequence == m_observedChunk)
+      {
+         getSignalingOverlayEdges();
+      }
    }
 }
 
@@ -142,7 +160,7 @@ void OverlayTopology::addNode(const IPvXAddress& ip, const int sequence) {
    assert(!ip.isUnspecified());
    if(sequence < m_observedChunk) return;
 
-   debugOUT<< "add Vertex " << ip << " for sequence " << sequence << endl;
+   //debugOUT<< "add Vertex " << ip << " for sequence " << sequence << endl;
    assert(topo.find(sequence) != topo.end());
    topo[sequence].addVertex(ip, sequence);
 }
@@ -168,7 +186,7 @@ void OverlayTopology::addEdge(const int sequence, const IPvXAddress& from, const
    assert(!from.isUnspecified() && !to.isUnspecified());
    assert(topo.find(sequence) != topo.end());
    topo[sequence].addEdge(sequence, from, to);
-   debugOUT<< "add Edge from " << from << " to " << to << " for sequence " << sequence << endl;
+   //debugOUT<< "add Edge from " << from << " to " << to << " for sequence " << sequence << endl;
 }
 
 
@@ -200,14 +218,20 @@ PPEdgeList OverlayTopology::getEdges(const int sequence) {
 }
 
 
-TopologyModel OverlayTopology::getMostRecentTopology() {
-
+TopologyModel OverlayTopology::getMostRecentTopology()
+{
+   debugOUT << "getMostRecentTopology::" << endl;
    int topoMax = getMaxRecentSeq();
    debugOUT << "topoMax = " << topoMax << endl;
    debugOUT << "streamStripes = " << streamStripes << endl;
 
-   if(streamStripes == 1) return getTopology(topoMax);
+   if(streamStripes == 1)
+   {
+      debugOUT << "There is only one stripe" << endl;
+      return getTopology(topoMax);
+   }
 
+   debugOUT << "There are more than one stripe" << endl;
    TopologyModel globalTopology = TopologyModel();
    for(int i = 0; i < streamStripes; i++) {
       int topoNum = topoMax - i;
@@ -219,9 +243,38 @@ TopologyModel OverlayTopology::getMostRecentTopology() {
 }
 
 
-TopologyModel OverlayTopology::getTopology() {
-
+TopologyModel OverlayTopology::getTopology()
+{
    return getMostRecentTopology();
+}
+
+/*
+ * Get a number of consecutive topologies
+ */
+TopologyModel OverlayTopology::getTopologySet()
+{
+   debugOUT << "getTopologySet::" << endl;
+
+   int seqTopoMax = getMaxRecentSeq();
+   TopologyModel topoMax = getTopology(seqTopoMax);
+
+   debugOUT << "seqTopoMax = " << seqTopoMax << endl;
+   debugOUT << "streamStripes = " << streamStripes << endl;
+   debugOUT << "Number of vertex of topoMax " << topoMax.numberVertexes() << endl;
+
+   assert((unsigned int)streamStripes < topo.size());
+
+   TopologyModel outputTopology = TopologyModel();
+   for (int i = 0; i < streamStripes; ++i)
+   {
+      int stripeNum = i + (int)m_observedChunk;
+      debugOUT << "\t Considering snapshot " << stripeNum << endl;
+      TopologyModel tempTopo = getTopology(stripeNum);
+      debugOUT << "\t Number of vertexes of the tempTopo: " << tempTopo.numberVertexes() << endl;
+      outputTopology.insertTopology2(tempTopo);
+   }
+
+   return outputTopology;
 }
 
 TopologyModel & OverlayTopology::getTopologyRef() {
@@ -237,6 +290,7 @@ TopologyModel& OverlayTopology::getMostRecentTopologyRef(){
 TopologyModel OverlayTopology::getTopology(const int sequence)
 {
    Enter_Method_Silent();
+   debugOUT << "getTopology::" << endl;
 
    debugOUT << "sequence: " << sequence << endl;
    if (topo.find(sequence) == topo.end())
@@ -247,7 +301,7 @@ TopologyModel OverlayTopology::getTopology(const int sequence)
    else
    {
       debugOUT << "topology is present!" << endl;
-      debugOUT << "number of elements: " << topo.size() << endl;
+      debugOUT << "number of collected topologies: " << topo.size() << endl;
    }
    assert(topo.find(sequence) != topo.end());
    return topo[sequence];
@@ -268,6 +322,7 @@ int OverlayTopology::attackRecursive(const int num)
 
    // get most recent sequence number
    int sequence = getMaxRecentSeq();
+   //int sequence = (int)m_observedChunk;
    debugOUT << "sequence = " << sequence << endl; // OK!
    debugOUT << "num = " << num << endl;
 
@@ -287,35 +342,70 @@ int OverlayTopology::getMostRecentSeq() {
 
 // returns sequence number of topology
 // with maximum number of nodes
-int OverlayTopology::getMaxRecentSeq() {
+int OverlayTopology::getMaxRecentSeq()
+{
+   debugOUT << "getMaxRecentSeq()::" << endl;
    int seq = -1;
    int max = -1;
-   debugOUT << "the number of overlays: " << topo.size() << endl;
-   for(Iterator it = topo.begin(); it != topo.end(); it++) {
+   debugOUT << "\t the number of collected topologies: " << topo.size() << endl;
+   for(Iterator it = topo.begin(); it != topo.end(); it++)
+   {
       int num = it->second.numberVertexes();
-      if(max < num || (max == num && seq < it->first)) {
+      if(max < num || (max == num && seq < it->first))
+      {
          seq = it->first;
          max = num;
       }
    }
    assert(seq >= 0);
+   debugOUT << "\t max Sequence = " << seq << endl;
    return seq;
 }
 
 
-int OverlayTopology::attackRecursive(const int sequence, const int num) {
+int OverlayTopology::attackRecursive(const int sequence, const int num)
+{
    Enter_Method("attackRecursive(sequence,num");
+   debugOUT << "attackRecursive:" << endl;
 
-   TopologyModel topoM = getTopology(sequence);
-   EV << "topoM is empty: " << topoM.empty() << endl;
-   EV << "num = " << num << endl;
+   // -- old code
+   //
+   //TopologyModel topoM = getTopology(sequence);
 
-   //    EV << "print edge list: " << endl;
-   //    PPEdgeList eList = topoM.getEdges();
-   //    for (PPEdgeList::iterator iter = eList.begin(); iter != eList.end(); ++iter)
-   //    {
-   //       EV << iter->begin() << " - " << iter->end() << endl;
-   //    }
+   // -- Giang: try something new
+   //
+   //TopologyModel topoM = getTopology();
+   TopologyModel topoM = getTopologySet();
+   topoM.calculate();
+
+   debugOUT << "number of stripes after getTopologySet(): " << topoM.getNumSeenStripes() << endl;
+
+   debugOUT << "\t topoM is empty: " << topoM.empty() << endl;
+   //debugOUT << "\t num = " << num << endl;
+   //debugOUT << "\t print edge list: " << endl;
+
+   debugOUT << "List of stripes:" << endl;
+   PPStringSet stripeSet = topoM.getStripes();
+   for (PPStringSet::iterator iter = stripeSet.begin(); iter != stripeSet.end(); ++iter)
+   {
+      debugOUT << "Edges for stripe " << *iter << endl;
+
+      PPEdgeList eList = topoM.getEdges(*iter);
+      for (PPEdgeList::iterator iter = eList.begin(); iter != eList.end(); ++iter)
+      {
+         debugOUT << iter->begin() << " - " << iter->end() << endl;
+      }
+
+   }
+
+//   PPEdgeList eList = topoM.getEdges(sequence);
+//   for (PPEdgeList::iterator iter = eList.begin(); iter != eList.end(); ++iter)
+//   {
+//      debugOUT << iter->begin() << " - " << iter->end() << endl;
+//   }
+
+   topoM.printCentralityList();
+   topoM.printIncomingEdgeList();
 
    int damage = 0;
    for(int i = 0; i < num; i++)
@@ -323,6 +413,39 @@ int OverlayTopology::attackRecursive(const int sequence, const int num) {
       damage += topoM.removeCentralVertex();
    }
 
+   damage += topoM.getTotalNodesServiceLost();
+   debugOUT << "Total nodes with service loss: " << topoM.getTotalNodesServiceLost() << endl;
+   debugOUT << "\t damage of attack recursive = " << damage << endl;
+   return damage;
+}
+
+int OverlayTopology::attackRecursiveTopoSet(const int num)
+{
+   Enter_Method("attackRecursive(sequence,num");
+   debugOUT << "attackRecursive on set of topology::" << endl;
+
+   TopologyModel topoSet = getTopologySet();
+   PPStringSet stripeSet = topoSet.getStripes();
+   int numStripes = stripeSet.size();
+   debugOUT << "\t topoM is " << (topoSet.empty() ? "" : " NOT ") << "empty" << endl;
+   debugOUT << "\t number of removed nodes = " << num << endl;
+   debugOUT << "\t number of topologies: " << numStripes << endl;
+
+   for (PPStringSet::iterator iter = stripeSet.begin(); iter != stripeSet.end(); ++iter)
+   {
+      debugOUT << "stripe " << *iter << endl;
+      //TopologyModel tempTopo = topoM[*iter];
+   }
+
+   int damage = 0;
+   for(int i = 0; i < num; i++)
+   {
+      damage += topoSet.removeCentralVertex();
+   }
+
+   damage += topoSet.getTotalNodesServiceLost();
+   debugOUT << "Total nodes with service loss: " << topoSet.getTotalNodesServiceLost() << endl;
+   debugOUT << "\t damage of attack recursive for TopoSet = " << damage << endl;
    return damage;
 }
 
@@ -347,10 +470,10 @@ void OverlayTopology::writeEdgesToFile(void)
    assert(stripeSet.size() > 0);
    PPEdgeList eList = topo.getEdges(*stripeSet.begin());
 
-//   for (PPStringSet::iterator iter = stripeSet.begin(); iter != stripeSet.end(); ++iter)
-//   {
-//      PPEdgeList eList = topo.getEdges(*iter);
-//   }
+   //   for (PPStringSet::iterator iter = stripeSet.begin(); iter != stripeSet.end(); ++iter)
+   //   {
+   //      PPEdgeList eList = topo.getEdges(*iter);
+   //   }
 
    m_outFile << "Source;Target" << endl;
    debugOUT << "this topo has " << eList.size() << " edges" << endl;
@@ -386,3 +509,104 @@ void OverlayTopology::writeEdgesToFile(const char* filename)
    outFile.close();
 }
 
+void OverlayTopology::getSignalingOverlayEdges(void)
+{
+   Enter_Method("getSignalingOverlayEdges");
+   debugOUT << "getSignalingOverlayEdges" << endl;
+   debugOUT << "hello :)" << endl;
+   // -- Browse through all the nodes to extract the partner list
+   //
+   // Source node
+   cModule* sourceNodeModule = getParentModule()->getSubmodule("sourceNode",0);
+   assert(sourceNodeModule);
+
+   PartnerList* partnerList = check_and_cast<PartnerList*>(sourceNodeModule-> \
+                                                           getModuleByRelativePath("peerApp")-> \
+                                                           getModuleByRelativePath("partnerList"));
+
+   IPvXAddress sourceAddress = getIpAddress(sourceNodeModule);
+
+   std::vector<IPvXAddress> addressList = partnerList->getPartnerAddresses();
+
+   debugOUT << "source address: " << sourceAddress << endl;
+   debugOUT << "edges relating to the source node:" << endl;
+   for (std::vector<IPvXAddress>::iterator iter = addressList.begin();
+        iter != addressList.end(); ++iter)
+   {
+      debugOUT << "edge " << sourceAddress << " -- " << *iter << endl;
+      //m_edges.insert(std::pair<IPvXAddress, IPvXAddress>(sourceAddress, *iter));
+      m_edges.push_back(std::pair<IPvXAddress, IPvXAddress>(sourceAddress, *iter));
+   }
+
+   // Peer nodes
+   for (int i = 0; i < m_numPeers; ++i)
+   {
+      cModule* peerNodeModule = getParentModule()->getSubmodule("peerNode",i);
+
+      partnerList = check_and_cast<PartnerList*>(peerNodeModule-> \
+                                                 getModuleByRelativePath("peerApp")-> \
+                                                 getModuleByRelativePath("partnerList"));
+
+      IPvXAddress peerAddress = getIpAddress(peerNodeModule);
+      debugOUT << "Connections of peer " << peerAddress << endl;
+      addressList = partnerList->getPartnerAddresses();
+      for (std::vector<IPvXAddress>::iterator iter = addressList.begin(); iter != addressList.end(); ++iter)
+      {
+         bool pair_existed = false;
+         for(std::vector<Edge_Type>::iterator it = m_edges.begin(); it != m_edges.end(); ++it)
+         {
+            if (peerAddress == it->second && *iter == it->first)
+            {
+               pair_existed = true;
+               break;
+            }
+         }
+         if (pair_existed)
+         {
+            debugOUT << "edge " << *iter << " -- " << peerAddress << " existed" << endl;
+         }
+         else
+         {
+            debugOUT << "edge " << peerAddress << " -- " << *iter << endl;
+            m_edges.push_back(std::pair<IPvXAddress, IPvXAddress>(peerAddress, *iter));
+         }
+      } // for each address in the partnerList
+   }
+
+}
+
+void OverlayTopology::storeOverlayTopology(void)
+{
+   debugOUT << "storeOverlayTopology" << endl;
+
+   // -- Write to file
+   //
+   m_overlayTopologyFile << " graph graphname {" << endl;
+   for (std::vector<Edge_Type>::iterator iter = m_edges.begin();
+        iter != m_edges.end(); ++iter)
+   {
+      m_overlayTopologyFile << iter->first.str().erase(0, 10) << " -- "
+                            << iter->second.str().erase(0, 10) << ";" << endl;
+   }
+   m_overlayTopologyFile << "}" << endl;
+
+   m_overlayTopologyFile.close();
+}
+
+IPvXAddress OverlayTopology::getIpAddress(cModule* module)
+{
+   InterfaceTable* interface = check_and_cast<InterfaceTable*>(module->getSubmodule("interfaceTable"));
+   //debugOUT << "Number of interfaces: " << interface->getNumInterfaces() << endl;
+
+   IPvXAddress address;
+   if (interface->getNumInterfaces() > 1)
+   {
+      address = IPvXAddress(interface->getInterface(interface->getNumInterfaces()-1)->ipv4Data()->getIPAddress());
+   }
+   else
+   {
+      address = IPvXAddress(interface->getInterface(0)->ipv4Data()->getIPAddress());
+   }
+
+   return address;
+}

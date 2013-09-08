@@ -60,7 +60,7 @@ public:
     void	 	addVertex(const IPvXAddress vertex,const int sequence);
     void        addVertex(const std::string& stripe, const IPvXAddress vertex);
     int			removeCentralVertex();
-    void        removeVertex(const IPvXAddress& vertex);
+    //void        removeVertex(const IPvXAddress& vertex);
     virtual int removeVertexRecursive(const IPvXAddress& vertex);
     int         removeVertexRecursive(const std::string& stripe, const IPvXAddress &vertex);
     int         removeVertexRecursive(const std::string& stripe, const IPvXAddress &vertex, bool loss);
@@ -135,7 +135,16 @@ public:
     PPIPvXAddressSet getVertexes();
 
     void insertTopology(TopologyModel modelToInsert);
+    void insertTopology2(TopologyModel modelToInsert);
     std::string getString(const int sequence) const;
+
+    inline int getTotalNodesServiceLost() { return nodesServiceLost.size(); }
+    PPIPvXAddressIntMap getInEdgesCountList();
+
+    // -- Debugging
+    //
+    void printCentralityList();
+    void printIncomingEdgeList();
 };
 
 #endif // TOPOLOGYMODEL_H
