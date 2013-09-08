@@ -222,57 +222,6 @@ void TopologyModel::addVertex(const std::string& stripe, const IPvXAddress verte
  * This is used to ensure that two attackers in a row
  * are not treated equal to two attackers at the same level in different stripes.
  */
-//int TopologyModel::removeVertexRecursive(const IPvXAddress& vertex)
-//{
-//   debugOUT << "removeVertexRecursive " << endl;
-
-//   bool flag_loss = (minRequiredStripes > 0);
-//   debugOUT << "in removeVertexRecursive" << ", loss = " << (flag_loss ? "true" : "false") << endl;
-
-//   int affected = 0;
-//   if (flag_loss)
-//   {
-//      debugOUT << "loss #1" << endl;
-//      affected = nodesServiceLost.size();
-//      debugOUT << "at beginning, nodes (service lost) = " << affected << endl;
-//   }
-
-//   centrality.erase(vertex);
-//   inEdgesCtr.erase(vertex);
-//   numNodes--;
-
-//   //int succ = countSuccessors(vertex);
-
-//   debugOUT << "total number of stripes: " << stripes.size() << endl;
-//   // -- For each stripe, remove all edges in and out of this node
-//   //
-//   foreach(std::string stripe, stripes)
-//   {
-//      int impact = removeVertexRecursive(stripe, vertex, flag_loss);
-//      affected += impact;
-//      debugOUT << "Damage for stripe " << stripe << ": " << impact << endl;
-//   }
-
-//   debugOUT << "affected = " << affected << endl;
-//   calculated = false;
-//   DEBUGOUT(" * affected = " << affected << " and original successors " << succ);
-
-//   // -- Test code from Mathias source code
-//   //
-////   if (loss)
-////      return nodesServiceLost.size() - affected;
-////   else
-////      return affected;
-
-//   if (flag_loss)
-//      return nodesServiceLost.size();
-//   else
-//      return affected;
-
-//   // -- old code
-//   // return affected;
-//}
-
 int TopologyModel::removeVertexRecursive(const IPvXAddress& vertex)
 {
    debugOUT << "removeVertexRecursive(vertex)::" << endl;
@@ -281,18 +230,10 @@ int TopologyModel::removeVertexRecursive(const IPvXAddress& vertex)
    debugOUT << "in removeVertexRecursive" << ", loss = " << (flag_loss ? "true" : "false") << endl;
 
    int affected = 0;
-//   if (flag_loss)
-//   {
-//      debugOUT << "loss #1" << endl;
-//      affected = nodesServiceLost.size();
-//      debugOUT << "at beginning, nodes (service lost) = " << affected << endl;
-//   }
 
    centrality.erase(vertex);
    //inEdgesCtr.erase(vertex);
    numNodes--;
-
-   //int succ = countSuccessors(vertex);
 
    debugOUT << "total number of stripes: " << stripes.size() << endl;
    // -- For each stripe, remove all edges in and out of this node
@@ -306,22 +247,30 @@ int TopologyModel::removeVertexRecursive(const IPvXAddress& vertex)
 
    debugOUT << "affected = " << affected << endl;
    calculated = false;
-   DEBUGOUT(" * affected = " << affected << " and original successors " << succ);
 
-   // -- Test code from Mathias source code
+   return affected;
+}
+
+// -- a modified version for Giang
+//
+void TopologyModel::removeVertexRecursive2(const IPvXAddress& vertex)
+{
+   debugOUT << "removeVertexRecursive(vertex)::" << endl;
+
+   centrality.erase(vertex);
+   //inEdgesCtr.erase(vertex);
+   numNodes--;
+
+   debugOUT << "total number of stripes: " << stripes.size() << endl;
+   // -- For each stripe, remove all edges in and out of this node
    //
-//   if (loss)
-//      return nodesServiceLost.size() - affected;
-//   else
-//      return affected;
+   foreach(std::string stripe, stripes)
+   {
+      debugOUT << "Removing vertex " << vertex << " in stripe " << stripe << endl;
+      removeVertexRecursive2(stripe, vertex);
+   }
 
-//   if (flag_loss)
-//      return nodesServiceLost.size() + affected;
-//   else
-//      return affected;
-
-   // -- old code
-    return affected;
+   calculated = false;
 }
 
 
@@ -343,28 +292,26 @@ int TopologyModel::removeVertexRecursive(const std::string& stripe, const IPvXAd
    // -- Remove all incident edges
    // -- This is related to the inbound links.
    //
-   int numIncomingEdges = 0;
-   Vertexes::iterator it = graph[stripe].begin();
-   while (it != graph[stripe].end())
-   {
-      //debugOUT << "Investigating vertex " << it->first << endl;
-      int old = it->second.size();
-      //debugOUT << "\t Number of children of " << it->first << " is: " << old << endl;
-      it->second.erase(vertex);
-      //debugOUT << "\t Number of children of " << it->first
-      //         << " after deleting " << vertex
-      //         << " is: " << it->second.size() << endl;
-      numIncomingEdges += old - it->second.size();
-      //debugOUT << "\t vertex " << it->first
-      //         << " with old = " << old
-      //         << " -- numIncomingEdges = " << numIncomingEdges << endl;
-      it++;
-   }
-
-   debugOUT << "numIncomingEdges to " << vertex << " = " << numIncomingEdges << endl;
-   debugOUT << "this->numStripes = " << this->numStripes << endl;
-
-   assert(numIncomingEdges <= this->numStripes);
+   //   int numIncomingEdges = 0;
+   //   Vertexes::iterator it = graph[stripe].begin();
+   //   while (it != graph[stripe].end())
+   //   {
+   //      //debugOUT << "Investigating vertex " << it->first << endl;
+   //      int old = it->second.size();
+   //      //debugOUT << "\t Number of children of " << it->first << " is: " << old << endl;
+   //      it->second.erase(vertex);
+   //      //debugOUT << "\t Number of children of " << it->first
+   //      //         << " after deleting " << vertex
+   //      //         << " is: " << it->second.size() << endl;
+   //      numIncomingEdges += old - it->second.size();
+   //      //debugOUT << "\t vertex " << it->first
+   //      //         << " with old = " << old
+   //      //         << " -- numIncomingEdges = " << numIncomingEdges << endl;
+   //      it++;
+   //   }
+   //   debugOUT << "numIncomingEdges to " << vertex << " = " << numIncomingEdges << endl;
+   //   debugOUT << "this->numStripes = " << this->numStripes << endl;
+   //   assert(numIncomingEdges <= this->numStripes);
 
    // -- Remove all adjacent edges
    // -- These are tracked. An acyclic graph is expected.
@@ -443,52 +390,11 @@ int TopologyModel::removeVertexRecursive(const std::string& stripe, const IPvXAd
             inEdgesCtr.erase(node);
          }
 
-//         PPIPvXAddressSet::iterator it = newads.begin();
-//         while (it != newads.end())
-//         {
-//            inEdgesCtr[*it]--;
-//            debugOUT << " \\ removeVertexRecursive " << node << "->" << *it << " in " << stripe
-//                     << " decreases #inbound[to]=" << inEdgesCtr[*it] << " >= 0" << endl;
-
-//            if (inEdgesCtr[node] < minRequiredStripes)
-//            {
-//               debugOUT << "inedgectr of node " << node
-//                        << " = " << inEdgesCtr[node]
-//                        << " -- minRequiredStripes = " << minRequiredStripes << endl;
-//               debugOUT << "inEdgesCtr less than minNode " << node << " with service lost" << endl;
-//               nodesServiceLost.insert(node);
-//               inEdgesCtr.erase(node);
-//            }
-//            it++;
-//         }
-
          // -- kind of recursive (delete the cur_node, and browse through its children instead)
          //
          ads.insert(newads.begin(), newads.end());
          old_parent = node;
 
-//         if (loss)
-//         {
-//            if (inEdgesCtr[node] < minRequiredStripes)
-//            {
-//               debugOUT << "Node " << node << " with service lost" << endl;
-//               nodesServiceLost.insert(node);
-//            }
-//         }
-//         else
-//         {
-//            affected++;
-//         }
-
-//            if (inEdgesCtr[node] < minRequiredStripes)
-//            {
-//               debugOUT << "inedgectr of node " << node
-//                        << " = " << inEdgesCtr[node]
-//                        << " -- minRequiredStripes = " << minRequiredStripes << endl;
-//               debugOUT << "inEdgesCtr less than minNode " << node << " with service lost" << endl;
-//               nodesServiceLost.insert(node);
-//               inEdgesCtr.erase(node);
-//            }
       } // while
    }
    else
@@ -502,6 +408,133 @@ int TopologyModel::removeVertexRecursive(const std::string& stripe, const IPvXAd
             << "\t -- nodesServiceLoss is " << nodesServiceLost.size() << endl;
 
    return affected;
+}
+
+// -- a modified version for Giang
+//
+void TopologyModel::removeVertexRecursive2(const std::string& stripe, const IPvXAddress &vertex)
+{
+   debugOUT << "removeVertexRecursive3(stripe, vertex, loss)::" << endl;
+
+   debugOUT << " * remove vertex " << vertex
+            << " recursively in stripe: " << stripe << endl;
+
+   debugOUT << "Current inEdgesCtr of " << vertex << " is " << inEdgesCtr[vertex] << endl;
+
+   // -- Remove all incident edges
+   // -- This is related to the inbound links.
+   //
+   //   int numIncomingEdges = 0;
+   //   Vertexes::iterator it = graph[stripe].begin();
+   //   while (it != graph[stripe].end())
+   //   {
+   //      //debugOUT << "Investigating vertex " << it->first << endl;
+   //      int old = it->second.size();
+   //      //debugOUT << "\t Number of children of " << it->first << " is: " << old << endl;
+   //      it->second.erase(vertex);
+   //      //debugOUT << "\t Number of children of " << it->first
+   //      //         << " after deleting " << vertex
+   //      //         << " is: " << it->second.size() << endl;
+   //      numIncomingEdges += old - it->second.size();
+   //      //debugOUT << "\t vertex " << it->first
+   //      //         << " with old = " << old
+   //      //         << " -- numIncomingEdges = " << numIncomingEdges << endl;
+   //      it++;
+   //   }
+   //   debugOUT << "numIncomingEdges to " << vertex << " = " << numIncomingEdges << endl;
+   //   debugOUT << "this->numStripes = " << this->numStripes << endl;
+   //   assert(numIncomingEdges <= this->numStripes);
+
+   // -- Remove all adjacent edges
+   // -- These are tracked. An acyclic graph is expected.
+   //
+   if(graph[stripe].find(vertex) != graph[stripe].end())
+   {
+      debugOUT << "node " << vertex << " is found in stripe " << stripe << endl;
+
+      // -- Find all children of ``vertex''
+      //
+      PPIPvXAddressSet ads = graph[stripe][vertex];
+
+      // -- Debug
+      debugOUT << "All children of node " << vertex << ":" << endl;
+      for (PPIPvXAddressSet::iterator iter = ads.begin(); iter != ads.end(); ++iter)
+         debugOUT << "\t Child " << *iter << endl;
+
+      // -- Delete node "vertex" on the graph, and increment number of affected nodes
+      //
+      graph[stripe].erase(vertex);
+      //affected++;
+      inEdgesCtr[vertex]--; // Giang
+      debugOUT << " \\ removeVertexRecursive root" << "->" << vertex << " in " << stripe
+               << " decreases #inbound[to]= " << inEdgesCtr[vertex] << " >= 0" << endl;
+
+      if (inEdgesCtr[vertex] < minRequiredStripes)
+      {
+         debugOUT << "inedgectr of node " << vertex
+                  << " = " << inEdgesCtr[vertex]
+                  << " -- minRequiredStripes = " << minRequiredStripes << endl;
+         debugOUT << "inEdgesCtr less than minNode " << vertex << " with service lost" << endl;
+         nodesServiceLost.insert(vertex);
+         inEdgesCtr.erase(vertex);
+      }
+
+      IPvXAddress old_parent = vertex;
+      // -- Browse through the children of vertex
+      //
+      while (ads.size() > 0)
+      {
+         IPvXAddress node = *ads.begin();
+         debugOUT << "Investigating child node " << node << endl;
+         assert(roots.find(node) == roots.end()); // make sure the the node is not the root node :)
+
+         // -- Remove the vertex "node" so that it won't be investigated again
+         //
+         ads.erase(node);
+         assert(graph[stripe].find(node) != graph[stripe].end());
+
+         // -- Get the list of children of vertex "node"
+         //
+         PPIPvXAddressSet newads = graph[stripe][node]; // hardcopy here
+
+         debugOUT << "-- Children of node " << node << endl;
+         for (PPIPvXAddressSet::iterator iter = newads.begin(); iter != newads.end(); ++iter)
+            debugOUT << "\t Child " << *iter << endl;
+
+         // -- NOTICE: drop all adjacents of node in stripe here, so they won't be parsed twice
+         //
+         graph[stripe][node].clear();
+         graph[stripe].erase(node);
+
+         inEdgesCtr[node]--; // Giang
+         debugOUT << " \\ removeVertexRecursive " << old_parent << "->" << node << " in " << stripe
+                  << " decreases #inbound[to]= " << inEdgesCtr[node] << " >= 0" << endl;
+
+         if (inEdgesCtr[node] < minRequiredStripes)
+         {
+            debugOUT << "inedgectr of node " << node
+                     << " = " << inEdgesCtr[node]
+                     << " -- minRequiredStripes = " << minRequiredStripes << endl;
+            debugOUT << "inEdgesCtr less than minNode " << node << " with service lost" << endl;
+            nodesServiceLost.insert(node);
+            inEdgesCtr.erase(node);
+         }
+
+         // -- kind of recursive (delete the cur_node, and browse through its children instead)
+         //
+         ads.insert(newads.begin(), newads.end());
+         old_parent = node;
+
+      } // while
+   }
+   else
+   {
+      DEBUGOUT("  \\ Node was not found");
+   }
+
+   debugOUT << "Impacts after removing node " << vertex
+            << " in stripe " << stripe
+            << "\t -- nodesServiceLoss is " << nodesServiceLost.size() << endl;
 }
 
 
@@ -548,6 +581,20 @@ int TopologyModel::removeCentralVertex()
    return damage;
 }
 
+void TopologyModel::removeCentralVertex2()
+{
+   debugOUT << "removeCentralVertex::" << endl;
+
+   // -- Step 1: Find a central vertex
+   //
+   IPvXAddress vertex = getCentralVertex();
+   debugOUT << "Central Vertex: " << vertex << endl;
+
+   // -- Step 2: Remove the central vertex found in step 1
+   //
+   removeVertexRecursive2(vertex);
+
+}
 
 void TopologyModel::addEdge(const int sequence, const IPvXAddress from, const IPvXAddress to) {
 
@@ -1578,11 +1625,11 @@ void TopologyModel::writeTopologyToDotFile(std::string folder)
       dotFile.close();
    }
 
-      debugOUT << "storeOverlayTopology" << endl;
+   debugOUT << "storeOverlayTopology" << endl;
 
    // -- Write to file
    //
 
 
-//   m_overlayTopologyFile.close();
+   //   m_overlayTopologyFile.close();
 }

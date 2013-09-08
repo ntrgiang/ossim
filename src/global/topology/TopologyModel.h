@@ -61,10 +61,13 @@ public:
     void	 	addVertex(const IPvXAddress vertex,const int sequence);
     void        addVertex(const std::string& stripe, const IPvXAddress vertex);
     int			removeCentralVertex();
+    void			removeCentralVertex2();
     //void        removeVertex(const IPvXAddress& vertex);
-    virtual int removeVertexRecursive(const IPvXAddress& vertex);
+    int        removeVertexRecursive(const IPvXAddress& vertex);
+    void        removeVertexRecursive2(const IPvXAddress& vertex);
     int         removeVertexRecursive(const std::string& stripe, const IPvXAddress &vertex);
     int         removeVertexRecursive(const std::string& stripe, const IPvXAddress &vertex, bool loss);
+    void        removeVertexRecursive2(const std::string& stripe, const IPvXAddress &vertex);
     bool        hasVertex(const IPvXAddress& vertex);
 
     void        removeInboundEdges(const IPvXAddress to);

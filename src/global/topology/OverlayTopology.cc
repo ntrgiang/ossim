@@ -316,17 +316,13 @@ TopologyModel& OverlayTopology::getTopologyRef(const int sequence)
 }
 
 
-int OverlayTopology::attackRecursive(const int num)
+int OverlayTopology::attackRecursive(const int numAttacks)
 {
    Enter_Method("attackRecursive");
 
-   // get most recent sequence number
-   int sequence = getMaxRecentSeq();
-   //int sequence = (int)m_observedChunk;
-   debugOUT << "sequence = " << sequence << endl; // OK!
-   debugOUT << "num = " << num << endl;
+   debugOUT << "attackRecursive():: " << numAttacks << " times" << endl;
 
-   return attackRecursive(sequence, num);
+   return attackRecursive2(numAttacks);
 }
 
 
@@ -366,50 +362,37 @@ int OverlayTopology::getMaxRecentSeq()
 int OverlayTopology::attackRecursive(const int sequence, const int num)
 {
    Enter_Method("attackRecursive(sequence,num");
-   debugOUT << "attackRecursive:" << endl;
+   debugOUT << "attackRecursive2(sequence, num)::" << endl;
 
-   // -- old code
+   // -- Get the set of topologies
    //
-   //TopologyModel topoM = getTopology(sequence);
-
-   // -- Giang: try something new
-   //
-   //TopologyModel topoM = getTopology();
    TopologyModel topoM = getTopologySet();
+
+   // -- Calculate the centralities for all the nodes
+   //
    topoM.calculate();
 
    // -- Output the topologies into .dot files for visualization
    //
    topoM.writeTopologyToDotFile("//home//giang//Downloads//topology");
 
-   debugOUT << "number of stripes after getTopologySet(): " << topoM.getNumSeenStripes() << endl;
-
-   debugOUT << "\t topoM is empty: " << topoM.empty() << endl;
-   //debugOUT << "\t num = " << num << endl;
-   //debugOUT << "\t print edge list: " << endl;
-
-   debugOUT << "List of stripes:" << endl;
-   PPStringSet stripeSet = topoM.getStripes();
-   for (PPStringSet::iterator iter = stripeSet.begin(); iter != stripeSet.end(); ++iter)
-   {
-      debugOUT << "Edges for stripe " << *iter << endl;
-
-      PPEdgeList eList = topoM.getEdges(*iter);
-      for (PPEdgeList::iterator iter = eList.begin(); iter != eList.end(); ++iter)
-      {
-         debugOUT << iter->begin() << " - " << iter->end() << endl;
-      }
-
-   }
-
-//   PPEdgeList eList = topoM.getEdges(sequence);
-//   for (PPEdgeList::iterator iter = eList.begin(); iter != eList.end(); ++iter)
+   // -- Debugging
+   //
+//   debugOUT << "number of stripes after getTopologySet(): " << topoM.getNumSeenStripes() << endl;
+//   debugOUT << "\t topoM is empty: " << topoM.empty() << endl;
+//   debugOUT << "List of stripes:" << endl;
+//   PPStringSet stripeSet = topoM.getStripes();
+//   for (PPStringSet::iterator iter = stripeSet.begin(); iter != stripeSet.end(); ++iter)
 //   {
-//      debugOUT << iter->begin() << " - " << iter->end() << endl;
+//      debugOUT << "Edges for stripe " << *iter << endl;
+//      PPEdgeList eList = topoM.getEdges(*iter);
+//      for (PPEdgeList::iterator iter = eList.begin(); iter != eList.end(); ++iter)
+//      {
+//         debugOUT << iter->begin() << " - " << iter->end() << endl;
+//      }
 //   }
-
-   topoM.printCentralityList();
-   topoM.printIncomingEdgeList();
+//   topoM.printCentralityList();
+//   topoM.printIncomingEdgeList();
 
    int damage = 0;
    for(int i = 0; i < num; i++)
@@ -422,6 +405,53 @@ int OverlayTopology::attackRecursive(const int sequence, const int num)
    debugOUT << "\t damage of attack recursive = " << damage << endl;
    return damage;
 }
+
+int OverlayTopology::attackRecursive2(const int numAttacks)
+{
+   Enter_Method("attackRecursive(numAttacks");
+   debugOUT << "attackRecursive2(numAttacks)::" << endl;
+
+   // -- Get the set of topologies
+   //
+   TopologyModel topoM = getTopologySet();
+
+   // -- Calculate the centralities for all the nodes
+   //
+   topoM.calculate();
+
+   // -- Output the topologies into .dot files for visualization
+   //
+   topoM.writeTopologyToDotFile("//home//giang//Downloads//topology");
+
+   // -- Debugging
+   //
+//   debugOUT << "number of stripes after getTopologySet(): " << topoM.getNumSeenStripes() << endl;
+//   debugOUT << "\t topoM is empty: " << topoM.empty() << endl;
+//   debugOUT << "List of stripes:" << endl;
+//   PPStringSet stripeSet = topoM.getStripes();
+//   for (PPStringSet::iterator iter = stripeSet.begin(); iter != stripeSet.end(); ++iter)
+//   {
+//      debugOUT << "Edges for stripe " << *iter << endl;
+//      PPEdgeList eList = topoM.getEdges(*iter);
+//      for (PPEdgeList::iterator iter = eList.begin(); iter != eList.end(); ++iter)
+//      {
+//         debugOUT << iter->begin() << " - " << iter->end() << endl;
+//      }
+//   }
+//   topoM.printCentralityList();
+//   topoM.printIncomingEdgeList();
+
+   for(int i = 0; i < numAttacks; i++)
+   {
+      topoM.removeCentralVertex2();
+   }
+
+   int damage = topoM.getTotalNodesServiceLost();
+   debugOUT << "Total nodes with service loss: " << topoM.getTotalNodesServiceLost() << endl;
+   debugOUT << "\t damage of attack recursive = " << damage << endl;
+   return damage;
+}
+
 
 int OverlayTopology::attackRecursiveTopoSet(const int num)
 {

@@ -139,25 +139,6 @@ void AttackerModule::handleMessage(cMessage* msg) {
 
    if (msg == timer_attack)
    {
-      // -- print topology to file
-      //oT->writeEdgesToFile();
-
-      //debugOUT << "get topology" << endl;
-      //TopologyModel topo = oT->getTopology();
-      //TopologyModel topoSet = oT->getTopologySet();
-
-      //int numNodes = topo.getNumRootSuccessors();
-      //debugOUT << "topo has " << numNodes << " nodes " << endl;
-
-      //PPStringSet stripeSet = topo.getStripes();
-      //debugOUT << "the number of stripes: " << stripeSet.size() << endl;
-
-//      for (PPStringSet::iterator iter = stripeSet.begin(); iter != stripeSet.end(); ++iter)
-//      {
-//         PPEdgeList eList = topo.getEdges(*iter);
-//         debugOUT << "this topo has " << eList.size() << " edges" << endl;
-//      }
-
       attackGlobal();
 
       //nodeShutdown();
@@ -193,15 +174,14 @@ void AttackerModule::attackGlobal()
    Enter_Method("attackGlobal()");
    debugOUT << "Attack Global! Calculating potential damage ..." << endl;
 
-   // put stats here
-   int damage = oT->attackRecursive(numAttack);
-   debugOUT << "damage1 = " << damage << endl;
+   // -- Attack on the Overlay Topology recursively with "numAttack" times
+   //
+   int damage = oT->attackRecursive2(numAttack);
+   debugOUT << "damage of attackGlobal() = " << damage << endl;
 
-   //int damage2 = oT->attackRecursiveTopoSet(numAttack);
-   //debugOUT << "damage2 = " << damage2 << endl;
-
+   // -- Statistics
+   //
    emit(sig_damage, damage);
-
    attackerDamage.collect((double) damage);
    attackerDamageTime.record((double) damage);
 }
