@@ -61,7 +61,7 @@ void VideoBuffer::initialize(int stage)
    {
       m_debug = (hasPar("debug")) ? par("debug").boolValue() : false;
 
-      signal_seqNum_receivedChunk = registerSignal("Signal_RecevedChunk");
+      signal_seqNum_receivedChunk = registerSignal("Signal_ReceivedChunk");
       signal_lateChunk            = registerSignal("Signal_Latechunk");
       signal_inrangeChunk         = registerSignal("Signal_InrangeChunk");
       signal_duplicatedChunk      = registerSignal("Signal_DuplicatedChunk");
@@ -199,8 +199,8 @@ void VideoBuffer::insertPacket(VideoChunkPacket *packet)
       m_bufferEnd_seqNum = seq_num;
       debugOUT << "old start: " << m_bufferStart_seqNum << endl;
 
-      if (m_bufferStart_seqNum == 777)
-         assert(m_bufferEnd_seqNum - m_bufferSize_chunk + 1 > 727);
+//      if (m_bufferStart_seqNum == 777)
+//         assert(m_bufferEnd_seqNum - m_bufferSize_chunk + 1 > 727);
 
       m_bufferStart_seqNum = m_bufferEnd_seqNum - m_bufferSize_chunk + 1;
       debugOUT << "new start: " << m_bufferStart_seqNum << endl;
