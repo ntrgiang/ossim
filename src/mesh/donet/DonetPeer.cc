@@ -1342,8 +1342,8 @@ void DonetPeer::sendPartnershipRequest(void)
       if (count > 10)
          break;
 
-      //addressRandPeer = m_memManager->getRandomPeer(getNodeAddress());
-      addressRandPeer = m_memManager->getRandomPeer2(getNodeAddress());
+      addressRandPeer = m_memManager->getRandomPeer(getNodeAddress());
+      //addressRandPeer = m_memManager->getRandomPeer2(getNodeAddress());
       debugOUT << "potential partner " << addressRandPeer << endl;
 
       if (m_partnerList->have(addressRandPeer))
