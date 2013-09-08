@@ -378,6 +378,10 @@ int OverlayTopology::attackRecursive(const int sequence, const int num)
    TopologyModel topoM = getTopologySet();
    topoM.calculate();
 
+   // -- Output the topologies into .dot files for visualization
+   //
+   topoM.writeTopologyToDotFile("//home//giang//Downloads//topology");
+
    debugOUT << "number of stripes after getTopologySet(): " << topoM.getNumSeenStripes() << endl;
 
    debugOUT << "\t topoM is empty: " << topoM.empty() << endl;

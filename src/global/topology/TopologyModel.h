@@ -3,6 +3,7 @@
 
 #include "PPDatatypes.h"
 #include <boost/shared_ptr.hpp>
+#include <string>
 
 typedef boost::shared_ptr<PPIPvXAddressSet>	IPSetSmartPtr;
 
@@ -145,6 +146,7 @@ public:
     //
     void printCentralityList();
     void printIncomingEdgeList();
+    void writeTopologyToDotFile(std::string folder);
 };
 
 #endif // TOPOLOGYMODEL_H

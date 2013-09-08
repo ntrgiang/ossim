@@ -3,6 +3,7 @@
 #include <queue>
 #include <sstream>
 #include <string>
+#include <fstream>
 
 #if _DEBUG
 # define DEBUGOUT(x) if (C_DEBUG_TopologyModel) { std::cout << "(TM  @" << "0x" << std::setbase(16) << ((long)this) << "): " << std::setbase(10) << x << endl;; };
@@ -14,6 +15,7 @@
 #define debugOUT (!true) ? std::cout : std::cout << "TopologyModel: "
 #endif
 
+using namespace std;
 
 TopologyModel::TopologyModel() {
    calculated = true;
@@ -287,7 +289,7 @@ int TopologyModel::removeVertexRecursive(const IPvXAddress& vertex)
 //   }
 
    centrality.erase(vertex);
-   inEdgesCtr.erase(vertex);
+   //inEdgesCtr.erase(vertex);
    numNodes--;
 
    //int succ = countSuccessors(vertex);
@@ -334,6 +336,8 @@ int TopologyModel::removeVertexRecursive(const std::string& stripe, const IPvXAd
    debugOUT << " * remove vertex " << vertex
             << " recursively in stripe: " << stripe
             << " with loss = " << (loss?"true":"false") << endl;
+
+   debugOUT << "Current inEdgesCtr of " << vertex << " is " << inEdgesCtr[vertex] << endl;
    int affected = 0;
 
    // -- Remove all incident edges
@@ -533,13 +537,14 @@ int TopologyModel::removeVertexRecursive(const std::string& stripe, const IPvXAd
 
 int TopologyModel::removeCentralVertex()
 {
+   debugOUT << "removeCentralVertex::" << endl;
+
    IPvXAddress vertex = getCentralVertex();
    debugOUT << "Central Vertex: " << vertex << endl;
-   std::cout << "Central Vertex: " << vertex << endl;
 
    int damage = removeVertexRecursive(vertex);
 
-   debugOUT << "cummulative damage after removing one vertex = " << damage << endl;
+   debugOUT << "Cummulative damage after removing the central vertex = " << damage << endl;
    return damage;
 }
 
@@ -1532,4 +1537,52 @@ void TopologyModel::printIncomingEdgeList()
 PPIPvXAddressIntMap TopologyModel::getInEdgesCountList()
 {
    return inEdgesCtr;
+}
+
+void TopologyModel::writeTopologyToDotFile(std::string folder)
+{
+   debugOUT << "writeTopologyToDotFile::" << endl;
+
+   for (std::set<std::string>::iterator iter = stripes.begin(); iter != stripes.end(); ++iter)
+   {
+      std::string cur_stripe = *iter;
+      debugOUT << "Parsing stripe " << cur_stripe << endl;
+      std::string filename = folder + "//" + cur_stripe + ".dot";
+      std::ofstream dotFile(filename.c_str(), fstream::out);
+      debugOUT << "Output file for stripe " << cur_stripe << " is " << filename << endl;
+
+      // -- Get list of vertexSet corresponding to each stripe
+      //
+      dotFile << "digraph graphname {" << endl;
+
+      // -- Browse through the vertexes
+      //
+      for (Vertexes::iterator it = graph[cur_stripe].begin(); it != graph[cur_stripe].end(); ++it)
+      {
+         IPvXAddress cur_parent = it->first;
+         debugOUT << "Parent node: " << cur_parent << endl;
+
+         std::set<IPvXAddress> childrenSet = it->second;
+         for (std::set<IPvXAddress>::iterator child_iter = childrenSet.begin();
+              child_iter != childrenSet.end(); ++child_iter)
+         {
+            IPvXAddress cur_child = *child_iter;
+            dotFile << cur_parent.str().erase(0, 10) << " -> "
+                    << cur_child.str().erase(0, 10) << ";" << endl;
+         }
+
+
+      }
+      dotFile << "}" << endl;
+
+      dotFile.close();
+   }
+
+      debugOUT << "storeOverlayTopology" << endl;
+
+   // -- Write to file
+   //
+
+
+//   m_overlayTopologyFile.close();
 }
