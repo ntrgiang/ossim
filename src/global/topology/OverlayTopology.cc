@@ -421,7 +421,7 @@ int OverlayTopology::attackRecursive2(const int numAttacks)
 
    // -- Output the topologies into .dot files for visualization
    //
-   topoM.writeTopologyToDotFile("//home//giang//Downloads//topology");
+   topoM.writeTopologyToDotFile(par("snapshotFolder").stdstringValue());
 
    // -- Debugging
    //
@@ -449,37 +449,6 @@ int OverlayTopology::attackRecursive2(const int numAttacks)
    int damage = topoM.getTotalNodesServiceLost();
    debugOUT << "Total nodes with service loss: " << topoM.getTotalNodesServiceLost() << endl;
    debugOUT << "\t damage of attack recursive = " << damage << endl;
-   return damage;
-}
-
-
-int OverlayTopology::attackRecursiveTopoSet(const int num)
-{
-   Enter_Method("attackRecursive(sequence,num");
-   debugOUT << "attackRecursive on set of topology::" << endl;
-
-   TopologyModel topoSet = getTopologySet();
-   PPStringSet stripeSet = topoSet.getStripes();
-   int numStripes = stripeSet.size();
-   debugOUT << "\t topoM is " << (topoSet.empty() ? "" : " NOT ") << "empty" << endl;
-   debugOUT << "\t number of removed nodes = " << num << endl;
-   debugOUT << "\t number of topologies: " << numStripes << endl;
-
-   for (PPStringSet::iterator iter = stripeSet.begin(); iter != stripeSet.end(); ++iter)
-   {
-      debugOUT << "stripe " << *iter << endl;
-      //TopologyModel tempTopo = topoM[*iter];
-   }
-
-   int damage = 0;
-   for(int i = 0; i < num; i++)
-   {
-      damage += topoSet.removeCentralVertex();
-   }
-
-   damage += topoSet.getTotalNodesServiceLost();
-   debugOUT << "Total nodes with service loss: " << topoSet.getTotalNodesServiceLost() << endl;
-   debugOUT << "\t damage of attack recursive for TopoSet = " << damage << endl;
    return damage;
 }
 

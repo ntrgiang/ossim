@@ -596,16 +596,16 @@ void TopologyModel::removeCentralVertex2()
 
 }
 
-void TopologyModel::addEdge(const int sequence, const IPvXAddress from, const IPvXAddress to) {
-
-   //std::cout <<" addEdge for sequence " << sequence << " from " << from << " to " <<  to << endl;
+void TopologyModel::addEdge(const int sequence, const IPvXAddress from, const IPvXAddress to)
+{
+   debugOUT <<"add edge for sequence " << sequence << " from " << from << " to " <<  to << endl;
    std::string stripe = getString(sequence);
    addEdge(stripe, from, to);
 }
 
 void TopologyModel::addEdge(const std::string& stripe, const IPvXAddress from, const IPvXAddress to)
 {
-   debugOUT << "addEdge " << from << "->" << to << " in " << stripe << endl;
+   debugOUT << "add edge for stripe " << stripe << ": " << from << " -> " << to << " in " << endl;
 
    //foreach(std::string s, stripes) std::cout<< " stripe " << s << endl;
    assert(stripes.find(stripe) != stripes.end());
@@ -1531,6 +1531,8 @@ void TopologyModel::insertTopology2(TopologyModel modelToInsert)
       }
    }
 
+   // -- Do the trick, since addVertex will reset the values of inEdgesCtr[]
+   //
    for (Centrality::iterator iter = copyInEdges.begin(); iter != copyInEdges.end(); ++iter)
    {
       if (this->inEdgesCtr.find(iter->first) == inEdgesCtr.end())

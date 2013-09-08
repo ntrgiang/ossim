@@ -91,7 +91,6 @@ public:
    int attackRecursive(const int num);
    int attackRecursive2(const int num);
    int attackRecursive(const int sequence, const int num);
-   int attackRecursiveTopoSet(const int num);
 
    // -- Giang
    TopologyModel getTopologySet();

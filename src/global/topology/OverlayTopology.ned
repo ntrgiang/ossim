@@ -14,6 +14,7 @@ simple OverlayTopology
         string sourceAddress = default("192.168.0.1");
         // -- For result recording to an external file
         string outputFilename = default("");
+        string snapshotFolder = default("");
 
         // -- To save the overlay topology
         string overlayTopologyFile = default("");
