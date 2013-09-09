@@ -111,20 +111,31 @@ void CommBase::findNodeAddress(void)
 {
    Enter_Method("findNodeAddress()");
 
-   cModule* module = getParentModule()->getParentModule();
-   InterfaceTable* interface = check_and_cast<InterfaceTable*>(module->getSubmodule("interfaceTable"));
-   EV << "Number of interfaces: " << interface->getNumInterfaces() << endl;
+//   cModule* module = getParentModule()->getParentModule();
+//   InterfaceTable* interface = check_and_cast<InterfaceTable*>(module->getSubmodule("interfaceTable"));
+//   EV << "Number of interfaces: " << interface->getNumInterfaces() << endl;
 
-   assert(interface->getNumInterfaces() > 0);
+//   assert(interface->getNumInterfaces() > 0);
 
-   if (interface->getNumInterfaces() > 1)
-   {
-      m_localAddress = IPvXAddress(interface->getInterface(interface->getNumInterfaces()-1)->ipv4Data()->getIPAddress());
-   }
-   else
-   {
-      m_localAddress = IPvXAddress(interface->getInterface(0)->ipv4Data()->getIPAddress());
-   }
+//   if (interface->getNumInterfaces() > 1)
+//   {
+//      m_localAddress = IPvXAddress(interface->getInterface(interface->getNumInterfaces()-1)->ipv4Data()->getIPAddress());
+//   }
+//   else
+//   {
+//      m_localAddress = IPvXAddress(interface->getInterface(0)->ipv4Data()->getIPAddress());
+//   }
+
+    IInterfaceTable *inet_ift;
+    inet_ift = InterfaceTableAccess().get();
+
+    EV << "Number of interfaces: " << inet_ift->getNumInterfaces() << endl;
+    if (inet_ift->getNumInterfaces() < 2) throw cException("Less than 2 interfaces");
+
+    // EV << "Interface 1: " << inet_ift->getInterface(0)->ipv4Data()->getIPAddress() << endl;
+    // EV << "Interface 2: " << inet_ift->getInterface(1)->ipv4Data()->getIPAddress() << endl;
+
+    m_localAddress = (IPvXAddress)inet_ift->getInterface(1)->ipv4Data()->getIPAddress();
 
    assert(!m_localAddress.isUnspecified());
 

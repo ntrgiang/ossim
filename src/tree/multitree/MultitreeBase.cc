@@ -3,6 +3,10 @@
 #include "limits.h"
 #include "MultitreeBase.h"
 #include "DpControlInfo_m.h"
+#include "InterfaceTable.h"      // finding IP address
+#include "InterfaceTableAccess.h"
+#include "IPv4InterfaceData.h"   // finding IP address
+#include <assert.h>
 
 #include <algorithm> 
 
@@ -824,3 +828,22 @@ bool MultitreeBase::haveMoreChildrenInOtherStripe(unsigned int stripe)
 	}
 	return false;
 }
+
+//IPvXAddress MultitreeBase::getNodeAddress(void)
+//{
+//   if (m_localAddress.isUnspecified()) findNodeAddress();
+
+//   return m_localAddress;
+//}
+
+//void MultitreeBase::findNodeAddress()
+//{
+//    IInterfaceTable *inet_ift;
+//    inet_ift = InterfaceTableAccess().get();
+
+//    EV << "Number of interfaces: " << inet_ift->getNumInterfaces() << endl;
+//    if (inet_ift->getNumInterfaces() < 2) throw cException("Less than 2 interfaces");
+
+//    m_localAddress = (IPvXAddress)inet_ift->getInterface(1)->ipv4Data()->getIPAddress();
+//    EV << "Node's own address is: " << m_localAddress << endl;
+//}

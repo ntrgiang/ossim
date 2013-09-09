@@ -59,12 +59,14 @@ protected:
     int getChunkSize(void);
     int getBufferMapSize(void);
 
+    // -- Binding to external modules
+    void bindToGlobalModule(void);
+
+public:
     // -- Utility functions
     void findNodeAddress(void);
     IPvXAddress getNodeAddress(void);
 
-    // -- Binding to external modules
-    void bindToGlobalModule(void);
 
 protected:
     bool m_debug;

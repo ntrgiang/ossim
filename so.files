@@ -369,3 +369,5 @@ src/global/AppSettingMultitree.cc
 src/global/statistic/MultitreeStatistic.ned
 src/global/statistic/MultitreeStatistic.h
 src/global/statistic/MultitreeStatistic.cc
+simulations/Multitree.ned
+simulations/Multitree.ini
