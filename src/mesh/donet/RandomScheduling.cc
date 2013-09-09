@@ -31,6 +31,10 @@
 
 #include "DonetPeer.h"
 
+#ifndef debugOUT
+#define debugOUT (!m_debug_scheduling) ? std::cout : std::cout << "@" << simTime().dbl() << " DonetScheduling:: "
+#endif
+
 using namespace std;
 
 void DonetPeer::randomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NUMBER_T upper_bound)

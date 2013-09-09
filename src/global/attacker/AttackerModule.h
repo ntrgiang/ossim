@@ -84,6 +84,7 @@ protected:
    //double percentage;
    OverlayTopology* oT;
    int numAttack;
+   int param_numPeers;
 
    // ************** statistics ****************
    std::string statname_damage_global;
@@ -92,6 +93,7 @@ protected:
    cOutVector nodesOverallVec;
 
    simsignal_t sig_damage;
+   simsignal_t sig_damage_ratio;
 
 };
 

@@ -97,6 +97,8 @@ void ForwarderTopo::handleMessage(cMessage* msg)
    //   EV << "A video chunk has just been received from " << senderAddress << endl;
    VideoChunkPacket *chunkPkt = check_and_cast<VideoChunkPacket *>(appMsg);
 
+   m_videoBuffer->insertPacket(chunkPkt);
+
    // -- Local record of incoming chunks
    updateReceivedChunkRecord(senderAddress);
    ++m_count_totalChunk_incoming;
@@ -108,7 +110,6 @@ void ForwarderTopo::handleMessage(cMessage* msg)
    m_topoObserver->addNode(controlInfo->getDestAddr(), seq);
    m_topoObserver->addEdge(seq, controlInfo->getSrcAddr(), controlInfo->getDestAddr());
 
-   m_videoBuffer->insertPacket(chunkPkt);
 }
 
 void ForwarderTopo::sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort)

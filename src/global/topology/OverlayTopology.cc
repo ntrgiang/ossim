@@ -121,13 +121,13 @@ void OverlayTopology::setRoot(const IPvXAddress & root, const int sequence) {
    Enter_Method_Silent();
 
    assert(!root.isUnspecified());
-   //debugOUT << "current seq = " << sequence << " - while barrier is " << m_observedChunk << endl;
+   debugOUT << "current seq = " << sequence << " - while barrier is " << m_observedChunk << endl;
    if(sequence >= m_observedChunk && topo.find(sequence) == topo.end())
    {
-      //debugOUT <<" root " << root << " for sequence " << sequence << " topo.size() " << topo.size() << endl;
+      debugOUT <<" root " << root << " for sequence " << sequence << " topo.size() " << topo.size() << endl;
       topo[sequence].setRoot(root,sequence);
 
-      //debugOUT << "topo.size(after) " << topo.size() << endl;
+      debugOUT << "topo.size(after) " << topo.size() << endl;
 
       if (sequence == m_observedChunk)
       {
@@ -347,6 +347,7 @@ int OverlayTopology::getMaxRecentSeq()
    for(Iterator it = topo.begin(); it != topo.end(); it++)
    {
       int num = it->second.numberVertexes();
+      debugOUT << "number of Vertexes: " << num << endl;
       if(max < num || (max == num && seq < it->first))
       {
          seq = it->first;

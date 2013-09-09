@@ -50,10 +50,12 @@ simple AttackerModule
         volatile double simTimeLimit @unit(s) = default(1s);
 
         volatile int numAttack = default(0);
+        int numPeers = default(1);
         //volatile double percentage = default(0.1);
         //double rejoin = default(false);
 
         // ----- Statistics -----
-        @statistic[damage](source="Signal_Damage"; record=mean,min,max,vector);
+        @statistic[damage](source="Signal_Damage"; record=last,mean,min,max,vector);
+        @statistic[damage_ratio](source="Signal_Damage_Ratio"; record=last,mean,min,max,vector);
 }
 

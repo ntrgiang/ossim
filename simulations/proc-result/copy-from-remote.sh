@@ -18,20 +18,20 @@
 
 # -- Inputs
 #
-REMOTE=118:/home/giang/sim1/omnetpp/so/simulations
-LOCAL=/nix/workspace/omnet422-inet118/store/sim-results/wMathias/damage
+REMOTE=152:/home/giang/sim/release/so/simulations
+LOCAL=/dos/research/experiments/scheduling-diversification/potential-damage
 
 STORE_DIR=$LOCAL/$1
 
-CONFIG_NAME=Donet_oneRouter_underlayAttack
-CONFIG_FILE=Donet-underlayAttack
+CONFIG_NAME=Donet_oneRouter_overlayAttack_new
+CONFIG_FILE=Donet-overlayAttack
 
 
 # -- Preparation
 #
-rm -rf $STORE_DIR
+#rm -rf $STORE_DIR
 
-mkdir $STORE_DIR
+#mkdir $STORE_DIR
 
 # -- Copy
 #
@@ -46,13 +46,13 @@ scp $REMOTE/include/seed.ini $STORE_DIR
 
 # -- Zip
 #
-CUR_DIR=$pwd
+#CUR_DIR=$pwd
 
-cd $STORE_DIR
-tar \
-   -zcvpf /home/giang/Downloads/result-to-Mathias--$1.tar.gz \
-   *.sca \
-   *.vci \
-   *.vec \
+#cd $STORE_DIR
+#tar \
+#   -zcvpf /home/giang/Downloads/result-to-Mathias--$1.tar.gz \
+#   *.sca \
+#   *.vci \
+#   *.vec \
 
 cd $CUR_DIR

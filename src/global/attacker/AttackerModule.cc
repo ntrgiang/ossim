@@ -55,7 +55,8 @@ void AttackerModule::initialize(int stage)
 {
    if (stage == 0)
    {
-      sig_damage = registerSignal("Signal_Damage");
+      sig_damage        = registerSignal("Signal_Damage");
+      sig_damage_ratio  = registerSignal("Signal_Damage_Ratio");
 
       if (hasPar("debug"))
          m_debug = par("debug").boolValue();
@@ -82,8 +83,10 @@ void AttackerModule::initialize(int stage)
    assert(startAttack < stopAttack);
    interval = par("interval").doubleValue();
 
+   param_numPeers = par("numPeers").longValue();
+
    // Percentage of nodes to attack
-   //percentage = par("percentage").doubleValue(); // not used so far
+   //
    numAttack = par("numAttack").longValue();
 
    // the statistical parameters
@@ -182,8 +185,9 @@ void AttackerModule::attackGlobal()
    // -- Statistics
    //
    emit(sig_damage, damage);
-   attackerDamage.collect((double) damage);
-   attackerDamageTime.record((double) damage);
+   emit (sig_damage_ratio, (double)damage / param_numPeers);
+   //attackerDamage.collect((double) damage);
+   //attackerDamageTime.record((double) damage);
 }
 
 void AttackerModule::nodeShutdown()

@@ -147,6 +147,7 @@ public:
 
     // -- Debugging
     //
+    bool m_debug;
     void printCentralityList();
     void printIncomingEdgeList();
     void writeTopologyToDotFile(std::string folder);

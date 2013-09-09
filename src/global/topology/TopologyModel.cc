@@ -12,8 +12,9 @@
 #endif
 
 #ifndef debugOUT
-#define debugOUT (!true) ? std::cout : std::cout << "TopologyModel: "
+#define debugOUT (!m_debug) ? std::cout : std::cout << "TopologyModel: "
 #endif
+
 
 using namespace std;
 
@@ -23,6 +24,7 @@ TopologyModel::TopologyModel() {
    numNodes = 0;
    this->minRequiredStripes = 1;
    //stripes.insert("0-0");
+   m_debug = false;
 }
 
 

@@ -1775,8 +1775,8 @@ void DonetPeer::chunkScheduling()
             << " -- range: start " << m_videoBuffer->getBufferStartSeqNum() << " -- end " << m_videoBuffer->getBufferEndSeqNum()
             << endl;
 
-   donetChunkScheduling(lower_bound, upper_bound);
-   //   randomChunkScheduling(m_sched_window.start, m_sched_window.end);
+//   donetChunkScheduling(lower_bound, upper_bound);
+   randomChunkScheduling(lower_bound, upper_bound);
 
 }
 
