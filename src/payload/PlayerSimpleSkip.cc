@@ -87,7 +87,7 @@ void PlayerSimpleSkip::initialize(int stage)
    m_videoBuffer = check_and_cast<VideoBuffer *>(temp);
 
    temp = simulation.getModuleByPath("appSetting");
-   m_appSetting = check_and_cast<AppSettingDonet *>(temp);
+   m_appSetting = check_and_cast<AppSetting *>(temp);
 
    temp = simulation.getModuleByPath("globalStatistic");
    //m_stat = check_and_cast<StatisticBase *>(temp);

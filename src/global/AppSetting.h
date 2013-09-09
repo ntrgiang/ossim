@@ -35,16 +35,21 @@
 
 class AppSetting : public cSimpleModule {
 public:
-    AppSetting();
-    virtual ~AppSetting();
+   AppSetting();
+   virtual ~AppSetting();
 
-//public:
-//    int getLocalPort(void);
-//    int getDestPort(void);
-//
-//protected:
-//    int param_localPort;
-//    int param_destPort;
+   virtual int getBufferMapSizeChunk(void) { return 0; };
+   virtual double getIntervalNewChunk(void) { return 0.0; };
+   virtual int getChunkSize(void) { return 0; };
+   virtual int getPacketSizeVideoChunk(void) { return 0; };
+
+   //public:
+   //    int getLocalPort(void);
+   //    int getDestPort(void);
+   //
+   //protected:
+   //    int param_localPort;
+   //    int param_destPort;
 
 
 

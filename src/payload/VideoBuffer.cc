@@ -73,7 +73,8 @@ void VideoBuffer::initialize(int stage)
    }
 
    cModule *temp = simulation.getModuleByPath("appSetting");
-   AppSettingDonet *m_appSetting = check_and_cast<AppSettingDonet *>(temp);
+   //AppSettingDonet *m_appSetting = check_and_cast<AppSettingDonet *>(temp);
+   AppSetting *m_appSetting = check_and_cast<AppSetting *>(temp);
 
    temp = simulation.getModuleByPath("globalStatistic");
    //m_gstat = check_and_cast<GlobalStatistic *>(temp);

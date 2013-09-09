@@ -36,7 +36,7 @@
 
 #include "VideoBuffer.h"
 #include "VideoChunkPacket_m.h"
-#include "AppSettingDonet.h"
+#include "AppSetting.h"
 //#include "GlobalStatistic.h"
 //#include "DonetStatistic.h"
 #include "StreamingStatistic.h"
@@ -106,7 +106,8 @@ protected:
 
     // -- Pointers to external modules
     VideoBuffer *m_videoBuffer;
-    AppSettingDonet *m_appSetting;
+    //AppSettingDonet *m_appSetting;
+    AppSetting *m_appSetting;
 
     // -- Signal for data collection
     simsignal_t sig_chunkHit;

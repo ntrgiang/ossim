@@ -44,3 +44,10 @@ packet VideoChunkPacket extends PeerStreamingPacket
     double  sentTimeStamp        @getter(getSentTimeStamp)        @setter(setSentTimeStamp);
     int     overlayHopCount      @getter(getOverlayHopCount)      @setter(setOverlayHopCount);
 }
+
+packet VideoStripePacket extends VideoChunkPacket
+{
+    int hopCount;
+    int stripe;
+}
+

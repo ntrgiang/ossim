@@ -20,7 +20,7 @@
 // this program. If not, see <http://www.gnu.org/licenses/>.
 
 // -----------------------------------------------------------------------------
-// VideoChunkPacket.msg
+// TreePeerStreamingPacket.msg
 // -----------------------------------------------------------------------------
 // (C) Copyright 2012-2013, by Giang Nguyen (P2P, TU Darmstadt) and Contributors
 //
@@ -31,17 +31,75 @@
 
 cplusplus {{
 #include <PeerStreamingPacket_m.h>
+#include <IPvXAddress.h>
+
+#include <MultitreeMessages.h>
+
+typedef std::vector<ConnectRequest> CRVector;
+typedef std::vector<ConnectConfirm> CCVector;
+typedef std::vector<DisconnectRequest> DRVector;
+typedef std::vector<PassNodeRequest> PNRVector;
+typedef std::vector<SuccessorInfo> SIVector;
 }}
 
 class PeerStreamingPacket;
+class IPvXAddress extends void;
+
+class noncobject CRVector;
+class noncobject CCVector;
+class noncobject DRVector;
+class noncobject PNRVector;
+class noncobject SIVector;
 
 enum TreePeerStreamingPacketType
 {
-    TREE_KEEP_ALIVE     = 1;
+    TREE_KEEP_ALIVE     = 0;
+    TREE_SUCCESSOR_INFO = 1;
+
+	// ----------------------- Partnership
+	TREE_CONNECT_REQUEST = 10;
+	TREE_CONNECT_CONFIRM= 11;
+	TREE_DISCONNECT_REQUEST = 12;
+	TREE_PASS_NODE_REQUEST = 13;
 }
 
 packet TreePeerStreamingPacket extends PeerStreamingPacket
 {
     packetGroup = PACKET_GROUP_TREE_OVERLAY;
-    short packetType @getter(getPacketType) @setter(setPacketType) @enum(TreePeerStreamingPacketType) ;
+    short packetType @getter(getPacketType) @setter(setPacketType) @enum(TreePeerStreamingPacketType);
+}
+
+packet TreeConnectRequestPacket extends TreePeerStreamingPacket
+{
+    packetType = TREE_CONNECT_REQUEST;
+
+	CRVector requests;
+}
+
+packet TreeConnectConfirmPacket extends TreePeerStreamingPacket
+{
+    packetType = TREE_CONNECT_CONFIRM;
+
+	CCVector confirms;
+}
+
+packet TreeDisconnectRequestPacket extends TreePeerStreamingPacket
+{
+    packetType = TREE_DISCONNECT_REQUEST;
+
+	DRVector requests;
+}
+
+packet TreePassNodeRequestPacket extends TreePeerStreamingPacket
+{
+    packetType = TREE_PASS_NODE_REQUEST;
+
+	PNRVector requests;
+}
+
+packet TreeSuccessorInfoPacket extends TreePeerStreamingPacket
+{
+    packetType = TREE_SUCCESSOR_INFO;
+
+	SIVector updates;
 }

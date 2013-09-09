@@ -47,14 +47,15 @@ protected:
 public:
     // -- Direct parameters
     int getVideoStreamBitRate(void);
-    int getChunkSize(void);
+    virtual int getChunkSize(void);
     int getBufferMapSizeSecond(void);
     double getBufferMapInterval(void);
 
     // -- Indirect parameters
     int getVideoStreamChunkRate(void);
-    int getBufferMapSizeChunk(void);
-    double getIntervalNewChunk(void);
+    virtual int getBufferMapSizeChunk(void);
+    virtual double getIntervalNewChunk(void);
+    virtual int getPacketSizeVideoChunk(void) const;
 
     int getPacketSizePartnershipRequest(void) const;
     int getPacketSizePartnershipAccept(void) const;
@@ -65,7 +66,6 @@ public:
     int getPacketSizeBufferMap(void) const;
     int getPacketSizeChunkRequest(void) const;
 
-    int getPacketSizeVideoChunk(void) const;
 
 protected:
     int param_videoStreamBitRate; //par("videoStreamBitRate").longValue();
