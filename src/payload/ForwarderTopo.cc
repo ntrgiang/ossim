@@ -36,9 +36,9 @@
 
 Define_Module(ForwarderTopo)
 
-long ForwarderTopo::m_observedChunk;
-int ForwarderTopo::m_topoSequence;
-std::vector<long> m_observedChunkList;
+//long ForwarderTopo::m_observedChunk;
+//int ForwarderTopo::m_topoSequence;
+//std::vector<long> m_observedChunkList;
 
 ForwarderTopo::ForwarderTopo() {}
 
@@ -59,11 +59,11 @@ void ForwarderTopo::initialize(int stage)
    //m_traceroute = check_and_cast<Traceroute *>(temp);
    //EV << "Binding to Traceroute is completed successfully" << endl;
 
-   m_observedChunk = m_topoObserver->getObservedChunk();
-   m_topoSequence = m_observedChunk % INT_MAX;
+   //m_observedChunk = m_topoObserver->getObservedChunk();
+   //m_topoSequence = m_observedChunk % INT_MAX;
 
-   WATCH(m_observedChunk);
-   WATCH(m_topoSequence);
+//   WATCH(m_observedChunk);
+//   WATCH(m_topoSequence);
    WATCH(m_topoObserver);
 }
 
@@ -85,9 +85,8 @@ void ForwarderTopo::handleMessage(cMessage* msg)
    // -- For incoming chunks
    // -------------------------------------------------------------------------
 
-   IPvXAddress senderAddress;
    DpControlInfo *controlInfo = check_and_cast<DpControlInfo *>(msg->getControlInfo());
-   //   senderAddress = controlInfo->getSrcAddr();
+   IPvXAddress senderAddress = controlInfo->getSrcAddr();
 
    PeerStreamingPacket *appMsg = check_and_cast<PeerStreamingPacket *>(msg);
    EV << "PacketGroup = " << appMsg->getPacketGroup() << endl;

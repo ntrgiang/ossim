@@ -133,6 +133,7 @@ public:
     IPvXAddress getHead(std::string stripe, const IPvXAddress& succ);
     bool        getNodeStability(const IPvXAddress& address);
     double      getSmallestHeadStability();
+    std::string getString(const int sequence) const;
 
     PPEdgeList  getEdges(const int sequence);
     PPEdgeList  getEdges(std::string stripe);
@@ -140,7 +141,6 @@ public:
 
     void insertTopology(TopologyModel modelToInsert);
     void insertTopology2(TopologyModel modelToInsert);
-    std::string getString(const int sequence) const;
 
     inline int getTotalNodesServiceLost() { return nodesServiceLost.size(); }
     PPIPvXAddressIntMap getInEdgesCountList();
@@ -151,6 +151,8 @@ public:
     void printCentralityList();
     void printIncomingEdgeList();
     void writeTopologyToDotFile(std::string folder);
+    void printOverviewInfo(void);
+    void printDetailedInfo(void);
 };
 
 #endif // TOPOLOGYMODEL_H

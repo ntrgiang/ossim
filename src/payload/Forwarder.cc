@@ -39,14 +39,6 @@ Define_Module(Forwarder)
 #define debugOUT (!m_debug) ? std::cout : std::cout << "@" << getNodeAddress() << "::" << getFullName() << ": "
 #endif
 
-void RecordCountChunk::print()
-{
-   EV << "Record of count chunk: " << endl;
-   EV << "\t m_chunkSent = " << m_chunkSent << endl;
-   EV << "\t m_chunkReceived = " << m_chunkReceived << endl;
-   EV << "\t m_oriTime = " << m_oriTime << endl;
-}
-
 Forwarder::Forwarder() {}
 
 Forwarder::~Forwarder() {}
@@ -66,6 +58,11 @@ void Forwarder::initialize(int stage)
    m_count_totalChunk_incoming = 0L;
 
    WATCH(m_count_totalChunk_incoming);
+}
+
+void Forwarder::finish()
+{
+
 }
 
 void Forwarder::handleMessage(cMessage* msg)
@@ -99,11 +96,6 @@ void Forwarder::handleMessage(cMessage* msg)
    // -- Local record of incoming chunks
    updateReceivedChunkRecord(senderAddress);
    ++m_count_totalChunk_incoming;
-}
-
-void Forwarder::finish()
-{
-
 }
 
 void Forwarder::sendChunk(SEQUENCE_NUMBER_T seq, IPvXAddress destAddress, int destPort)
@@ -206,4 +198,12 @@ void Forwarder::addRecord(const IPvXAddress & address)
    newRecord.m_oriTime = simTime().dbl();
 
    m_record_countChunk.insert(std::pair<IPvXAddress, RecordCountChunk>(address, newRecord));
+}
+
+void RecordCountChunk::print()
+{
+   EV << "Record of count chunk: " << endl;
+   EV << "\t m_chunkSent = " << m_chunkSent << endl;
+   EV << "\t m_chunkReceived = " << m_chunkReceived << endl;
+   EV << "\t m_oriTime = " << m_oriTime << endl;
 }

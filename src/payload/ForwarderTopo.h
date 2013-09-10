@@ -58,9 +58,9 @@ public:
 protected:
 
    // @brief stores the seq_num of the chunk to be observed
-   static long m_observedChunk;
+   //static long m_observedChunk;
    // @brief stores the sequence of the overlay to be observed
-   static int m_topoSequence;
+   //static int m_topoSequence;
 
    //Traceroute* m_traceroute;
 

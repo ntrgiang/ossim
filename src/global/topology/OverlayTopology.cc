@@ -93,7 +93,9 @@ void OverlayTopology::initialize()
    WATCH(m_observedChunk);
 }
 
-void OverlayTopology::finish() {
+void OverlayTopology::finish()
+{
+   debugOUT << "OverlayTopology has collected totally " << topo.size() << " topologies" << endl;
    topo.clear();
 
    //   std::list<PPEdge> edgeList = getEdges(m_observedChunk % INT_MAX);
@@ -255,12 +257,12 @@ TopologyModel OverlayTopology::getTopologySet()
 {
    debugOUT << "getTopologySet::" << endl;
 
-   int seqTopoMax = getMaxRecentSeq();
-   TopologyModel topoMax = getTopology(seqTopoMax);
+//   int seqTopoMax = getMaxRecentSeq();
+//   TopologyModel topoMax = getTopology(seqTopoMax);
 
-   debugOUT << "seqTopoMax = " << seqTopoMax << endl;
-   debugOUT << "streamStripes = " << streamStripes << endl;
-   debugOUT << "Number of vertex of topoMax " << topoMax.numberVertexes() << endl;
+//   debugOUT << "seqTopoMax = " << seqTopoMax << endl;
+//   debugOUT << "streamStripes = " << streamStripes << endl;
+//   debugOUT << "Number of vertex of topoMax " << topoMax.numberVertexes() << endl;
 
    assert((unsigned int)streamStripes < topo.size());
 
@@ -412,6 +414,8 @@ int OverlayTopology::attackRecursive2(const int numAttacks)
    Enter_Method("attackRecursive(numAttacks");
    debugOUT << "attackRecursive2(numAttacks)::" << endl;
 
+   debugOUT << "OverlayTopology has totally " << topo.size() << " topologies" << endl;
+
    // -- Get the set of topologies
    //
    TopologyModel topoM = getTopologySet();
@@ -423,6 +427,8 @@ int OverlayTopology::attackRecursive2(const int numAttacks)
    // -- Output the topologies into .dot files for visualization
    //
    topoM.writeTopologyToDotFile(par("snapshotFolder").stdstringValue());
+
+   topoM.printOverviewInfo();
 
    // -- Debugging
    //
@@ -585,7 +591,7 @@ void OverlayTopology::storeOverlayTopology(void)
 
    // -- Write to file
    //
-   m_overlayTopologyFile << " graph graphname {" << endl;
+   m_overlayTopologyFile << "graph graphname {" << endl;
    for (std::vector<Edge_Type>::iterator iter = m_edges.begin();
         iter != m_edges.end(); ++iter)
    {

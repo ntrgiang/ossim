@@ -15,7 +15,6 @@
 #define debugOUT (!m_debug) ? std::cout : std::cout << "TopologyModel: "
 #endif
 
-
 using namespace std;
 
 TopologyModel::TopologyModel() {
@@ -24,7 +23,7 @@ TopologyModel::TopologyModel() {
    numNodes = 0;
    this->minRequiredStripes = 1;
    //stripes.insert("0-0");
-   m_debug = false;
+   m_debug = true;
 }
 
 
@@ -493,15 +492,23 @@ void TopologyModel::removeVertexRecursive2(const std::string& stripe, const IPvX
          // -- Remove the vertex "node" so that it won't be investigated again
          //
          ads.erase(node);
+         debugOUT << "--Node " << node << " has " << graph[stripe][node].size() << " children" << endl;
          assert(graph[stripe].find(node) != graph[stripe].end());
 
          // -- Get the list of children of vertex "node"
          //
          PPIPvXAddressSet newads = graph[stripe][node]; // hardcopy here
 
-         debugOUT << "-- Children of node " << node << endl;
-         for (PPIPvXAddressSet::iterator iter = newads.begin(); iter != newads.end(); ++iter)
-            debugOUT << "\t Child " << *iter << endl;
+         if (newads.size() > 0)
+         {
+            debugOUT << "\t Children of node " << node << endl;
+            for (PPIPvXAddressSet::iterator iter = newads.begin(); iter != newads.end(); ++iter)
+               debugOUT << "\t - Child " << *iter << endl;
+         }
+         else
+         {
+            debugOUT << "\t it has now children" << endl;
+         }
 
          // -- NOTICE: drop all adjacents of node in stripe here, so they won't be parsed twice
          //
@@ -509,8 +516,8 @@ void TopologyModel::removeVertexRecursive2(const std::string& stripe, const IPvX
          graph[stripe].erase(node);
 
          inEdgesCtr[node]--; // Giang
-         debugOUT << " \\ removeVertexRecursive " << old_parent << "->" << node << " in " << stripe
-                  << " decreases #inbound[to]= " << inEdgesCtr[node] << " >= 0" << endl;
+         debugOUT << "\t removed one incoming edge to node " << node << " in " << stripe
+                  << " -- now inEdgesCrt = " << inEdgesCtr[node] << " >= 0" << endl;
 
          if (inEdgesCtr[node] < minRequiredStripes)
          {
@@ -522,11 +529,21 @@ void TopologyModel::removeVertexRecursive2(const std::string& stripe, const IPvX
             inEdgesCtr.erase(node);
          }
 
+         debugOUT << "ads before insertion" << endl;
+         for (std::set<IPvXAddress>::iterator iter = ads.begin(); iter != ads.end(); ++iter)
+         {
+            debugOUT << *iter << endl;
+         }
          // -- kind of recursive (delete the cur_node, and browse through its children instead)
          //
          ads.insert(newads.begin(), newads.end());
          old_parent = node;
 
+         debugOUT << "ads after insertion" << endl;
+         for (std::set<IPvXAddress>::iterator iter = ads.begin(); iter != ads.end(); ++iter)
+         {
+            debugOUT << *iter << endl;
+         }
       } // while
    }
    else
@@ -1636,4 +1653,29 @@ void TopologyModel::writeTopologyToDotFile(std::string folder)
 
 
    //   m_overlayTopologyFile.close();
+}
+
+void TopologyModel::printOverviewInfo(void)
+{
+   debugOUT << "printOverviewInfo::" << endl;
+   // -- Number of stripes
+   //
+   debugOUT << "Total number of stripes: " << numStripes << endl;
+
+   // -- Browse through all stripes
+   //
+   for (PPStringSet::iterator iter = stripes.begin(); iter != stripes.end(); ++iter)
+   {
+      debugOUT << "Stripe " << *iter << endl;
+      //std::string strStripe = getString(*iter);
+
+      debugOUT << "This single topology has "
+               << graph[*iter].size() << " vertexes"
+               << endl;
+   }
+}
+
+void TopologyModel::printDetailedInfo(void)
+{
+
 }
