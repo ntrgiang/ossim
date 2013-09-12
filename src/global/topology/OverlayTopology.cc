@@ -33,6 +33,7 @@
 #include <boost/lexical_cast.hpp>
 #include "AppSetting.h"
 #include "AppSettingDonet.h"
+#include "AppCommon.h" // get2LastOctet()
 
 #include "PartnerList.h"
 #include "InterfaceTable.h"
@@ -595,8 +596,10 @@ void OverlayTopology::storeOverlayTopology(void)
    for (std::vector<Edge_Type>::iterator iter = m_edges.begin();
         iter != m_edges.end(); ++iter)
    {
-      m_overlayTopologyFile << iter->first.str().erase(0, 10) << " -- "
-                            << iter->second.str().erase(0, 10) << ";" << endl;
+//      m_overlayTopologyFile << iter->first.str().erase(0, 10) << " -- "
+//                            << iter->second.str().erase(0, 10) << ";" << endl;
+      m_overlayTopologyFile << get2LastOctet(iter->first) << " -- "
+                            << get2LastOctet(iter->second) << ";" << endl;
    }
    m_overlayTopologyFile << "}" << endl;
 

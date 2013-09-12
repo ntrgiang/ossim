@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <fstream>
+#include "AppCommon.h" // get2LastOctet
 
 #if _DEBUG
 # define DEBUGOUT(x) if (C_DEBUG_TopologyModel) { std::cout << "(TM  @" << "0x" << std::setbase(16) << ((long)this) << "): " << std::setbase(10) << x << endl;; };
@@ -23,7 +24,7 @@ TopologyModel::TopologyModel() {
    numNodes = 0;
    this->minRequiredStripes = 1;
    //stripes.insert("0-0");
-   m_debug = true;
+   m_debug = false;
 }
 
 
@@ -1627,16 +1628,14 @@ void TopologyModel::writeTopologyToDotFile(std::string folder)
       //
       for (Vertexes::iterator it = graph[cur_stripe].begin(); it != graph[cur_stripe].end(); ++it)
       {
-         IPvXAddress cur_parent = it->first;
-         debugOUT << "Parent node: " << cur_parent << endl;
+         debugOUT << "Parent node: " << it->first << endl;
 
          std::set<IPvXAddress> childrenSet = it->second;
          for (std::set<IPvXAddress>::iterator child_iter = childrenSet.begin();
               child_iter != childrenSet.end(); ++child_iter)
          {
-            IPvXAddress cur_child = *child_iter;
-            dotFile << cur_parent.str().erase(0, 10) << " -> "
-                    << cur_child.str().erase(0, 10) << ";" << endl;
+            dotFile << get2LastOctet(it->first) << " -> "
+                    << get2LastOctet(*child_iter) << ";" << endl;
          }
 
 
