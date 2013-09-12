@@ -31,7 +31,7 @@ CONFIG_FILE=Donet-overlayAttack
 #
 #rm -rf $STORE_DIR
 
-#mkdir $STORE_DIR
+mkdir $STORE_DIR
 
 # -- Copy
 #
