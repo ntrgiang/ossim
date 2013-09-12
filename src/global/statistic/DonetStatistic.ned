@@ -48,9 +48,7 @@ simple DonetStatistic like IStreamingStatistic
 // -----------------------------------------------------------------------------
 // --- Statistics
 // -----------------------------------------------------------------------------
-        //@statistic[ChunkHit](source=Signal_ChunkHit; record=count);
-        //@statistic[ChunkMiss](source=Signal_ChunkMiss; record=count);
-        //@statistic[ChunkSeek](title="Chunk Seek"; source=Signal_ChunkSeek; record=count);
+
         //@statistic[Rebuffering](source=Signal_Rebuffering; record=count);
         //@statistic[Stall](source=Signal_Stall; record=count);
         
@@ -81,6 +79,16 @@ simple DonetStatistic like IStreamingStatistic
         // new stat - periodically
         // @statistic[CI](source="Signal_CI"; record=last,vector);
         //@statistic[globalCI](source="Signal_CI"; record=last,mean,vector);
+
+        @statistic[chunkHit](source="Signal_ChunkHit"; record=last);
+        @statistic[chunkMiss](source="Signal_ChunkMiss"; record=last);
+        @statistic[allChunk](source="Signal_AllChunk"; record=last);
+
+        @statistic[globalCI](source="Signal_CI"; record=last);
+        @statistic[globalLoss](source="Signal_Loss"; record=last);
+
+        //@statistic[globalCI](source="count(Signal_ChunkHit)/count(Signal_AllChunk)"; record=last);
+        //@statistic[globalLoss](source="count(Signal_ChunkMiss)/count(Signal_AllChunk)"; record=last);
 
         //@statistic[globalCI_delta](source="Signal_CI_delta"; record=last,mean,vector);
 

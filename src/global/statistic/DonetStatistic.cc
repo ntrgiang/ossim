@@ -35,203 +35,216 @@
 Define_Module(DonetStatistic)
 
 DonetStatistic::DonetStatistic() {
-    // TODO Auto-generated constructor stub
+   // TODO Auto-generated constructor stub
 
 }
 
 DonetStatistic::~DonetStatistic() {
-    // TODO Auto-generated destructor stub
-    if (timer_reportCI)
-    {
-       delete cancelEvent(timer_reportCI);
-       timer_reportCI       = NULL;
-    }
+   // TODO Auto-generated destructor stub
+   if (timer_reportCI)
+   {
+      delete cancelEvent(timer_reportCI);
+      timer_reportCI       = NULL;
+   }
 }
 
 void DonetStatistic::finish()
 {
-    // -- Close the log file
-    m_outFile.close();
+   // -- Report statistics
+   //
+   emit(sig_allChunk, m_count_allChunk);
+   emit(sig_chunkHit, m_count_chunkHit);
+   emit(sig_chunkMiss, m_count_chunkMiss);
 
-    //recordScalar("Reach Ratio", (double)m_countReach / m_countAppMsgNew);
+   if (m_count_allChunk)
+   {
+      emit(sig_ci, (double) m_count_chunkHit / m_count_allChunk);
+      emit(sig_loss, (double) m_count_chunkMiss / m_count_allChunk);
+   }
+
+   // -- Close the log file
+   m_outFile.close();
+
+   //recordScalar("Reach Ratio", (double)m_countReach / m_countAppMsgNew);
 }
 
-//void DonetStatistic::initialize()
 void DonetStatistic::initialize(int stage)
 {
-    if (stage == 0)
-    {
-        // -- Performance-critical Signals
-        // sig_dummy_chunkHit = registerSignal("Signal_ChunkHit");
+   if (stage == 0)
+   {
+      // -- Performance-critical Signals
+      // sig_dummy_chunkHit = registerSignal("Signal_ChunkHit");
 
-        sig_chunkHit    = registerSignal("Signal_ChunkHit");
-        sig_chunkMiss   = registerSignal("Signal_ChunkMiss");
-        sig_chunkNeed   = registerSignal("Signal_ChunkNeed");
+      sig_chunkHit         = registerSignal("Signal_ChunkHit");
+      sig_chunkMiss        = registerSignal("Signal_ChunkMiss");
+      sig_allChunk         = registerSignal("Signal_AllChunk");
 
-        sig_requestedChunk      = registerSignal("Signal_RequestedChunk");
-        sig_receivedChunk       = registerSignal("Signal_ReceivedChunk");
-        sig_lateChunk           = registerSignal("Signal_LateChunk");
-        sig_inrangeChunk        = registerSignal("Signal_InrangeChunk");
-        sig_duplicatedChunk     = registerSignal("Signal_DuplicatedChunk");
+      sig_ci                = registerSignal("Signal_CI");
+      sig_loss              = registerSignal("Signal_Loss");
 
-        sig_skipChunk         = registerSignal("Signal_SkipChunk");
-        sig_rebuffering       = registerSignal("Signal_Rebuffering");
-        sig_stallDuration     = registerSignal("Signal_StallDuration");
-        sig_ci                = registerSignal("Signal_CI");
-        sig_ci_delta          = registerSignal("Signal_CI_delta");
-        sig_systemSize        = registerSignal("Signal_SystemSize");
+      sig_requestedChunk      = registerSignal("Signal_RequestedChunk");
+      sig_receivedChunk       = registerSignal("Signal_ReceivedChunk");
+      sig_lateChunk           = registerSignal("Signal_LateChunk");
+      sig_inrangeChunk        = registerSignal("Signal_InrangeChunk");
+      sig_duplicatedChunk     = registerSignal("Signal_DuplicatedChunk");
 
-        // -- Delays
-        sig_DelayOneOverlayHop     = registerSignal("Signal_DelayOneOverlayHop");
-        sig_overlayHopCount   = registerSignal("Signal_OverlayHopCount");
+      sig_skipChunk         = registerSignal("Signal_SkipChunk");
+      sig_rebuffering       = registerSignal("Signal_Rebuffering");
+      sig_stallDuration     = registerSignal("Signal_StallDuration");
+      sig_ci_delta          = registerSignal("Signal_CI_delta");
+      sig_systemSize        = registerSignal("Signal_SystemSize");
 
-        // should be obsolete
-        sig_chunkSeek       = registerSignal("Signal_ChunkSeek");
+      // -- Delays
+      sig_DelayOneOverlayHop     = registerSignal("Signal_DelayOneOverlayHop");
+      sig_overlayHopCount   = registerSignal("Signal_OverlayHopCount");
 
-        sig_meshJoin    = registerSignal("Signal_MeshJoin");
-        sig_nPartner    = registerSignal("Signal_NumberOfPartner");
-        sig_nJoin       = registerSignal("Signal_nJoin");
+      // should be obsolete
+      //sig_chunkSeek       = registerSignal("Signal_ChunkSeek");
 
-        sig_playback    = registerSignal("Signal_Playback");
+      sig_meshJoin    = registerSignal("Signal_MeshJoin");
+      sig_nPartner    = registerSignal("Signal_NumberOfPartner");
+      sig_nJoin       = registerSignal("Signal_nJoin");
 
-        timer_reportCI = new cMessage("GLOBAL_STATISTIC_REPORT_CI");
-        timer_reportSystemSize = new cMessage("GLOBAL_STATISTIC_REPORT_SYSTEM_SIZE");
+      sig_playback    = registerSignal("Signal_Playback");
 
-        param_interval_reportCI = par("interval_reportCI").doubleValue();
-        param_interval_reportSystemSize = par("interval_reportSystemSize");
+      timer_reportCI = new cMessage("GLOBAL_STATISTIC_REPORT_CI");
+      timer_reportSystemSize = new cMessage("GLOBAL_STATISTIC_REPORT_SYSTEM_SIZE");
 
-        m_count_allChunk = 0L;
-        m_count_chunkHit = 0L;
-        m_count_chunkMiss = 0L;
+      param_interval_reportCI = par("interval_reportCI").doubleValue();
+      param_interval_reportSystemSize = par("interval_reportSystemSize");
 
-        m_count_allChunk_prev = 0L;
-        m_count_chunkHit_prev = 0L;
+      m_count_allChunk = 0L;
+      m_count_chunkHit = 0L;
+      m_count_chunkMiss = 0L;
 
-//        std::vector<cIListener*> localListener;
-//        localListener = getLocalSignalListeners(sig_dummy_chunkHit);
-//
-//        for (std::vector<cIListener*>::iterator iter = localListener.begin(); iter != localListener.end(); ++iter)
-//        {
-//            simulation.getSystemModule()->subscribe("Signal_ChunkHit", *iter);
-//        }
-    }
+      m_count_allChunk_prev = 0L;
+      m_count_chunkHit_prev = 0L;
 
-    if (stage != 3)
-        return;
+      //        std::vector<cIListener*> localListener;
+      //        localListener = getLocalSignalListeners(sig_dummy_chunkHit);
+      //
+      //        for (std::vector<cIListener*>::iterator iter = localListener.begin(); iter != localListener.end(); ++iter)
+      //        {
+      //            simulation.getSystemModule()->subscribe("Signal_ChunkHit", *iter);
+      //        }
+   }
 
-    // get a pointer to the NotificationBoard module and IInterfaceTable
-    nb = NotificationBoardAccess().get();
+   if (stage != 3)
+      return;
 
-    nb->subscribe(this, NF_INTERFACE_CREATED);
-    nb->subscribe(this, NF_INTERFACE_DELETED);
-    nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
-    nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
-    nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
+   // get a pointer to the NotificationBoard module and IInterfaceTable
+   nb = NotificationBoardAccess().get();
 
-    // -- Binding to Active Peer Table
-    cModule *temp = simulation.getModuleByPath("activePeerTable");
-    m_apTable = check_and_cast<ActivePeerTable *>(temp);
-    //if (m_apTable == NULL) throw cException("NULL pointer to module activePeerTable");
-    EV << "Binding to activePeerTable is completed successfully" << endl;
+   nb->subscribe(this, NF_INTERFACE_CREATED);
+   nb->subscribe(this, NF_INTERFACE_DELETED);
+   nb->subscribe(this, NF_INTERFACE_STATE_CHANGED);
+   nb->subscribe(this, NF_INTERFACE_CONFIG_CHANGED);
+   nb->subscribe(this, NF_INTERFACE_IPv4CONFIG_CHANGED);
 
-    m_outFile.open(par("gstatLog").stringValue(), fstream::out);
-    //m_outFile << "test" << endl;
+   // -- Binding to Active Peer Table
+   cModule *temp = simulation.getModuleByPath("activePeerTable");
+   m_apTable = check_and_cast<ActivePeerTable *>(temp);
+   //if (m_apTable == NULL) throw cException("NULL pointer to module activePeerTable");
+   EV << "Binding to activePeerTable is completed successfully" << endl;
 
-    scheduleAt(simTime() + param_interval_reportCI, timer_reportCI);
-    scheduleAt(simTime() + param_interval_reportSystemSize, timer_reportSystemSize);
+   m_outFile.open(par("gstatLog").stringValue(), fstream::out);
+   //m_outFile << "test" << endl;
 
-//    cNumericResultRecorder *listener = new cNumericResultRecorder;
-//    simulation.getSystemModule()->subscribe("chunkHit_Global", listener);
+   scheduleAt(simTime() + param_interval_reportCI, timer_reportCI);
+   scheduleAt(simTime() + param_interval_reportSystemSize, timer_reportSystemSize);
 
-    // -- Initialize count variables
-//    m_sizeInView = 0L;
-//    m_sizePartialView = 0L;
+   //    cNumericResultRecorder *listener = new cNumericResultRecorder;
+   //    simulation.getSystemModule()->subscribe("chunkHit_Global", listener);
 
-//    m_countIV = 0L;
-//    m_countPV = 0L;
+   // -- Initialize count variables
+   //    m_sizeInView = 0L;
+   //    m_sizePartialView = 0L;
 
-    m_joinTime.setName("JoinTime");
+   //    m_countIV = 0L;
+   //    m_countPV = 0L;
 
-//    m_finalSizeIV.setName("Final Size of InViews");
-//    m_finalSizePV.setName("Final Size of PartialViews");
+   m_joinTime.setName("JoinTime");
 
-    m_count_NEW = 0L;
-    m_count_IGN = 0L;
-    m_count_ACK = 0L;
+   //    m_finalSizeIV.setName("Final Size of InViews");
+   //    m_finalSizePV.setName("Final Size of PartialViews");
 
-    m_totalEndToEndDelay = 0.0L;
-    m_totalNumberOfReceivedChunk = 0L;
-    m_totalOverlayHopCount = 0L;
+   m_count_NEW = 0L;
+   m_count_IGN = 0L;
+   m_count_ACK = 0L;
 
-    // -- data to be processed with R
-//    m_accumulatedSizePV = 0L;
-//    m_totalNode = 0;
+   m_totalEndToEndDelay = 0.0L;
+   m_totalNumberOfReceivedChunk = 0L;
+   m_totalOverlayHopCount = 0L;
 
-    // -- For collecting the sizes of Partial View
-    // m_sizePV.setName("pvSize");
+   // -- data to be processed with R
+   //    m_accumulatedSizePV = 0L;
+   //    m_totalNode = 0;
 
-    // -- For drawing the histogram of partial view sizes
-    m_allFinalPVsizes.setName("allFinalPVsizes");
+   // -- For collecting the sizes of Partial View
+   // m_sizePV.setName("pvSize");
 
-    // -- For checking the number of new App messages created and deleted
-    //m_countAppMsgNew = 0L;
-    //m_countSelfAppMsg = 0L;
-    //m_countReach = 0L;
+   // -- For drawing the histogram of partial view sizes
+   m_allFinalPVsizes.setName("allFinalPVsizes");
+
+   // -- For checking the number of new App messages created and deleted
+   //m_countAppMsgNew = 0L;
+   //m_countSelfAppMsg = 0L;
+   //m_countReach = 0L;
 
 
 
-    WATCH(m_outFile);
+   WATCH(m_outFile);
 }
 
 void DonetStatistic::handleMessage(cMessage *msg)
 {
-    //EV << "ActivePeerTable doesn't process messages!" << endl;
-    if (msg->isSelfMessage())
-    {
-        handleTimerMessage(msg);
-    }
-    else
-    {
-        throw cException("ActivePeerTable doesn't process messages!");
-    }
+   //EV << "ActivePeerTable doesn't process messages!" << endl;
+   if (msg->isSelfMessage())
+   {
+      handleTimerMessage(msg);
+   }
+   else
+   {
+      throw cException("ActivePeerTable doesn't process messages!");
+   }
 }
 
 void DonetStatistic::handleTimerMessage(cMessage *msg)
 {
-    if (msg == timer_reportCI)
-    {
-        collectCI();
-        collectSkipChunk();
-        collectStallDuration();
-        collectRebuffering();
+   if (msg == timer_reportCI)
+   {
+      collectCI();
+      collectSkipChunk();
+      collectStallDuration();
+      collectRebuffering();
 
-        reportDelays();
+      reportDelays();
 
-        scheduleAt(simTime() + param_interval_reportCI, timer_reportCI);
-    }
-    else if (msg == timer_reportSystemSize)
-    {
-       reportSystemSize();
-       scheduleAt(simTime() + param_interval_reportSystemSize, timer_reportSystemSize);
-    }
+      scheduleAt(simTime() + param_interval_reportCI, timer_reportCI);
+   }
+   else if (msg == timer_reportSystemSize)
+   {
+      reportSystemSize();
+      scheduleAt(simTime() + param_interval_reportSystemSize, timer_reportSystemSize);
+   }
 }
 
 void DonetStatistic::receiveChangeNotification(int category, const cPolymorphic *details)
 {
-    return;
+   return;
 }
 
 
 // ----------------- Interface in effect -------------------------
 void DonetStatistic::writeActivePeerTable2File(vector<IPvXAddress> activePeerList)
 {
-    m_outFile << "List of active peers" << endl;
+   m_outFile << "List of active peers" << endl;
 
-    for (vector<IPvXAddress>::iterator iter = activePeerList.begin();
-         iter != activePeerList.end(); ++iter)
-    {
-        m_outFile << *iter << endl;
-    }
+   for (vector<IPvXAddress>::iterator iter = activePeerList.begin();
+        iter != activePeerList.end(); ++iter)
+   {
+      m_outFile << *iter << endl;
+   }
 }
 
 void DonetStatistic::writePartnerList2File(IPvXAddress node, vector<IPvXAddress> pList)
@@ -240,13 +253,13 @@ void DonetStatistic::writePartnerList2File(IPvXAddress node, vector<IPvXAddress>
    //m_outFile << "At " << simTime().dbl() << "(s) " << endl;
    //m_outFile << "Peer " << node << " has " << pList.size() << " partners: " << endl;
 
-    for (vector<IPvXAddress>::iterator iter = pList.begin();
-         iter != pList.end(); ++iter)
-    {
-        //m_outFile << "\t" << *iter << endl;
-       m_outFile << node << " " << *iter << endl;
-    }
-    m_outFile << endl;
+   for (vector<IPvXAddress>::iterator iter = pList.begin();
+        iter != pList.end(); ++iter)
+   {
+      //m_outFile << "\t" << *iter << endl;
+      m_outFile << node << " " << *iter << endl;
+   }
+   m_outFile << endl;
 }
 
 void DonetStatistic::writePartnership2File(IPvXAddress local, IPvXAddress remote)
@@ -286,7 +299,7 @@ void DonetStatistic::writePartnership2File(IPvXAddress local, IPvXAddress remote
 
 void DonetStatistic::recordJoinTime(double time)
 {
-    m_joinTime.record(time);
+   m_joinTime.record(time);
 }
 
 /**
@@ -297,12 +310,12 @@ void DonetStatistic::recordJoinTime(double time)
 
 void DonetStatistic::collectSizeIV(int size)
 {
-//    m_finalSizeIV.collect(size);
+   //    m_finalSizeIV.collect(size);
 }
 
 void DonetStatistic::collectSizePV(int size)
 {
-//    m_finalSizePV.collect(size);
+   //    m_finalSizePV.collect(size);
 }
 
 /**
@@ -313,37 +326,37 @@ void DonetStatistic::collectSizePV(int size)
 
 void DonetStatistic::increaseNEW(void)
 {
-    ++m_count_NEW;
+   ++m_count_NEW;
 }
 
 void DonetStatistic::decreaseNEW(void)
 {
-    --m_count_NEW;
+   --m_count_NEW;
 }
 
 void DonetStatistic::increaseIGN(void)
 {
-    ++m_count_IGN;
+   ++m_count_IGN;
 }
 
 void DonetStatistic::increaseACK(void)
 {
-    ++m_count_ACK;
+   ++m_count_ACK;
 }
 
 long DonetStatistic::getNEW(void)
 {
-    return m_count_NEW;
+   return m_count_NEW;
 }
 
 long DonetStatistic::getIGN(void)
 {
-    return m_count_IGN;
+   return m_count_IGN;
 }
 
 long DonetStatistic::getACK(void)
 {
-    return m_count_ACK;
+   return m_count_ACK;
 }
 
 //void DonetStatistic::recordPartialViewSize(int size)
@@ -364,7 +377,7 @@ long DonetStatistic::getACK(void)
 
 void DonetStatistic::collectAllPVsizes(int size)
 {
-    m_allFinalPVsizes.record(size);
+   m_allFinalPVsizes.record(size);
 }
 
 // ---------------------- Signal --------------------------
@@ -389,27 +402,29 @@ void DonetStatistic::collectAllPVsizes(int size)
 //}
 
 //void DonetStatistic::reportChunkHit(SEQUENCE_NUMBER_T seq_num)
-void DonetStatistic::reportChunkHit(const SEQUENCE_NUMBER_T &seq_num)
+void DonetStatistic::incrementChunkHit(const SEQUENCE_NUMBER_T &seq_num)
 {
-    emit(sig_chunkHit, seq_num);
-    ++m_count_chunkHit;
-    ++m_count_allChunk;
+//   emit(sig_chunkHit, seq_num);
+//   emit(sig_allChunk, seq_num);
+
+//   ++m_count_chunkHit;
+//   ++m_count_allChunk;
 }
 
-void DonetStatistic::reportChunkMiss(const SEQUENCE_NUMBER_T &seq_num)
+void DonetStatistic::incrementChunkMiss(const SEQUENCE_NUMBER_T &seq_num)
 {
-    emit(sig_chunkMiss, seq_num);
-    emit(sig_chunkNeed, seq_num);
-    ++m_count_chunkMiss;
-    ++m_count_allChunk;
+//   emit(sig_chunkMiss, seq_num);
+//   emit(sig_allChunk, seq_num);
+
+//   ++m_count_chunkMiss;
+//   ++m_count_allChunk;
 }
 
-void DonetStatistic::reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num)
-{
-    emit(sig_chunkSeek, seq_num);
-    emit(sig_chunkNeed, seq_num);
-//    ++m_count_allChunk;
-}
+//void DonetStatistic::reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num)
+//{
+//    emit(sig_chunkSeek, seq_num);
+////    ++m_count_allChunk;
+//}
 
 void DonetStatistic::increaseChunkHit(const int &delta)
 {
@@ -423,32 +438,31 @@ void DonetStatistic::increaseChunkMiss(const int &delta)
    m_count_allChunk += delta;
 }
 
-
 void DonetStatistic::reportRequestedChunk(const SEQUENCE_NUMBER_T &seq_num)
 {
-    emit(sig_requestedChunk, seq_num);
+   emit(sig_requestedChunk, seq_num);
 }
 
 void DonetStatistic::reportDuplicatedChunk(const SEQUENCE_NUMBER_T &seq_num)
 {
-    emit(sig_duplicatedChunk, seq_num);
+   emit(sig_duplicatedChunk, seq_num);
 }
 
 void DonetStatistic::reportLateChunk(const SEQUENCE_NUMBER_T &seq_num)
 {
-    emit(sig_lateChunk, seq_num);
-    emit(sig_receivedChunk, seq_num);
+   emit(sig_lateChunk, seq_num);
+   emit(sig_receivedChunk, seq_num);
 }
 
 void DonetStatistic::reportInrangeChunk(const SEQUENCE_NUMBER_T &seq_num)
 {
-    emit(sig_inrangeChunk, seq_num);
-    emit(sig_receivedChunk, seq_num);
+   emit(sig_inrangeChunk, seq_num);
+   emit(sig_receivedChunk, seq_num);
 }
 
 void DonetStatistic::reportRebuffering(const SEQUENCE_NUMBER_T &seq_num)
 {
-    emit(sig_rebuffering, seq_num);
+   emit(sig_rebuffering, seq_num);
 }
 
 void DonetStatistic::reportSystemSize()
@@ -481,7 +495,7 @@ void DonetStatistic::printActivePeerList(void)
 // should be obsolete
 void DonetStatistic::reportStall()
 {
-    emit(sig_stall, 1);
+   emit(sig_stall, 1);
 }
 
 // --------------------------------------------------- ON-GOING ----------------
@@ -490,11 +504,11 @@ void DonetStatistic::collectCI(void)
    if (m_count_allChunk)
    {
       long delta_allChunk = m_count_allChunk - m_count_allChunk_prev;
-//      std::cout << "all: " << m_count_allChunk << ", " << m_count_allChunk_prev << ", " << delta_allChunk << endl;
+      //      std::cout << "all: " << m_count_allChunk << ", " << m_count_allChunk_prev << ", " << delta_allChunk << endl;
       m_count_allChunk_prev = m_count_allChunk;
 
       long delta_chunkHit = m_count_chunkHit - m_count_chunkHit_prev;
-//      std::cout << "hit: " << m_count_chunkHit << ", " << m_count_chunkHit_prev << ", " << delta_chunkHit << endl;
+      //      std::cout << "hit: " << m_count_chunkHit << ", " << m_count_chunkHit_prev << ", " << delta_chunkHit << endl;
       m_count_chunkHit_prev = m_count_chunkHit;
 
       if (delta_allChunk)
@@ -538,19 +552,19 @@ void DonetStatistic::reportSkipChunk()
 
 void DonetStatistic::reportStallDuration(double dur)
 {
-    m_count_stallDuration += dur;
+   m_count_stallDuration += dur;
 }
 
 void DonetStatistic::reportStallDuration(void)
 {
-    ++m_count_stallDuration_chunk;
-    // the stall duration will be normalized to the length of a video chunk
+   ++m_count_stallDuration_chunk;
+   // the stall duration will be normalized to the length of a video chunk
 }
 
 void DonetStatistic::reportRebuffering()
 {
-    //emit(sig_rebuffering, 1);
-    ++m_count_rebuffering;
+   //emit(sig_rebuffering, 1);
+   ++m_count_rebuffering;
 }
 
 void DonetStatistic::reportDelays(void)
@@ -558,16 +572,16 @@ void DonetStatistic::reportDelays(void)
    if (simTime().dbl() < simulation.getWarmupPeriod().dbl())
       return;
 
-//   if (m_totalNumberOfReceivedChunk == 0L)
-//   {
-//      emit(sig_DelayOneOverlayHop, 0.0);
-//      emit(sig_overlayHopCount, 0L);
-//   }
-//   else
-//   {
-//      emit(sig_DelayOneOverlayHop, m_totalEndToEndDelay / m_totalNumberOfReceivedChunk);
-//      emit(sig_overlayHopCount, (long double)(m_totalOverlayHopCount / m_totalNumberOfReceivedChunk));
-//   }
+   //   if (m_totalNumberOfReceivedChunk == 0L)
+   //   {
+   //      emit(sig_DelayOneOverlayHop, 0.0);
+   //      emit(sig_overlayHopCount, 0L);
+   //   }
+   //   else
+   //   {
+   //      emit(sig_DelayOneOverlayHop, m_totalEndToEndDelay / m_totalNumberOfReceivedChunk);
+   //      emit(sig_overlayHopCount, (long double)(m_totalOverlayHopCount / m_totalNumberOfReceivedChunk));
+   //   }
 
    if (m_totalNumberOfReceivedChunk > 0L)
    {
@@ -580,12 +594,12 @@ void DonetStatistic::reportDelays(void)
 
 void DonetStatistic::reportMeshJoin()
 {
-    emit(sig_meshJoin, 1);
+   emit(sig_meshJoin, 1);
 }
 
 void DonetStatistic::reportNumberOfPartner(int nPartner)
 {
-    emit(sig_nPartner, nPartner);
+   emit(sig_nPartner, nPartner);
 }
 
 void DonetStatistic::reportNumberOfPartner(const IPvXAddress &addr, const int &nPartner)
@@ -598,14 +612,14 @@ void DonetStatistic::reportNumberOfPartner(const IPvXAddress &addr, const int &n
    EV << endl << endl;
 
    m_peerList[addr] = nPartner;
-    //emit(sig_nPartner, nPartner);
+   //emit(sig_nPartner, nPartner);
 
    printActivePeerList();
 }
 
 void DonetStatistic::reportNumberOfJoin(int val)
 {
-    emit(sig_nJoin, val);
+   emit(sig_nJoin, val);
 }
 
 void DonetStatistic::collectDeltaDelayOneOverlayHop(const double &delta)
@@ -626,4 +640,19 @@ void DonetStatistic::collectDeltaNumberOfReceivedChunk(const long &delta)
 void DonetStatistic::collectPlaybackPoint(SEQUENCE_NUMBER_T seq)
 {
    emit(sig_playback, seq);
+}
+
+void DonetStatistic::addFinalChunkHit(const long &peer_finalHit)
+{
+   m_count_chunkHit += peer_finalHit;
+}
+
+void DonetStatistic::addFinalChunkMiss(const long &peer_finalMiss)
+{
+   m_count_chunkMiss += peer_finalMiss;
+}
+
+void DonetStatistic::addFinalAllChunk(const long &peer_finalTotal)
+{
+   m_count_allChunk += peer_finalTotal;
 }

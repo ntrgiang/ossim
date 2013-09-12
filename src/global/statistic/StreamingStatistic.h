@@ -1,4 +1,4 @@
-//  
+//
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -43,8 +43,12 @@ public:
     virtual ~StreamingStatistic() {}
 
 public:
-    virtual void increaseChunkHit(const int &delta) = 0;
-    virtual void increaseChunkMiss(const int &delta) = 0;
+    virtual void addFinalChunkHit(const long &delta) {}
+    virtual void addFinalChunkMiss(const long &delta) {}
+    virtual void addFinalAllChunk(const long &delta) {}
+
+    virtual void incrementChunkHit(const SEQUENCE_NUMBER_T &seq_num) {}
+    virtual void incrementChunkMiss(const SEQUENCE_NUMBER_T &seq_num) {}
 
 };
 

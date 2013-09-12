@@ -112,11 +112,19 @@ public:
     //inline void incrementCountReach(void) { ++m_countReach; }
 
     // -- Interface to emit signal for global statistic collection
-    //void reportChunkHit(SEQUENCE_NUMBER_T seq_num);
-    void reportChunkHit(const SEQUENCE_NUMBER_T &seq_num);
-    void reportChunkMiss(const SEQUENCE_NUMBER_T &seq_num);
-    void reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num);
+
+    // -- To calculate CI or loss ratio
+    //
+    virtual void incrementChunkHit(const SEQUENCE_NUMBER_T &seq_num);
+    virtual void incrementChunkMiss(const SEQUENCE_NUMBER_T &seq_num);
+    //void reportChunkSeek(const SEQUENCE_NUMBER_T &seq_num);
     void reportRebuffering(const SEQUENCE_NUMBER_T &seq_num);
+
+    // -- Collect stats @ finishing step
+    //
+    virtual void addFinalChunkHit(const long &delta);
+    virtual void addFinalChunkMiss(const long &delta);
+    virtual void addFinalAllChunk(const long &delta);
 
     void reportStall(); // should be obsolete
 
@@ -150,6 +158,7 @@ public:
     void reportDelays(void);
 
     // -- To calculate Continuity Index
+    //
     void increaseChunkHit(const int &delta);
     void increaseChunkMiss(const int &delta);
 
@@ -221,14 +230,16 @@ private:
 
     simsignal_t sig_chunkHit;
     simsignal_t sig_chunkMiss;
-    simsignal_t sig_chunkNeed;
+    simsignal_t sig_allChunk;
+
+    simsignal_t sig_ci;
+    simsignal_t sig_loss;
 
     simsignal_t sig_stall; // should be obsolete
 
     simsignal_t sig_skipChunk;
     simsignal_t sig_rebuffering;
     simsignal_t sig_stallDuration;
-    simsignal_t sig_ci;
     simsignal_t sig_ci_delta;
     simsignal_t sig_systemSize;
 
@@ -237,8 +248,6 @@ private:
     simsignal_t sig_overlayHopCount;
 
     // should be obsolete
-    simsignal_t sig_chunkSeek;
-
     simsignal_t sig_meshJoin;
 
     simsignal_t sig_nPartner;
