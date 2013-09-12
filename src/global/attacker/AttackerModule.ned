@@ -43,6 +43,7 @@ simple AttackerModule
     parameters:
         bool debug = default(false);
         bool active = default(false);
+        bool overlayAttack = default(true);
 
         volatile double start @unit(s) = default(1s);
         volatile double stop @unit(s) = default(1s);

@@ -69,6 +69,7 @@ public:
 protected:
    bool m_debug;
    bool m_useEV;
+   bool m_overlayAttack;
 
    cMessage* timer_attack;
    cMessage* timer_reviewTopo;

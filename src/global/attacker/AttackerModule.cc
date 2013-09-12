@@ -70,6 +70,8 @@ void AttackerModule::initialize(int stage)
    m_active = par("active").boolValue();
    if (!m_active) return;
 
+   m_overlayAttack = par("overlayAttack").boolValue();
+
    // -- Binding to the global module Topology Observer
    cModule *temp = simulation.getModuleByPath("topoObserver");
    oT = check_and_cast<OverlayTopology*>(temp);
@@ -142,9 +144,14 @@ void AttackerModule::handleMessage(cMessage* msg) {
 
    if (msg == timer_attack)
    {
-      attackGlobal();
-
-      //nodeShutdown();
+      if (m_overlayAttack)
+      {
+         attackGlobal();
+      }
+      else
+      {
+         nodeShutdown();
+      }
 
       //debugOUT << "topo size after shuting down nodes: " << oT->getNumTopologies() << endl;
    }
@@ -194,12 +201,19 @@ void AttackerModule::nodeShutdown()
 {
    debugOUT << "Node shutdown!" << endl;
 
-   int sequence = oT->getMaxRecentSeq();
-   TopologyModel topoM = oT->getTopology(sequence);
+   TopologyModel topoM = oT->getTopologySet();
+   topoM.calculate();
+
+   // -- Output the topologies into .dot files for visualization
+   //
+   topoM.writeTopologyToDotFile(par("snapshotFolder").stdstringValue());
+   //topoM.printOverviewInfo();
 
    for (int i = 0; i < numAttack; ++i)
    {
       IPvXAddress vertex = topoM.getCentralVertex();
+      debugOUT << "Ip of the node with highest centrality: " << vertex << endl;
+      topoM.removeVertexRecursive2(vertex);
 
       // -- Has to figure out which node has this IP address
       int j = 0;
@@ -231,13 +245,7 @@ void AttackerModule::nodeShutdown()
          j++;
       } // while
 
-      // -- removed the identified node, to prepare for the next removal
-      topoM.removeVertexRecursive(vertex);
-
-   } // for
-
-   // put stats here
-//   int damage = oT->attackRecursive(numAttack);
+   } // for (numAttacks)
 
 }
 
