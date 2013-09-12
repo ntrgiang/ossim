@@ -61,6 +61,11 @@ PlayerSimpleSkip::~PlayerSimpleSkip()
       cancelAndDelete(timer_playerStop);
    }
 
+   if (timer_reportStatistic)
+   {
+      cancelAndDelete(timer_reportStatistic);
+   }
+
    //if (timer_reportStatistic) cancelAndDelete(timer_reportStatistic);
 }
 
@@ -90,15 +95,16 @@ void PlayerSimpleSkip::initialize(int stage)
    m_appSetting = check_and_cast<AppSetting *>(temp);
 
    temp = simulation.getModuleByPath("globalStatistic");
-   //m_stat = check_and_cast<StatisticBase *>(temp);
-   //m_stat = check_and_cast<StreamingStatistic *>(temp);
+   m_gstat = check_and_cast<StreamingStatistic *>(temp);
 
    timer_nextChunk     = new cMessage("PLAYER_TIMER_NEXT_CHUNK");
    timer_playerStart   = new cMessage("PLAYER_TIMER_START");
    timer_playerStop    = new cMessage("PLAYER_TIMER_STOP");
-   //timer_reportStatistic = new cMessage("PLAYER_TIMER_REPORT_STATISTIC");
+   timer_reportStatistic = new cMessage("PLAYER_TIMER_REPORT_STATISTIC");
 
    // -- Reading parameters from module itself
+   param_time_report_statistic = par("time_report_statistic").doubleValue() - 1.0;
+   debugOUT << "param_time_report_statistic = " << param_time_report_statistic << endl;
    param_interval_recheckVideoBuffer = par("interval_recheckVideoBuffer");
    param_interval_reportStatistic = par("interval_reportStatistic");
 
@@ -126,8 +132,10 @@ void PlayerSimpleSkip::initialize(int stage)
    m_count_prev_chunkHit = 0L;
    m_count_prev_chunkMiss = 0L;
 
-   // -- Schedule the first event for the first chunk
-   //    scheduleAt(simTime() + par("videoStartTime").doubleValue(), timer_newChunk);
+   if (param_time_report_statistic > 0.0)
+   {
+      scheduleAt(simTime() + param_time_report_statistic, timer_reportStatistic);
+   }
 
    // -------------------------------------------------------------------------
    // Signals
@@ -211,6 +219,7 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
          else
          {
             // -- Change state to PLAYING
+            //
             m_state = PLAYER_STATE_PLAYING;
             //m_id_nextChunk = m_videoBuffer->getBufferStartSeqNum();
             m_id_nextChunk = expected_playback_point;
@@ -232,7 +241,9 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
 
             emit(sig_timePlayerStart, simTime().dbl());
 
-            scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+            scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
+            debugOUT << "m_interval_newChunk = " << m_interval_newChunk
+                     << "-- from videoBuffer " << m_videoBuffer->getChunkInterval() << endl;
 
             // -- Schedule to report chunkHit, chunkMiss
             //scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
@@ -249,19 +260,43 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
    {
       if (m_videoBuffer->inBuffer(m_id_nextChunk))
       {
-         ++m_id_nextChunk;
-         scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+         scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
 
-         ++m_count_chunkHit;
+         // -- On chunk hit
+         //
+         if (simTime() >= simulation.getWarmupPeriod())
+         {
+            ++m_count_chunkHit;
+            m_gstat->incrementChunkHit(m_id_nextChunk);
+         }
+
+         // -- next expected chunk
+         //
+         ++m_id_nextChunk;
       }
       else // expected chunk is NOT in buffer
       {
-         ++m_id_nextChunk;
-         scheduleAt(simTime() + m_videoBuffer->getChunkInterval(), timer_nextChunk);
+         scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
 
-         ++m_count_chunkMiss;
+         // -- On chunk Miss
+         //
+         if (simTime() >= simulation.getWarmupPeriod())
+         {
+            ++m_count_chunkMiss;
+            m_gstat->incrementChunkMiss(m_id_nextChunk);
+         }
+
+         // -- next expected chunk
+         //
+         ++m_id_nextChunk;
       } // else ~ chunk not in buffer
 
+   }
+   else if (msg == timer_reportStatistic)
+   {
+      m_gstat->addFinalChunkHit(m_count_chunkHit);
+      m_gstat->addFinalChunkMiss(m_count_chunkMiss);
+      m_gstat->addFinalAllChunk(m_count_chunkHit+m_count_chunkMiss);
    }
    else if (msg == timer_playerStop)
    {

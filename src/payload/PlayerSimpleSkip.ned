@@ -37,8 +37,10 @@ simple PlayerSimpleSkip like PlayerBase
       @class(PlayerSimpleSkip);
       bool debug = default(false);
 
-      double interval_reportStatistic @unit(s) = default(0.1s);
+      double time_report_statistic @unit(s) = default(0.0);
 
+
+      double interval_reportStatistic @unit(s) = default(0.1s);
       double interval_recheckVideoBuffer @unit(s) = default(0.1s);
       double percent_buffer_low = default(0.0);
       double percent_buffer_high = default(1.0);

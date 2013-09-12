@@ -86,6 +86,8 @@ protected:
     cMessage *timer_nextChunk;
     cMessage *timer_playerStart;
     cMessage *timer_playerStop;
+    cMessage *timer_reportStatistic;
+
 
     SEQUENCE_NUMBER_T m_id_nextChunk;
 
@@ -103,11 +105,12 @@ protected:
     //long int m_countChunkHit, m_countChunkMiss;[
 
     int m_skip;
+    double param_time_report_statistic;
 
     // -- Pointers to external modules
-    VideoBuffer *m_videoBuffer;
-    //AppSettingDonet *m_appSetting;
-    AppSetting *m_appSetting;
+    VideoBuffer*           m_videoBuffer;
+    AppSetting*            m_appSetting;
+    StreamingStatistic*    m_gstat;
 
     // -- Signal for data collection
     simsignal_t sig_chunkHit;
