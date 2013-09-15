@@ -218,6 +218,8 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
          }
          else
          {
+            scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
+
             // -- Change state to PLAYING
             //
             m_state = PLAYER_STATE_PLAYING;
@@ -241,7 +243,6 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
 
             emit(sig_timePlayerStart, simTime().dbl());
 
-            scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
             debugOUT << "m_interval_newChunk = " << m_interval_newChunk
                      << "-- from videoBuffer " << m_videoBuffer->getChunkInterval() << endl;
 
@@ -258,10 +259,10 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
    }
    else if (msg == timer_nextChunk)
    {
+      scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
+
       if (m_videoBuffer->inBuffer(m_id_nextChunk))
       {
-         scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
-
          // -- On chunk hit
          //
          if (simTime() >= simulation.getWarmupPeriod())
@@ -269,15 +270,9 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
             ++m_count_chunkHit;
             m_gstat->incrementChunkHit(m_id_nextChunk);
          }
-
-         // -- next expected chunk
-         //
-         ++m_id_nextChunk;
       }
       else // expected chunk is NOT in buffer
       {
-         scheduleAt(simTime() + m_interval_newChunk, timer_nextChunk);
-
          // -- On chunk Miss
          //
          if (simTime() >= simulation.getWarmupPeriod())
@@ -285,12 +280,11 @@ void PlayerSimpleSkip::handleTimerMessage(cMessage *msg)
             ++m_count_chunkMiss;
             m_gstat->incrementChunkMiss(m_id_nextChunk);
          }
-
-         // -- next expected chunk
-         //
-         ++m_id_nextChunk;
       } // else ~ chunk not in buffer
 
+      // -- next expected chunk
+      //
+      ++m_id_nextChunk;
    }
    else if (msg == timer_reportStatistic)
    {
