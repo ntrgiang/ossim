@@ -121,8 +121,6 @@ void DonetPeer::initialize(int stage)
    //    m_state_joined = false;
    m_state = MESH_JOIN_STATE_IDLE;
    m_scheduling_started = false;
-   // -- Join status
-   //    m_joinState = MESH_STATE_JOIN_IDLE;
 
    // -------------------------------------------------------------------------
    // -------------------------------- Timers ---------------------------------
@@ -447,6 +445,7 @@ void DonetPeer::handleTimerMessage(cMessage *msg)
    {
       scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
       sendBufferMap();
+      failureDetection();
    }
    else if (msg == timer_chunkScheduling)
    {
@@ -603,9 +602,39 @@ void DonetPeer::gracefulLeave(void)
    //   m_gstat->reportNumberOfPartner(getNodeAddress(), 0); // left the system
    m_gstat->reportNumberOfPartner(getNodeAddress(), m_partnerList->m_map.size()); // leaving
 
+   //m_player->scheduleStopPlayer();
+
    cancelAllTimer();
 
-   m_state = MESH_JOIN_STATE_IDLE;
+   //m_state = MESH_JOIN_STATE_IDLE;
+   m_state = MESH_JOIN_STATE_PERMANENT_IDLE;
+}
+
+void DonetPeer::fail(void)
+{
+   Enter_Method("handleTimerLeave()");
+
+   debugOUT<< "Handle timer leave" << endl;
+
+   // - clear the partnerlist
+   m_partnerList->m_map.clear();
+
+   // - Report to Active Peer Table
+   m_apTable->removeAddress(getNodeAddress());
+
+   // - Report to Discovery Layer
+   m_memManager->deletePeerAddress(getNodeAddress());
+
+   // - Report to statistic module
+   //   m_gstat->reportNumberOfPartner(getNodeAddress(), 0); // left the system
+   m_gstat->reportNumberOfPartner(getNodeAddress(), m_partnerList->m_map.size()); // leaving
+
+   //m_player->scheduleStopPlayer();
+
+   cancelAllTimer();
+
+   //m_state = MESH_JOIN_STATE_IDLE;
+   m_state = MESH_JOIN_STATE_PERMANENT_IDLE;
 }
 
 void DonetPeer::handleTimerFindMorePartner(void)
@@ -944,6 +973,13 @@ void DonetPeer::processPacket(cPacket *pkt)
    if (appMsg->getPacketGroup() != PACKET_GROUP_MESH_OVERLAY)
    {
       throw cException("Wrong packet type!");
+   }
+
+   if (m_state == MESH_JOIN_STATE_PERMANENT_IDLE)
+   {
+      debugOUT << "Peer is OFFLINE now, should ignore all incoming messages" << endl;
+      delete pkt;
+      return;
    }
 
    MeshPeerStreamingPacket *meshMsg = check_and_cast<MeshPeerStreamingPacket *>(appMsg);
@@ -1765,6 +1801,8 @@ void DonetPeer::chunkScheduling()
    upper_bound = m_partnerList->getMaxHeadSequenceNumber();
    lower_bound = std::max(lower_bound, upper_bound - m_videoBuffer->getSize() + 1);
 
+   // -- Debug
+   //
    debugOUT << "lower_bound " << lower_bound << " -- uppper bound: " << upper_bound << endl;
    debugOUT << "current playback point: " << m_player->getCurrentPlaybackPoint() << endl;
    assert(upper_bound - lower_bound + 1 <= m_videoBuffer->getSize());
@@ -1772,7 +1810,8 @@ void DonetPeer::chunkScheduling()
    debugOUT << "size of sched_win: " << upper_bound - lower_bound + 1
             << " -- range: start " << lower_bound << " -- end: " << upper_bound << endl;
    debugOUT << "size of buffer : " << m_videoBuffer->getBufferEndSeqNum() - m_videoBuffer->getBufferStartSeqNum() + 1
-            << " -- range: start " << m_videoBuffer->getBufferStartSeqNum() << " -- end " << m_videoBuffer->getBufferEndSeqNum()
+            << " -- range: start " << m_videoBuffer->getBufferStartSeqNum()
+            << " -- end " << m_videoBuffer->getBufferEndSeqNum()
             << endl;
 
    donetChunkScheduling(lower_bound, upper_bound);

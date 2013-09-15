@@ -41,5 +41,5 @@ simple DonetBase extends CommBase
         @class(DonetBase);
         @display("i=block/app;bgb=250,410");
 
-        double threshold_idleDuration_buffermap @unit(s) = default(0.5s);
+        double threshold_idleDuration_buffermap @unit(s) = default(5.0s);
 }

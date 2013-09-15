@@ -64,7 +64,7 @@ simple DonetPeer extends DonetBase
         double interval_reportStatistic         @unit(s) = default(30s);
 
         double interval_reportActive            @unit(s) = default(0.1s);
-        
+
         // double keepAliveInterval             @unit(s) = default(1s);
         
         // Thresholds

@@ -508,3 +508,33 @@ void DonetBase::processPartnershipLeave(cPacket *pkt)
 //   sendToDispatcher(startmsg);
 //   //cSimpleModule::send(startmsg,"to_trcrt");
 //}
+
+void DonetBase::failureDetection(void)
+{
+      if (m_partnerList->getSize() < param_minNOP)
+   {
+      debugOUT << "Not enough minimum number of partners, should not cleanup now" << endl;
+      return;
+   }
+
+   std::vector<IPvXAddress> idlePartners;
+   // -- Clean all the partners who didn't send any buffer map recently
+   //
+   for (std::map<IPvXAddress, NeighborInfo>::iterator iter = m_partnerList->m_map.begin();
+        iter != m_partnerList->m_map.end(); ++iter)
+   {
+      debugOUT << "Most recent BM from " << iter->first
+               << " received at " << iter->second.getLastRecvBmTime() << endl;
+
+      if (simTime().dbl() - iter->second.getLastRecvBmTime() > param_threshold_idleDuration_buffermap)
+      {
+         debugOUT << "This partner has been unresponsive for quite some time --> delete ..." << endl;
+         idlePartners.push_back(iter->first);
+      }
+   }
+
+   for (std::vector<IPvXAddress>::iterator iter = idlePartners.begin(); iter != idlePartners.end(); ++iter)
+   {
+      m_partnerList->deleteAddress(*iter);
+   }
+}

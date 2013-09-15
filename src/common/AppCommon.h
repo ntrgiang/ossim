@@ -48,17 +48,6 @@ using namespace std;
 #define FORWARDED_SUBSCRIPTION  1
 // #define NEW_SUBSCRIPTION        0
 
-// For messages of type: MESH_PEER_JOIN
-/*
-#define MESH_PEER_JOIN_REQUEST  0
-#define MESH_PEER_JOIN_ACCEPTED 1
-*/
-
-//#define MESH_STATE_JOIN_IDLE                    0
-//#define MESH_STATE_JOIN_WAITING_ACCEPT          1
-//#define MESH_STATE_JOIN_ALL_ACCEPT_RECEIVED     2
-//#define MESH_STATE_JOIN_WAITING_ACCEPT_ACK      3
-
 //enum Mesh_State {
 //    MESH_STATE_IDLE = 0,
 //    MESH_STATE_IDLE_WAITING = 1,

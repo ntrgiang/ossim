@@ -50,6 +50,7 @@ enum Mesh_Join_State
 {
    MESH_JOIN_STATE_IDLE            = 0,
    MESH_JOIN_STATE_ACTIVE          = 1,
+   MESH_JOIN_STATE_PERMANENT_IDLE = 2,
 };
 
 class DonetBase : public CommBase
@@ -93,6 +94,7 @@ protected:
    bool canAcceptMorePartner(void);
    void addPartner(IPvXAddress remote, double bw);
    void processPartnershipLeave(cPacket *pkt);
+   void failureDetection(void);
 
    // Timer
    void handleTimerTimeoutWaitingAccept();

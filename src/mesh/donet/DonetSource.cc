@@ -184,10 +184,11 @@ void DonetSource::handleTimerMessage(cMessage *msg)
 {
    if (msg == timer_sendBufferMap)
    {
-      m_videoBuffer->printStatus();
-
-      sendBufferMap();
       scheduleAt(simTime() + param_interval_bufferMap, timer_sendBufferMap);
+
+      m_videoBuffer->printStatus();
+      sendBufferMap();
+      failureDetection();
 
       // -- Doing some statistical reporting stuff
       emit(sig_nPartner, m_partnerList->getSize());
@@ -195,8 +196,8 @@ void DonetSource::handleTimerMessage(cMessage *msg)
    }
    else if (msg == timer_reportStatistic)
    {
-      handleTimerReportStatistic();
       scheduleAt(simTime() + param_interval_reportStatistic, timer_reportStatistic);
+      handleTimerReportStatistic();
    }
 }
 

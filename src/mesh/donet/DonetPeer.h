@@ -70,6 +70,7 @@ public:
     virtual ~DonetPeer();
 
     void gracefulLeave(void);
+    void fail(void);
 
 protected:
     virtual int numInitStages() const { return 4; }
@@ -199,17 +200,14 @@ private:
     double  param_interval_timeout_joinReqAck;
     double  param_interval_waitingPartnershipResponse;
     double  param_interval_partnershipRefinement;
-    //double  param_interval_partnerlistCleanup;
     double  param_interval_reportStatistic;
     static double  param_interval_reportActive;
+    double  param_factor_requestList;
 
     //double  param_baseValue_requestGreedyFactor;
     //double  param_aggressiveValue_requestGreedyFactor
     //double  param_requestFactor_moderate;
     //double  param_requestFactor_aggresive;
-    double  param_factor_requestList;
-    //double  param_threshold_scarity;
-    double  param_threshold_idleDuration_buffermap;
 
     // -- Partnership size
     int param_minNOP;
