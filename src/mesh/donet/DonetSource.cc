@@ -153,7 +153,7 @@ void DonetSource::finish()
 {
    //    if (m_videoBuffer != NULL) delete m_videoBuffer;
 
-   m_gstat->reportNumberOfPartner(m_partnerList->getSize());
+   //m_gstat->reportNumberOfPartner(m_partnerList->getSize());
 
    /*
     Partnership p;

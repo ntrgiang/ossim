@@ -118,7 +118,7 @@ void DonetPeer::randomChunkScheduling(SEQUENCE_NUMBER_T lower_bound, SEQUENCE_NU
 
                 // -- Emit signal for statistics collection
                 emit(sig_chunkRequestSeqNum, seq_num);
-                m_gstat->reportRequestedChunk(seq_num);
+                //m_gstat->reportRequestedChunk(seq_num);
 
             } // if (nHolder > 0)
             else

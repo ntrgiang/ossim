@@ -2105,3 +2105,35 @@ void DonetPeer::printExpectedSet()
    std::cout << endl;
 }
 
+// ------------------------ Wrappers --------------------------
+//
+long DonetPeer::getChunkHit(void)
+{
+   return m_player->getCountChunkHit();
+}
+
+long DonetPeer::getChunkMiss(void)
+{
+   return m_player->getCountChunkMiss();
+}
+
+float DonetPeer::getLocalCI(void)
+{
+   return m_player->getContinuityIndex();
+}
+
+long DonetPeer::getTotalHopCount(void)
+{
+   return m_videoBuffer->getTotalOverlayHopCount();
+}
+
+long DonetPeer::getTotalReceivedChunk(void)
+{
+   return m_videoBuffer->getNumberOfReceivedChunk();
+}
+
+long DonetPeer::getTotalE2eDelay(void)
+{
+   return m_videoBuffer->getTotalDelayOneOverlayHop();
+}
+

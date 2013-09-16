@@ -1,4 +1,4 @@
-//  
+//
 // =============================================================================
 // OSSIM : A Generic Simulation Framework for Overlay Streaming
 // =============================================================================
@@ -39,76 +39,22 @@ package so.global.statistic;
 simple DonetStatistic like IStreamingStatistic
 {
    parameters:
-
+      bool debug = default(false);
       string gstatLog = default("..//results//gstatlog.txt");
       double interval_reportCI @unit(s) = default(0.5s);
       double interval_reportSystemSize @unit(s) = default(0.5s);
+      int numPeers = default(1);
 
+   // -- Statistics till the end of the simulation
+   //
+   @statistic[numActivePeer](source="Signal_NumActivePeer";       record=last,vector);
+   @statistic[numPartner](source="Signal_NumPartner";             record=last,vector);
+   @statistic[globalCI](source="Signal_GlobalCI";                 record=last,vector);
+   @statistic[globalLoss](source="Signal_GlobalLoss";             record=last,vector);
+   @statistic[overlayHopCount](source="Signal_OverlayHopCount";   record=last,vector);
+   @statistic[s2pDelay](source="Signal_S2pDelay";                 record=last,vector);
 
-// -----------------------------------------------------------------------------
-// --- Statistics
-// -----------------------------------------------------------------------------
-
-        //@statistic[Rebuffering](source=Signal_Rebuffering; record=count);
-        //@statistic[Stall](source=Signal_Stall; record=count);
-        
-        //@statistic[CI](source="count(Signal_ChunkHit)/(count(Signal_ChunkHit)+count(Signal_ChunkMiss))"; record=last,vector);
-        //@statistic[CI](source="count(Signal_ChunkHit)/count(Signal_ChunkNeed)"; record=last,vector);
-
-        // works
-        //@statistic[CI](source="count(Signal_ChunkHit)/count(Signal_ChunkSeek)"; record=last,vector);
-
-        // -- Join time
-        //@statistic[MeshJoin](source=Signal_MeshJoin; record=vector);
-        
-        //@statistic[NumberOfPartner](title="Number Of Partner"; source=Signal_NumberOfPartner; record=vector);
-
-      //@statistic[NumberOfJoin](title="Number Of Join"; source=Signal_nJoin; record=sum,vector);
-
-        //@statistic[requestedChunk](source=Signal_RequestedChunk; record=count);
-        //@statistic[receivedChunk](source=Signal_ReceivedChunk; record=count);
-        //@statistic[lateChunk](source=Signal_LateChunk; record=count);
-        //@statistic[inrangeChunk](source=Signal_InrangeChunk; record=count);
-        //@statistic[duplicatedChunk](source=Signal_DuplicatedChunk; record=count);
-
-      //@statistic[newCI](source="count(Signal_InrangeChunk)/count(Signal_ReceivedChunk)"; record=last);
-      //@statistic[newCI](source="count(Signal_InrangeChunk)/(count(Signal_ReceivedChunk)-count(Signal_DuplicatedChunk))"; record=last);
-
-
-        // -------------------------- Starting from here -----------------------
-        // new stat - periodically
-        // @statistic[CI](source="Signal_CI"; record=last,vector);
-        //@statistic[globalCI](source="Signal_CI"; record=last,mean,vector);
-
-        @statistic[chunkHit](source="Signal_ChunkHit"; record=last);
-        @statistic[chunkMiss](source="Signal_ChunkMiss"; record=last);
-        @statistic[allChunk](source="Signal_AllChunk"; record=last);
-
-        @statistic[globalCI](source="Signal_CI"; record=last);
-        @statistic[globalLoss](source="Signal_Loss"; record=last);
-
-        //@statistic[globalCI](source="count(Signal_ChunkHit)/count(Signal_AllChunk)"; record=last);
-        //@statistic[globalLoss](source="count(Signal_ChunkMiss)/count(Signal_AllChunk)"; record=last);
-
-        //@statistic[globalCI_delta](source="Signal_CI_delta"; record=last,mean,vector);
-
-        // To get the number active peers in the system
-        //@statistic[systemSize](source="Signal_SystemSize"; record=last,mean,vector);
-
-        // Delay --->
-        //@statistic[delayOneOverlayHop](source="Signal_DelayOneOverlayHop"; record=mean,min,max,vector);
-
-        //@statistic[overlayHopCount](source="Signal_OverlayHopCount"; record=mean,min,max,vector);
-        // <---- Delay
-
-        //@statistic[SkipChunk](source="Signal_SkipChunk"; record=last,vector);
-
-        //@statistic[StallDuration](source="Signal_StallDuration"; record=last,vector);
-
-        //@statistic[Rebuffering](source="Signal_Rebuffering"; record=last,vector);
-
-        // -- For playback lags
-        @statistic[playback](source="Signal_Playback"; record=min,max,mean,count);
+   @statistic[playback](source="Signal_Playback"; record=min,max,mean,count);
            // count: to see how many active peers are there till the end of the simulation
 
 

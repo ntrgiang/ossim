@@ -72,6 +72,19 @@ public:
     void gracefulLeave(void);
     void fail(void);
 
+    // -- Wrappers
+    //
+    long getChunkHit(void);
+    long getChunkMiss(void);
+
+    long getTotalHopCount(void);
+    long getTotalReceivedChunk(void);
+    long getTotalE2eDelay(void);
+
+    float getLocalCI(void);
+    inline int getNumPartners(void) { return m_partnerList->getSize(); }
+    // ---------------------------
+
 protected:
     virtual int numInitStages() const { return 4; }
     virtual void initialize(int stage);
